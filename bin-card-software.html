@@ -37,7 +37,7 @@
   </style>
 </head>
 <body class="logged-out">
-  <section id="loginPage"><div class="login-card"><div class="login-brand"><img src="Farnoor_New_Logo.jpg-removebg-preview.png" onerror="this.onerror=null;this.src='Farnoor_New_Logo.jpg-removebg-preview.png';" alt="Farnoor logo"><strong><span class="login-brand-farnoor">FARNOOR</span><span class="login-brand-ltd">GARMENTS LTD.</span></strong></div><div id="loginPanel"><h2>লগইন করুন</h2><p>Management পেজে প্রবেশ করতে আপনার ইমেইল ও পাসওয়ার্ড দিন।</p><form id="loginForm"><label>ইমেইল</label><input id="loginName" type="email" required placeholder="ইমেইল লিখুন"><label>পাসওয়ার্ড</label><input id="loginPass" type="password" required placeholder="পাসওয়ার্ড লিখুন"><button class="primary" type="submit">লগইন করুন</button><button class="form-link" id="forgotPasswordButton" type="button">পাসওয়ার্ড ভুলে গেছেন?</button><div class="login-error" id="loginError"></div></form><div class="form-link">নতুন ব্যবহারকারী? <button type="button" onclick="showRegister()">নতুন রেজিস্টার করুন</button></div></div><div id="registerPanel" class="hidden"><h2>নতুন রেজিস্টার</h2><p>প্রথমে নাম, বিভাগ ও মোবাইল নম্বর দিন।</p><form id="registerForm"><label>আপনার নাম</label><input id="regName" required placeholder="নাম লিখুন"><label>Department / বিভাগ</label><select id="regDepartment" required><option value="" selected disabled>বিভাগ নির্বাচন করুন</option><option>Administration</option><option>MD</option><option>GM</option><option>Director</option><option>Account</option><option>Commercial</option><option>Merchandising</option><option>Knitting and Dyeing</option><option>Store</option><option>Production</option><option>Line-1</option><option>Line-2</option><option>Line-3</option><option>Line-4</option><option>Cutting</option><option>Finishing</option><option>Packing</option><option>Quality</option><option>Sample</option><option>Maintenance</option><option>Electrical</option><option>Driver</option></select><label>মোবাইল নম্বর</label><input id="regMobile" inputmode="numeric" required placeholder="01XXXXXXXXX"><label>পাসওয়ার্ড</label><input id="regPass" type="password" required placeholder="পাসওয়ার্ড দিন"><label>পাসওয়ার্ড নিশ্চিত করুন</label><input id="regConfirm" type="password" required placeholder="আবার পাসওয়ার্ড লিখুন"><button class="primary" type="submit">রেজিস্টার করুন</button><div class="login-error" id="registerError"></div></form><div class="form-link">আগে থেকেই অ্যাকাউন্ট আছে? <button type="button" onclick="showLogin()">লগইন করুন</button></div></div></div></section>
+  <section id="loginPage"><div class="login-card"><div class="login-brand"><img src="Farnoor_New_Logo.jpg-removebg-preview.png" onerror="this.onerror=null;this.src='Farnoor_New_Logo.jpg-removebg-preview.png';" alt="Farnoor logo"><strong><span class="login-brand-farnoor">FARNOOR</span><span class="login-brand-ltd">GARMENTS LTD.</span></strong></div><div id="loginPanel"><h2>লগইন করুন</h2><p>Management পেজে প্রবেশ করতে আপনার ইমেইল ও পাসওয়ার্ড দিন।</p><form id="loginForm"><label>ইমেইল</label><input id="loginName" type="email" required placeholder="ইমেইল লিখুন"><label>পাসওয়ার্ড</label><input id="loginPass" type="password" required placeholder="পাসওয়ার্ড লিখুন"><button class="primary" type="submit">লগইন করুন</button><button class="form-link" id="forgotPasswordButton" type="button">পাসওয়ার্ড ভুলে গেছেন?</button><div class="login-error" id="loginError"></div></form><div class="form-link">নতুন ব্যবহারকারী? <button type="button" onclick="showRegister()">নতুন রেজিস্টার করুন</button></div></div><div id="registerPanel" class="hidden"><h2>নতুন রেজিস্টার</h2><p>প্রথমে নাম, বিভাগ ও ইমেইল দিন। ইমেইলে যাচাইকরণ কোড যাবে।</p><form id="registerForm"><label>আপনার নাম</label><input id="regName" required placeholder="নাম লিখুন"><label>Department / বিভাগ</label><select id="regDepartment" required><option value="" selected disabled>বিভাগ নির্বাচন করুন</option><option>Administration</option><option>MD</option><option>GM</option><option>Director</option><option>Account</option><option>Commercial</option><option>Merchandising</option><option>Knitting and Dyeing</option><option>Store</option><option>Production</option><option>Line-1</option><option>Line-2</option><option>Line-3</option><option>Line-4</option><option>Cutting</option><option>Finishing</option><option>Packing</option><option>Quality</option><option>Sample</option><option>Maintenance</option><option>Electrical</option><option>Driver</option></select><label>ইমেইল</label><input id="regEmail" type="email" required placeholder="আপনার ইমেইল লিখুন"><label>পাসওয়ার্ড</label><input id="regPass" type="password" required placeholder="পাসওয়ার্ড দিন"><label>পাসওয়ার্ড নিশ্চিত করুন</label><input id="regConfirm" type="password" required placeholder="আবার পাসওয়ার্ড লিখুন"><button class="primary" type="submit">রেজিস্টার করুন</button><div class="login-error" id="registerError"></div></form><div class="form-link">আগে থেকেই অ্যাকাউন্ট আছে? <button type="button" onclick="showLogin()">লগইন করুন</button></div></div></div></section>
   <div id="appShell"><header><div class="brand-wrap"><img class="brand-logo" src="Farnoor_New_Logo.jpg-removebg-preview.png" onerror="this.onerror=null;this.src='Farnoor_New_Logo.jpg-removebg-preview.png';" alt="Farnoor logo"><div class="brand-copy"><h1><span class="brand-farnoor">FARNOOR</span> <span class="brand-ltd">GARMENTS LTD.</span></h1><p>1028/1/2, Malibagh Bazar Road, Dhaka-1217</p></div></div><div class="user-area"><span class="welcome" id="welcome"></span><div class="badge">MANAGEMENT</div><button class="logout" onclick="logout()">লগআউট</button></div></header>
   <main>
     <div class="notice">প্রতিটি Management Entry একটি নির্দিষ্ট <b>Order No + Style No</b>-এর জন্য। Main Label, Size Label ও Care Label-সহ সব materials/accessories-এর quantity একই এন্ট্রিতে আলাদাভাবে রাখা যাবে।</div>
@@ -74,8 +74,8 @@
     function showRegister(){document.getElementById('loginPanel').classList.add('hidden');document.getElementById('registerPanel').classList.remove('hidden');document.getElementById('loginError').textContent='';}
     function showLogin(){document.getElementById('registerPanel').classList.add('hidden');document.getElementById('loginPanel').classList.remove('hidden');document.getElementById('registerError').textContent='';}
     function getAccounts(){return JSON.parse(localStorage.getItem('farnoorAccounts')||'[]');}
-    document.getElementById('loginForm').onsubmit=e=>{e.preventDefault();const name=document.getElementById('loginName').value.trim(),pass=document.getElementById('loginPass').value,account=getAccounts().find(a=>a.name.toLowerCase()===name.toLowerCase()&&a.pass===pass);if(!account){document.getElementById('loginError').textContent='নাম অথবা পাসওয়ার্ড সঠিক নয়। নতুন হলে আগে রেজিস্টার করুন।';return;}sessionStorage.setItem('farnoorLogin',JSON.stringify({name:account.name,mobile:account.mobile||account.user,department:account.department||''}));enterApp(account.name,account.department);};
-    document.getElementById('registerForm').onsubmit=e=>{e.preventDefault();const name=document.getElementById('regName').value.trim(),department=document.getElementById('regDepartment').value,mobile=document.getElementById('regMobile').value.trim(),pass=document.getElementById('regPass').value,confirmPass=document.getElementById('regConfirm').value,accounts=getAccounts();if(!department){document.getElementById('registerError').textContent='বিভাগ নির্বাচন করুন।';return;}if(!/^01\d{9}$/.test(mobile)){document.getElementById('registerError').textContent='সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন।';return;}if(pass!==confirmPass){document.getElementById('registerError').textContent='দুইটি পাসওয়ার্ড একই নয়।';return;}if(accounts.some(a=>(a.mobile||a.user)===mobile)){document.getElementById('registerError').textContent='এই মোবাইল নম্বরটি আগে থেকেই রেজিস্টার করা আছে।';return;}accounts.push({name,department,mobile,pass});localStorage.setItem('farnoorAccounts',JSON.stringify(accounts));document.getElementById('loginName').value=name;document.getElementById('loginPass').value='';document.getElementById('registerForm').reset();showLogin();document.getElementById('loginError').textContent='রেজিস্ট্রেশন সফল হয়েছে। এখন নাম ও পাসওয়ার্ড দিয়ে লগইন করুন।';};
+    document.getElementById('loginForm').onsubmit=e=>{e.preventDefault();const name=document.getElementById('loginName').value.trim(),pass=document.getElementById('loginPass').value,account=getAccounts().find(a=>(a.email||a.name||'').toLowerCase()===name.toLowerCase()&&a.pass===pass);if(!account){document.getElementById('loginError').textContent='ইমেইল অথবা পাসওয়ার্ড সঠিক নয়। নতুন হলে আগে রেজিস্টার করুন।';return;}sessionStorage.setItem('farnoorLogin',JSON.stringify({name:account.name||account.email,email:account.email||name,department:account.department||''}));enterApp(account.name||account.email,account.department);};
+    document.getElementById('registerForm').onsubmit=e=>{e.preventDefault();const name=document.getElementById('regName').value.trim(),department=document.getElementById('regDepartment').value,email=document.getElementById('regEmail').value.trim(),pass=document.getElementById('regPass').value,confirmPass=document.getElementById('regConfirm').value,accounts=getAccounts();if(!department){document.getElementById('registerError').textContent='বিভাগ নির্বাচন করুন।';return;}if(!/^\S+@\S+\.\S+$/.test(email)){document.getElementById('registerError').textContent='সঠিক ইমেইল দিন।';return;}if(pass!==confirmPass){document.getElementById('registerError').textContent='দুইটি পাসওয়ার্ড একই নয়।';return;}if(accounts.some(a=>(a.email||'').toLowerCase()===email.toLowerCase())){document.getElementById('registerError').textContent='এই ইমেইলটি আগে থেকেই রেজিস্টার করা আছে।';return;}accounts.push({name,department,email,pass});localStorage.setItem('farnoorAccounts',JSON.stringify(accounts));document.getElementById('loginName').value=email;document.getElementById('loginPass').value='';document.getElementById('registerForm').reset();showLogin();document.getElementById('loginError').textContent='রেজিস্ট্রেশন সফল হয়েছে। এখন ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।';};
     function logout(){sessionStorage.removeItem('farnoorLogin');document.body.className='logged-out';document.getElementById('loginForm').reset();document.getElementById('loginError').textContent='';showLogin();}
     const savedLogin=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null');if(savedLogin)enterApp(savedLogin.name,savedLogin.department);
     const itemNames=['Main Label','Care Label','Sewing Thread','Mobilon Tape','Button','Zipper','Elastic','Interlining','Neck/Shoulder Tape','Hanger Loop'];
@@ -177,21 +177,8 @@
         loginName.placeholder = 'আপনার ইমেইল লিখুন';
       }
       const registerForm = document.getElementById('registerForm');
-      if (registerForm && !document.getElementById('regEmail')) {
-        const label = document.createElement('label');
-        label.textContent = 'ইমেইল';
-        const input = document.createElement('input');
-        input.id = 'regEmail';
-        input.type = 'email';
-        input.required = true;
-        input.autocomplete = 'email';
-        input.placeholder = 'আপনার ইমেইল লিখুন';
-        const mobile = document.getElementById('regMobile');
-        mobile?.insertAdjacentElement('afterend', label);
-        label.insertAdjacentElement('afterend', input);
-      }
       document.querySelector('#loginPanel p').textContent = 'অনলাইনে নিরাপদভাবে প্রবেশ করতে ইমেইল ও পাসওয়ার্ড দিন।';
-      document.querySelector('#registerPanel p').textContent = 'নাম, বিভাগ, মোবাইল ও ইমেইল দিয়ে নতুন ব্যবহারকারী রেজিস্টার করুন।';
+      document.querySelector('#registerPanel p').textContent = 'নাম, বিভাগ ও ইমেইল দিয়ে নতুন ব্যবহারকারী রেজিস্টার করুন।';
     }
 
     function storedValue(key) {
@@ -234,7 +221,7 @@
       const meta = user.user_metadata || {};
       sessionStorage.setItem('farnoorLogin', JSON.stringify({
         name: meta.name || user.email,
-        mobile: meta.mobile || '',
+        email: user.email || '',
         department: meta.department || ''
       }));
       const loadedKey = 'farnoorCloudLoaded-' + user.id;
@@ -246,7 +233,7 @@
         return;
       }
       if (typeof enterApp === 'function') enterApp(meta.name || user.email, meta.department || '');
-      showCloudStatus('✓ অনলাইন সেভ চালু আছে');
+      document.getElementById('cloudSaveStatus')?.remove();
     }
 
     function installStorageSync() {
@@ -394,19 +381,17 @@
         event.preventDefault();
         const name = document.getElementById('regName').value.trim();
         const department = document.getElementById('regDepartment').value;
-        const mobile = document.getElementById('regMobile').value.trim();
         const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPass').value;
         const confirmPassword = document.getElementById('regConfirm').value;
         const errorBox = document.getElementById('registerError');
         if (!department) { errorBox.textContent = 'বিভাগ নির্বাচন করুন।'; return; }
-        if (!/^01\d{9}$/.test(mobile)) { errorBox.textContent = 'সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন।'; return; }
         if (password !== confirmPassword) { errorBox.textContent = 'দুইটি পাসওয়ার্ড একই নয়।'; return; }
         errorBox.textContent = 'রেজিস্ট্রেশন হচ্ছে...';
         const { data, error } = await client.auth.signUp({
           email,
           password,
-          options: { data: { name, department, mobile } }
+          options: { data: { name, department } }
         });
         if (error) { errorBox.textContent = error.message; return; }
         document.getElementById('registerForm').reset();
@@ -477,10 +462,10 @@
         event.preventDefault(); if (busy) return; busy = true; const submit = form.querySelector('button[type="submit"]'); submit.disabled = true; errorBox.textContent = '';
         try {
           if (stage === 1) {
-            const name = document.getElementById('regName').value.trim(), department = document.getElementById('regDepartment').value, mobile = document.getElementById('regMobile').value.trim(), loginEmail = email.value.trim();
-            if (!name || !department || !/^01\d{9}$/.test(mobile) || !/^\S+@\S+\.\S+$/.test(loginEmail)) { errorBox.textContent = 'নাম, বিভাগ, সঠিক মোবাইল ও ইমেইল দিন।'; return; }
+            const name = document.getElementById('regName').value.trim(), department = document.getElementById('regDepartment').value, loginEmail = email.value.trim();
+            if (!name || !department || !/^\S+@\S+\.\S+$/.test(loginEmail)) { errorBox.textContent = 'নাম, বিভাগ ও সঠিক ইমেইল দিন।'; return; }
             submit.textContent = 'কোড পাঠানো হচ্ছে...'; errorBox.textContent = 'ভেরিফিকেশন কোড পাঠানো হচ্ছে...';
-            const result = await call('send-registration-code', { name, department, mobile, loginEmail });
+            const result = await call('send-registration-code', { name, department, loginEmail });
             verificationId = result.verificationId; stage = 2; codeLabel.style.display = ''; code.style.display = ''; note.style.display = ''; code.required = true; form.querySelector('button[type="submit"]').textContent = 'কোড যাচাই করুন'; errorBox.textContent = 'কোড ' + verificationMailbox + '-এ পাঠানো হয়েছে।';
           } else if (stage === 2) {
             submit.textContent = 'কোড যাচাই হচ্ছে...'; errorBox.textContent = 'কোড যাচাই হচ্ছে...';
@@ -834,10 +819,17 @@
         try { return JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department || ''; }
         catch { return ''; }
       };
+      const isSuperAdmin = () => {
+        try {
+          const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {};
+          return ['superadmin','owner','alldepartments'].includes(normalize(session.department)) || String(session.email || '').trim().toLowerCase() === 'lutfarbabu@gmail.com';
+        } catch { return false; }
+      };
       const canAccess = department => {
         const role = getRole();
         const roleKey = normalize(role);
         const depKey = normalize(department);
+        if (isSuperAdmin()) return true;
         if (!roleKey) return false;
         if (restrictedAdmin.test(role)) return depKey === roleKey;
         if (roleKey === 'administration') return depKey === 'administration';
@@ -918,15 +910,18 @@
         driver: []
       };
       const currentRole = () => { try { return clean(JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department); } catch { return ''; } };
+      const isSuperAdmin = () => { try { const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; return ['superadmin','owner','alldepartments'].includes(clean(session.department)) || String(session.email || '').trim().toLowerCase() === 'lutfarbabu@gmail.com'; } catch { return false; } };
       const isAdminUser = role => /^admin[1-5]$/.test(role);
       const canRead = department => {
         const role = currentRole(), target = clean(department);
+        if (isSuperAdmin()) return true;
         if (!role) return false;
         if (isAdminUser(role)) return target === role || adminTargets.includes(target);
         return target === role || (readGroups[role] || []).includes(target);
       };
       const canWrite = department => {
         const role = currentRole(), target = clean(department);
+        if (isSuperAdmin()) return true;
         if (!role) return false;
         if (isAdminUser(role)) return adminTargets.includes(target) || target === role;
         return role === target;
@@ -1027,7 +1022,7 @@
         try { return String(JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department || '').trim().toLowerCase().replace(/[\s_-]+/g,''); }
         catch { return ''; }
       };
-      const isAdminUser = () => /^admin[1-5]$/.test(role());
+      const isAdminUser = () => { try { const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; return /^admin[1-5]$/.test(role()) || ['superadmin','owner','alldepartments'].includes(role()) || String(session.email || '').toLowerCase() === 'lutfarbabu@gmail.com'; } catch { return false; } };
       const goHome = () => {
         document.getElementById('storeView')?.classList.remove('visible');
         document.getElementById('productionView')?.classList.remove('visible');
@@ -1118,7 +1113,7 @@
       if (!store || !actions || !page) return;
       const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
       const role = () => { try { return clean(JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department); } catch { return ''; } };
-      const isAdminUser = () => /^admin[1-5]$/.test(role());
+      const isAdminUser = () => { try { const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; return /^admin[1-5]$/.test(role()) || ['superadmin','owner','alldepartments'].includes(role()) || String(session.email || '').toLowerCase() === 'lutfarbabu@gmail.com'; } catch { return false; } };
       const goManagementHome = () => {
         store.classList.remove('visible');
         document.getElementById('productionView')?.classList.remove('visible');
@@ -1183,3 +1178,4 @@
   </script>
 </body>
 </html>
+
