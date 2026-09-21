@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FARNOOR GARMENTS LTD. — Management</title>
+  <style>
+    :root { --ink:#18342e; --muted:#6b7f79; --paper:#eef7f3; --line:#d9e1dc; --green:#087c5b; --deep:#07533f; --accent:#f2b84b; --danger:#b33a3a; }
+    * { box-sizing:border-box; } body { margin:0; min-height:100vh; font-family:"Noto Sans Bengali", "Segoe UI", Arial, sans-serif; background:radial-gradient(circle at 8% 10%,#ccefe3 0,transparent 30%),radial-gradient(circle at 92% 21%,#fff0c8 0,transparent 27%),linear-gradient(135deg,#edf8f3 0%,#f7faf7 47%,#edf4fb 100%); color:var(--ink); }
+    header { background:linear-gradient(125deg,#073d31,#087c5b); color:#fff; padding:28px clamp(18px,5vw,70px); display:flex; justify-content:space-between; align-items:center; gap:20px; }
+    .brand-wrap { display:flex; align-items:center; gap:13px; } .brand-copy { display:flex; flex-direction:column; justify-content:center; } h1 { font-size:clamp(23px,3vw,34px); margin:0 0 5px; font-weight:900; letter-spacing:3px; text-shadow:0 3px 10px #002b2170; font-family:Georgia,"Times New Roman",serif; } .brand-logo { width:58px; height:58px; object-fit:contain; box-shadow:0 3px 10px #001e173b; flex:none; } .brand-farnoor { color:#fff; background:linear-gradient(110deg,#ffffff 12%,#a7f5d8 48%,#fff4c9 82%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; } .brand-ltd { font-family:"Segoe UI",Arial,sans-serif; font-size:.52em; letter-spacing:3.5px; color:#d7f8eb; -webkit-text-fill-color:#d7f8eb; vertical-align:middle; } header p { margin:0; opacity:.85; font-size:14px; } .badge { background:#ffffff20; border:1px solid #ffffff44; border-radius:40px; padding:9px 14px; font-size:13px; white-space:nowrap; letter-spacing:1.2px; font-weight:800; }
+    main { max-width:1380px; margin:28px auto; padding:0 20px 50px; } .notice { background:linear-gradient(100deg,#fff8dc,#fffdf4); border-left:4px solid var(--accent); padding:13px 16px; border-radius:9px; color:#604917; margin-bottom:20px; font-size:14px; box-shadow:0 4px 12px #8d77301c; }
+    .grid { display:grid; grid-template-columns:420px 1fr; gap:22px; align-items:start; } .card { background:#ffffffeb; backdrop-filter:blur(6px); border:1px solid #ffffff; border-radius:14px; box-shadow:0 9px 25px #173b3024; overflow:hidden; }
+    .card-head { padding:17px 20px; border-bottom:1px solid var(--line); background:linear-gradient(100deg,#e2f4ed,#f8fcfa); display:flex; justify-content:space-between; align-items:center; } h2 { font-size:18px; margin:0; } .body { padding:20px; }
+    label { display:block; font-size:13px; font-weight:700; margin:0 0 6px; color:#31554b; } input, select { width:100%; border:1px solid #cbd8d2; padding:10px 11px; border-radius:7px; font:inherit; color:var(--ink); background:#fff; } input:focus,select:focus { outline:2px solid #79c8af; border-color:var(--green); }
+    .fields { display:grid; grid-template-columns:1fr 1fr; gap:13px; } .full { grid-column:1/-1; } .rule { height:1px; background:var(--line); margin:19px 0; } .material { display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr 1fr; gap:8px; align-items:end; margin-bottom:8px; } .material label { margin:0; font-size:11px; } .material input { padding:8px; font-size:12px; }
+    button { border:0; cursor:pointer; font:inherit; font-weight:700; border-radius:7px; padding:10px 14px; } .primary { background:var(--green); color:#fff; } .primary:hover { background:var(--deep); } .secondary { background:#e9f1ed; color:var(--deep); } .danger { color:var(--danger); background:#fff0f0; } .actions { display:flex; gap:8px; margin-top:18px; } .actions button { flex:1; }
+    .toolbar { display:flex; gap:10px; } .toolbar input { min-width:230px; } .list { max-height:640px; overflow:auto; } table { width:100%; border-collapse:collapse; font-size:13px; } th { background:linear-gradient(90deg,#dff2ea,#eef7f3); text-align:left; padding:12px 13px; color:#31554b; position:sticky; top:0; } td { border-top:1px solid var(--line); padding:12px 13px; vertical-align:top; } tr.data:hover { background:#edf9f4; cursor:pointer; } tr.selected { background:#d8f2e6; } .id { font-weight:800; } .sub { color:var(--muted); font-size:12px; margin-top:3px; } .qty { font-weight:700; white-space:nowrap; } .empty { text-align:center; padding:65px 20px; color:var(--muted); } .small { font-size:12px; color:var(--muted); }
+    .summary-head { display:flex; justify-content:space-between; align-items:center; gap:16px; margin:3px 0 15px; } .summary-head h2 { font-size:22px; } .summary-head p { margin:4px 0 0; color:var(--muted); font-size:13px; } .summary-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; } .stat { background:linear-gradient(135deg,#0a805e,#07523f); color:#fff; border-radius:12px; padding:16px; box-shadow:0 7px 17px #06564027; } .stat:nth-child(2){background:linear-gradient(135deg,#287f9d,#19576e)} .stat:nth-child(3){background:linear-gradient(135deg,#b77a25,#8a5513)} .stat:nth-child(4){background:linear-gradient(135deg,#7463a6,#463779)} .stat b { display:block; font-size:24px; margin-top:4px; } .stat span { font-size:12px; opacity:.85; } .summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:13px; } .function-card { border:1px solid #d4e3dc; background:#ffffffdf; padding:15px; border-radius:11px; text-align:left; transition:.18s transform,.18s box-shadow; color:var(--ink); } .function-card:hover { transform:translateY(-3px); box-shadow:0 8px 18px #164c3a24; border-color:#78bba5; } .function-card strong { display:block; font-size:15px; margin-bottom:11px; color:var(--deep); } .function-card div { display:grid; grid-template-columns:1fr 1fr; gap:7px; font-size:11px; color:var(--muted); } .function-card b { display:block; font-size:15px; color:var(--ink); margin-top:1px; } .manage-view { display:none; } .manage-view.visible { display:grid; } .back { padding:8px 11px; } .active-material { background:#fff5d8; border-left:3px solid var(--accent); padding-left:5px; border-radius:4px; }
+    .buyer-title { display:flex; align-items:center; justify-content:space-between; margin:25px 0 10px; } .buyer-title h3 { margin:0; font-size:17px; } .buyer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; } .buyer-card { border:0; border-radius:12px; padding:17px; text-align:left; color:#fff; background:linear-gradient(135deg,#167f78,#075747); box-shadow:0 7px 16px #07574722; } .buyer-card:nth-child(3n+2){background:linear-gradient(135deg,#3d769b,#214666)} .buyer-card:nth-child(3n){background:linear-gradient(135deg,#9b6e39,#62421e)} .buyer-card:hover { filter:brightness(1.08); transform:translateY(-2px); } .buyer-card strong { display:block; font-size:17px; margin-bottom:11px; } .buyer-card span { display:block; font-size:12px; opacity:.88; } .buyer-card b { font-size:20px; } .current-buyer { outline:3px solid #f2b84b; }
+    .department-panel { background:#ffffffd9; border:1px solid #d4e3dc; border-radius:13px; padding:16px; margin-bottom:20px; } .department-panel h3 { margin:0 0 5px; font-size:17px; } .department-panel p { margin:0 0 12px; font-size:13px; color:var(--muted); } .department-form { display:flex; gap:9px; max-width:560px; } .department-form input { flex:1; } .department-form button { white-space:nowrap; } .department-grid { display:flex; flex-wrap:wrap; gap:9px; margin-top:14px; } .department-button { background:#e5f5ee; color:var(--deep); border:1px solid #a6d7c4; padding:9px 13px; } .department-button:hover,.department-button.active { background:var(--green); color:#fff; border-color:var(--green); } @media (max-width:600px){.department-form{display:block}.department-form button{width:100%;margin-top:8px}}
+    .store-view { display:none; margin-top:18px; } .store-view.visible { display:block; } .store-actions { display:flex; flex-wrap:wrap; gap:11px; margin:0 0 16px; } .store-action { min-width:180px; padding:13px 17px; border:1px solid #a1d4c1; border-radius:11px; background:linear-gradient(135deg,#f4fcf8,#dff3e9); color:#075b45; font-weight:900; box-shadow:0 5px 13px #075b4517; } .store-action:nth-child(4) { background:linear-gradient(135deg,#6b5aa6,#44356f); color:#fff; border-color:#44356f; } .store-action:hover,.store-action.active { color:#fff; border-color:#075b45; background:linear-gradient(135deg,#0b7a5c,#075b45); transform:translateY(-2px); } .store-search { display:none; margin:-5px 0 16px; padding:12px; border:1px solid #b9d9ca; background:#f5fbf8; border-radius:10px; } .store-search.visible { display:flex; gap:9px; align-items:center; } .store-search input { flex:1; } .store-card { max-width:1280px; margin:auto; } .store-card .card-head { background:linear-gradient(100deg,#e4f4ed,#f9fcfa); } .store-fields { border:1px solid var(--line); border-radius:9px; overflow:hidden; } .store-row { display:grid; grid-template-columns:210px 1fr; border-top:1px solid var(--line); } .store-row:first-child { border-top:0; } .store-row label { margin:0; padding:12px 14px; display:flex; align-items:center; background:#eef7f3; border-right:1px solid var(--line); } .store-row input { border:0; border-radius:0; padding:12px 14px; min-width:0; } .accessory-table { border:1px solid #b9d5ca; border-radius:9px; overflow-x:auto; } .accessory-table-head,.accessory-table-row,.accessory-total-row { display:grid; grid-template-columns:38px 1.8fr .75fr repeat(6,1fr); min-width:1000px; } .accessory-table-head { background:#075b45; color:#fff; font-size:11px; font-weight:800; } .accessory-table-head span { padding:12px 7px; border-left:1px solid #ffffff42; } .accessory-table-head span:first-child { border-left:0; } .accessory-table-row { background:#fff; border-top:1px solid var(--line); } .accessory-table-row select,.accessory-table-row input { border:0; border-radius:0; padding:13px 7px; border-left:1px solid var(--line); min-width:0; width:100%; } .accessory-table-row input:first-child { border-left:0; } .accessory-table-row select:focus,.accessory-table-row input:focus,.store-row input:focus { outline:2px solid #79c8af; outline-offset:-2px; } .delete-accessory { border-radius:0; color:#b33a3a; background:#fff2f2; padding:0; font-size:20px; } .balance-field { background:#eef7f3; font-weight:800; color:var(--deep); } .accessory-total-row { background:#dff2ea; font-weight:900; color:var(--deep); border-top:2px solid #73ad97; } .accessory-total-row span { padding:12px 7px; border-left:1px solid #b9d5ca; text-align:center; } .accessory-total-row span:nth-child(2) { text-align:left; padding-left:12px; } .add-accessory { margin-top:12px; width:100%; border:1px dashed #76b69f; background:#f0faf5; color:var(--deep); } .store-saved { margin-top:15px; padding:11px 13px; background:#e7f7ef; color:var(--deep); font-size:13px; display:none; } @media (max-width:700px){.store-actions{display:grid;grid-template-columns:1fr}.store-action{width:100%}.store-search.visible{display:block}.store-search input{width:100%;margin-bottom:8px}.store-row{grid-template-columns:1fr}.store-row label{border-right:0;border-bottom:1px solid var(--line)}.accessory-table{overflow-x:auto}}
+    #loginPage { min-height:100vh; display:grid; place-items:center; padding:22px; background:radial-gradient(circle at 15% 15%,#48ae8a 0,transparent 30%),radial-gradient(circle at 85% 80%,#efbd54 0,transparent 26%),linear-gradient(135deg,#073d31,#075b45); } .login-card { width:min(430px,100%); background:#ffffffef; border:1px solid #ffffff; border-radius:18px; padding:34px; box-shadow:0 20px 50px #001e175c; } .login-brand { display:flex; align-items:center; gap:13px; margin-bottom:25px; } .login-brand img { width:56px; height:56px; object-fit:contain; } .login-brand strong { display:flex; flex-direction:column; margin-left:0; transform:translate(9px,4px); color:var(--deep); letter-spacing:1px; font-size:18px; line-height:1.02; } .login-brand-farnoor { font-size:1.45em; letter-spacing:2.2px; } .login-brand-ltd { margin-top:4px; font-size:.84em; letter-spacing:1px; } .login-card h2 { margin:0 0 6px; font-size:23px; } .login-card p { color:var(--muted); margin:0 0 22px; font-size:13px; } .login-card label { margin-top:13px; } .login-card button { width:100%; margin-top:22px; padding:12px; } .login-error { min-height:18px; color:#b33a3a; font-size:12px; margin-top:9px; } .form-link { margin:17px 0 0; text-align:center; color:var(--muted); font-size:13px; } .form-link button { width:auto; margin:0; padding:0; background:none; color:var(--green); text-decoration:underline; } .hidden { display:none; } body.logged-out #appShell { display:none; } body.logged-in #loginPage { display:none; } .user-area { display:flex; align-items:center; gap:10px; } .welcome { font-size:12px; opacity:.9; text-align:right; } .logout { background:#ffffff22; color:#fff; border:1px solid #ffffff55; white-space:nowrap; padding:8px 11px; } .logout:hover { background:#ffffff35; }
+    .print-only { display:none; } .print-entry-header { align-items:center; gap:12px; padding-bottom:9px; border-bottom:2px solid #075b45; } .print-entry-header img { width:58px; height:58px; object-fit:contain; } .print-company-name { font-size:19px; font-weight:900; color:#075b45; letter-spacing:.6px; } .print-address { margin-top:3px; font-size:11px; } .print-department { margin:10px 0; text-align:center; font-size:15px; font-weight:900; text-transform:uppercase; } .print-info-box { border:1px solid #8eaa9d; margin:0 0 12px; } .print-info-box div { display:grid; grid-template-columns:145px 1fr; border-top:1px solid #c4d5cc; } .print-info-box div:first-child { border-top:0; } .print-info-box strong { padding:6px 9px; background:#edf6f1; border-right:1px solid #c4d5cc; } .print-info-box span { padding:6px 9px; } .print-signatures { display:grid; grid-template-columns:repeat(3,1fr); gap:30px; margin-top:52px; text-align:center; } .print-signatures div { border-top:1px solid #222; padding-top:6px; font-size:11px; font-weight:800; } @media (max-width:1000px) { .grid { grid-template-columns:1fr; } } @media (max-width:600px) { header { display:block; } .badge{ display:inline-block; margin-top:12px; } .fields { grid-template-columns:1fr; } .full { grid-column:auto; } .material { grid-template-columns:1fr 1fr; } .material .mat-name { grid-column:1/-1; } .toolbar { display:block; } .toolbar input { min-width:0; margin-top:10px; } }
+    .store-records { margin-top:20px; } .store-records .card-head { gap:12px; } .saved-entry { margin:14px 0; border:1px solid #bfd8cd; border-radius:9px; overflow:hidden; } .saved-entry-title { background:#e5f4ed; padding:11px 13px; font-weight:800; color:var(--deep); } .saved-entry-title span { font-weight:500; font-size:12px; color:var(--muted); margin-left:9px; } .saved-entry table { font-size:12px; } .saved-entry th { position:static; background:#f0f8f4; } .saved-entry th,.saved-entry td { text-align:center; padding:9px 6px; } .saved-entry th:first-child,.saved-entry td:first-child { text-align:left; padding-left:12px; }
+    @media print { @page { size:A4 portrait; margin:12mm; } header,.notice,.summary-section,.form-card,.toolbar,.no-print,#storeForm,.store-view>.summary-head,.store-records>.card-head { display:none!important; } body,main { background:#fff; margin:0; padding:0; } .grid { display:block!important; } .card { border:0; box-shadow:none; } .store-view { display:block!important; } .store-records { display:block!important; margin:0; } .store-records .card { border:0; } .print-only { display:block; } .print-entry-header { display:flex!important; } .saved-entry { border:0; margin:0; overflow:visible; break-after:page; } .saved-entry:last-child { break-after:auto; } .saved-entry-title { display:none; } .saved-entry table { width:100%; font-size:9px; } .saved-entry th,.saved-entry td { padding:5px 3px; } .list { max-height:none; overflow:visible; } }
+    .delivery-panel { display:none; } .delivery-fields { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding-bottom:16px; } .delivery-fields label { display:block; margin:0 0 6px; font-weight:800; font-size:12px; color:var(--deep); } .delivery-fields select { width:100%; } .delivery-sheet { width:100%; border-collapse:collapse; margin-top:8px; } .delivery-sheet th,.delivery-sheet td { border:1px solid #bdd8cc; padding:10px 8px; text-align:left; } .delivery-sheet th { background:#075b45; color:#fff; font-size:12px; } .delivery-sheet input { width:100%; min-width:85px; } .delivery-empty { padding:22px; text-align:center; color:var(--muted); background:#f3faf6; border:1px dashed #aad2bf; border-radius:9px; } @media (max-width:700px){.delivery-fields{grid-template-columns:1fr}.delivery-sheet{font-size:12px;}}
+    .department-panel { text-align:center; } .department-panel .department-form { margin:24px auto 0; justify-content:center; } .department-panel .department-grid { text-align:left; } #storeView .summary-head { position:relative; justify-content:center; text-align:center; } #storeView .summary-head h2 { font-size:27px; letter-spacing:.5px; color:var(--deep); } #storeView .summary-head .secondary { position:absolute; right:0; } .store-actions { justify-content:center; gap:16px; } .store-action { min-width:245px; padding:18px 22px; font-size:17px; color:#fff; border:0; box-shadow:0 8px 18px #0a543228; } .store-action:nth-child(1) { background:linear-gradient(135deg,#067e5b,#07533f); } .store-action:nth-child(2) { background:linear-gradient(135deg,#267fa4,#174d76); } .store-action:nth-child(3) { background:linear-gradient(135deg,#ba7c26,#825016); } .store-action:hover,.store-action.active { filter:brightness(1.12); transform:translateY(-3px); } .line1-panel { display:none; max-width:1280px; margin:auto; } .line1-table-wrap { overflow-x:auto; border:1px solid #b9d5ca; border-radius:10px; } .line1-sheet { min-width:1180px; width:100%; border-collapse:collapse; } .line1-sheet th { position:static; background:#075b45; color:#fff; text-align:center; padding:11px 7px; font-size:11px; } .line1-sheet td { padding:0; border:1px solid #c5dfd3; } .line1-sheet input { width:100%; border:0; border-radius:0; padding:13px 8px; min-width:90px; } .line1-sheet .line1-balance { background:#eaf6f0; color:var(--deep); font-weight:900; } @media (max-width:700px){#storeView .summary-head{display:block}#storeView .summary-head .secondary{position:static;margin-top:10px}.store-action{min-width:0;font-size:16px;}}
+    @media print { .manage-view { display:none!important; } .print-signatures { display:grid!important; grid-template-columns:repeat(4,max-content)!important; justify-content:space-between!important; gap:0!important; } .print-signatures div { width:max-content!important; white-space:nowrap!important; font-size:10px!important; } }
+    .department-panel .department-form { margin-top:58px; } .department-button[data-department="Store"],.department-button[data-department="Line-1"] { min-width:190px; min-height:74px; font-size:18px; color:#fff; border:0; border-radius:14px; box-shadow:0 8px 18px #075b452c; } .department-button[data-department="Store"] { background:linear-gradient(135deg,#087b5c,#064b3b); } .department-button[data-department="Line-1"] { background:linear-gradient(135deg,#287eaa,#174d77); } .line1-delete { width:38px; min-width:38px; height:46px; border-radius:0; background:#fff0f0; color:#b33a3a; font-size:20px; } .line1-sheet th:first-child { min-width:38px; } .production-view { display:none; margin-top:18px; } .production-view.visible { display:block; } .production-actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; max-width:1120px; margin:26px auto; } .production-action { min-height:110px; padding:22px; color:#fff; border:0; border-radius:15px; font-size:17px; font-weight:900; box-shadow:0 9px 20px #173b3029; background:linear-gradient(135deg,#07815f,#07523f); } .production-action:nth-child(2){background:linear-gradient(135deg,#2e86a8,#19546e)} .production-action:nth-child(3){background:linear-gradient(135deg,#8a68ad,#55417d)} .production-action:nth-child(4){background:linear-gradient(135deg,#ba7b26,#875018)} .production-action:nth-child(5){background:linear-gradient(135deg,#bd5c51,#873a35)} .production-action:hover,.production-action.active { transform:translateY(-3px); filter:brightness(1.1); outline:3px solid #f0c85a; }
+    .department-button[data-department="Production"] { min-width:190px; min-height:74px; font-size:18px; color:#fff; border:0; border-radius:14px; background:linear-gradient(135deg,#8a68ad,#55417d); box-shadow:0 8px 18px #075b452c; }
+    .department-grid { justify-content:center; } .dept-control { position:relative; width:190px; } .department-button,.department-button[data-department="Store"],.department-button[data-department="Line-1"],.department-button[data-department="Production"] { width:190px; min-width:190px; min-height:74px; font-size:18px; } .delete-department { position:absolute; top:-8px; right:-8px; width:27px; height:27px; padding:0; border-radius:50%; background:#c24b46; color:#fff; font-size:17px; line-height:1; box-shadow:0 3px 8px #6f242d44; } .admin-view { display:none; margin-top:18px; } .admin-view.visible { display:block; } .admin-actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; max-width:850px; margin:26px auto; } .admin-action { min-height:110px; padding:22px; color:#fff; border:0; border-radius:15px; font-size:17px; font-weight:900; background:linear-gradient(135deg,#0a805e,#07523f); box-shadow:0 9px 20px #173b3029; } .admin-action:nth-child(2){background:linear-gradient(135deg,#2e86a8,#19546e)} .admin-action:nth-child(3){background:linear-gradient(135deg,#8a68ad,#55417d)} .admin-action:hover,.admin-action.active{transform:translateY(-3px);filter:brightness(1.1);outline:3px solid #f0c85a;}
+    .service-benefit-view { display:none; margin-top:18px; } .service-benefit-view.visible { display:block; } .service-benefit-actions { display:grid; grid-template-columns:repeat(3,minmax(200px,1fr)); gap:16px; max-width:850px; margin:26px auto; } .service-benefit-action { min-height:110px; border:0; border-radius:15px; padding:22px; color:#fff; font-size:17px; font-weight:900; background:linear-gradient(135deg,#087e5d,#07523f); box-shadow:0 9px 20px #173b3029; } .service-benefit-action:nth-child(2){background:linear-gradient(135deg,#2f83a7,#19536e)} .service-benefit-action:nth-child(3){background:linear-gradient(135deg,#a17231,#704819)} .service-benefit-action:hover,.service-benefit-action.active{transform:translateY(-3px);filter:brightness(1.1);outline:3px solid #f0c85a;} @media(max-width:700px){.service-benefit-actions{grid-template-columns:1fr;}}
+    .delete-department { display:none!important; } .department-context-menu { position:fixed; z-index:1000; display:none; min-width:155px; padding:6px; background:#fff; border:1px solid #d8dfdb; border-radius:8px; box-shadow:0 10px 26px #173b3040; } .department-context-menu.visible { display:block; } .department-context-menu button { width:100%; text-align:left; color:#af3737; background:#fff3f3; } .service-benefit-actions { grid-template-columns:repeat(2,minmax(220px,1fr)); max-width:620px; } .service-benefit-report { display:none; max-width:960px; margin:20px auto; background:#fff; border:1px solid #aaa; } .service-benefit-report.visible { display:block; } .benefit-title { text-align:center; padding:14px; border-bottom:1px solid #d4d4d4; } .benefit-title h2,.benefit-title h3 { margin:0 0 6px; } .benefit-title h3 { text-decoration:underline; font-size:25px; } .benefit-info { display:grid; grid-template-columns:1fr 1fr; } .benefit-info label { display:grid; grid-template-columns:160px 20px 1fr; border-bottom:1px solid #d4d4d4; border-right:1px solid #d4d4d4; padding:7px; font-weight:800; } .benefit-info input { border:0; padding:0 4px; min-width:0; font:inherit; } .benefit-table { width:100%; border-collapse:collapse; } .benefit-table th,.benefit-table td { border:1px solid #222; text-align:center; padding:7px; } .benefit-table th { position:static; background:#fff; color:#111; font-size:15px; } .benefit-table input { width:100%; border:0; text-align:center; font:inherit; } .benefit-total { padding:11px; text-align:right; font-size:20px; font-weight:900; border-top:1px solid #111; } .benefit-sign { display:flex; justify-content:space-between; padding:100px 42px 22px; font-size:17px; font-weight:900; } .benefit-sign span { border-top:1px solid #222; padding-top:7px; } @media(max-width:700px){.benefit-info{grid-template-columns:1fr}.benefit-info label{border-right:0}.benefit-sign{padding:80px 22px 22px;font-size:12px;}.service-benefit-actions{grid-template-columns:1fr;}}
+    .benefit-toolbar { display:flex; gap:10px; justify-content:flex-end; padding:13px; border-top:1px solid #ddd; } .benefit-toolbar button { min-width:130px; } .benefit-list { display:none; max-width:1050px; margin:22px auto; background:#fff; border:1px solid #c8d8d0; border-radius:12px; overflow:hidden; } .benefit-list.visible { display:block; } .benefit-list h3 { margin:0; padding:15px; color:#075b45; background:#ecf7f1; } .benefit-list table { min-width:850px; } .benefit-list-wrap { overflow-x:auto; } .benefit-list th { position:static; background:#075b45; color:#fff; } .benefit-list td,.benefit-list th { padding:10px; text-align:center; } .benefit-list td:first-child,.benefit-list th:first-child { text-align:left; } .department-context-menu { display:none; gap:5px; } .department-context-menu.visible { display:flex; } .department-context-menu button { width:auto; } .department-context-menu .rename-option { color:#075b45; background:#e9f6ef; }
+    .dept-control:nth-child(6n+1) .department-button { background:linear-gradient(135deg,#0c9a70,#06543f)!important; color:#fff; } .dept-control:nth-child(6n+2) .department-button { background:linear-gradient(135deg,#348db9,#1b557d)!important; color:#fff; } .dept-control:nth-child(6n+3) .department-button { background:linear-gradient(135deg,#a875bd,#633b80)!important; color:#fff; } .dept-control:nth-child(6n+4) .department-button { background:linear-gradient(135deg,#d48a2c,#8a4d13)!important; color:#fff; } .dept-control:nth-child(6n+5) .department-button { background:linear-gradient(135deg,#d76d60,#8b3933)!important; color:#fff; } .dept-control:nth-child(6n) .department-button { background:linear-gradient(135deg,#3f8191,#24515c)!important; color:#fff; } .department-button:hover { transform:translateY(-4px) scale(1.02); box-shadow:0 12px 22px #173b3040; }
+  </style>
+</head>
+<body class="logged-out">
+  <section id="loginPage"><div class="login-card"><div class="login-brand"><img src="Farnoor_New_Logo.jpg-removebg-preview.png" alt="Farnoor logo"><strong><span class="login-brand-farnoor">FARNOOR</span><span class="login-brand-ltd">GARMENTS LTD.</span></strong></div><div id="loginPanel"><h2>লগইন করুন</h2><p>Management পেজে প্রবেশ করতে আপনার ইমেইল ও পাসওয়ার্ড দিন।</p><form id="loginForm"><label>ইমেইল</label><input id="loginName" type="email" required placeholder="ইমেইল লিখুন"><label>পাসওয়ার্ড</label><input id="loginPass" type="password" required placeholder="পাসওয়ার্ড লিখুন"><button class="primary" type="submit">লগইন করুন</button><button class="form-link" id="forgotPasswordButton" type="button">পাসওয়ার্ড ভুলে গেছেন?</button><div class="login-error" id="loginError"></div></form><div class="form-link">নতুন ব্যবহারকারী? <button type="button" onclick="showRegister()">নতুন রেজিস্টার করুন</button></div></div><div id="registerPanel" class="hidden"><h2>নতুন রেজিস্টার</h2><p>প্রথমে নাম, বিভাগ ও মোবাইল নম্বর দিন।</p><form id="registerForm"><label>আপনার নাম</label><input id="regName" required placeholder="নাম লিখুন"><label>Department / বিভাগ</label><select id="regDepartment" required><option value="" selected disabled>বিভাগ নির্বাচন করুন</option><option>Administration</option><option>MD</option><option>GM</option><option>Director</option><option>Account</option><option>Commercial</option><option>Merchandising</option><option>Knitting and Dyeing</option><option>Store</option><option>Production</option><option>Line-1</option><option>Line-2</option><option>Line-3</option><option>Line-4</option><option>Cutting</option><option>Finishing</option><option>Packing</option><option>Quality</option><option>Sample</option><option>Maintenance</option><option>Electrical</option><option>Driver</option></select><label>মোবাইল নম্বর</label><input id="regMobile" inputmode="numeric" required placeholder="01XXXXXXXXX"><label>পাসওয়ার্ড</label><input id="regPass" type="password" required placeholder="পাসওয়ার্ড দিন"><label>পাসওয়ার্ড নিশ্চিত করুন</label><input id="regConfirm" type="password" required placeholder="আবার পাসওয়ার্ড লিখুন"><button class="primary" type="submit">রেজিস্টার করুন</button><div class="login-error" id="registerError"></div></form><div class="form-link">আগে থেকেই অ্যাকাউন্ট আছে? <button type="button" onclick="showLogin()">লগইন করুন</button></div></div></div></section>
+  <div id="appShell"><header><div class="brand-wrap"><img class="brand-logo" src="Farnoor_New_Logo.jpg-removebg-preview.png" alt="Farnoor logo"><div class="brand-copy"><h1><span class="brand-farnoor">FARNOOR</span> <span class="brand-ltd">GARMENTS LTD.</span></h1><p>1028/1/2, Malibagh Bazar Road, Dhaka-1217</p></div></div><div class="user-area"><span class="welcome" id="welcome"></span><div class="badge">MANAGEMENT</div><button class="logout" onclick="logout()">লগআউট</button></div></header>
+  <main>
+    <div class="notice">প্রতিটি Management Entry একটি নির্দিষ্ট <b>Order No + Style No</b>-এর জন্য। Main Label, Size Label ও Care Label-সহ সব materials/accessories-এর quantity একই এন্ট্রিতে আলাদাভাবে রাখা যাবে।</div>
+    <section class="summary-section" id="summaryView">
+      <div class="summary-head"><div><h2>Management Summary</h2><p>সব আইটেমের বর্তমান হিসাব এক জায়গায়। কোনো আইটেমে ক্লিক করে তার আলাদা কাজের অংশে যান।</p></div><button class="primary" onclick="openFunction()">+ New Input / নতুন ইনপুট</button></div>
+      <section class="department-panel"><h3>Department Management</h3><p>নিচে Department-এর নাম লিখে যোগ করুন। যোগ করার সঙ্গে সঙ্গে আলাদা বাটন তৈরি হবে।</p><form class="department-form" id="departmentForm"><input id="departmentName" required placeholder="যেমন: Merchandising"><button class="primary" type="submit">+ Department যোগ করুন</button></form><div class="department-grid" id="departmentButtons"></div><div class="small" id="departmentStatus"></div></section>
+    </section>
+    <section class="store-view" id="storeView"><div class="summary-head"><div><h2>Store Page</h2><p>Buyer, Style, Order এবং Accessories-এর quantity এখানে দিন।</p></div><button class="secondary" type="button" onclick="openStorePageHome()">← Store Page</button></div><div class="card store-card"><div class="card-head"><div><h2>Accessories Entry</h2><div class="small">Receive Balance = Received − Booking; Balance = Received − Delivery। ফলাফলে + বা − চিহ্ন দেখা যাবে।</div></div></div><div class="body"><form id="storeForm"><datalist id="accessoryOptions"><option value="Main Label"><option value="Size Label"><option value="Care Label"><option value="Button"><option value="Zipper"><option value="Sewing Thread"><option value="Mobilon Tape"><option value="Elastic"><option value="Interlining"><option value="Neck/Shoulder Tape"><option value="Hanger Loop"></datalist><div class="store-fields"><div class="store-row"><label>Buyer Name</label><input id="storeBuyer" required placeholder="Buyer Name লিখুন"></div><div class="store-row"><label>Style Number</label><input id="storeStyle" required placeholder="Style Number লিখুন"></div><div class="store-row"><label>Order Quantity</label><input id="storeOrderQty" type="number" min="0" value="0" placeholder="0"></div></div><div style="height:16px"></div><div class="accessory-table"><div class="accessory-table-head"><span>−</span><span>Accessories নাম</span><span>Size</span><span>Size Quantity</span><span>Booking Quantity</span><span>Received Quantity</span><span>Receive Balance</span><span>Delivery Quantity</span><span>Balance</span></div><div id="storeAccessoryRows"></div><div class="accessory-total-row"><span></span><span>Total</span><span>—</span><span id="totalSizeQty">0</span><span id="totalBookingQty">0</span><span id="totalReceivedQty">0</span><span id="totalReceiveBalanceQty">0</span><span id="totalDeliveryQty">0</span><span id="totalBalanceQty">0</span></div></div><button class="add-accessory" type="button" onclick="addAccessoryRow()">+ Accessories যোগ করুন</button><div class="actions"><button class="primary" type="submit">সব তথ্য Save করুন</button></div><div class="store-saved" id="storeSaved">Accessories-এর তথ্য সংরক্ষণ করা হয়েছে।</div></form></div></div><section class="card store-records" id="storeRecords"><div class="card-head"><div><h2>Save করা Store তথ্য</h2><div class="small">একই Buyer ও Style-এর সব Accessories একটি ঘরে দেখানো হবে।</div></div><button class="secondary no-print" type="button" onclick="printStoreRecords()">A4 প্রিন্ট</button></div><div class="body" id="storeRecordsBody"></div></section></section>
+    <div class="grid manage-view" id="manageView">
+      <section class="card form-card"><div class="card-head"><div><button class="secondary back no-print" onclick="returnSummary()">← আগের পেজে ফিরে যান</button><h2 id="formTitle" style="margin-top:10px">New Input / নতুন ইনপুট</h2></div><span class="small" id="editing"></span></div><div class="body">
+        <form id="cardForm">
+          <div class="fields">
+            <div><label>Department *</label><select id="entryDepartment" required><option value="" selected disabled>আগে Department যোগ করুন</option></select></div>
+            <div><label>Buyer</label><input id="buyer" placeholder="Buyer নাম" /></div>
+            <div><label>Order No *</label><input id="order" required placeholder="যেমন: FG-1001" /></div>
+            <div><label>Style No *</label><input id="style" required placeholder="যেমন: ST-25" /></div>
+          </div>
+          <div class="rule"></div>
+          <label style="margin-bottom:10px">Materials / Accessories / Labels (Quantity)</label>
+          <div class="material"><label class="mat-name">Item</label><label>Order Qty</label><label>Booking Qty</label><label>Received Qty</label><label>Delivery Qty</label></div>
+          <div id="materials"></div>
+          <div class="actions"><button type="button" class="secondary" id="clearBtn">New Input / নতুন ইনপুট</button><button class="primary" type="submit">Save Management Entry</button></div>
+        </form>
+      </div></section>
+      <section class="card"><div class="card-head"><div><button class="secondary back no-print" onclick="returnSummary()">← সামারিতে ফিরে যান</button> <h2 id="listHeading" style="display:inline">Management তালিকা</h2></div><div class="toolbar no-print"><button class="secondary" onclick="window.print()">প্রিন্ট</button><input id="search" placeholder="Order বা Style খুঁজুন" /></div></div><div class="body print-only"><h2>FARNOOR GARMENTS LTD. — Management</h2></div><div class="list"><table><thead><tr><th>Order / Style</th><th>Buyer</th><th id="summaryHeading">Materials summary</th><th class="no-print">Action</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+    </div>
+  </main></div>
+  <script>
+    // One-time reset requested by administrator: only management entries and Buyer data are removed.
+    if(!localStorage.getItem('farnoorBinCardsResetSep2026v1')){localStorage.removeItem('farnoorBinCards');localStorage.removeItem('farnoorDepartments');localStorage.setItem('farnoorBinCardsResetSep2026v1','done');}
+    // One-time user-account reset requested by administrator. Store and Department data are preserved.
+    if(!localStorage.getItem('farnoorAccountsResetSep2026v4')){localStorage.removeItem('farnoorAccounts');sessionStorage.removeItem('farnoorLogin');localStorage.setItem('farnoorAccountsResetSep2026v4','done');}
+    function enterApp(name,department=''){document.body.className='logged-in';document.getElementById('welcome').textContent=`স্বাগতম, ${name}`;if(String(department).trim().toLowerCase()==='store'){openStoreForm();}else{document.getElementById('storeView').classList.remove('visible');document.getElementById('summaryView').style.display='block';document.querySelector('.notice').style.display='block';}}
+    function showRegister(){document.getElementById('loginPanel').classList.add('hidden');document.getElementById('registerPanel').classList.remove('hidden');document.getElementById('loginError').textContent='';}
+    function showLogin(){document.getElementById('registerPanel').classList.add('hidden');document.getElementById('loginPanel').classList.remove('hidden');document.getElementById('registerError').textContent='';}
+    function getAccounts(){return JSON.parse(localStorage.getItem('farnoorAccounts')||'[]');}
+    document.getElementById('loginForm').onsubmit=e=>{e.preventDefault();const name=document.getElementById('loginName').value.trim(),pass=document.getElementById('loginPass').value,account=getAccounts().find(a=>a.name.toLowerCase()===name.toLowerCase()&&a.pass===pass);if(!account){document.getElementById('loginError').textContent='নাম অথবা পাসওয়ার্ড সঠিক নয়। নতুন হলে আগে রেজিস্টার করুন।';return;}sessionStorage.setItem('farnoorLogin',JSON.stringify({name:account.name,mobile:account.mobile||account.user,department:account.department||''}));enterApp(account.name,account.department);};
+    document.getElementById('registerForm').onsubmit=e=>{e.preventDefault();const name=document.getElementById('regName').value.trim(),department=document.getElementById('regDepartment').value,mobile=document.getElementById('regMobile').value.trim(),pass=document.getElementById('regPass').value,confirmPass=document.getElementById('regConfirm').value,accounts=getAccounts();if(!department){document.getElementById('registerError').textContent='বিভাগ নির্বাচন করুন।';return;}if(!/^01\d{9}$/.test(mobile)){document.getElementById('registerError').textContent='সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন।';return;}if(pass!==confirmPass){document.getElementById('registerError').textContent='দুইটি পাসওয়ার্ড একই নয়।';return;}if(accounts.some(a=>(a.mobile||a.user)===mobile)){document.getElementById('registerError').textContent='এই মোবাইল নম্বরটি আগে থেকেই রেজিস্টার করা আছে।';return;}accounts.push({name,department,mobile,pass});localStorage.setItem('farnoorAccounts',JSON.stringify(accounts));document.getElementById('loginName').value=name;document.getElementById('loginPass').value='';document.getElementById('registerForm').reset();showLogin();document.getElementById('loginError').textContent='রেজিস্ট্রেশন সফল হয়েছে। এখন নাম ও পাসওয়ার্ড দিয়ে লগইন করুন।';};
+    function logout(){sessionStorage.removeItem('farnoorLogin');document.body.className='logged-out';document.getElementById('loginForm').reset();document.getElementById('loginError').textContent='';showLogin();}
+    const savedLogin=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null');if(savedLogin)enterApp(savedLogin.name,savedLogin.department);
+    const itemNames=['Main Label','Care Label','Sewing Thread','Mobilon Tape','Button','Zipper','Elastic','Interlining','Neck/Shoulder Tape','Hanger Loop'];
+    const materialBox=document.querySelector('#materials'); let cards=JSON.parse(localStorage.getItem('farnoorBinCards')||'[]'), departments=JSON.parse(localStorage.getItem('farnoorDepartments')||'[]'), editId=null, activeItem=null, activeBuyer=null, activeDepartment=null;
+    const restoredDepartments=['Administration','MD','GM','Director','Account','Commercial','Merchandising','Knitting and Dyeing','Store','Production','Line-1','Line-2','Line-3','Line-4','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical','Driver'];if(!localStorage.getItem('farnoorDepartmentsRestoredSep2026v1')){restoredDepartments.forEach(name=>{if(!departments.some(item=>item.toLowerCase()===name.toLowerCase()))departments.push(name);});localStorage.setItem('farnoorDepartments',JSON.stringify(departments));localStorage.setItem('farnoorDepartmentsRestoredSep2026v1','done');}
+    materialBox.innerHTML=itemNames.map((n,i)=>`<div class="material"><input class="mat-name" data-n="${n}" value="${n}" readonly><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div>`).join('');
+    const val=id=>document.getElementById(id).value.trim(); const set=(id,v='')=>document.getElementById(id).value=v;
+    function getMaterials(){ return [...materialBox.querySelectorAll('.material')].map(r=>({name:r.querySelector('[data-n]').dataset.n,order:r.querySelector('[data-k=order]').value||0,booking:r.querySelector('[data-k=booking]').value||0,received:r.querySelector('[data-k=received]').value||0,delivery:r.querySelector('[data-k=delivery]').value||0})); }
+    function setMaterials(items=[]){ [...materialBox.querySelectorAll('.material')].forEach(r=>{const saved=items.find(m=>m.name===r.querySelector('[data-n]').dataset.n)||{};['order','booking','received','delivery'].forEach(k=>r.querySelector(`[data-k=${k}]`).value=saved[k]||'');}); }
+    function save(){ localStorage.setItem('farnoorBinCards',JSON.stringify(cards)); render(); renderSummary(); }
+    function renderDepartments(){const select=document.getElementById('entryDepartment'),previous=select.value;select.innerHTML=departments.length?'<option value="" disabled>Department নির্বাচন করুন</option>'+departments.map(d=>`<option value="${d}">${d}</option>`).join(''):'<option value="" selected disabled>আগে Department যোগ করুন</option>';select.value=departments.includes(previous)?previous:(activeDepartment||'');document.getElementById('departmentButtons').innerHTML=departments.map(d=>`<button class="department-button ${activeDepartment===d?'active':''}" type="button" data-department="${d}">${d}</button>`).join('');document.querySelectorAll('[data-department]').forEach(b=>b.onclick=()=>selectDepartment(b.dataset.department));document.getElementById('departmentStatus').textContent=departments.length?`${departments.length}টি Department যোগ করা হয়েছে।`:'এখনও কোনো Department নেই। উপরের ফর্ম থেকে যোগ করুন।';}
+    document.getElementById('departmentForm').onsubmit=e=>{e.preventDefault();const name=val('departmentName');if(departments.some(d=>d.toLowerCase()===name.toLowerCase())){document.getElementById('departmentStatus').textContent='এই Department আগে থেকেই আছে।';return;}departments.push(name);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));set('departmentName');activeDepartment=name;renderDepartments();renderSummary();};
+    function selectDepartment(department){activeDepartment=department;activeBuyer=null;renderDepartments();renderSummary();if(department.toLowerCase()==='administration')openAdministrationPage();else if(['line-1','line 1'].includes(department.toLowerCase()))openStoreForm(department);else if(department.toLowerCase()==='store')openStoreForm(department);else closeStoreForm();}
+    function openStoreForm(department='Store'){document.getElementById('summaryView').style.display='none';document.querySelector('.notice').style.display='none';document.querySelector('#storeView .summary-head h2').textContent=department.toLowerCase()==='store'?'Store Page':`${department} Page`;document.getElementById('storeView').classList.add('visible');if(typeof setLine1Mode==='function')setLine1Mode(['line-1','line 1'].includes(department.toLowerCase()));resetStoreLanding();window.scrollTo({top:0,behavior:'smooth'});}
+    function closeStoreForm(){document.getElementById('storeView').classList.remove('visible');document.getElementById('summaryView').style.display='block';document.querySelector('.notice').style.display='block';activeDepartment=null;renderDepartments();window.scrollTo({top:0,behavior:'smooth'});}
+    function openStorePageHome(){document.getElementById('summaryView').style.display='none';document.querySelector('.notice').style.display='none';document.getElementById('storeView').classList.add('visible');document.getElementById('productionView')?.classList.remove('visible');document.getElementById('administrationView')?.classList.remove('visible');document.querySelector('#storeView .summary-head h2').textContent='Store Page';resetStoreLanding();window.scrollTo({top:0,behavior:'smooth'});}
+    function setupProductionPage(){const production=document.createElement('section');production.id='productionView';production.className='production-view';production.innerHTML='<div class="summary-head"><div><h2>Production Page</h2></div><button class="secondary" type="button">← Home Page</button></div><div class="production-actions"><button class="production-action" type="button">Production Schedule</button><button class="production-action" type="button">Cutting Schedule</button><button class="production-action" type="button">Quality Schedule</button><button class="production-action" type="button">Finishing Schedule</button><button class="production-action" type="button">Shipment Date</button></div>';document.getElementById('storeView').after(production);production.querySelector('.secondary').onclick=()=>closeProductionPage();production.querySelectorAll('.production-action').forEach(button=>button.onclick=()=>production.querySelectorAll('.production-action').forEach(item=>item.classList.toggle('active',item===button)));}function openProductionPage(){document.getElementById('summaryView').style.display='none';document.querySelector('.notice').style.display='none';document.getElementById('storeView').classList.remove('visible');document.getElementById('productionView').classList.add('visible');window.scrollTo({top:0,behavior:'smooth'});}function closeProductionPage(){document.getElementById('productionView').classList.remove('visible');document.getElementById('summaryView').style.display='block';document.querySelector('.notice').style.display='block';activeDepartment=null;renderDepartments();window.scrollTo({top:0,behavior:'smooth'});}function setupAdministrationPage(){const admin=document.createElement('section');admin.id='administrationView';admin.className='admin-view';admin.innerHTML='<div class="summary-head"><div><h2>Administration Page</h2></div><button class="secondary" type="button">← Home Page</button></div><div class="admin-actions"><button class="admin-action" type="button">Service Benefit</button><button class="admin-action" type="button">Personal File</button><button class="admin-action" type="button">Maternity</button></div>';document.getElementById('productionView').after(admin);admin.querySelector('.secondary').onclick=()=>closeAdministrationPage();admin.querySelectorAll('.admin-action').forEach(button=>button.onclick=()=>admin.querySelectorAll('.admin-action').forEach(item=>item.classList.toggle('active',item===button)));}function openAdministrationPage(){document.getElementById('summaryView').style.display='none';document.querySelector('.notice').style.display='none';document.getElementById('storeView').classList.remove('visible');document.getElementById('productionView').classList.remove('visible');document.getElementById('administrationView').classList.add('visible');window.scrollTo({top:0,behavior:'smooth'});}function closeAdministrationPage(){document.getElementById('administrationView').classList.remove('visible');document.getElementById('summaryView').style.display='block';document.querySelector('.notice').style.display='block';activeDepartment=null;renderDepartments();window.scrollTo({top:0,behavior:'smooth'});}
+    function addStoreVariant(){const count=document.querySelectorAll('#storeVariants .variant-block').length+1,box=document.createElement('section');box.className='variant-block';box.innerHTML=`<div class="variant-title"><span>Color / Size তথ্য — ${count}</span><button class="danger remove-variant" type="button">বাদ দিন</button></div><div class="store-row"><label>Color নির্বাচন করুন</label><select class="store-color" required><option value="" selected disabled>Color নির্বাচন করুন</option><option>Black</option><option>White</option><option>Red</option><option>Blue</option><option>Green</option><option>Yellow</option><option>Grey</option><option>Navy</option><option>Other</option></select></div><div class="store-row custom-color"><label>Other Color নাম</label><input class="store-custom-color" placeholder="নিজের Color নাম লিখুন"></div><div class="store-row"><label>Size নির্বাচন করুন</label><select class="store-size" required><option value="" selected disabled>Size নির্বাচন করুন</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>Other</option></select></div><div class="store-row"><label>Size Quantity</label><input class="store-size-qty" type="number" min="0" required placeholder="0"></div><div class="store-row"><label>Color Quantity</label><input class="store-color-qty" type="number" min="0" required placeholder="0"></div>`;box.querySelector('.store-color').onchange=e=>{const custom=box.querySelector('.custom-color'),input=box.querySelector('.store-custom-color'),isOther=e.target.value==='Other';custom.classList.toggle('visible',isOther);input.required=isOther;};box.querySelector('.remove-variant').onclick=()=>{if(document.querySelectorAll('#storeVariants .variant-block').length>1)box.remove();};document.getElementById('storeVariants').append(box);}
+    function addStoreAccessory(){const count=document.querySelectorAll('.accessory-block').length+1,box=document.createElement('section');box.className='variant-block accessory-block';box.innerHTML=`<div class="variant-title"><span>Accessories তথ্য — ${count}</span><button class="danger remove-variant" type="button">বাদ দিন</button></div><div class="store-row"><label>Accessories নাম</label><select class="accessory-type" required><option value="" selected disabled>Accessories নির্বাচন করুন</option><option>Main Label</option><option>Size Label</option><option>Care Label</option><option>Button</option><option>Zipper</option><option>Sewing Thread</option><option>Mobilon Tape</option><option>Elastic</option><option>Interlining</option><option>Neck/Shoulder Tape</option><option>Hanger Loop</option><option>Other</option></select></div><div class="store-row"><label>নাম / বিবরণ</label><input class="accessory-name" required placeholder="যেমন: Main Label-এর নাম লিখুন"></div><div class="store-row"><label>Order Quantity</label><input class="accessory-order" type="number" min="0" required placeholder="0"></div><div class="store-row"><label>Booking Quantity</label><input class="accessory-booking" type="number" min="0" required placeholder="0"></div><div class="store-row"><label>Received Quantity</label><input class="accessory-received" type="number" min="0" required placeholder="0"></div>`;box.querySelector('.accessory-type').onchange=e=>box.querySelector('.accessory-name').placeholder=`${e.target.value} এর নাম / বিবরণ লিখুন`;box.querySelector('.remove-variant').onclick=()=>{if(document.querySelectorAll('.accessory-block').length>1)box.remove();};document.getElementById('storeAccessories').append(box);}
+    document.getElementById('storeForm').onsubmit=e=>{e.preventDefault();const variants=[...document.querySelectorAll('#storeVariants .variant-block')].map(v=>({color:v.querySelector('.store-color').value==='Other'?v.querySelector('.store-custom-color').value.trim():v.querySelector('.store-color').value,size:v.querySelector('.store-size').value,sizeQuantity:v.querySelector('.store-size-qty').value,colorQuantity:v.querySelector('.store-color-qty').value})),accessories=[...document.querySelectorAll('.accessory-block')].map(a=>({type:a.querySelector('.accessory-type').value,name:a.querySelector('.accessory-name').value.trim(),orderQuantity:a.querySelector('.accessory-order').value,bookingQuantity:a.querySelector('.accessory-booking').value,receivedQuantity:a.querySelector('.accessory-received').value})),entry={id:Date.now(),buyerNumber:val('storeBuyer'),styleNumber:val('storeStyle'),orderQuantity:val('storeOrderQty'),variants,accessories},storeEntries=JSON.parse(localStorage.getItem('farnoorStoreEntries')||'[]');storeEntries.unshift(entry);localStorage.setItem('farnoorStoreEntries',JSON.stringify(storeEntries));document.getElementById('storeSaved').style.display='block';document.getElementById('storeForm').reset();document.getElementById('storeVariants').innerHTML='';document.getElementById('storeAccessories').innerHTML='';addStoreVariant();addStoreAccessory();};
+    function clear(){ document.getElementById('cardForm').reset(); if(activeBuyer)set('buyer',activeBuyer); if(activeDepartment)set('entryDepartment',activeDepartment); setMaterials(); editId=null; document.getElementById('formTitle').textContent='New Input / নতুন ইনপুট'; document.getElementById('editing').textContent=''; }
+    document.getElementById('clearBtn').onclick=clear;
+    document.getElementById('cardForm').onsubmit=e=>{e.preventDefault(); const item={id:editId||Date.now(),department:val('entryDepartment'),buyer:val('buyer'),order:val('order'),style:val('style'),materials:getMaterials()}; const duplicate=cards.find(x=>x.id!==item.id&&x.department===item.department&&x.order.toLowerCase()===item.order.toLowerCase()&&x.style.toLowerCase()===item.style.toLowerCase()); if(duplicate){alert('এই Department-এ একই Order No + Style No-এর Management Entry আগে থেকেই আছে।');return;} if(editId) cards=cards.map(x=>x.id===editId?item:x); else cards.unshift(item); save(); clear(); };
+    function edit(id){const x=cards.find(a=>a.id===id); if(!x)return; editId=id; ['buyer','order','style'].forEach(k=>set(k,x[k]));set('entryDepartment',x.department||'');setMaterials(x.materials);document.getElementById('formTitle').textContent='Management Entry সংশোধন';document.getElementById('editing').textContent=x.order;window.scrollTo({top:0,behavior:'smooth'});}
+    function del(id){if(confirm('এই Management Entry মুছে ফেলবেন?')){cards=cards.filter(x=>x.id!==id);save(); if(editId===id)clear();}}
+    function shownCards(){return cards.filter(x=>(!activeBuyer||(x.buyer||'').toLowerCase()===activeBuyer.toLowerCase())&&(!activeDepartment||x.department===activeDepartment));}
+    function totalFor(name){return shownCards().reduce((a,x)=>{const m=(x.materials||[]).find(z=>z.name===name)||{};['order','booking','received','delivery'].forEach(k=>a[k]+=(+m[k]||0));return a;},{order:0,booking:0,received:0,delivery:0});}
+    function renderSummary(){}
+    function selectBuyer(buyer){activeBuyer=buyer;renderSummary();window.scrollTo({top:0,behavior:'smooth'});}
+    function clearBuyer(){activeBuyer=null;renderSummary();}
+    function openFunction(name=null){activeItem=name;if(activeBuyer&&!val('buyer'))set('buyer',activeBuyer);if(activeDepartment)set('entryDepartment',activeDepartment);document.getElementById('summaryView').style.display='none';document.getElementById('manageView').classList.add('visible');document.getElementById('listHeading').textContent=name?`${name} ফাংশন`:(activeDepartment?`${activeDepartment} — New Input`:'New Input / নতুন ইনপুট');document.getElementById('summaryHeading').textContent=name?`${name} Quantity`:'Materials summary';[...materialBox.querySelectorAll('.material')].forEach(r=>r.classList.toggle('active-material',r.querySelector('[data-n]').dataset.n===name));render();window.scrollTo({top:0,behavior:'smooth'});}
+    function returnSummary(){activeItem=null;clear();document.getElementById('manageView').classList.remove('visible');document.getElementById('summaryView').style.display='block';renderSummary();window.scrollTo({top:0,behavior:'smooth'});}
+    function render(){const q=document.getElementById('search').value.toLowerCase();const shown=shownCards().filter(x=>{const matches=[x.order,x.style,x.buyer].join(' ').toLowerCase().includes(q);const m=(x.materials||[]).find(z=>z.name===activeItem);const hasActive=!activeItem||(m&&['order','booking','received','delivery'].some(k=>+m[k]));return matches&&hasActive;});document.getElementById('rows').innerHTML=shown.length?shown.map(x=>{const relevant=activeItem?(x.materials||[]).filter(m=>m.name===activeItem):x.materials||[];const sum=relevant.filter(m=>+m.order||+m.booking||+m.received||+m.delivery).map(m=>`${m.name}: Order ${m.order} · Booking ${m.booking} · Rcv ${m.received} · Del ${m.delivery}`).join('<br>')||'<span class="small">কোন quantity নেই</span>';return `<tr class="data ${editId===x.id?'selected':''}" onclick="edit(${x.id})"><td><div class="id">${x.order}</div><div class="sub">Style: ${x.style}</div></td><td>${x.buyer||'—'}</td><td class="qty">${sum}</td><td class="no-print"><button class="danger" onclick="event.stopPropagation();del(${x.id})">Delete</button></td></tr>`}).join(''):`<tr><td colspan="4" class="empty">এই অংশে এখনো কোনো quantity দেওয়া নেই।</td></tr>`;}
+    function setupStoreActions(){const view=document.getElementById('storeView'),card=view.querySelector('.store-card'),records=document.getElementById('storeRecords'),actions=document.createElement('div'),search=document.createElement('div');card.style.display='none';records.style.display='none';actions.className='store-actions no-print';actions.innerHTML='<button class="store-action" type="button">Accessories Entry</button><button class="store-action" type="button">Accessories Delivery</button><button class="store-action" type="button">Search Option</button><button class="store-action" type="button">Store Page</button>';search.className='store-search no-print';search.innerHTML='<input type="search" placeholder="Buyer, Style বা Accessories লিখে খুঁজুন"><button class="secondary" type="button">পরিষ্কার করুন</button>';card.before(actions,search);const buttons=actions.querySelectorAll('.store-action'),activate=button=>buttons.forEach(item=>item.classList.toggle('active',item===button)),show=(entry,delivery,find)=>{card.style.display=entry?'block':'none';records.style.display=delivery?'block':'none';search.classList.toggle('visible',find);},scrollTo=target=>target.scrollIntoView({behavior:'smooth',block:'start'}),input=search.querySelector('input');buttons[0].onclick=()=>{activate(buttons[0]);show(true,false,false);scrollTo(card);};buttons[1].onclick=()=>{activate(buttons[1]);show(false,true,false);scrollTo(records);};buttons[2].onclick=()=>{activate(buttons[2]);show(false,true,true);scrollTo(search);input.focus();};buttons[3].onclick=()=>{activate(buttons[3]);show(false,false,false);view.querySelector('.line1-panel')?.style.setProperty('display','none');scrollTo(actions);};input.oninput=()=>{const term=input.value.trim().toLowerCase();document.querySelectorAll('#storeRecordsBody .saved-entry').forEach(item=>item.style.display=!term||item.textContent.toLowerCase().includes(term)?'':'none');};search.querySelector('button').onclick=()=>{input.value='';input.dispatchEvent(new Event('input'));input.focus();};}
+    function resetStoreLanding(){const card=document.querySelector('#storeView .store-card'),records=document.getElementById('storeRecords'),search=document.querySelector('#storeView .store-search'),input=search?.querySelector('input');if(card)card.style.display='none';if(records)records.style.display='none';if(search)search.classList.remove('visible');document.querySelector('#storeView .line1-panel')?.style.setProperty('display','none');document.querySelectorAll('#storeView .store-action').forEach(button=>button.classList.remove('active'));if(input){input.value='';input.dispatchEvent(new Event('input'));}}
+    setupStoreActions();
+    function configureStoreDeliveryPage(){const view=document.getElementById('storeView'),card=view.querySelector('.store-card'),form=card.querySelector('#storeForm'),body=card.querySelector('.body'),records=document.getElementById('storeRecords'),search=view.querySelector('.store-search'),buttons=view.querySelectorAll('.store-action'),title=card.querySelector('.card-head h2'),note=card.querySelector('.card-head .small'),panel=document.createElement('div');panel.className='delivery-panel';panel.innerHTML='<div class="delivery-fields"><div><label>Buyer Name</label><select id="deliveryBuyer"><option value="">Buyer নির্বাচন করুন</option></select></div><div><label>Style Number</label><select id="deliveryStyle"><option value="">Style নির্বাচন করুন</option></select></div><div><label>Order Quantity</label><select id="deliveryOrder"><option value="">Order নির্বাচন করুন</option></select></div></div><div id="deliverySheet" class="delivery-empty">Buyer ও Style নির্বাচন করলে Accessories তথ্য দেখা যাবে।</div><div class="actions"><button class="primary" id="saveDelivery" type="button">Delivery তথ্য Save করুন</button></div><div class="store-saved" id="deliverySaved">Delivery তথ্য সংরক্ষণ করা হয়েছে।</div>';body.append(panel);const buyer=panel.querySelector('#deliveryBuyer'),style=panel.querySelector('#deliveryStyle'),order=panel.querySelector('#deliveryOrder'),sheet=panel.querySelector('#deliverySheet'),activate=button=>buttons.forEach(item=>item.classList.toggle('active',item===button)),entries=()=>normalizeStoreEntries(JSON.parse(localStorage.getItem('farnoorStoreEntries')||'[]')),fillBuyers=()=>{const values=[...new Set(entries().map(e=>e.buyerName))];buyer.innerHTML='<option value="">Buyer নির্বাচন করুন</option>'+values.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');style.innerHTML='<option value="">Style নির্বাচন করুন</option>';order.innerHTML='<option value="">Order নির্বাচন করুন</option>';sheet.className='delivery-empty';sheet.textContent='Buyer ও Style নির্বাচন করলে Accessories তথ্য দেখা যাবে।';},selected=()=>entries().find(e=>e.buyerName===buyer.value&&e.styleNumber===style.value),showSheet=()=>{const e=selected();if(!e){sheet.className='delivery-empty';sheet.textContent='Buyer ও Style নির্বাচন করলে Accessories তথ্য দেখা যাবে।';return;}order.innerHTML=`<option value="${escapeHtml(e.orderQuantity)}">${escapeHtml(e.orderQuantity)}</option>`;sheet.className='';sheet.innerHTML=`<table class="delivery-sheet"><thead><tr><th>Accessories Name</th><th>Size</th><th>Received Quantity</th><th>Delivery Quantity</th><th>Balance Quantity</th></tr></thead><tbody>${e.accessories.map((a,i)=>`<tr><td>${escapeHtml(a.name)}</td><td>${escapeHtml(a.size)}</td><td>${escapeHtml(a.receivedQuantity||'0')}</td><td><input class="delivery-add" data-index="${i}" type="number" min="0" value="0"></td><td>${escapeHtml(signed((+a.receivedQuantity||0)-(+a.deliveryQuantity||0)))}</td></tr>`).join('')}</tbody></table>`;};buyer.onchange=()=>{const values=entries().filter(e=>e.buyerName===buyer.value).map(e=>e.styleNumber);style.innerHTML='<option value="">Style নির্বাচন করুন</option>'+[...new Set(values)].map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');order.innerHTML='<option value="">Order নির্বাচন করুন</option>';showSheet();};style.onchange=showSheet;panel.querySelector('#saveDelivery').onclick=()=>{const e=selected();if(!e)return;const all=entries(),target=all.find(x=>x.buyerName===e.buyerName&&x.styleNumber===e.styleNumber);panel.querySelectorAll('.delivery-add').forEach(input=>{const a=target.accessories[+input.dataset.index],add=+input.value||0;a.deliveryQuantity=String((+a.deliveryQuantity||0)+add);a.balance=signed((+a.receivedQuantity||0)-(+a.deliveryQuantity||0));});localStorage.setItem('farnoorStoreEntries',JSON.stringify(all));panel.querySelector('#deliverySaved').style.display='block';renderStoreRecords();showSheet();};buttons[0].onclick=()=>{activate(buttons[0]);title.textContent='Accessories Entry';note.textContent='Receive Balance = Received − Booking; Balance = Received − Delivery। ফলাফলে + বা − চিহ্ন দেখা যাবে।';card.style.display='block';form.style.display='block';panel.style.display='none';records.style.display='none';search.classList.remove('visible');card.scrollIntoView({behavior:'smooth',block:'start'});};buttons[1].onclick=()=>{activate(buttons[1]);title.textContent='Accessories Delivery';note.textContent='Entry থেকে Buyer, Style ও Received Quantity নির্বাচন করে Delivery দিন।';card.style.display='block';form.style.display='none';panel.style.display='block';records.style.display='none';search.classList.remove('visible');fillBuyers();card.scrollIntoView({behavior:'smooth',block:'start'});};}
+    configureStoreDeliveryPage();
+    function setLine1Mode(enabled){const view=document.getElementById('storeView'),card=view.querySelector('.store-card'),records=document.getElementById('storeRecords'),search=view.querySelector('.store-search'),buttons=view.querySelectorAll('.store-action');if(!buttons.length)return;let panel=view.querySelector('.line1-panel');if(!panel){panel=document.createElement('section');panel.className='card line1-panel';panel.innerHTML='<div class="card-head"><div><h2>Line-1 Entry Sheet</h2><div class="small">Balance = Store Receive Quantity − Line Receive Quantity</div></div></div><div class="body"><form id="line1Form"><div class="line1-table-wrap"><table class="line1-sheet"><thead><tr><th>Buyer Name</th><th>Style Number</th><th>Order Quantity</th><th>Accessories Name</th><th>Size Order Quantity</th><th>Receive Order Quantity</th><th>Store Receive Quantity</th><th>Line Receive Quantity</th><th>Balance</th></tr></thead><tbody id="line1Rows"></tbody></table></div><button class="add-accessory" type="button" id="addLine1Row">+ নতুন Row যোগ করুন</button><div class="actions"><button class="primary" type="submit">সব তথ্য Save করুন</button></div><div class="store-saved" id="line1Saved">Line-1 তথ্য সংরক্ষণ করা হয়েছে।</div></form></div>';card.before(panel);const rows=panel.querySelector('#line1Rows'),addRow=()=>{const row=document.createElement('tr');row.innerHTML='<td><input class="l-buyer" required placeholder="Buyer Name"></td><td><input class="l-style" required placeholder="Style Number"></td><td><input class="l-order" type="number" min="0" value="0"></td><td><input class="l-accessory" placeholder="Accessories Name"></td><td><input class="l-size-order" type="number" min="0" value="0"></td><td><input class="l-receive-order" type="number" min="0" value="0"></td><td><input class="l-store-receive" type="number" min="0" value="0"></td><td><input class="l-line-receive" type="number" min="0" value="0"></td><td><input class="line1-balance" readonly value="0"></td>';const calc=()=>row.querySelector('.line1-balance').value=signed((+row.querySelector('.l-store-receive').value||0)-(+row.querySelector('.l-line-receive').value||0));row.querySelectorAll('input').forEach(input=>input.oninput=calc);rows.append(row);};addRow();panel.querySelector('#addLine1Row').onclick=addRow;panel.querySelector('#line1Form').onsubmit=e=>{e.preventDefault();const saved=JSON.parse(localStorage.getItem('farnoorLine1Entries')||'[]'),items=[...rows.querySelectorAll('tr')].map(row=>({buyer:row.querySelector('.l-buyer').value.trim(),style:row.querySelector('.l-style').value.trim(),order:row.querySelector('.l-order').value,accessory:row.querySelector('.l-accessory').value.trim(),sizeOrder:row.querySelector('.l-size-order').value,receiveOrder:row.querySelector('.l-receive-order').value,storeReceive:row.querySelector('.l-store-receive').value,lineReceive:row.querySelector('.l-line-receive').value,balance:row.querySelector('.line1-balance').value}));localStorage.setItem('farnoorLine1Entries',JSON.stringify([...items,...saved]));panel.querySelector('#line1Saved').style.display='block';};const normalEntry=buttons[0].onclick;buttons[0].onclick=()=>{if(['line-1','line 1'].includes((activeDepartment||'').toLowerCase())){buttons.forEach(item=>item.classList.toggle('active',item===buttons[0]));panel.style.display='block';card.style.display='none';records.style.display='none';search.classList.remove('visible');panel.scrollIntoView({behavior:'smooth',block:'start'});}else normalEntry();};}if(!enabled)panel.style.display='none';}
+    const baseSetLine1Mode=setLine1Mode;setLine1Mode=function(enabled){baseSetLine1Mode(enabled);const panel=document.querySelector('.line1-panel');if(!panel)return;const header=[...panel.querySelectorAll('.line1-sheet th')].find(cell=>cell.textContent.trim()==='Receive Order Quantity');if(header)header.style.display='none';const setupRow=row=>{const receive=row.querySelector('.l-receive-order');if(receive)receive.closest('td').style.display='none';if(!row.querySelector('.line1-delete')){const cell=document.createElement('td'),button=document.createElement('button');button.type='button';button.className='line1-delete';button.textContent='−';button.title='এই Row বাদ দিন';button.onclick=()=>{if(panel.querySelectorAll('#line1Rows tr').length>1)row.remove();};cell.append(button);row.prepend(cell);}};panel.querySelectorAll('#line1Rows tr').forEach(setupRow);if(!panel.dataset.rowWatch){new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node.nodeType===1&&node.tagName==='TR')setupRow(node);}))).observe(panel.querySelector('#line1Rows'),{childList:true});panel.dataset.rowWatch='yes';}};
+    const alignedLine1Mode=setLine1Mode;setLine1Mode=function(enabled){alignedLine1Mode(enabled);const panel=document.querySelector('.line1-panel');if(!panel)return;const headerRow=panel.querySelector('.line1-sheet thead tr');if(!headerRow.querySelector('.line1-minus-head')){const minusHead=document.createElement('th');minusHead.className='line1-minus-head';minusHead.textContent='';headerRow.prepend(minusHead);}};
+    document.querySelector('#storeView .summary-head p').style.display='none';
+    function signed(value){return value>0?`+${value}`:String(value);}
+    function updateAccessoryTotals(){const sum=selector=>[...document.querySelectorAll(selector)].reduce((total,input)=>total+(+input.value||0),0),receiveBalance=sum('.receive-balance-field'),balance=sum('.final-balance-field');document.getElementById('totalSizeQty').textContent=sum('.accessory-size-qty');document.getElementById('totalBookingQty').textContent=sum('.accessory-booking');document.getElementById('totalReceivedQty').textContent=sum('.accessory-received');document.getElementById('totalReceiveBalanceQty').textContent=signed(receiveBalance);document.getElementById('totalDeliveryQty').textContent=sum('.accessory-delivery');document.getElementById('totalBalanceQty').textContent=signed(balance);}
+    function addAccessoryRow(){const row=document.createElement('div');row.className='accessory-table-row';row.innerHTML=`<button class="delete-accessory" type="button" title="এই row বাদ দিন">−</button><input class="accessory-type" list="accessoryOptions" placeholder="Accessories নির্বাচন করুন" title="Double-click করে নাম লিখুন বা পরিবর্তন করুন"><select class="accessory-size"><option value="0" selected>Size</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>Free Size</option><option>Other</option></select><input class="accessory-size-qty" type="number" min="0" value="0" placeholder="0"><input class="accessory-booking" type="number" min="0" value="0" placeholder="0"><input class="accessory-received" type="number" min="0" value="0" placeholder="0"><input class="receive-balance-field balance-field" type="text" readonly value="0"><input class="accessory-delivery" type="number" min="0" value="0" placeholder="0"><input class="balance-field final-balance-field" type="text" readonly value="0">`;const name=row.querySelector('.accessory-type'),booking=row.querySelector('.accessory-booking'),received=row.querySelector('.accessory-received'),delivery=row.querySelector('.accessory-delivery'),receiveBalance=row.querySelector('.receive-balance-field'),balance=row.querySelector('.final-balance-field');name.ondblclick=()=>{name.select();};const calc=()=>{receiveBalance.value=signed((+received.value||0)-(+booking.value||0));balance.value=signed((+received.value||0)-(+delivery.value||0));updateAccessoryTotals();};row.querySelectorAll('input,select').forEach(input=>input.oninput=calc);row.querySelector('.delete-accessory').onclick=()=>{if(document.querySelectorAll('#storeAccessoryRows .accessory-table-row').length>1){row.remove();updateAccessoryTotals();}};document.getElementById('storeAccessoryRows').append(row);updateAccessoryTotals();}
+    function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+    function normalizeStoreEntries(raw){const groups=new Map();raw.forEach(e=>{const buyer=(e.buyerName||'').trim(),style=(e.styleNumber||'').trim(),key=`${buyer.toLowerCase()}|||${style.toLowerCase()}`;if(!groups.has(key))groups.set(key,{id:e.id||Date.now(),buyerName:buyer,styleNumber:style,orderQuantity:0,accessories:[]});const group=groups.get(key);group.orderQuantity+=(+e.orderQuantity||0);(e.accessories||[]).forEach(a=>{const name=a.name||'—',size=a.size||'—',aKey=`${name.toLowerCase()}|||${size.toLowerCase()}`,old=group.accessories.find(x=>x._key===aKey);if(old){old.sizeQuantity+=(+a.sizeQuantity||0);old.bookingQuantity+=(+a.bookingQuantity||0);old.receivedQuantity+=(+a.receivedQuantity||0);old.deliveryQuantity+=(+a.deliveryQuantity||0);}else group.accessories.push({_key:aKey,name,size,sizeQuantity:+a.sizeQuantity||0,bookingQuantity:+a.bookingQuantity||0,receivedQuantity:+a.receivedQuantity||0,deliveryQuantity:+a.deliveryQuantity||0});});});return [...groups.values()].map(g=>({...g,orderQuantity:String(g.orderQuantity),accessories:g.accessories.map(a=>({...a,sizeQuantity:String(a.sizeQuantity),bookingQuantity:String(a.bookingQuantity),receivedQuantity:String(a.receivedQuantity),deliveryQuantity:String(a.deliveryQuantity),receiveBalance:signed(a.receivedQuantity-a.bookingQuantity),balance:signed(a.receivedQuantity-a.deliveryQuantity)}))}));}
+    function renderStoreRecords(){const groups=normalizeStoreEntries(JSON.parse(localStorage.getItem('farnoorStoreEntries')||'[]'));document.getElementById('storeRecordsBody').innerHTML=groups.length?groups.map(g=>`<section class="saved-entry"><div class="print-only print-entry-header"><img src="Farnoor_New_Logo.jpg-removebg-preview.png" alt="Farnoor logo"><div><div class="print-company-name">FARNOOR GARMENTS LTD.</div><div class="print-address">1028/1/2, Malibagh Bazar Road, Dhaka-1217</div></div></div><div class="print-only print-department">STORE SECTION REPORT</div><div class="print-only print-info-box"><div><strong>Buyer Name</strong><span>${escapeHtml(g.buyerName)}</span></div><div><strong>Style Number</strong><span>${escapeHtml(g.styleNumber)}</span></div><div><strong>Order Quantity</strong><span>${escapeHtml(g.orderQuantity)}</span></div></div><div class="saved-entry-title">Buyer: ${escapeHtml(g.buyerName)} <span>Style: ${escapeHtml(g.styleNumber)} · Order Quantity: ${escapeHtml(g.orderQuantity)}</span></div><table><thead><tr><th>Accessories</th><th>Size</th><th>Size Qty</th><th>Booking</th><th>Received</th><th>Receive Balance</th><th>Delivery</th><th>Balance</th></tr></thead><tbody>${g.accessories.map(a=>`<tr><td>${escapeHtml(a.name||'—')}</td><td>${escapeHtml(a.size||'—')}</td><td>${escapeHtml(a.sizeQuantity||'0')}</td><td>${escapeHtml(a.bookingQuantity||'0')}</td><td>${escapeHtml(a.receivedQuantity||'0')}</td><td>${escapeHtml(a.receiveBalance??'0')}</td><td>${escapeHtml(a.deliveryQuantity||'0')}</td><td>${escapeHtml(a.balance??'0')}</td></tr>`).join('')}</tbody></table><div class="print-only print-signatures"><div>STORE OFFICER</div><div>HEAD OF PRODUCTION</div><div>AUTHORIZED SIGNATURE</div></div></section>`).join(''):'<div class="empty">এখনও কোনো Store তথ্য Save করা হয়নি।</div>';}
+    function printStoreRecords(){window.print();}
+    const standardRenderStoreRecords=renderStoreRecords;renderStoreRecords=function(){standardRenderStoreRecords();document.querySelectorAll('.print-signatures').forEach(box=>box.innerHTML='<div>STORE OFFICER</div><div>STORE INCHARGE</div><div>HEAD OF PRODUCTION</div><div>AUTHORIZED</div>');};function configureSearchResults(){const view=document.getElementById('storeView'),button=view.querySelectorAll('.store-action')[2],card=view.querySelector('.store-card'),records=document.getElementById('storeRecords'),search=view.querySelector('.store-search'),input=search.querySelector('input'),clear=search.querySelector('button');button.onclick=()=>{view.querySelectorAll('.store-action').forEach(item=>item.classList.toggle('active',item===button));card.style.display='none';records.style.display='none';search.classList.add('visible');input.focus();};input.oninput=()=>{const term=input.value.trim().toLowerCase(),items=document.querySelectorAll('#storeRecordsBody .saved-entry');items.forEach(item=>item.style.display=term&&item.textContent.toLowerCase().includes(term)?'':'none');records.style.display=term?'block':'none';};clear.onclick=()=>{input.value='';input.dispatchEvent(new Event('input'));input.focus();};}configureSearchResults();document.querySelector('.badge')?.remove();document.querySelector('#loginPanel p').textContent='সফটওয়্যারে প্রবেশ করতে আপনার নাম ও পাসওয়ার্ড দিন।';
+    document.getElementById('storeForm').onsubmit=e=>{e.preventDefault();const accessories=[...document.querySelectorAll('#storeAccessoryRows .accessory-table-row')].map(row=>{const booking=row.querySelector('.accessory-booking').value||'0',received=row.querySelector('.accessory-received').value||'0',delivery=row.querySelector('.accessory-delivery').value||'0';return {name:row.querySelector('.accessory-type').value||'—',size:row.querySelector('.accessory-size').value||'—',sizeQuantity:row.querySelector('.accessory-size-qty').value||'0',bookingQuantity:booking,receivedQuantity:received,deliveryQuantity:delivery};}),entry={id:Date.now(),buyerName:val('storeBuyer'),styleNumber:val('storeStyle'),orderQuantity:val('storeOrderQty')||'0',accessories},storeEntries=normalizeStoreEntries(JSON.parse(localStorage.getItem('farnoorStoreEntries')||'[]')),existing=storeEntries.find(x=>x.buyerName.toLowerCase()===entry.buyerName.toLowerCase()&&x.styleNumber.toLowerCase()===entry.styleNumber.toLowerCase());if(existing){existing.orderQuantity=String((+existing.orderQuantity||0)+(+entry.orderQuantity||0));entry.accessories.forEach(a=>{const old=existing.accessories.find(x=>x.name.toLowerCase()===a.name.toLowerCase()&&x.size.toLowerCase()===a.size.toLowerCase());if(old){old.sizeQuantity=String((+old.sizeQuantity||0)+(+a.sizeQuantity||0));old.bookingQuantity=String((+old.bookingQuantity||0)+(+a.bookingQuantity||0));old.receivedQuantity=String((+old.receivedQuantity||0)+(+a.receivedQuantity||0));old.deliveryQuantity=String((+old.deliveryQuantity||0)+(+a.deliveryQuantity||0));}else existing.accessories.push(a);});}else storeEntries.unshift(entry);localStorage.setItem('farnoorStoreEntries',JSON.stringify(normalizeStoreEntries(storeEntries)));document.getElementById('storeSaved').style.display='block';document.getElementById('storeForm').reset();document.getElementById('storeAccessoryRows').innerHTML='';addAccessoryRow();renderStoreRecords();};
+    const pageActions=document.querySelectorAll('#storeView .store-action'),receiveAction=pageActions[0],productionAction=pageActions[1],oldReceiveAction=receiveAction.onclick,oldProductionAction=productionAction.onclick;receiveAction.textContent='Accessories Receive';productionAction.textContent='Accessories Delivery';receiveAction.onclick=()=>{oldReceiveAction();if(!['line-1','line 1'].includes((activeDepartment||'').toLowerCase()))document.querySelector('#storeView .store-card .card-head h2').textContent='Accessories Receive';};productionAction.onclick=()=>{oldProductionAction();document.querySelector('#storeView .store-card .card-head h2').textContent='Accessories Delivery';};
+    document.querySelector('#summaryView .summary-head button')?.remove();const departmentPanel=document.querySelector('.department-panel'),departmentForm=document.getElementById('departmentForm'),departmentGrid=document.getElementById('departmentButtons');departmentPanel.querySelector('h3')?.remove();departmentPanel.querySelector('p')?.remove();departmentGrid.after(departmentForm);
+    setupProductionPage();setupAdministrationPage();const standardDepartmentRender=renderDepartments;renderDepartments=function(){standardDepartmentRender();const grid=document.getElementById('departmentButtons'),addSpecial=(name,action)=>{let button=grid.querySelector(`[data-department="${name}"]`);if(!button){button=document.createElement('button');button.type='button';button.className='department-button';button.dataset.department=name;button.textContent=name;button.onclick=action;grid.append(button);}};addSpecial('Administration',()=>{activeDepartment='Administration';renderDepartments();renderSummary();openAdministrationPage();});addSpecial('Production',()=>{activeDepartment='Production';renderDepartments();renderSummary();openProductionPage();});document.querySelector('.department-button[data-department="Line-1"]')?.replaceChildren('Line-1');grid.querySelectorAll('.department-button').forEach(button=>{if(button.closest('.dept-control'))return;const wrap=document.createElement('span'),remove=document.createElement('button'),department=button.dataset.department;wrap.className='dept-control';button.before(wrap);wrap.append(button);if(['Administration','Production'].includes(department))return;remove.type='button';remove.className='delete-department';remove.textContent='×';remove.title='এই Department বাদ দিন';remove.onclick=e=>{e.stopPropagation();if(!confirm(`${department} Department মুছে দিতে চান?`))return;departments=departments.filter(item=>item!==department);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));if(activeDepartment===department)activeDepartment=null;renderDepartments();};wrap.append(remove);});};
+    document.getElementById('search').oninput=render; renderDepartments(); addAccessoryRow(); renderStoreRecords(); render(); renderSummary();
+    function openServiceBenefitPage(){const page=document.getElementById('serviceBenefitView');document.getElementById('administrationView').classList.remove('visible');page.classList.add('visible');window.scrollTo({top:0,behavior:'smooth'});}function setupServiceBenefitPage(){const page=document.createElement('section');page.id='serviceBenefitView';page.className='service-benefit-view';page.innerHTML='<div class="summary-head"><div><h2>Service Benefit</h2></div><button class="secondary" type="button">← Administration Page</button></div><div class="service-benefit-actions"><button class="service-benefit-action" type="button">Service Benefit Entry</button><button class="service-benefit-action" type="button">Service Benefit List</button><button class="service-benefit-action" type="button">Service Benefit Report</button></div>';document.getElementById('administrationView').after(page);page.querySelector('.secondary').onclick=()=>{page.classList.remove('visible');document.getElementById('administrationView').classList.add('visible');};page.querySelectorAll('.service-benefit-action').forEach(button=>button.onclick=()=>page.querySelectorAll('.service-benefit-action').forEach(item=>item.classList.toggle('active',item===button)));document.querySelector('#administrationView .admin-action')?.addEventListener('click',openServiceBenefitPage);}setupServiceBenefitPage();
+    function setupServiceBenefitReport(){const page=document.getElementById('serviceBenefitView'),actions=page.querySelector('.service-benefit-actions'),buttons=actions.querySelectorAll('.service-benefit-action');buttons[0].textContent='Entry';buttons[1].textContent='Payment';buttons[2]?.remove();const report=document.createElement('section');report.className='service-benefit-report';report.innerHTML='<div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input placeholder="Name লিখুন"></label><label>Designation <b>:</b><input placeholder="Designation লিখুন"></label><label>Card/Staff No <b>:</b><input placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining <b>:</b><input type="date"></label><label>Salary <b>:</b><input type="number" placeholder="0"></label><label>Basic <b>:</b><input type="number" placeholder="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody><tr><td>01</td><td><input type="date"></td><td><input placeholder="Month"></td><td><input placeholder="Days"></td><td><input type="number" placeholder="0"></td></tr></tbody></table><div class="benefit-total">Total Payment = <span>0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div>';page.append(report);buttons[0].onclick=()=>{buttons.forEach(item=>item.classList.remove('active'));buttons[0].classList.add('active');report.classList.add('visible');report.scrollIntoView({behavior:'smooth',block:'start'});};buttons[1].onclick=()=>{buttons.forEach(item=>item.classList.remove('active'));buttons[1].classList.add('active');report.classList.remove('visible');};}function setupDepartmentContextMenu(){const menu=document.createElement('div');menu.className='department-context-menu';menu.innerHTML='<button type="button">Delete Department</button>';document.body.append(menu);let selected='';const wire=()=>document.querySelectorAll('.department-button').forEach(button=>{if(button.dataset.contextReady)return;button.dataset.contextReady='yes';button.addEventListener('contextmenu',event=>{event.preventDefault();selected=button.dataset.department;menu.style.left=`${event.clientX}px`;menu.style.top=`${event.clientY}px`;menu.classList.add('visible');});});menu.querySelector('button').onclick=()=>{if(!selected)return;if(!confirm(`${selected} Department মুছে দিতে চান?`))return;departments=departments.filter(item=>item!==selected);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};document.addEventListener('click',()=>menu.classList.remove('visible'));const originalRender=renderDepartments;renderDepartments=function(){originalRender();wire();};wire();}setupServiceBenefitReport();setupDepartmentContextMenu();
+    function upgradeServiceBenefit(){const page=document.getElementById('serviceBenefitView'),report=page.querySelector('.service-benefit-report'),actions=page.querySelector('.service-benefit-actions'),entryButton=actions.querySelectorAll('.service-benefit-action')[0],paymentButton=actions.querySelectorAll('.service-benefit-action')[1];report.innerHTML='<div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input id="sbName" placeholder="Name লিখুন"></label><label>Designation <b>:</b><input id="sbDesignation" placeholder="Designation লিখুন"></label><label>Card/Staff No <b>:</b><input id="sbCard" placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining <b>:</b><input id="sbJoining" type="date"></label><label>Release Date <b>:</b><input id="sbRelease" type="date"></label><label>Total Salary <b>:</b><input id="sbSalary" type="number" min="0" placeholder="0"></label><label>Basic (60%) <b>:</b><input id="sbBasic" type="number" readonly value="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody id="sbPeriods"></tbody></table><div class="benefit-total">Total Payment = <span id="sbTotal">0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div><div class="benefit-toolbar"><button class="primary" type="button" id="sbSave">Input Save</button><button class="secondary" type="button" id="sbPrint">Print</button></div>';const list=document.createElement('section');list.className='benefit-list';list.innerHTML='<h3>Payment List</h3><div class="benefit-list-wrap"><table><thead><tr><th>Name</th><th>Card / ID No</th><th>Designation</th><th>Joining Date</th><th>Release Date</th><th>Payable Month</th><th>Total Payment</th></tr></thead><tbody></tbody></table></div>';page.append(list);const $=id=>report.querySelector(`#${id}`),dateAtStart=value=>new Date(`${value}T00:00:00`),money=value=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(value||0),calculate=()=>{const salary=+$('sbSalary').value||0,basic=Math.round(salary*.6);$('sbBasic').value=basic;$('sbPeriods').innerHTML='';const joining=$('sbJoining').value,release=$('sbRelease').value;if(!joining||!release||dateAtStart(release)<dateAtStart(joining)){$('sbTotal').textContent='0';return;}const join=dateAtStart(joining),end=dateAtStart(release),rows=[];for(let year=join.getFullYear();year<=end.getFullYear();year++){const from=new Date(Math.max(join,new Date(year,0,1))),to=new Date(Math.min(end,new Date(year,11,31))),days=Math.floor((to-from)/86400000)+1,full=from.getTime()===new Date(year,0,1).getTime()&&to.getTime()===new Date(year,11,31).getTime(),months=Math.floor(days/30),remaining=days%30,pay=Math.round(full?basic:basic*(days/(new Date(year,11,31).getDate()===31&&new Date(year,1,29).getMonth()===1?366:365)));rows.push({year,months,remaining,pay});}$('sbPeriods').innerHTML=rows.map((row,index)=>`<tr><td>${String(index+1).padStart(2,'0')}</td><td>${row.year}</td><td>${row.months} Month</td><td>${row.remaining} Days</td><td>${money(row.pay)}</td></tr>`).join('');$('sbTotal').textContent=money(rows.reduce((sum,row)=>sum+row.pay,0));};['sbSalary','sbJoining','sbRelease'].forEach(id=>$(id).addEventListener('input',calculate));const renderList=()=>{const entries=JSON.parse(localStorage.getItem('farnoorServiceBenefitEntries')||'[]'),tbody=list.querySelector('tbody');tbody.innerHTML=entries.length?entries.map(item=>`<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.card)}</td><td>${escapeHtml(item.designation)}</td><td>${escapeHtml(item.joining)}</td><td>${escapeHtml(item.release)}</td><td>${escapeHtml(item.months)}</td><td>${escapeHtml(item.total)}</td></tr>`).join(''):'<tr><td colspan="7">এখনও কোনো Payment তথ্য Save করা হয়নি।</td></tr>';};$('sbSave').onclick=()=>{calculate();const joining=$('sbJoining').value,release=$('sbRelease').value;if(!$('sbName').value.trim()||!joining||!release){alert('Name, Joining Date এবং Release Date দিন।');return;}const days=Math.floor((dateAtStart(release)-dateAtStart(joining))/86400000)+1,entry={id:Date.now(),name:$('sbName').value.trim(),card:$('sbCard').value.trim(),designation:$('sbDesignation').value.trim(),joining,release,months:`${Math.floor(days/30)} Month ${days%30} Days`,total:$('sbTotal').textContent};const items=JSON.parse(localStorage.getItem('farnoorServiceBenefitEntries')||'[]');items.unshift(entry);localStorage.setItem('farnoorServiceBenefitEntries',JSON.stringify(items));renderList();alert('Service Benefit তথ্য Save করা হয়েছে।');};$('sbPrint').onclick=()=>window.print();entryButton.onclick=()=>{actions.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button===entryButton));list.classList.remove('visible');report.classList.add('visible');report.scrollIntoView({behavior:'smooth',block:'start'});};paymentButton.onclick=()=>{actions.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button===paymentButton));report.classList.remove('visible');renderList();list.classList.add('visible');list.scrollIntoView({behavior:'smooth',block:'start'});};$('sbRelease').value=new Date().toISOString().slice(0,10);calculate();}function upgradeDepartmentContextMenu(){const menu=document.querySelector('.department-context-menu');if(!menu)return;menu.innerHTML='<button class="rename-option" type="button">Rename</button><button class="delete-option" type="button">Delete</button>';let selected='';document.getElementById('departmentButtons').addEventListener('contextmenu',event=>{const button=event.target.closest('.department-button');if(!button)return;event.preventDefault();selected=button.dataset.department;menu.style.left=`${event.clientX}px`;menu.style.top=`${event.clientY}px`;menu.classList.add('visible');});menu.querySelector('.delete-option').onclick=()=>{if(!selected)return;if(!confirm(`${selected} Department মুছে দিতে চান?`))return;departments=departments.filter(item=>item!==selected);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};menu.querySelector('.rename-option').onclick=()=>{if(!selected)return;const name=prompt('Department-এর নতুন নাম লিখুন',selected);if(!name?.trim())return;if(departments.some(item=>item.toLowerCase()===name.trim().toLowerCase()&&item!==selected)){alert('এই নামের Department আগে থেকেই আছে।');return;}departments=departments.map(item=>item===selected?name.trim():item);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};}upgradeServiceBenefit();upgradeDepartmentContextMenu();
+  </script>
+  <script>
+    (()=>{const page=document.getElementById('serviceBenefitView');if(!page)return;const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));page.querySelector('.service-benefit-actions').innerHTML='<button class="service-benefit-action" type="button">Entry</button><button class="service-benefit-action" type="button">Payment</button>';const [entryButton,paymentButton]=page.querySelectorAll('.service-benefit-action');const report=document.createElement('section');report.className='service-benefit-report';report.innerHTML='<div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input id="sbName" placeholder="Name লিখুন"></label><label>Designation <b>:</b><input id="sbDesignation" placeholder="Designation লিখুন"></label><label>Card/Staff No <b>:</b><input id="sbCard" placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining <b>:</b><input id="sbJoining" type="date"></label><label>Release Date <b>:</b><input id="sbRelease" type="date"></label><label>Total Salary <b>:</b><input id="sbSalary" type="number" min="0" placeholder="0"></label><label>Basic (60%) <b>:</b><input id="sbBasic" type="number" readonly value="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody id="sbPeriods"></tbody></table><div class="benefit-total">Total Payment = <span id="sbTotal">0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div><div class="benefit-toolbar"><button class="primary" type="button" id="sbSave">Input Save</button><button class="secondary" type="button" id="sbPrint">Print</button></div>';const list=document.createElement('section');list.className='benefit-list';list.innerHTML='<h3>Payment List</h3><div class="benefit-list-wrap"><table><thead><tr><th>Name</th><th>Card / ID No</th><th>Designation</th><th>Joining Date</th><th>Release Date</th><th>Payable Month</th><th>Total Payment</th></tr></thead><tbody></tbody></table></div>';page.append(report,list);const $=id=>report.querySelector('#'+id),dateOf=value=>new Date(value+'T00:00:00'),money=value=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(value||0),calculate=()=>{const salary=+$('sbSalary').value||0,basic=Math.round(salary*.6);$('sbBasic').value=basic;const joining=$('sbJoining').value,release=$('sbRelease').value,body=$('sbPeriods');body.innerHTML='';if(!joining||!release||dateOf(release)<dateOf(joining)){$('sbTotal').textContent='0';return;}const start=dateOf(joining),end=dateOf(release),periods=[];for(let year=start.getFullYear();year<=end.getFullYear();year++){const first=new Date(year,0,1),last=new Date(year,11,31),from=new Date(Math.max(start,first)),to=new Date(Math.min(end,last)),days=Math.floor((to-from)/86400000)+1,full=from.getTime()===first.getTime()&&to.getTime()===last.getTime(),leap=new Date(year,1,29).getMonth()===1,payment=Math.round(full?basic:basic*days/(leap?366:365));periods.push({year,days,months:Math.floor(days/30),remaining:days%30,payment});}body.innerHTML=periods.map((item,index)=>'<tr><td>'+String(index+1).padStart(2,'0')+'</td><td>'+item.year+'</td><td>'+item.months+' Month</td><td>'+item.remaining+' Days</td><td>'+money(item.payment)+'</td></tr>').join('');$('sbTotal').textContent=money(periods.reduce((sum,item)=>sum+item.payment,0));};const renderList=()=>{const items=JSON.parse(localStorage.getItem('farnoorServiceBenefitEntries')||'[]');list.querySelector('tbody').innerHTML=items.length?items.map(item=>'<tr><td>'+esc(item.name)+'</td><td>'+esc(item.card)+'</td><td>'+esc(item.designation)+'</td><td>'+esc(item.joining)+'</td><td>'+esc(item.release)+'</td><td>'+esc(item.months)+'</td><td>'+esc(item.total)+'</td></tr>').join(''):'<tr><td colspan="7">এখনও কোনো Payment তথ্য Save করা হয়নি।</td></tr>';};['sbSalary','sbJoining','sbRelease'].forEach(id=>$(id).addEventListener('input',calculate));$('sbRelease').value=new Date().toISOString().slice(0,10);calculate();$('sbSave').onclick=()=>{calculate();const joining=$('sbJoining').value,release=$('sbRelease').value;if(!$('sbName').value.trim()||!joining||!release){alert('Name, Joining Date এবং Release Date দিন।');return;}const days=Math.floor((dateOf(release)-dateOf(joining))/86400000)+1,items=JSON.parse(localStorage.getItem('farnoorServiceBenefitEntries')||'[]');items.unshift({name:$('sbName').value.trim(),card:$('sbCard').value.trim(),designation:$('sbDesignation').value.trim(),joining,release,months:Math.floor(days/30)+' Month '+(days%30)+' Days',total:$('sbTotal').textContent});localStorage.setItem('farnoorServiceBenefitEntries',JSON.stringify(items));alert('Service Benefit তথ্য Save করা হয়েছে।');};$('sbPrint').onclick=()=>window.print();entryButton.onclick=()=>{entryButton.classList.add('active');paymentButton.classList.remove('active');list.classList.remove('visible');report.classList.add('visible');};paymentButton.onclick=()=>{paymentButton.classList.add('active');entryButton.classList.remove('active');report.classList.remove('visible');renderList();list.classList.add('visible');};const menu=document.querySelector('.department-context-menu');if(menu){menu.innerHTML='<button class="rename-option" type="button">Rename</button><button class="delete-option" type="button">Delete</button>';let picked='';document.getElementById('departmentButtons').addEventListener('contextmenu',event=>{const button=event.target.closest('.department-button');if(!button)return;event.preventDefault();picked=button.dataset.department;menu.style.left=event.clientX+'px';menu.style.top=event.clientY+'px';menu.classList.add('visible');});menu.querySelector('.rename-option').onclick=()=>{const name=prompt('Department-এর নতুন নাম লিখুন',picked);if(!name?.trim())return;departments=departments.map(item=>item===picked?name.trim():item);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};menu.querySelector('.delete-option').onclick=()=>{if(!confirm(picked+' Department মুছে দিতে চান?'))return;departments=departments.filter(item=>item!==picked);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};}})();
+  </script>
+  <script>
+    (()=>{const designations=['Sr. Sewing Operator','Sewing Operator','Jr. Sewing Operator','Ast. Sewing Operator','Line Ironman','Input Man','Sr. Cutter man','Cutter man','Jr. Cutter man','Gen. Cutter man','Ast. Cutter man','Sr. Q/I','Q/I','Jr. Q.I.','General Q.I.','Ast. Q.I.','Poly Woman','Jr. Poly Women','General. Poly Women','Ast. Poly Women','Packingman','Jr. Poly Women','General Packingman','Ast. Packingman','Foldingman','Jr. Foldingman','General Foldingman','Ast. Foldingman','Finishing Ironman','Ast. Finishing','Line chief','Line Incharge','Supervisor','Driver','Nurse','Checker','Store Labour','Doctor','Safety Officer','Cleaner','Security Guard','Samplman'];const old=document.getElementById('sbDesignation');if(old){const select=document.createElement('select');select.id='sbDesignation';select.innerHTML='<option value="">Designation নির্বাচন করুন</option>'+designations.map(name=>'<option>'+name+'</option>').join('');old.replaceWith(select);}['sbJoining','sbRelease'].forEach(id=>{const input=document.getElementById(id);if(input){input.lang='en-GB';const label=input.closest('label');if(label&&label.firstChild)label.firstChild.nodeValue=(id==='sbJoining'?'Date Of Joining (DD-MM-YYYY) ':'Release Date (DD-MM-YYYY) ');}});})();
+  </script>
+  <script>
+    (()=>{if(typeof openStoreForm!=='function')return;const previousOpenStore=openStoreForm;openStoreForm=function(department='Store'){previousOpenStore(department);if(String(department).trim().toLowerCase()==='store')resetStoreLanding();};const storeButtons=document.querySelectorAll('#storeView .store-action');storeButtons[0]?.addEventListener('click',()=>{const card=document.querySelector('#storeView .store-card'),form=document.getElementById('storeForm');if(card)card.style.display='block';if(form)form.style.display='block';});})();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* Secure online saving with Supabase. The publishable key is safe to use in a browser. */
+  (() => {
+    const supabaseUrl = 'https://jbrqvgoptdsekxmisach.supabase.co';
+    const supabaseKey = 'sb_publishable_rkaW0e6QdHKkpxGU3LpXrQ_fqVz_17T';
+    const cloudKeys = ['farnoorDepartments', 'farnoorBinCards', 'farnoorStoreEntries', 'farnoorLine1Entries', 'farnoorServiceBenefitEntries'];
+    let client, pulling = false, timer;
+    const nativeSetItem = Storage.prototype.setItem;
+
+    function showCloudStatus(message, isError = false) {
+      let status = document.getElementById('cloudSaveStatus');
+      if (!status) {
+        status = document.createElement('div');
+        status.id = 'cloudSaveStatus';
+        status.style.cssText = 'margin:10px 0;text-align:center;font-size:12px;font-weight:700;color:#147a42;';
+        document.querySelector('#loginPanel .login-error')?.before(status);
+      }
+      status.style.color = isError ? '#b42318' : '#147a42';
+      status.textContent = message;
+    }
+
+    function updateLoginText() {
+      const loginName = document.getElementById('loginName');
+      const loginForm = document.getElementById('loginForm');
+      const loginLabels = loginForm?.querySelectorAll('label');
+      if (loginName && loginLabels?.[0]) {
+        loginLabels[0].textContent = 'ইমেইল';
+        loginName.type = 'email';
+        loginName.autocomplete = 'email';
+        loginName.placeholder = 'আপনার ইমেইল লিখুন';
+      }
+      const registerForm = document.getElementById('registerForm');
+      if (registerForm && !document.getElementById('regEmail')) {
+        const label = document.createElement('label');
+        label.textContent = 'ইমেইল';
+        const input = document.createElement('input');
+        input.id = 'regEmail';
+        input.type = 'email';
+        input.required = true;
+        input.autocomplete = 'email';
+        input.placeholder = 'আপনার ইমেইল লিখুন';
+        const mobile = document.getElementById('regMobile');
+        mobile?.insertAdjacentElement('afterend', label);
+        label.insertAdjacentElement('afterend', input);
+      }
+      document.querySelector('#loginPanel p').textContent = 'অনলাইনে নিরাপদভাবে প্রবেশ করতে ইমেইল ও পাসওয়ার্ড দিন।';
+      document.querySelector('#registerPanel p').textContent = 'নাম, বিভাগ, মোবাইল ও ইমেইল দিয়ে নতুন ব্যবহারকারী রেজিস্টার করুন।';
+    }
+
+    function storedValue(key) {
+      try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+      catch { return []; }
+    }
+
+    async function pushKey(key) {
+      if (!client || pulling || !cloudKeys.includes(key)) return;
+      const { data: { user } } = await client.auth.getUser();
+      if (!user) return;
+      const { error } = await client.from('farnoor_app_state').upsert({
+        user_id: user.id,
+        state_key: key,
+        state_data: storedValue(key),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,state_key' });
+      if (error) showCloudStatus('অনলাইন সেভে সমস্যা হয়েছে: ' + error.message, true);
+      else showCloudStatus('✓ আপনার তথ্য অনলাইনে সেভ হয়েছে');
+    }
+
+    async function pushAll() {
+      for (const key of cloudKeys) await pushKey(key);
+    }
+
+    async function pullCloudData() {
+      const { data: { user } } = await client.auth.getUser();
+      if (!user) return 0;
+      const { data, error } = await client.from('farnoor_app_state').select('state_key,state_data');
+      if (error) { showCloudStatus('অনলাইন তথ্য পড়া যায়নি: ' + error.message, true); return 0; }
+      pulling = true;
+      (data || []).forEach(row => {
+        if (cloudKeys.includes(row.state_key)) nativeSetItem.call(localStorage, row.state_key, JSON.stringify(row.state_data));
+      });
+      pulling = false;
+      return (data || []).length;
+    }
+
+    async function openCloudSession(user) {
+      const meta = user.user_metadata || {};
+      sessionStorage.setItem('farnoorLogin', JSON.stringify({
+        name: meta.name || user.email,
+        mobile: meta.mobile || '',
+        department: meta.department || ''
+      }));
+      const loadedKey = 'farnoorCloudLoaded-' + user.id;
+      if (!sessionStorage.getItem(loadedKey)) {
+        const count = await pullCloudData();
+        if (!count) await pushAll();
+        sessionStorage.setItem(loadedKey, 'yes');
+        location.reload();
+        return;
+      }
+      if (typeof enterApp === 'function') enterApp(meta.name || user.email, meta.department || '');
+      showCloudStatus('✓ অনলাইন সেভ চালু আছে');
+    }
+
+    function installStorageSync() {
+      if (window.farnoorCloudStorageSync) return;
+      window.farnoorCloudStorageSync = true;
+      Storage.prototype.setItem = function(key, value) {
+        nativeSetItem.call(this, key, value);
+        if (this === localStorage && cloudKeys.includes(key) && !pulling) {
+          clearTimeout(timer);
+          timer = setTimeout(() => pushKey(key), 250);
+        }
+      };
+    }
+
+    async function boot() {
+      if (!window.supabase) { showCloudStatus('অনলাইন সেভ চালু করা যায়নি। ইন্টারনেট সংযোগ দেখুন।', true); return; }
+      client = window.supabase.createClient(supabaseUrl, supabaseKey);
+      installStorageSync();
+      updateLoginText();
+
+      document.getElementById('loginForm').onsubmit = async event => {
+        event.preventDefault();
+        const email = document.getElementById('loginName').value.trim();
+        const password = document.getElementById('loginPass').value;
+        const errorBox = document.getElementById('loginError');
+        errorBox.textContent = 'লগইন হচ্ছে...';
+        const { data, error } = await client.auth.signInWithPassword({ email, password });
+        if (error || !data.user) {
+          const message = String(error?.message || '').toLowerCase();
+          errorBox.textContent = message.includes('email not confirmed')
+            ? 'আপনার ইমেইল এখনো নিশ্চিত করা হয়নি। রেজিস্ট্রেশনের ইমেইল খুলে Confirm করুন।'
+            : 'ইমেইল অথবা পাসওয়ার্ড সঠিক নয়। এই ইমেইলটি দিয়ে নতুন করে রেজিস্টার করা থাকলে সেই পাসওয়ার্ড ব্যবহার করুন।';
+          return;
+        }
+        sessionStorage.removeItem('farnoorCloudLoaded-' + data.user.id);
+        await openCloudSession(data.user);
+      };
+
+      let resetVerificationId = '';
+      let resetVerificationToken = '';
+      let resetStage = 0;
+      const resetFunctionBase = 'https://jbrqvgoptdsekxmisach.supabase.co/functions/v1';
+      const resetRequest = async (name, body) => {
+        const response = await fetch(resetFunctionBase + '/' + name, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'অনুরোধটি সম্পন্ন করা যায়নি।');
+        return result;
+      };
+      const resetPanel = document.createElement('div');
+      resetPanel.id = 'passwordResetPanel';
+      resetPanel.style.cssText = 'margin-top:12px;padding:14px;border:1px solid #c9d7ee;border-radius:12px;background:#f5f8ff;display:none;';
+      resetPanel.innerHTML = '<div id="resetStatus" style="font-size:13px;font-weight:700;color:#2457a6;margin-bottom:8px;"></div>' +
+        '<label id="resetCodeLabel" style="display:none;">ইমেইলে আসা ভেরিফিকেশন কোড</label>' +
+        '<input id="resetCode" inputmode="numeric" maxlength="6" placeholder="৬ সংখ্যার কোড লিখুন" style="display:none;">' +
+        '<label id="resetPassLabel" style="display:none;">নতুন পাসওয়ার্ড</label>' +
+        '<input id="resetPass" type="password" minlength="6" placeholder="নতুন পাসওয়ার্ড দিন" style="display:none;">' +
+        '<label id="resetConfirmLabel" style="display:none;">নতুন পাসওয়ার্ড নিশ্চিত করুন</label>' +
+        '<input id="resetConfirm" type="password" minlength="6" placeholder="আবার পাসওয়ার্ড লিখুন" style="display:none;">' +
+        '<button id="resetAction" class="primary" type="button" style="margin-top:8px;">কোড পাঠান</button>';
+      document.getElementById('forgotPasswordButton').insertAdjacentElement('afterend', resetPanel);
+      const resetStatus = resetPanel.querySelector('#resetStatus');
+      const resetCode = resetPanel.querySelector('#resetCode');
+      const resetPass = resetPanel.querySelector('#resetPass');
+      const resetConfirm = resetPanel.querySelector('#resetConfirm');
+      const resetAction = resetPanel.querySelector('#resetAction');
+      const resetCodeLabel = resetPanel.querySelector('#resetCodeLabel');
+      const resetPassLabel = resetPanel.querySelector('#resetPassLabel');
+      const resetConfirmLabel = resetPanel.querySelector('#resetConfirmLabel');
+      const showResetField = (element, label, visible) => {
+        element.style.display = visible ? 'block' : 'none';
+        label.style.display = visible ? 'block' : 'none';
+      };
+      document.getElementById('forgotPasswordButton').onclick = async () => {
+        const email = document.getElementById('loginName').value.trim();
+        const errorBox = document.getElementById('loginError');
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          errorBox.textContent = 'আগে ইমেইল ঘরে আপনার লগইন ইমেইল লিখুন।';
+          return;
+        }
+        resetStage = 1;
+        resetVerificationId = '';
+        resetVerificationToken = '';
+        resetPanel.style.display = 'block';
+        showResetField(resetCode, resetCodeLabel, false);
+        showResetField(resetPass, resetPassLabel, false);
+        showResetField(resetConfirm, resetConfirmLabel, false);
+        resetAction.style.display = 'inline-block';
+        resetAction.disabled = false;
+        resetAction.textContent = 'কোড পাঠান';
+        resetStatus.textContent = 'আপনার লগইন ইমেইল যাচাই করে কোড পাঠানো হচ্ছে...';
+        try {
+          const result = await resetRequest('send-password-reset-code', { loginEmail: email });
+          resetVerificationId = result.verificationId;
+          showResetField(resetCode, resetCodeLabel, true);
+          resetAction.textContent = 'কোড যাচাই করুন';
+          resetStatus.textContent = 'ভেরিফিকেশন কোড ' + (result.destinationEmail || 'lutfarbabu@gmail.com') + ' ঠিকানায় পাঠানো হয়েছে।';
+          resetCode.focus();
+        } catch (error) {
+          resetStage = 0;
+          resetStatus.textContent = error.message;
+        }
+      };
+      resetAction.onclick = async () => {
+        const email = document.getElementById('loginName').value.trim();
+        resetAction.disabled = true;
+        try {
+          if (resetStage === 1) {
+            const result = await resetRequest('verify-password-reset-code', { verificationId: resetVerificationId, code: resetCode.value.trim() });
+            resetVerificationToken = result.verificationToken;
+            resetStage = 2;
+            showResetField(resetCode, resetCodeLabel, false);
+            showResetField(resetPass, resetPassLabel, true);
+            showResetField(resetConfirm, resetConfirmLabel, true);
+            resetAction.textContent = 'নতুন পাসওয়ার্ড সেট করুন';
+            resetStatus.textContent = 'কোড সঠিক হয়েছে। এখন নতুন পাসওয়ার্ড দিন।';
+            resetPass.focus();
+          } else if (resetStage === 2) {
+            if (resetPass.value.length < 6) throw new Error('কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন।');
+            if (resetPass.value !== resetConfirm.value) throw new Error('দুইটি পাসওয়ার্ড একই নয়।');
+            await resetRequest('complete-password-reset', {
+              verificationId: resetVerificationId,
+              verificationToken: resetVerificationToken,
+              password: resetPass.value
+            });
+            resetStage = 3;
+            resetStatus.textContent = 'নতুন পাসওয়ার্ড সফলভাবে সেট হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।';
+            resetAction.style.display = 'none';
+            showResetField(resetPass, resetPassLabel, false);
+            showResetField(resetConfirm, resetConfirmLabel, false);
+            document.getElementById('loginPass').value = '';
+            document.getElementById('loginName').value = email;
+          }
+        } catch (error) {
+          resetStatus.textContent = error.message;
+        } finally {
+          resetAction.disabled = false;
+        }
+      };
+
+      document.getElementById('registerForm').onsubmit = async event => {
+        event.preventDefault();
+        const name = document.getElementById('regName').value.trim();
+        const department = document.getElementById('regDepartment').value;
+        const mobile = document.getElementById('regMobile').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPass').value;
+        const confirmPassword = document.getElementById('regConfirm').value;
+        const errorBox = document.getElementById('registerError');
+        if (!department) { errorBox.textContent = 'বিভাগ নির্বাচন করুন।'; return; }
+        if (!/^01\d{9}$/.test(mobile)) { errorBox.textContent = 'সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন।'; return; }
+        if (password !== confirmPassword) { errorBox.textContent = 'দুইটি পাসওয়ার্ড একই নয়।'; return; }
+        errorBox.textContent = 'রেজিস্ট্রেশন হচ্ছে...';
+        const { data, error } = await client.auth.signUp({
+          email,
+          password,
+          options: { data: { name, department, mobile } }
+        });
+        if (error) { errorBox.textContent = error.message; return; }
+        document.getElementById('registerForm').reset();
+        if (data.session && data.user) {
+          sessionStorage.removeItem('farnoorCloudLoaded-' + data.user.id);
+          await openCloudSession(data.user);
+        } else {
+          showLogin();
+          document.getElementById('loginName').value = email;
+          document.getElementById('loginError').textContent = 'রেজিস্ট্রেশন হয়েছে। ইমেইলে আসা নিশ্চিতকরণ লিংকে চাপ দিন, তারপর লগইন করুন।';
+        }
+      };
+
+      window.logout = async function() {
+        await client.auth.signOut();
+        sessionStorage.removeItem('farnoorLogin');
+        document.body.className = 'logged-out';
+        document.getElementById('loginForm').reset();
+        showLogin();
+      };
+
+      const { data: { session } } = await client.auth.getSession();
+      if (session?.user) await openCloudSession(session.user);
+      else document.getElementById('cloudSaveStatus')?.remove();
+    }
+    window.addEventListener('load', boot, { once: true });
+  })();
+</script>
+<script>
+  /* Three-step registration: request code -> verify code -> choose password. */
+  (() => {
+    const functionBase = 'https://jbrqvgoptdsekxmisach.supabase.co/functions/v1';
+    const verificationMailbox = 'lutfarbabu@gmail.com';
+    const setup = () => {
+      const form = document.getElementById('registerForm');
+      if (!form || form.dataset.codeFlowReady) return;
+      form.dataset.codeFlowReady = 'yes';
+      const pass = document.getElementById('regPass');
+      const confirm = document.getElementById('regConfirm');
+      const email = document.getElementById('regEmail');
+      if (!pass || !confirm || !email) return;
+      const codeLabel = document.createElement('label');
+      codeLabel.id = 'regCodeLabel'; codeLabel.textContent = `ভেরিফিকেশন কোড (${verificationMailbox})`;
+      const code = document.createElement('input');
+      code.id = 'regCode'; code.inputMode = 'numeric'; code.maxLength = 6; code.placeholder = '৬ সংখ্যার কোড লিখুন';
+      const note = document.createElement('div');
+      note.id = 'regCodeNote'; note.style.cssText = 'font-size:12px;color:#6b7280;margin-top:7px;';
+      note.textContent = `কোডটি ${verificationMailbox}-এ যাবে।`;
+      form.insertBefore(codeLabel, pass); form.insertBefore(code, pass); form.insertBefore(note, pass);
+      const passwordLabels = [...form.querySelectorAll('label')].filter(label => label.textContent.includes('পাসওয়ার্ড'));
+      const hidePassword = hidden => {
+        [pass, confirm].forEach(input => { input.required = !hidden; input.closest('label')?.style && (input.closest('label').style.display = hidden ? 'none' : ''); input.style.display = hidden ? 'none' : ''; });
+        passwordLabels.forEach(label => { if (label !== codeLabel) label.style.display = hidden ? 'none' : ''; });
+      };
+      let stage = 1, verificationId = '', verificationToken = '', busy = false;
+      hidePassword(true); codeLabel.style.display = 'none'; code.style.display = 'none'; note.style.display = 'none';
+      window.__resetRegistrationFlow = () => { stage = 1; verificationId = ''; verificationToken = ''; busy = false; form.reset(); code.required = false; codeLabel.style.display = 'none'; code.style.display = 'none'; note.style.display = 'none'; hidePassword(true); const submit = form.querySelector('button[type="submit"]'); submit.disabled = false; submit.textContent = 'ভেরিফিকেশন কোড পাঠান'; };
+      const originalShowRegister = window.showRegister;
+      window.showRegister = () => { originalShowRegister(); window.__resetRegistrationFlow?.(); };
+      const errorBox = document.getElementById('registerError');
+      const call = async (name, body) => {
+        const response = await fetch(`${functionBase}/${name}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'অনলাইন যাচাই সেবা এখন পাওয়া যাচ্ছে না।');
+        return data;
+      };
+      form.onsubmit = async event => {
+        event.preventDefault(); if (busy) return; busy = true; const submit = form.querySelector('button[type="submit"]'); submit.disabled = true; errorBox.textContent = '';
+        try {
+          if (stage === 1) {
+            const name = document.getElementById('regName').value.trim(), department = document.getElementById('regDepartment').value, mobile = document.getElementById('regMobile').value.trim(), loginEmail = email.value.trim();
+            if (!name || !department || !/^01\d{9}$/.test(mobile) || !/^\S+@\S+\.\S+$/.test(loginEmail)) { errorBox.textContent = 'নাম, বিভাগ, সঠিক মোবাইল ও ইমেইল দিন।'; return; }
+            submit.textContent = 'কোড পাঠানো হচ্ছে...'; errorBox.textContent = 'ভেরিফিকেশন কোড পাঠানো হচ্ছে...';
+            const result = await call('send-registration-code', { name, department, mobile, loginEmail });
+            verificationId = result.verificationId; stage = 2; codeLabel.style.display = ''; code.style.display = ''; note.style.display = ''; code.required = true; form.querySelector('button[type="submit"]').textContent = 'কোড যাচাই করুন'; errorBox.textContent = 'কোড ' + verificationMailbox + '-এ পাঠানো হয়েছে।';
+          } else if (stage === 2) {
+            submit.textContent = 'কোড যাচাই হচ্ছে...'; errorBox.textContent = 'কোড যাচাই হচ্ছে...';
+            const result = await call('verify-registration-code', { verificationId, code: code.value.trim() });
+            verificationToken = result.verificationToken; stage = 3; code.required = false; code.style.display = 'none'; codeLabel.style.display = 'none'; note.style.display = 'none'; hidePassword(false); form.querySelector('button[type="submit"]').textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন'; errorBox.textContent = 'কোড সঠিক হয়েছে। এখন নতুন পাসওয়ার্ড দিন।';
+          } else {
+            if (pass.value.length < 6 || pass.value !== confirm.value) { errorBox.textContent = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের এবং দুই ঘরে একই হতে হবে।'; return; }
+            submit.textContent = 'রেজিস্ট্রেশন হচ্ছে...'; errorBox.textContent = 'রেজিস্ট্রেশন সম্পন্ন হচ্ছে...';
+            await call('complete-registration', { verificationId, verificationToken, password: pass.value });
+            const loginEmail = email.value.trim(); form.reset(); showLogin(); document.getElementById('loginName').value = loginEmail; document.getElementById('loginError').textContent = 'রেজিস্ট্রেশন সফল হয়েছে। এখন ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।';
+          }
+        } catch (error) { errorBox.textContent = error.message || 'রেজিস্ট্রেশন সম্পন্ন করা যায়নি।'; } finally { busy = false; submit.disabled = false; if (stage === 1) submit.textContent = 'ভেরিফিকেশন কোড পাঠান'; if (stage === 2) submit.textContent = 'কোড যাচাই করুন'; if (stage === 3) submit.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন'; }
+      };
+    };
+    window.addEventListener('load', setup, { once: true });
+  })();
+</script>
+  <script>
+    (() => {
+      const style = document.createElement('style');
+      style.textContent = '#otherDepartmentView{display:none;margin-top:18px}.other-department-head{justify-content:center;text-align:center}.other-department-head h2{font-size:36px;letter-spacing:3px;color:var(--deep);margin:0}.other-department-blank{min-height:360px;background:#ffffffd9;border:1px solid #d4e3dc;border-radius:14px;box-shadow:0 9px 25px #173b3024}.department-button[data-department="Other Department"]{background:linear-gradient(135deg,#b65b83,#713653)!important;color:#fff!important}.department-button[data-department="Other Department"]:hover{filter:brightness(1.1);transform:translateY(-3px)}';
+      document.head.append(style);
+      const page = document.createElement('section');
+      page.id = 'otherDepartmentView';
+      page.innerHTML = '<div class="summary-head other-department-head"><div><h2>STORE</h2></div><button class="secondary" type="button">← Department Home</button></div><div class="other-department-blank"></div>';
+      document.getElementById('storeView')?.after(page);
+      const close = () => { page.style.display = 'none'; document.getElementById('summaryView').style.display = 'block'; document.querySelector('.notice').style.display = 'block'; activeDepartment = null; renderDepartments(); window.scrollTo({top:0,behavior:'smooth'}); };
+      window.openOtherDepartmentPage = () => { activeDepartment = 'Other Department'; renderDepartments(); document.getElementById('summaryView').style.display = 'none'; document.querySelector('.notice').style.display = 'none'; document.getElementById('storeView').classList.remove('visible'); document.getElementById('productionView')?.classList.remove('visible'); document.getElementById('administrationView')?.classList.remove('visible'); document.getElementById('serviceBenefitView')?.classList.remove('visible'); page.style.display = 'block'; window.scrollTo({top:0,behavior:'smooth'}); };
+      page.querySelector('button').onclick = close;
+      const originalRender = window.renderDepartments;
+      const ensureOtherButton = () => { const grid = document.getElementById('departmentButtons'); if (!grid || grid.querySelector('[data-department="Other Department"]')) return; const wrap = document.createElement('span'); wrap.className = 'dept-control'; const button = document.createElement('button'); button.type = 'button'; button.className = 'department-button'; button.dataset.department = 'Other Department'; button.textContent = 'Other Department'; button.onclick = window.openOtherDepartmentPage; wrap.append(button); grid.append(wrap); };
+      if (typeof originalRender === 'function') window.renderDepartments = () => { originalRender(); ensureOtherButton(); };
+      ensureOtherButton();
+    })();
+  </script>
+  <script>
+    (() => {
+      const view = document.getElementById('storeView');
+      const actions = view?.querySelector('.store-actions');
+      if (!view || !actions) return;
+      const card = view.querySelector('.store-card');
+      const records = view.querySelector('.store-records');
+      const search = view.querySelector('.store-search');
+      const otherButton = document.createElement('button');
+      otherButton.type = 'button';
+      otherButton.className = 'store-action store-other-department';
+      otherButton.textContent = 'Other Department';
+      otherButton.style.cssText = 'display:none;margin:22px auto;max-width:330px;';
+      actions.after(otherButton);
+      const minimalStoreLanding = () => {
+        actions.style.display = 'none';
+        if (card) card.style.display = 'none';
+        if (records) records.style.display = 'none';
+        if (search) search.classList.remove('visible');
+        otherButton.style.display = 'block';
+        view.querySelector('.summary-head h2').textContent = 'STORE';
+        document.querySelector('.department-context-menu')?.classList.remove('visible');
+      };
+      otherButton.onclick = () => window.openOtherDepartmentPage?.();
+      const oldOpenStoreForm = window.openStoreForm;
+      window.openStoreForm = (department = 'Store') => {
+        oldOpenStoreForm(department);
+        if (String(department).trim().toLowerCase() === 'store') minimalStoreLanding();
+      };
+      const oldOpenStorePageHome = window.openStorePageHome;
+      window.openStorePageHome = () => {
+        oldOpenStorePageHome();
+        minimalStoreLanding();
+      };
+    })();
+  </script>
+  <script>
+    (() => {
+      const view = document.getElementById('storeView');
+      const actions = view?.querySelector('.store-actions');
+      if (!view || !actions) return;
+      view.querySelector('.store-other-department')?.remove();
+      const restoreStoreFunctions = () => {
+        actions.style.display = 'flex';
+        view.querySelector('.summary-head h2').textContent = 'Store Page';
+        resetStoreLanding();
+      };
+      const minimalWrappedOpenStore = window.openStoreForm;
+      window.openStoreForm = (department = 'Store') => {
+        minimalWrappedOpenStore(department);
+        if (String(department).trim().toLowerCase() === 'store') restoreStoreFunctions();
+      };
+      const minimalWrappedStoreHome = window.openStorePageHome;
+      window.openStorePageHome = () => {
+        minimalWrappedStoreHome();
+        restoreStoreFunctions();
+      };
+      if (String(activeDepartment || '').trim().toLowerCase() === 'store') restoreStoreFunctions();
+    })();
+  </script>
+  <script>
+    (() => {
+      const view = document.getElementById('storeView');
+      if (!view) return;
+      const applyStoreLabels = () => {
+        const buttons = [...view.querySelectorAll('.store-actions .store-action')];
+        const otherButton = buttons[3];
+        if (otherButton) {
+          otherButton.textContent = 'Other Department';
+          otherButton.onclick = () => window.openOtherDepartmentPage?.();
+        }
+        const heading = view.querySelector('.summary-head h2');
+        if (heading) {
+          heading.textContent = 'STORE';
+          heading.style.fontSize = '30px';
+          heading.style.letterSpacing = '2px';
+          heading.style.fontWeight = '900';
+        }
+        const back = view.querySelector('.summary-head .secondary');
+        if (back) back.textContent = '← Store';
+      };
+      applyStoreLabels();
+      const previousStoreForm = window.openStoreForm;
+      window.openStoreForm = (department = 'Store') => {
+        previousStoreForm(department);
+        if (String(department).trim().toLowerCase() === 'store') applyStoreLabels();
+      };
+      const previousStoreHome = window.openStorePageHome;
+      window.openStorePageHome = () => {
+        previousStoreHome();
+        applyStoreLabels();
+      };
+    })();
+  </script>
+  <script>
+    (() => {
+      const notice = document.querySelector('.notice');
+      if (notice) notice.style.display = 'none';
+      document.querySelector('#summaryView .summary-head p')?.remove();
+      const summaryHead = document.querySelector('#summaryView .summary-head');
+      if (summaryHead) {
+        summaryHead.style.justifyContent = 'center';
+        summaryHead.style.textAlign = 'center';
+        const title = summaryHead.querySelector('h2');
+        if (title) title.style.margin = '0 auto';
+      }
+
+      const otherPage = document.getElementById('otherDepartmentView');
+      if (otherPage) {
+        const head = otherPage.querySelector('.other-department-head');
+        const back = head?.querySelector('button');
+        if (back) {
+          back.textContent = '← Store Page';
+          back.onclick = () => window.openStorePageHome?.();
+        }
+        let actions = otherPage.querySelector('.other-department-actions');
+        if (!actions) {
+          actions = document.createElement('div');
+          actions.className = 'other-department-actions';
+          actions.innerHTML = '<button type="button">Entry</button><button type="button">Report</button><button type="button">Search</button>';
+          head?.after(actions);
+        }
+      }
+
+      const style = document.createElement('style');
+      style.textContent = '#summaryView .summary-head h2{font-size:26px;letter-spacing:.5px}.other-department-actions{display:grid;grid-template-columns:repeat(3,minmax(160px,1fr));gap:14px;max-width:900px;margin:22px auto}.other-department-actions button{min-height:76px;color:#fff;font-size:17px;font-weight:900;border-radius:13px;background:linear-gradient(135deg,#087c5b,#07533f);box-shadow:0 8px 18px #075b4528}.other-department-actions button:nth-child(2){background:linear-gradient(135deg,#287fa4,#174d76)}.other-department-actions button:nth-child(3){background:linear-gradient(135deg,#b77a25,#8a5513)}.other-department-actions button:hover{filter:brightness(1.1);transform:translateY(-2px)}@media(max-width:700px){.other-department-actions{grid-template-columns:1fr}}';
+      document.head.append(style);
+
+      let departmentPage = document.getElementById('departmentPageView');
+      if (!departmentPage) {
+        departmentPage = document.createElement('section');
+        departmentPage.id = 'departmentPageView';
+        departmentPage.style.display = 'none';
+        departmentPage.innerHTML = '<div class="summary-head department-page-head"><div><h2></h2></div><button class="secondary" type="button">← Management Summary</button></div><div class="department-page-actions"><button type="button">New Input</button><button type="button">Department Report</button><button type="button">Department Home</button></div><div class="other-department-blank"></div>';
+        document.getElementById('otherDepartmentView')?.after(departmentPage);
+      }
+      const openDepartmentPage = (department) => {
+        activeDepartment = department;
+        activeBuyer = null;
+        renderDepartments();
+        document.getElementById('summaryView').style.display = 'none';
+        const notice = document.querySelector('.notice');
+        if (notice) notice.style.display = 'none';
+        document.getElementById('storeView').classList.remove('visible');
+        document.getElementById('otherDepartmentView')?.style.setProperty('display','none');
+        document.getElementById('productionView')?.classList.remove('visible');
+        document.getElementById('administrationView')?.classList.remove('visible');
+        document.getElementById('serviceBenefitView')?.classList.remove('visible');
+        departmentPage.querySelector('h2').textContent = department;
+        departmentPage.style.display = 'block';
+        window.scrollTo({top:0,behavior:'smooth'});
+      };
+      const genericButtons = departmentPage.querySelectorAll('.department-page-actions button');
+      genericButtons[0].onclick = () => { departmentPage.style.display='none'; openFunction(); };
+      genericButtons[1].onclick = () => { departmentPage.style.display='none'; document.getElementById('summaryView').style.display='block'; renderSummary(); };
+      genericButtons[2].onclick = () => { departmentPage.style.display='none'; document.getElementById('summaryView').style.display='block'; activeDepartment=null; renderDepartments(); renderSummary(); };
+      departmentPage.querySelector('.department-page-head button').onclick = genericButtons[2].onclick;
+
+      const previousSelectDepartment = window.selectDepartment;
+      window.selectDepartment = (department) => {
+        const key = String(department).trim().toLowerCase();
+        if (key === 'store' || key === 'line-1' || key === 'line 1' || key === 'administration' || key === 'production' || key === 'other department') {
+          departmentPage.style.display = 'none';
+          previousSelectDepartment(department);
+          return;
+        }
+        openDepartmentPage(department);
+      };
+      const previousStoreHome = window.openStorePageHome;
+      window.openStorePageHome = () => {
+        departmentPage.style.display = 'none';
+        previousStoreHome();
+      };
+      const previousOtherPage = window.openOtherDepartmentPage;
+      window.openOtherDepartmentPage = () => {
+        departmentPage.style.display = 'none';
+        previousOtherPage?.();
+      };
+      otherPage?.querySelector('.other-department-actions button:nth-child(1)')?.addEventListener('click', () => {
+        otherPage.style.display = 'none';
+        openFunction();
+      });
+      otherPage?.querySelector('.other-department-actions button:nth-child(2)')?.addEventListener('click', () => {
+        otherPage.style.display = 'none';
+        document.getElementById('summaryView').style.display = 'block';
+        renderSummary();
+      });
+      otherPage?.querySelector('.other-department-actions button:nth-child(3)')?.addEventListener('click', () => window.openStorePageHome?.());
+    })();
+  </script>
+  <script>
+    (() => {
+      const store = document.getElementById('storeView');
+      const admin = document.getElementById('administrationView');
+      const production = document.getElementById('productionView');
+      const generic = document.getElementById('departmentPageView');
+      const other = document.getElementById('otherDepartmentView');
+      const hideExtraPages = () => {
+        generic?.style.setProperty('display','none');
+        other?.style.setProperty('display','none');
+        production?.classList.remove('visible');
+        admin?.classList.remove('visible');
+      };
+      const setDepartmentHeading = (view, name) => {
+        const heading = view?.querySelector('.summary-head h2');
+        if (!heading) return;
+        heading.textContent = name;
+        heading.style.fontSize = '30px';
+        heading.style.letterSpacing = '2px';
+        heading.style.fontWeight = '900';
+      };
+      const showCompleteStore = () => {
+        if (!store) return;
+        hideExtraPages();
+        document.getElementById('summaryView').style.display = 'none';
+        const notice = document.querySelector('.notice');
+        if (notice) notice.style.display = 'none';
+        store.classList.add('visible');
+        setDepartmentHeading(store, 'STORE');
+        const actions = store.querySelector('.store-actions');
+        const card = store.querySelector('.store-card');
+        const form = store.querySelector('#storeForm');
+        const records = store.querySelector('.store-records');
+        const search = store.querySelector('.store-search');
+        if (actions) actions.style.display = 'flex';
+        if (card) card.style.display = 'block';
+        if (form) form.style.display = 'block';
+        if (records) records.style.display = 'block';
+        if (search) search.classList.remove('visible');
+        store.querySelector('.line1-panel')?.style.setProperty('display','none');
+        if (typeof renderStoreRecords === 'function') renderStoreRecords();
+      };
+      const previousOpenStore = window.openStoreForm;
+      window.openStoreForm = (department = 'Store') => {
+        previousOpenStore(department);
+        const key = String(department).trim().toLowerCase();
+        if (key === 'store') showCompleteStore();
+        else if (store) setDepartmentHeading(store, String(department).toUpperCase());
+      };
+      const previousStoreHome = window.openStorePageHome;
+      window.openStorePageHome = () => {
+        previousStoreHome();
+        showCompleteStore();
+      };
+      const previousAdmin = window.openAdministrationPage;
+      window.openAdministrationPage = () => {
+        previousAdmin();
+        generic?.style.setProperty('display','none');
+        other?.style.setProperty('display','none');
+        setDepartmentHeading(admin, 'ADMINISTRATION');
+        admin?.classList.add('visible');
+        document.getElementById('summaryView').style.display = 'none';
+        const notice = document.querySelector('.notice');
+        if (notice) notice.style.display = 'none';
+      };
+      const previousProduction = window.openProductionPage;
+      window.openProductionPage = () => {
+        previousProduction();
+        generic?.style.setProperty('display','none');
+        setDepartmentHeading(production, 'PRODUCTION');
+      };
+      setDepartmentHeading(admin, 'ADMINISTRATION');
+      setDepartmentHeading(production, 'PRODUCTION');
+      setDepartmentHeading(store, 'STORE');
+      const genericHeading = generic?.querySelector('.department-page-head h2');
+      if (genericHeading) {
+        genericHeading.style.fontSize = '30px';
+        genericHeading.style.letterSpacing = '2px';
+        genericHeading.style.fontWeight = '900';
+      }
+    })();
+  </script>
+  <script>
+    (() => {
+      const view = document.getElementById('storeView');
+      if (!view) return;
+      const buttons = [...view.querySelectorAll('.store-actions .store-action')];
+      if (buttons.length < 4) return;
+      buttons[0].textContent = 'Accessories Entry';
+      buttons[1].textContent = 'Accessories Delivery';
+      buttons[2].textContent = 'Search Option';
+      buttons[3].textContent = 'Store Page';
+      buttons[3].onclick = () => window.openStorePageHome?.();
+      buttons.forEach(button => button.style.display = 'inline-block');
+      const showStoreFunctions = () => {
+        view.classList.add('visible');
+        const actions = view.querySelector('.store-actions');
+        if (actions) actions.style.display = 'flex';
+      };
+      buttons[0].addEventListener('click', showStoreFunctions);
+      buttons[1].addEventListener('click', showStoreFunctions);
+      buttons[2].addEventListener('click', showStoreFunctions);
+    })();
+  </script>
+  <script>
+    (() => {
+      const select = document.getElementById('regDepartment');
+      if (!select) return;
+      const departments = ['Administration','MD','GM','Director','Account','Commercial','Merchandising','Knitting and Dyeing','Store','Production','Line-1','Line-2','Line-3','Line-4','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical','Driver','Auditing','admin1','admin2','admin3','admin4','admin5'];
+      select.innerHTML = '<option value="" selected disabled>বিভাগ নির্বাচন করুন</option>' + departments.map(name => `<option value="${name}">${name}</option>`).join('');
+    })();
+  </script>
+  <script>
+    (() => {
+      const extraDepartments = ['Auditing','admin1','admin2','admin3','admin4','admin5'];
+      let departmentsChanged = false;
+      if (typeof departments !== 'undefined') {
+        extraDepartments.forEach(name => {
+          if (!departments.some(item => item.toLowerCase() === name.toLowerCase())) { departments.push(name); departmentsChanged = true; }
+        });
+        localStorage.setItem('farnoorDepartments', JSON.stringify(departments));
+      }
+      const normalize = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+      const restrictedAdmin = /^admin[1-5]$/i;
+      const getRole = () => {
+        try { return JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department || ''; }
+        catch { return ''; }
+      };
+      const canAccess = department => {
+        const role = getRole();
+        const roleKey = normalize(role);
+        const depKey = normalize(department);
+        if (!roleKey) return false;
+        if (restrictedAdmin.test(role)) return depKey === roleKey;
+        if (roleKey === 'administration') return depKey === 'administration';
+        if (['md','gm','director'].includes(roleKey)) return !restrictedAdmin.test(String(department));
+        if (roleKey === 'store') return ['store','otherdepartment'].includes(depKey);
+        if (roleKey === 'account') return ['account','commercial','merchandising','production','auditing'].includes(depKey);
+        return depKey === roleKey;
+      };
+      const denied = () => alert('এই Department-এ আপনার প্রবেশাধিকার নেই।');
+      const applyAccess = () => {
+        const grid = document.getElementById('departmentButtons');
+        if (!grid) return;
+        grid.querySelectorAll('[data-department]').forEach(button => {
+          const department = button.dataset.department || button.textContent.trim();
+          const allowed = canAccess(department);
+          const wrapper = button.closest('.dept-control');
+          (wrapper || button).style.display = '';
+          button.classList.toggle('department-locked', !allowed);
+          button.title = allowed ? `${department} খুলুন` : 'এই Department-এ আপনার প্রবেশাধিকার নেই';
+          button.onclick = () => allowed ? window.selectDepartment?.(department) : denied();
+        });
+        const select = document.getElementById('entryDepartment');
+        if (select) [...select.options].forEach(option => {
+          if (!option.value) return;
+          option.hidden = false;
+        });
+      };
+      const originalRender = window.renderDepartments;
+      if (typeof originalRender === 'function') {
+        window.renderDepartments = () => { originalRender(); applyAccess(); };
+        if (departmentsChanged) window.renderDepartments(); else applyAccess();
+      }
+      const originalSelect = window.selectDepartment;
+      if (typeof originalSelect === 'function') {
+        window.selectDepartment = department => {
+          if (!canAccess(department)) { denied(); return; }
+          originalSelect(department);
+        };
+      }
+      const originalEnter = window.enterApp;
+      if (typeof originalEnter === 'function') {
+        window.enterApp = (name, department = '') => {
+          originalEnter(name, department);
+          applyAccess();
+        };
+      }
+      document.getElementById('loginForm')?.addEventListener('submit', () => setTimeout(applyAccess, 100));
+      const style = document.createElement('style');
+      style.textContent = '.notice{display:none!important}.department-locked{opacity:.62;filter:grayscale(.35);}.department-locked:hover{filter:grayscale(.1);opacity:.82}';
+      document.head.append(style);
+    })();
+  </script>
+  <script>
+    (() => {
+      const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+      const adminTargets = ['administration','account','commercial','merchandising','knittinganddyeing','store','production','line1','line2','line3','line4','cutting','finishing','packing','quality','sample','maintenance','electrical','driver','auditing'];
+      const readGroups = {
+        administration: adminTargets,
+        md: adminTargets,
+        gm: adminTargets,
+        director: adminTargets,
+        account: adminTargets,
+        commercial: adminTargets,
+        merchandising: adminTargets,
+        production: adminTargets,
+        store: ['merchandising','knittinganddyeing','store','production','line1','line2','line3','line4','cutting','finishing','packing','quality','sample','maintenance','electrical','driver'],
+        line1: ['store','production','line2','line3','line4','cutting','finishing','packing','quality','sample'],
+        line2: ['store','production','line1','line3','line4','cutting','finishing','packing','quality','sample'],
+        line3: ['store','production','line1','line2','line4','cutting','finishing','packing','quality','sample'],
+        line4: ['store','production','line1','line2','line3','cutting','finishing','packing','quality','sample'],
+        cutting: ['store','production','line1','line2','line3','line4','finishing','packing','quality','sample'],
+        finishing: ['store','production','line1','line2','line3','line4','cutting','packing','quality','sample'],
+        packing: ['store','production','line1','line2','line3','line4','cutting','finishing','quality','sample'],
+        quality: ['store','production','line1','line2','line3','line4','cutting','finishing','packing','sample'],
+        sample: ['store','production','line1','line2','line3','line4','cutting','finishing','packing','quality'],
+        maintenance: ['store','production','line1','line2','line3','line4','cutting','finishing','packing','quality','sample'],
+        electrical: ['store','production','line1','line2','line3','line4','cutting','finishing','packing','quality','sample'],
+        driver: []
+      };
+      const currentRole = () => { try { return clean(JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department); } catch { return ''; } };
+      const isAdminUser = role => /^admin[1-5]$/.test(role);
+      const canRead = department => {
+        const role = currentRole(), target = clean(department);
+        if (!role) return false;
+        if (isAdminUser(role)) return target === role || adminTargets.includes(target);
+        return target === role || (readGroups[role] || []).includes(target);
+      };
+      const canWrite = department => {
+        const role = currentRole(), target = clean(department);
+        if (!role) return false;
+        if (isAdminUser(role)) return adminTargets.includes(target) || target === role;
+        return role === target;
+      };
+      const denied = () => alert('এই Department-এ শুধু দেখা ও সার্চ করা যাবে। লেখা বা পরিবর্তনের অনুমতি নেই।');
+      const genericPage = document.getElementById('departmentPageView');
+      const storeView = document.getElementById('storeView');
+      const otherPage = document.getElementById('otherDepartmentView');
+      const hidePages = () => {
+        document.getElementById('summaryView').style.display = 'none';
+        document.querySelector('.notice')?.style.setProperty('display','none');
+        storeView?.classList.remove('visible');
+        document.getElementById('productionView')?.classList.remove('visible');
+        document.getElementById('administrationView')?.classList.remove('visible');
+        if (otherPage) otherPage.style.display = 'none';
+        if (genericPage) genericPage.style.display = 'none';
+      };
+      const openGenericReadOnly = department => {
+        hidePages();
+        if (typeof activeDepartment !== 'undefined') activeDepartment = department;
+        if (typeof activeBuyer !== 'undefined') activeBuyer = null;
+        genericPage.querySelector('.department-page-head h2').textContent = department;
+        const buttons = genericPage.querySelectorAll('.department-page-actions button');
+        const writable = canWrite(department);
+        if (buttons[0]) buttons[0].style.display = writable ? '' : 'none';
+        if (buttons[1]) buttons[1].textContent = writable ? 'Department Report' : 'View / Search Report';
+        genericPage.style.display = 'block';
+        window.scrollTo({top:0,behavior:'smooth'});
+      };
+      const openDepartment = department => {
+        const target = clean(department);
+        if (!canRead(department)) { denied(); return; }
+        if (target === 'store') { window.openStoreForm?.('Store'); return; }
+        if (target === 'administration') { window.openAdministrationPage?.(); return; }
+        if (target === 'production') { window.openProductionPage?.(); return; }
+        if (['line1','line2','line3','line4'].includes(target)) { window.openStoreForm?.(department); return; }
+        openGenericReadOnly(department);
+      };
+      const decorateDepartmentButtons = () => {
+        document.querySelectorAll('#departmentButtons [data-department]').forEach(button => {
+          const department = button.dataset.department || button.textContent.trim();
+          const readable = canRead(department), writable = canWrite(department);
+          const wrapper = button.closest('.dept-control');
+          (wrapper || button).style.display = '';
+          button.classList.toggle('department-locked', !writable);
+          button.title = readable ? (writable ? `${department} — লেখা ও কাজ করা যাবে` : `${department} — শুধু দেখা/সার্চ`) : 'এই Department-এ প্রবেশাধিকার নেই';
+          button.onclick = () => openDepartment(department);
+        });
+      };
+      const previousRender = window.renderDepartments;
+      if (typeof previousRender === 'function') {
+        window.renderDepartments = () => { previousRender(); decorateDepartmentButtons(); };
+        decorateDepartmentButtons();
+      }
+      const previousOpenFunction = window.openFunction;
+      if (typeof previousOpenFunction === 'function') {
+        window.openFunction = (...args) => {
+          const department = (typeof activeDepartment !== 'undefined' && activeDepartment) || currentRole();
+          if (!canWrite(department)) { denied(); return; }
+          previousOpenFunction(...args);
+        };
+      }
+      const applyStoreAccess = () => {
+        if (!storeView) return;
+        const currentTarget = (typeof activeDepartment !== 'undefined' && activeDepartment) || 'Store';
+        const writable = canWrite(currentTarget);
+        const actions = [...storeView.querySelectorAll('.store-actions .store-action')];
+        actions.forEach((button, index) => {
+          if (index < 2) button.style.display = currentTarget.toLowerCase() === 'store' && writable ? '' : 'none';
+          else button.style.display = '';
+        });
+        const card = storeView.querySelector('.store-card');
+        const form = storeView.querySelector('#storeForm');
+        const otherButton = storeView.querySelector('.store-other-department');
+        const isStore = clean(currentTarget) === 'store';
+        if (card) card.style.display = isStore && writable ? 'block' : 'none';
+        if (form) form.style.display = isStore && writable ? 'block' : 'none';
+        if (otherButton) otherButton.style.display = isStore && writable ? '' : 'none';
+        const linePanel = storeView.querySelector('.line1-panel');
+        if (linePanel) {
+          const lineWritable = writable && /^line[1-4]$/.test(clean(currentTarget));
+          linePanel.querySelectorAll('input,select,textarea').forEach(input => { input.readOnly = !lineWritable; input.disabled = !lineWritable; });
+          linePanel.querySelectorAll('#addLine1Row,.actions button[type="submit"]').forEach(button => button.style.display = lineWritable ? '' : 'none');
+        }
+      };
+      const previousOpenStore = window.openStoreForm;
+      if (typeof previousOpenStore === 'function') window.openStoreForm = department => { previousOpenStore(department); applyStoreAccess(); };
+      const previousStoreHome = window.openStorePageHome;
+      if (typeof previousStoreHome === 'function') window.openStorePageHome = () => { previousStoreHome(); applyStoreAccess(); };
+      applyStoreAccess();
+      decorateDepartmentButtons();
+      setTimeout(decorateDepartmentButtons, 100);
+    })();
+  </script>
+  <script>
+    (() => {
+      const role = () => {
+        try { return String(JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department || '').trim().toLowerCase().replace(/[\s_-]+/g,''); }
+        catch { return ''; }
+      };
+      const isAdminUser = () => /^admin[1-5]$/.test(role());
+      const goHome = () => {
+        document.getElementById('storeView')?.classList.remove('visible');
+        document.getElementById('productionView')?.classList.remove('visible');
+        document.getElementById('administrationView')?.classList.remove('visible');
+        document.getElementById('otherDepartmentView')?.style.setProperty('display','none');
+        document.getElementById('departmentPageView')?.style.setProperty('display','none');
+        document.getElementById('summaryView').style.display = 'block';
+        if (typeof activeDepartment !== 'undefined') activeDepartment = null;
+        if (typeof renderDepartments === 'function') renderDepartments();
+        if (typeof renderSummary === 'function') renderSummary();
+        window.scrollTo({top:0,behavior:'smooth'});
+      };
+      const install = () => {
+        const actions = document.querySelector('#storeView .store-actions');
+        if (!actions) return;
+        let button = actions.querySelector('.admin-home-action');
+        if (isAdminUser()) {
+          if (!button) {
+            button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'store-action admin-home-action';
+            button.textContent = 'Home Page';
+            button.onclick = goHome;
+            actions.append(button);
+          }
+          button.style.display = '';
+        } else if (button) button.style.display = 'none';
+      };
+      const oldOpenStore = window.openStoreForm;
+      if (typeof oldOpenStore === 'function') window.openStoreForm = department => { oldOpenStore(department); install(); };
+      const oldStoreHome = window.openStorePageHome;
+      if (typeof oldStoreHome === 'function') window.openStorePageHome = () => { oldStoreHome(); install(); };
+      install();
+      setTimeout(install, 150);
+      const style = document.createElement('style');
+      style.textContent = '.admin-home-action{background:linear-gradient(135deg,#8a4f9e,#5a2f70)!important;color:#fff!important}';
+      document.head.append(style);
+    })();
+  </script>
+  <script>
+    (() => {
+      const page = document.getElementById('otherDepartmentView');
+      if (!page) return;
+      const heading = page.querySelector('.other-department-head h2');
+      if (heading) {
+        heading.textContent = 'STORE HOME PAGE';
+        heading.style.fontSize = '30px';
+        heading.style.letterSpacing = '2px';
+        heading.style.fontWeight = '900';
+      }
+      const back = page.querySelector('.other-department-head button');
+      if (back) back.textContent = '← Store Page';
+    })();
+  </script>
+  <script>
+    (() => {
+      const setStoreLabels = () => {
+        const storeHeading = document.querySelector('#storeView .summary-head h2');
+        if (storeHeading) {
+          storeHeading.textContent = 'STORE HOMEPAGE';
+          storeHeading.style.fontSize = '30px';
+          storeHeading.style.letterSpacing = '2px';
+          storeHeading.style.fontWeight = '900';
+        }
+        const otherHeading = document.querySelector('#otherDepartmentView .other-department-head h2');
+        if (otherHeading) {
+          otherHeading.textContent = 'STORE';
+          otherHeading.style.fontSize = '36px';
+          otherHeading.style.letterSpacing = '3px';
+          otherHeading.style.fontWeight = '900';
+        }
+      };
+      setStoreLabels();
+      const oldStoreForm = window.openStoreForm;
+      if (typeof oldStoreForm === 'function') window.openStoreForm = department => { oldStoreForm(department); setStoreLabels(); };
+      const oldStoreHome = window.openStorePageHome;
+      if (typeof oldStoreHome === 'function') window.openStorePageHome = () => { oldStoreHome(); setStoreLabels(); };
+      const oldOther = window.openOtherDepartmentPage;
+      if (typeof oldOther === 'function') window.openOtherDepartmentPage = () => { oldOther(); setStoreLabels(); };
+    })();
+  </script>
+</body>
+</html>
