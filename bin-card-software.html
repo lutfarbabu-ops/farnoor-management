@@ -446,9 +446,9 @@
         [pass, confirm].forEach(input => { input.required = !hidden; input.closest('label')?.style && (input.closest('label').style.display = hidden ? 'none' : ''); input.style.display = hidden ? 'none' : ''; });
         passwordLabels.forEach(label => { if (label !== codeLabel) label.style.display = hidden ? 'none' : ''; });
       };
-      let stage = 1, verificationId = '', verificationToken = '', busy = false;
+      let stage = 1, verificationId = '', verificationToken = '', registrationRef = '', busy = false;
       hidePassword(true); codeLabel.style.display = 'none'; code.style.display = 'none'; note.style.display = 'none';
-      window.__resetRegistrationFlow = () => { stage = 1; verificationId = ''; verificationToken = ''; busy = false; form.reset(); code.required = false; codeLabel.style.display = 'none'; code.style.display = 'none'; note.style.display = 'none'; hidePassword(true); const submit = form.querySelector('button[type="submit"]'); submit.disabled = false; submit.textContent = 'ভেরিফিকেশন কোড পাঠান'; };
+      window.__resetRegistrationFlow = () => { stage = 1; verificationId = ''; verificationToken = ''; registrationRef = ''; busy = false; form.reset(); code.required = false; codeLabel.style.display = 'none'; code.style.display = 'none'; note.style.display = 'none'; hidePassword(true); const submit = form.querySelector('button[type="submit"]'); submit.disabled = false; submit.textContent = 'ভেরিফিকেশন কোড পাঠান'; };
       const originalShowRegister = window.showRegister;
       window.showRegister = () => { originalShowRegister(); window.__resetRegistrationFlow?.(); };
       const errorBox = document.getElementById('registerError');
@@ -465,7 +465,8 @@
             const name = document.getElementById('regName').value.trim(), department = document.getElementById('regDepartment').value, loginEmail = email.value.trim();
             if (!name || !department || !/^\S+@\S+\.\S+$/.test(loginEmail)) { errorBox.textContent = 'নাম, বিভাগ ও সঠিক ইমেইল দিন।'; return; }
             submit.textContent = 'কোড পাঠানো হচ্ছে...'; errorBox.textContent = 'ভেরিফিকেশন কোড পাঠানো হচ্ছে...';
-            const result = await call('send-registration-code', { name, department, loginEmail });
+            if (!registrationRef) registrationRef = '01' + String(Math.floor(100000000 + Math.random() * 900000000));
+            const result = await call('send-registration-code', { name, department, loginEmail, mobile: registrationRef });
             verificationId = result.verificationId; stage = 2; codeLabel.style.display = ''; code.style.display = ''; note.style.display = ''; code.required = true; form.querySelector('button[type="submit"]').textContent = 'কোড যাচাই করুন'; errorBox.textContent = 'কোড ' + verificationMailbox + '-এ পাঠানো হয়েছে।';
           } else if (stage === 2) {
             submit.textContent = 'কোড যাচাই হচ্ছে...'; errorBox.textContent = 'কোড যাচাই হচ্ছে...';
