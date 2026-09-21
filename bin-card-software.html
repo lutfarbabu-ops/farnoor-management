@@ -1166,6 +1166,7 @@
           }
           home.style.display = '';
         } else if (home) home.style.display = 'none';
+        if (home) actions.insertBefore(home, other);
         const current = clean(typeof activeDepartment !== 'undefined' ? activeDepartment : 'store');
         other.style.display = current === 'store' ? '' : 'none';
       };
