@@ -1131,7 +1131,7 @@
         renderSummary?.();
         window.scrollTo({top:0,behavior:'smooth'});
       };
-      const openStoreHome = () => { page.style.display = 'none'; window.openStorePageHome?.(); };
+      const openStoreHome = () => { activeDepartment = 'Store'; page.style.display = 'none'; window.openStorePageHome?.(); };
       const openStoreAction = index => {
         openStoreHome();
         const button = store.querySelectorAll('.store-actions .store-action')[index];
