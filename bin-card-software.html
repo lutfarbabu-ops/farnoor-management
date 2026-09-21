@@ -1110,20 +1110,74 @@
     })();
   </script>
   <script>
-    // Store-এর অতিরিক্ত Other Department/Store Page স্তর সরিয়ে শুধু মূল Store ফাংশন রাখি।
+    // Store-এর Other Department পেজে তিনটি পরিষ্কার navigation button রাখি।
     (() => {
-      const removeExtraStorePage = () => {
-        document.getElementById('otherDepartmentView')?.remove();
-        document.querySelectorAll('[data-department="Other Department"], .store-other-department').forEach(item => item.remove());
-        const actions = document.querySelector('#storeView .store-actions');
-        if (actions) {
-          const buttons = [...actions.querySelectorAll('.store-action')];
-          buttons.slice(3).forEach(button => button.remove());
-        }
+      const store = document.getElementById('storeView');
+      const actions = store?.querySelector('.store-actions');
+      const page = document.getElementById('otherDepartmentView');
+      if (!store || !actions || !page) return;
+      const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+      const role = () => { try { return clean(JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department); } catch { return ''; } };
+      const isAdminUser = () => /^admin[1-5]$/.test(role());
+      const goManagementHome = () => {
+        store.classList.remove('visible');
+        document.getElementById('productionView')?.classList.remove('visible');
+        document.getElementById('administrationView')?.classList.remove('visible');
+        page.style.display = 'none';
+        document.getElementById('departmentPageView')?.style.setProperty('display', 'none');
+        document.getElementById('summaryView').style.display = 'block';
+        if (typeof activeDepartment !== 'undefined') activeDepartment = null;
+        renderDepartments?.();
+        renderSummary?.();
+        window.scrollTo({top:0,behavior:'smooth'});
       };
-      removeExtraStorePage();
-      window.addEventListener('load', removeExtraStorePage, { once: true });
-      setTimeout(removeExtraStorePage, 100);
+      const openStoreHome = () => { page.style.display = 'none'; window.openStorePageHome?.(); };
+      const openStoreAction = index => {
+        openStoreHome();
+        const button = store.querySelectorAll('.store-actions .store-action')[index];
+        button?.click();
+      };
+      page.innerHTML = '<div class="summary-head other-department-head"><div><h2>OTHER DEPARTMENT</h2></div><button class="secondary" type="button">← Store Homepage</button></div><div class="other-department-actions"><button class="store-action" type="button">Store Homepage</button><button class="store-action" type="button">Accessories Receive</button><button class="store-action" type="button">Accessories Delivery</button></div>';
+      page.querySelector('.other-department-head button').onclick = openStoreHome;
+      const otherButtons = page.querySelectorAll('.other-department-actions button');
+      otherButtons[0].onclick = openStoreHome;
+      otherButtons[1].onclick = () => openStoreAction(0);
+      otherButtons[2].onclick = () => openStoreAction(1);
+      const ensureNavigation = () => {
+        [...actions.querySelectorAll('.store-action')].filter(button => /^(Store Page|Other Department)$/i.test(button.textContent.trim())).forEach(button => button.remove());
+        let other = actions.querySelector('.store-other-department');
+        if (!other) {
+          other = document.createElement('button');
+          other.type = 'button';
+          other.className = 'store-action store-other-department';
+          other.textContent = 'Other Department';
+          other.onclick = () => window.openOtherDepartmentPage?.();
+          actions.append(other);
+        }
+        let home = actions.querySelector('.admin-home-action');
+        if (isAdminUser()) {
+          if (!home) {
+            home = document.createElement('button');
+            home.type = 'button';
+            home.className = 'store-action admin-home-action';
+            home.textContent = 'Home Page';
+            home.onclick = goManagementHome;
+            actions.append(home);
+          }
+          home.style.display = '';
+        } else if (home) home.style.display = 'none';
+        const current = clean(typeof activeDepartment !== 'undefined' ? activeDepartment : 'store');
+        other.style.display = current === 'store' ? '' : 'none';
+      };
+      ensureNavigation();
+      const oldOpenStore = window.openStoreForm;
+      if (typeof oldOpenStore === 'function') window.openStoreForm = department => { oldOpenStore(department); ensureNavigation(); };
+      const oldStoreHome = window.openStorePageHome;
+      if (typeof oldStoreHome === 'function') window.openStorePageHome = () => { oldStoreHome(); ensureNavigation(); };
+      setTimeout(ensureNavigation, 150);
+      const style = document.createElement('style');
+      style.textContent = '.other-department-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin:24px auto;max-width:900px}.other-department-actions .store-action{min-width:220px}.store-other-department{background:linear-gradient(135deg,#b65b83,#713653)!important;color:#fff!important}.admin-home-action{background:linear-gradient(135deg,#8a4f9e,#5a2f70)!important;color:#fff!important}';
+      document.head.append(style);
     })();
   </script>
 </body>
