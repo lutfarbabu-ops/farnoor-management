@@ -309,6 +309,7 @@
       const resetConfirmLabel = resetPanel.querySelector('#resetConfirmLabel');
       /* Keep the Forgot Password panel direct and uncluttered; errors still use the main login message area. */
       resetStatus.style.display = 'none';
+      const showResetError = message => { resetStatus.textContent = message || ''; resetStatus.style.display = message ? 'block' : 'none'; };
       const normalizeResetCode = value => String(value || '').replace(/[০-৯]/g, digit => String('০১২৩৪৫৬৭৮৯'.indexOf(digit))).replace(/[٠-٩]/g, digit => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit))).replace(/\s+/g, '');
       const friendlyResetError = error => error instanceof TypeError && /fetch/i.test(error.message || '')
         ? 'অনলাইন যাচাই সেবা এখন সংযোগ করা যাচ্ছে না। কিছুক্ষণ পরে আবার চেষ্টা করুন।'
@@ -338,6 +339,7 @@
         resetBusy = true;
         resetAction.textContent = 'কোড পাঠান';
         resetStatus.textContent = 'আপনার লগইন ইমেইল যাচাই করে কোড পাঠানো হচ্ছে...';
+        resetStatus.style.display = 'none';
         try {
           const result = await resetRequest('send-password-reset-code', { loginEmail: email });
           resetVerificationId = result.verificationId;
@@ -347,7 +349,7 @@
           resetCode.focus();
         } catch (error) {
           resetStage = 0;
-          resetStatus.textContent = friendlyResetError(error);
+          showResetError(friendlyResetError(error));
         } finally {
           resetBusy = false;
         }
@@ -355,7 +357,7 @@
       resetAction.onclick = async () => {
         if (resetBusy) return;
         const email = document.getElementById('loginName').value.trim();
-        if (resetStage === 0) { resetStatus.textContent = 'প্রথমে “পাসওয়ার্ড ভুলে গেছেন?” চাপুন।'; return; }
+        if (resetStage === 0) { showResetError('প্রথমে “পাসওয়ার্ড ভুলে গেছেন?” চাপুন।'); return; }
         resetBusy = true;
         resetAction.disabled = true;
         try {
@@ -388,7 +390,7 @@
             document.getElementById('loginName').value = email;
           }
         } catch (error) {
-          resetStatus.textContent = friendlyResetError(error);
+          showResetError(friendlyResetError(error));
         } finally {
           resetBusy = false;
           resetAction.disabled = false;
