@@ -275,6 +275,7 @@
       let resetVerificationId = '';
       let resetVerificationToken = '';
       let resetStage = 0;
+      let resetBusy = false;
       const resetFunctionBase = 'https://jbrqvgoptdsekxmisach.supabase.co/functions/v1';
       const resetRequest = async (name, body) => {
         const response = await fetch(resetFunctionBase + '/' + name, {
@@ -306,11 +307,17 @@
       const resetCodeLabel = resetPanel.querySelector('#resetCodeLabel');
       const resetPassLabel = resetPanel.querySelector('#resetPassLabel');
       const resetConfirmLabel = resetPanel.querySelector('#resetConfirmLabel');
+      const normalizeResetCode = value => String(value || '').replace(/[০-৯]/g, digit => String('০১২৩৪৫৬৭৮৯'.indexOf(digit))).replace(/[٠-٩]/g, digit => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit))).replace(/\s+/g, '');
+      const friendlyResetError = error => error instanceof TypeError && /fetch/i.test(error.message || '')
+        ? 'অনলাইন যাচাই সেবা এখন সংযোগ করা যাচ্ছে না। কিছুক্ষণ পরে আবার চেষ্টা করুন।'
+        : (error?.message || 'অনুরোধটি সম্পন্ন করা যায়নি।');
       const showResetField = (element, label, visible) => {
         element.style.display = visible ? 'block' : 'none';
         label.style.display = visible ? 'block' : 'none';
       };
       document.getElementById('forgotPasswordButton').onclick = async () => {
+        if (resetBusy) return;
+        if (resetStage === 1) { resetStatus.textContent = 'কোড ইতিমধ্যে পাঠানো হয়েছে। ইমেইল দেখুন, তারপর কোড যাচাই করুন।'; return; }
         const email = document.getElementById('loginName').value.trim();
         const errorBox = document.getElementById('loginError');
         if (!/^\S+@\S+\.\S+$/.test(email)) {
@@ -326,6 +333,7 @@
         showResetField(resetConfirm, resetConfirmLabel, false);
         resetAction.style.display = 'inline-block';
         resetAction.disabled = false;
+        resetBusy = true;
         resetAction.textContent = 'কোড পাঠান';
         resetStatus.textContent = 'আপনার লগইন ইমেইল যাচাই করে কোড পাঠানো হচ্ছে...';
         try {
@@ -337,15 +345,22 @@
           resetCode.focus();
         } catch (error) {
           resetStage = 0;
-          resetStatus.textContent = error.message;
+          resetStatus.textContent = friendlyResetError(error);
+        } finally {
+          resetBusy = false;
         }
       };
       resetAction.onclick = async () => {
+        if (resetBusy) return;
         const email = document.getElementById('loginName').value.trim();
+        if (resetStage === 0) { resetStatus.textContent = 'প্রথমে “পাসওয়ার্ড ভুলে গেছেন?” চাপুন।'; return; }
+        resetBusy = true;
         resetAction.disabled = true;
         try {
           if (resetStage === 1) {
-            const result = await resetRequest('verify-password-reset-code', { verificationId: resetVerificationId, code: resetCode.value.trim() });
+            const codeValue = normalizeResetCode(resetCode.value);
+            if (!/^\d{6}$/.test(codeValue)) throw new Error('৬ সংখ্যার ভেরিফিকেশন কোড দিন।');
+            const result = await resetRequest('verify-password-reset-code', { verificationId: resetVerificationId, code: codeValue });
             resetVerificationToken = result.verificationToken;
             resetStage = 2;
             showResetField(resetCode, resetCodeLabel, false);
@@ -371,8 +386,9 @@
             document.getElementById('loginName').value = email;
           }
         } catch (error) {
-          resetStatus.textContent = error.message;
+          resetStatus.textContent = friendlyResetError(error);
         } finally {
+          resetBusy = false;
           resetAction.disabled = false;
         }
       };
