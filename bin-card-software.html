@@ -1308,7 +1308,12 @@
     const save = () => localStorage.setItem(key, JSON.stringify(labels));
     const page = () => document.getElementById('departmentPageView');
     const title = () => page()?.querySelector('.department-page-head h2');
-    const isMerch = () => clean(title()?.textContent) === 'merchandising';
+    const isMerch = () => {
+      const heading = clean(title()?.textContent);
+      let active = '';
+      try { active = clean(typeof activeDepartment !== 'undefined' ? activeDepartment : ''); } catch {}
+      return heading.includes('merchandising') || active.includes('merchandising');
+    };
     const makeButton = (label, type, index, handler) => { const button = document.createElement('button'); button.type = 'button'; button.className = type === 'top' ? 'merchandising-extra' : 'merchandising-inner-button'; button.textContent = label; button.dataset.merchType = type; button.dataset.merchIndex = String(index); button.onclick = handler; return button; };
     const renameOnRightClick = button => {
       button.oncontextmenu = event => {
