@@ -283,8 +283,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
         });
-        const result = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(result.error || 'অনুরোধটি সম্পন্ন করা যায়নি।');
+        const raw = await response.text();
+        let result = {};
+        try { result = raw ? JSON.parse(raw) : {}; } catch { result = {}; }
+        if (!response.ok) throw new Error(result.error || result.message || raw || ('অনুরোধটি সম্পন্ন করা যায়নি। (' + response.status + ')'));
         return result;
       };
       const resetPanel = document.createElement('div');
