@@ -318,47 +318,59 @@
         element.style.display = visible ? 'block' : 'none';
         label.style.display = visible ? 'block' : 'none';
       };
-      document.getElementById('forgotPasswordButton').onclick = async () => {
+      const sendResetCode = async () => {
         if (resetBusy) return;
-        if (resetStage === 1) { resetStatus.textContent = 'কোড ইতিমধ্যে পাঠানো হয়েছে। ইমেইল দেখুন, তারপর কোড যাচাই করুন।'; return; }
         const email = document.getElementById('loginName').value.trim();
         const errorBox = document.getElementById('loginError');
         if (!/^\S+@\S+\.\S+$/.test(email)) {
           errorBox.textContent = 'আগে ইমেইল ঘরে আপনার লগইন ইমেইল লিখুন।';
           return;
         }
-        resetStage = 1;
+        resetBusy = true;
+        resetAction.disabled = true;
+        resetStatus.textContent = 'আপনার লগইন ইমেইল যাচাই করে কোড পাঠানো হচ্ছে...';
+        resetStatus.style.display = 'block';
+        resetAction.textContent = 'কোড পাঠানো হচ্ছে...';
+        try {
+          const result = await resetRequest('send-password-reset-code', { loginEmail: email });
+          resetVerificationId = result.verificationId;
+          resetStage = 1;
+          showResetField(resetCode, resetCodeLabel, true);
+          resetAction.style.display = 'inline-block';
+          resetAction.textContent = 'কোড যাচাই করুন';
+          resetStatus.textContent = 'ভেরিফিকেশন কোড ' + (result.destinationEmail || 'lutfarbabu@gmail.com') + ' ঠিকানায় পাঠানো হয়েছে।';
+          resetStatus.style.display = 'block';
+          resetCode.focus();
+        } catch (error) {
+          resetStage = 0;
+          resetAction.style.display = 'inline-block';
+          resetAction.textContent = 'কোড পাঠান';
+          showResetError(friendlyResetError(error));
+        } finally {
+          resetBusy = false;
+          resetAction.disabled = false;
+        }
+      };
+      document.getElementById('forgotPasswordButton').onclick = () => {
+        if (resetBusy) return;
+        resetStage = 0;
         resetVerificationId = '';
         resetVerificationToken = '';
         resetPanel.style.display = 'block';
         showResetField(resetCode, resetCodeLabel, false);
         showResetField(resetPass, resetPassLabel, false);
         showResetField(resetConfirm, resetConfirmLabel, false);
-        resetAction.style.display = 'none';
+        resetAction.style.display = 'inline-block';
         resetAction.disabled = false;
-        resetBusy = true;
         resetAction.textContent = 'কোড পাঠান';
-        resetStatus.textContent = 'আপনার লগইন ইমেইল যাচাই করে কোড পাঠানো হচ্ছে...';
+        resetStatus.textContent = '';
         resetStatus.style.display = 'none';
-        try {
-          const result = await resetRequest('send-password-reset-code', { loginEmail: email });
-          resetVerificationId = result.verificationId;
-          showResetField(resetCode, resetCodeLabel, true);
-          resetAction.style.display = 'inline-block';
-          resetAction.textContent = 'কোড যাচাই করুন';
-          resetStatus.textContent = 'ভেরিফিকেশন কোড ' + (result.destinationEmail || 'lutfarbabu@gmail.com') + ' ঠিকানায় পাঠানো হয়েছে।';
-          resetCode.focus();
-        } catch (error) {
-          resetStage = 0;
-          showResetError(friendlyResetError(error));
-        } finally {
-          resetBusy = false;
-        }
+        resetAction.focus();
       };
       resetAction.onclick = async () => {
         if (resetBusy) return;
+        if (resetStage === 0) { await sendResetCode(); return; }
         const email = document.getElementById('loginName').value.trim();
-        if (resetStage === 0) { showResetError('প্রথমে “পাসওয়ার্ড ভুলে গেছেন?” চাপুন।'); return; }
         resetBusy = true;
         resetAction.disabled = true;
         try {
