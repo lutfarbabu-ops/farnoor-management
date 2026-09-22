@@ -1177,6 +1177,41 @@
       document.head.append(style);
     })();
   </script>
+  <script>
+    /* Remember login email addresses only; never store passwords. */
+    (() => {
+      const key = 'farnoorRememberedEmails';
+      const valid = value => /^\S+@\S+\.\S+$/.test(String(value || '').trim());
+      const read = () => { try { return JSON.parse(localStorage.getItem(key) || '[]').filter(valid); } catch { return []; } };
+      const remember = value => {
+        const email = String(value || '').trim().toLowerCase();
+        if (!valid(email)) return;
+        const emails = [email, ...read().filter(item => item !== email)].slice(0, 12);
+        localStorage.setItem(key, JSON.stringify(emails));
+        render();
+      };
+      const render = () => {
+        const list = document.getElementById('farnoorEmailSuggestions');
+        if (list) list.innerHTML = read().map(email => `<option value="${email}"></option>`).join('');
+      };
+      const setup = () => {
+        const login = document.getElementById('loginName');
+        const register = document.getElementById('regEmail');
+        if (!login) return;
+        let list = document.getElementById('farnoorEmailSuggestions');
+        if (!list) { list = document.createElement('datalist'); list.id = 'farnoorEmailSuggestions'; document.body.append(list); }
+        login.setAttribute('list', list.id); login.autocomplete = 'username'; login.addEventListener('change', () => remember(login.value));
+        login.addEventListener('blur', () => remember(login.value));
+        document.getElementById('loginForm')?.addEventListener('submit', () => remember(login.value));
+        register?.addEventListener('input', () => remember(register.value));
+        const saved = read()[0];
+        if (!login.value && saved) login.value = saved;
+        render();
+      };
+      window.rememberLoginEmail = remember;
+      window.addEventListener('load', setup, { once: true });
+    })();
+  </script>
 </body>
 </html>
 
