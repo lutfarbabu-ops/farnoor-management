@@ -1,8 +1,6 @@
-<!doctype html>
-<html lang="bn">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<html lang="bn"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FARNOOR GARMENTS LTD. — Management</title>
   <style>
     :root { --ink:#18342e; --muted:#6b7f79; --paper:#eef7f3; --line:#d9e1dc; --green:#087c5b; --deep:#07533f; --accent:#f2b84b; --danger:#b33a3a; }
@@ -35,34 +33,46 @@
     .benefit-toolbar { display:flex; gap:10px; justify-content:flex-end; padding:13px; border-top:1px solid #ddd; } .benefit-toolbar button { min-width:130px; } .benefit-list { display:none; max-width:1050px; margin:22px auto; background:#fff; border:1px solid #c8d8d0; border-radius:12px; overflow:hidden; } .benefit-list.visible { display:block; } .benefit-list h3 { margin:0; padding:15px; color:#075b45; background:#ecf7f1; } .benefit-list table { min-width:850px; } .benefit-list-wrap { overflow-x:auto; } .benefit-list th { position:static; background:#075b45; color:#fff; } .benefit-list td,.benefit-list th { padding:10px; text-align:center; } .benefit-list td:first-child,.benefit-list th:first-child { text-align:left; } .department-context-menu { display:none; gap:5px; } .department-context-menu.visible { display:flex; } .department-context-menu button { width:auto; } .department-context-menu .rename-option { color:#075b45; background:#e9f6ef; }
     .dept-control:nth-child(6n+1) .department-button { background:linear-gradient(135deg,#0c9a70,#06543f)!important; color:#fff; } .dept-control:nth-child(6n+2) .department-button { background:linear-gradient(135deg,#348db9,#1b557d)!important; color:#fff; } .dept-control:nth-child(6n+3) .department-button { background:linear-gradient(135deg,#a875bd,#633b80)!important; color:#fff; } .dept-control:nth-child(6n+4) .department-button { background:linear-gradient(135deg,#d48a2c,#8a4d13)!important; color:#fff; } .dept-control:nth-child(6n+5) .department-button { background:linear-gradient(135deg,#d76d60,#8b3933)!important; color:#fff; } .dept-control:nth-child(6n) .department-button { background:linear-gradient(135deg,#3f8191,#24515c)!important; color:#fff; } .department-button:hover { transform:translateY(-4px) scale(1.02); box-shadow:0 12px 22px #173b3040; }
   </style>
-</head>
-<body class="logged-out">
-  <section id="loginPage"><div class="login-card"><div class="login-brand"><img src="../assets/Farnoor_New_Logo.jpg-removebg-preview.png" onerror="this.onerror=null;this.src='../Farnoor_New_Logo.jpg-removebg-preview.png';" alt="Farnoor logo"><strong><span class="login-brand-farnoor">FARNOOR</span><span class="login-brand-ltd">GARMENTS LTD.</span></strong></div><div id="loginPanel"><h2>লগইন করুন</h2><p>Management পেজে প্রবেশ করতে আপনার ইমেইল ও পাসওয়ার্ড দিন।</p><form id="loginForm"><label>ইমেইল</label><input id="loginName" type="email" required placeholder="ইমেইল লিখুন"><label>পাসওয়ার্ড</label><input id="loginPass" type="password" required placeholder="পাসওয়ার্ড লিখুন"><button class="primary" type="submit">লগইন করুন</button><button class="form-link" id="forgotPasswordButton" type="button">পাসওয়ার্ড ভুলে গেছেন?</button><div class="login-error" id="loginError"></div></form><div class="form-link">নতুন ব্যবহারকারী? <button type="button" onclick="showRegister()">নতুন রেজিস্টার করুন</button></div></div><div id="registerPanel" class="hidden"><h2>নতুন রেজিস্টার</h2><p>প্রথমে নাম, বিভাগ ও ইমেইল দিন। ইমেইলে যাচাইকরণ কোড যাবে।</p><form id="registerForm"><label>আপনার নাম</label><input id="regName" required placeholder="নাম লিখুন"><label>Department / বিভাগ</label><select id="regDepartment" required><option value="" selected disabled>বিভাগ নির্বাচন করুন</option><option>Administration</option><option>MD</option><option>GM</option><option>Director</option><option>Account</option><option>Commercial</option><option>Merchandising</option><option>Knitting and Dyeing</option><option>Store</option><option>Production</option><option>Line-1</option><option>Line-2</option><option>Line-3</option><option>Line-4</option><option>Cutting</option><option>Finishing</option><option>Packing</option><option>Quality</option><option>Sample</option><option>Maintenance</option><option>Electrical</option><option>Driver</option></select><label>ইমেইল</label><input id="regEmail" type="email" required placeholder="আপনার ইমেইল লিখুন"><label>পাসওয়ার্ড</label><input id="regPass" type="password" required placeholder="পাসওয়ার্ড দিন"><label>পাসওয়ার্ড নিশ্চিত করুন</label><input id="regConfirm" type="password" required placeholder="আবার পাসওয়ার্ড লিখুন"><button class="primary" type="submit">রেজিস্টার করুন</button><div class="login-error" id="registerError"></div></form><div class="form-link">আগে থেকেই অ্যাকাউন্ট আছে? <button type="button" onclick="showLogin()">লগইন করুন</button></div></div></div></section>
-  <div id="appShell"><header><div class="brand-wrap"><img class="brand-logo" src="../assets/Farnoor_New_Logo.jpg-removebg-preview.png" onerror="this.onerror=null;this.src='../Farnoor_New_Logo.jpg-removebg-preview.png';" alt="Farnoor logo"><div class="brand-copy"><h1><span class="brand-farnoor">FARNOOR</span> <span class="brand-ltd">GARMENTS LTD.</span></h1><p>1028/1/2, Malibagh Bazar Road, Dhaka-1217</p></div></div><div class="user-area"><img class="profile-avatar" id="profileAvatar" alt="Profile photo"><span class="welcome" id="welcome"></span><button class="profile-edit" id="profileEditButton" type="button">প্রোফাইল এডিট</button><div class="badge">MANAGEMENT</div><button class="logout" onclick="logout()">লগআউট</button></div></header>
+<style>#otherDepartmentView{display:none;margin-top:18px}.other-department-head{justify-content:center;text-align:center}.other-department-head h2{font-size:36px;letter-spacing:3px;color:var(--deep);margin:0}.other-department-blank{min-height:360px;background:#ffffffd9;border:1px solid #d4e3dc;border-radius:14px;box-shadow:0 9px 25px #173b3024}.department-button[data-department="Other Department"]{background:linear-gradient(135deg,#b65b83,#713653)!important;color:#fff!important}.department-button[data-department="Other Department"]:hover{filter:brightness(1.1);transform:translateY(-3px)}</style><style>#summaryView .summary-head h2{font-size:26px;letter-spacing:.5px}.other-department-actions{display:grid;grid-template-columns:repeat(3,minmax(160px,1fr));gap:14px;max-width:900px;margin:22px auto}.other-department-actions button{min-height:76px;color:#fff;font-size:17px;font-weight:900;border-radius:13px;background:linear-gradient(135deg,#087c5b,#07533f);box-shadow:0 8px 18px #075b4528}.other-department-actions button:nth-child(2){background:linear-gradient(135deg,#287fa4,#174d76)}.other-department-actions button:nth-child(3){background:linear-gradient(135deg,#b77a25,#8a5513)}.other-department-actions button:hover{filter:brightness(1.1);transform:translateY(-2px)}@media(max-width:700px){.other-department-actions{grid-template-columns:1fr}}</style><style>.notice{display:none!important}.department-locked{opacity:.62;filter:grayscale(.35);}.department-locked:hover{filter:grayscale(.1);opacity:.82}</style><style>.admin-home-action{background:linear-gradient(135deg,#8a4f9e,#5a2f70)!important;color:#fff!important}</style><style>.other-department-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin:24px auto;max-width:900px}.other-department-actions .store-action{min-width:220px}.store-other-department{background:linear-gradient(135deg,#b65b83,#713653)!important;color:#fff!important}.admin-home-action{background:linear-gradient(135deg,#8a4f9e,#5a2f70)!important;color:#fff!important}</style><style>.merchandising-extra{display:none;min-height:82px;padding:17px;color:#fff;border:0;border-radius:14px;font-size:16px;font-weight:900;background:linear-gradient(135deg,#087c5b,#07533f);box-shadow:0 8px 18px #173b3029}.merchandising-extra:nth-last-child(2n){background:linear-gradient(135deg,#287fa4,#174d76)}.merchandising-extra:hover,.merchandising-inner-button:hover{filter:brightness(1.1);transform:translateY(-3px)}.merchandising-inside-page{display:none;margin-top:18px;padding:4px 0}.merchandising-inside-page .summary-head{justify-content:center;text-align:center}.merchandising-inside-page .summary-head h2{font-size:28px;letter-spacing:1px;color:var(--deep)}.merchandising-inside-page .summary-head .secondary{position:absolute;right:0}.merchandising-inner-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;max-width:980px;margin:26px auto}.merchandising-inner-button{min-height:88px;padding:18px;color:#fff;border:0;border-radius:14px;font-size:16px;font-weight:900;background:linear-gradient(135deg,#8a68ad,#55417d);box-shadow:0 8px 18px #173b3029}.merchandising-inner-button:nth-child(2n){background:linear-gradient(135deg,#a66b36,#65401f)}@media(max-width:700px){.merchandising-inside-page .summary-head .secondary{position:static;margin-top:10px}}</style><style>
+      #departmentPageView.merchandising-mode .department-page-head{justify-content:center;text-align:center;position:relative}
+      #departmentPageView.merchandising-mode .department-page-head h2{margin:0 auto;font-size:32px;letter-spacing:2px;font-weight:900;color:var(--deep)}
+      #departmentPageView.merchandising-mode .department-page-head>.secondary{position:absolute;right:0}
+      #departmentPageView.merchandising-mode .merchandising-top-actions{display:grid!important;grid-template-columns:repeat(4,minmax(190px,1fr));gap:16px;max-width:1120px;margin:26px auto}
+      #departmentPageView.merchandising-mode .merchandising-extra{width:100%;height:104px;min-height:104px;display:block!important;padding:20px 14px;font-size:17px;line-height:1.25}
+      #departmentPageView.merchandising-mode .merchandising-inside-page .summary-head{justify-content:center;text-align:center;position:relative}
+      #departmentPageView.merchandising-mode .merchandising-inside-page .summary-head h2{margin:0 auto;font-size:29px;letter-spacing:1.5px;font-weight:900}
+      #departmentPageView.merchandising-mode .merchandising-inner-actions{display:grid;grid-template-columns:repeat(4,minmax(190px,1fr));gap:16px;max-width:1120px;margin:26px auto}
+      #departmentPageView.merchandising-mode .merchandising-inner-button{width:100%;height:104px;min-height:104px;padding:20px 14px;font-size:17px;line-height:1.25}
+      @media(max-width:1000px){#departmentPageView.merchandising-mode .merchandising-top-actions,#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:repeat(2,minmax(190px,1fr))}}
+      @media(max-width:520px){#departmentPageView.merchandising-mode .merchandising-top-actions,#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:1fr}#departmentPageView.merchandising-mode .department-page-head>.secondary{position:static;margin-top:10px}}
+    </style><style>.merchandising-entry-form{display:none;max-width:1120px;margin:22px auto;padding:20px;background:#fff;border:1px solid #cde0d6;border-radius:16px;box-shadow:0 8px 22px #173b3014}.merchandising-entry-form h3{margin:0 0 16px;color:var(--deep);text-align:center;font-size:24px}.merch-entry-meta{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:12px;margin-bottom:18px}.merch-entry-meta label{font-size:12px;font-weight:800;color:var(--deep)}.merch-entry-meta input{display:block;width:100%;margin-top:6px}.merch-entry-table-wrap{overflow-x:auto}.merchandising-entry-form table{width:100%;min-width:700px;border-collapse:collapse}.merchandising-entry-form th,.merchandising-entry-form td{border:1px solid #d7e5de;padding:8px;text-align:center}.merchandising-entry-form th{background:#eaf6ef;color:var(--deep)}.merchandising-entry-form td input{width:100%;min-width:90px}.merch-entry-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}.merch-entry-actions button{width:auto;min-width:120px}.merch-remove-row{min-width:34px!important;width:34px!important;padding:5px!important}.merch-entry-status{text-align:right;color:var(--deep);min-height:18px}@media(max-width:800px){.merch-entry-meta{grid-template-columns:repeat(2,minmax(150px,1fr))}}@media(max-width:500px){.merch-entry-meta{grid-template-columns:1fr}.merch-entry-actions{justify-content:stretch;flex-direction:column}.merch-entry-actions button{width:100%}}</style><style>.merch-entry-meta-rows{display:grid;grid-template-columns:minmax(190px,340px) minmax(280px,1fr);max-width:760px;margin:0 auto 20px;gap:10px 18px}.merch-entry-meta-rows label{display:grid;grid-template-columns:150px minmax(0,1fr);align-items:center;gap:10px;font-size:13px;font-weight:800;color:var(--deep)}.merch-entry-meta-rows input{margin:0;width:100%}.merchandising-entry-form .merch-entry-table-wrap{margin-top:8px}.merchandising-entry-form .merch-entry-table-wrap th{white-space:nowrap}@media(max-width:700px){.merch-entry-meta-rows{grid-template-columns:1fr}.merch-entry-meta-rows label{grid-template-columns:130px minmax(0,1fr)}}</style><style>.merchandising-store-home{max-width:1120px;margin:28px auto 0;padding:20px;background:linear-gradient(135deg,#f7fcf9,#edf8f3);border:1px solid #bfdccd;border-radius:16px}.merchandising-store-home h3{margin:0 0 16px;text-align:center;color:var(--deep);font-size:22px}.merch-store-home-actions{display:grid;grid-template-columns:repeat(3,minmax(190px,1fr));gap:16px}.merch-store-home-actions button{width:100%;min-height:86px;padding:18px 14px;color:#fff;border:0;border-radius:14px;font-size:17px;font-weight:900;background:linear-gradient(135deg,#087c5b,#07533f);box-shadow:0 8px 18px #173b3029}.merch-store-home-actions button:nth-child(2){background:linear-gradient(135deg,#287fa4,#174d76)}.merch-store-home-actions button:nth-child(3){background:linear-gradient(135deg,#a66b36,#65401f)}.merch-store-home-actions button:hover{filter:brightness(1.1);transform:translateY(-3px)}@media(max-width:700px){.merch-store-home{margin-left:0;margin-right:0}.merch-store-home-actions{grid-template-columns:1fr}}</style><style>#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:repeat(4,minmax(190px,1fr));max-width:1120px}#departmentPageView.merchandising-mode .merchandising-inner-button{height:104px;min-height:104px;width:100%;font-size:17px}@media(max-width:1000px){#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:repeat(2,minmax(190px,1fr))}}@media(max-width:520px){#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:1fr}}</style><style>#departmentPageView.merchandising-mode .merchandising-inner-actions:has(.merchandising-inner-button:only-child){grid-template-columns:minmax(260px,420px);justify-content:center}#departmentPageView.merchandising-mode .merchandising-inner-actions:has(.merchandising-inner-button:only-child) .merchandising-inner-button{width:100%}</style><style>#departmentPageView .merchandising-store-home{display:none!important}</style></head>
+<body class="logged-out" data-new-gr-c-s-check-loaded="14.1330.0" data-gr-ext-installed="">
+  <section id="loginPage"><div class="login-card"><div class="login-brand"><img src="../assets/Farnoor_New_Logo.jpg-removebg-preview.png" onerror="this.onerror=null;this.src='../Farnoor_New_Logo.jpg-removebg-preview.png';" alt="Farnoor logo"><strong><span class="login-brand-farnoor">FARNOOR</span><span class="login-brand-ltd">GARMENTS LTD.</span></strong></div><div id="loginPanel"><h2>লগইন করুন</h2><p>অনলাইনে নিরাপদভাবে প্রবেশ করতে ইমেইল ও পাসওয়ার্ড দিন।</p><form id="loginForm"><label>ইমেইল</label><input id="loginName" type="email" required="" placeholder="আপনার ইমেইল লিখুন" autocomplete="username" list="farnoorEmailSuggestions"><label>পাসওয়ার্ড</label><input id="loginPass" type="password" required="" placeholder="পাসওয়ার্ড লিখুন"><button class="primary" type="submit">লগইন করুন</button><button class="form-link" id="forgotPasswordButton" type="button">পাসওয়ার্ড ভুলে গেছেন?</button><div id="passwordResetPanel" style="margin-top: 12px; padding: 14px; border: 1px solid rgb(201, 215, 238); border-radius: 12px; background: rgb(245, 248, 255); display: none;"><div id="resetStatus" style="font-size: 13px; font-weight: 700; color: rgb(36, 87, 166); margin-bottom: 8px; display: none;"></div><label id="resetCodeLabel" style="display:none;">ইমেইলে আসা ভেরিফিকেশন কোড</label><input id="resetCode" inputmode="numeric" maxlength="6" placeholder="৬ সংখ্যার কোড লিখুন" style="display:none;"><label id="resetPassLabel" style="display:none;">নতুন পাসওয়ার্ড</label><input id="resetPass" type="password" minlength="6" placeholder="নতুন পাসওয়ার্ড দিন" style="display:none;"><label id="resetConfirmLabel" style="display:none;">নতুন পাসওয়ার্ড নিশ্চিত করুন</label><input id="resetConfirm" type="password" minlength="6" placeholder="আবার পাসওয়ার্ড লিখুন" style="display:none;"><button id="resetAction" class="primary" type="button" style="margin-top:8px;">কোড পাঠান</button></div><div class="login-error" id="loginError"></div></form><div class="form-link">নতুন ব্যবহারকারী? <button type="button" onclick="showRegister()">নতুন রেজিস্টার করুন</button></div></div><div id="registerPanel" class="hidden"><h2>নতুন রেজিস্টার</h2><p>নাম, বিভাগ ও ইমেইল দিয়ে নতুন ব্যবহারকারী রেজিস্টার করুন।</p><form id="registerForm" data-code-flow-ready="yes"><label>আপনার নাম</label><input id="regName" required="" placeholder="নাম লিখুন"><label>Department / বিভাগ</label><select id="regDepartment" required=""><option value="" selected="" disabled="">বিভাগ নির্বাচন করুন</option><option value="Administration">Administration</option><option value="MD">MD</option><option value="GM">GM</option><option value="Director">Director</option><option value="Account">Account</option><option value="Commercial">Commercial</option><option value="Merchandising">Merchandising</option><option value="Knitting and Dyeing">Knitting and Dyeing</option><option value="Store">Store</option><option value="Production">Production</option><option value="Line-1">Line-1</option><option value="Line-2">Line-2</option><option value="Line-3">Line-3</option><option value="Line-4">Line-4</option><option value="Cutting">Cutting</option><option value="Finishing">Finishing</option><option value="Packing">Packing</option><option value="Quality">Quality</option><option value="Sample">Sample</option><option value="Maintenance">Maintenance</option><option value="Electrical">Electrical</option><option value="Driver">Driver</option><option value="Auditing">Auditing</option><option value="admin1">admin1</option><option value="admin2">admin2</option><option value="admin3">admin3</option><option value="admin4">admin4</option><option value="admin5">admin5</option></select><label>ইমেইল</label><input id="regEmail" type="email" required="" placeholder="আপনার ইমেইল লিখুন"><label style="display: none;">পাসওয়ার্ড</label><label id="regCodeLabel" style="display: none;">ভেরিফিকেশন কোড (lutfarbabu@gmail.com)</label><input id="regCode" inputmode="numeric" maxlength="6" placeholder="৬ সংখ্যার কোড লিখুন" style="display: none;"><div id="regCodeNote" style="font-size: 12px; color: rgb(107, 114, 128); margin-top: 7px; display: none;">কোডটি lutfarbabu@gmail.com-এ যাবে।</div><input id="regPass" type="password" placeholder="পাসওয়ার্ড দিন" style="display: none;"><label style="display: none;">পাসওয়ার্ড নিশ্চিত করুন</label><input id="regConfirm" type="password" placeholder="আবার পাসওয়ার্ড লিখুন" style="display: none;"><button class="primary" type="submit">রেজিস্টার করুন</button><div class="login-error" id="registerError"></div></form><div class="form-link">আগে থেকেই অ্যাকাউন্ট আছে? <button type="button" onclick="showLogin()">লগইন করুন</button></div></div></div></section>
+  <div id="appShell"><header><div class="brand-wrap"><img class="brand-logo" src="../assets/Farnoor_New_Logo.jpg-removebg-preview.png" onerror="this.onerror=null;this.src='../Farnoor_New_Logo.jpg-removebg-preview.png';" alt="Farnoor logo"><div class="brand-copy"><h1><span class="brand-farnoor">FARNOOR</span> <span class="brand-ltd">GARMENTS LTD.</span></h1><p>1028/1/2, Malibagh Bazar Road, Dhaka-1217</p></div></div><div class="user-area"><img class="profile-avatar" id="profileAvatar" alt="Profile photo"><span class="welcome" id="welcome"></span><button class="profile-edit" id="profileEditButton" type="button" style="display: none;">প্রোফাইল এডিট</button><button class="logout" onclick="logout()">লগআউট</button></div></header>
   <main>
-    <div class="notice">প্রতিটি Management Entry একটি নির্দিষ্ট <b>Order No + Style No</b>-এর জন্য। Main Label, Size Label ও Care Label-সহ সব materials/accessories-এর quantity একই এন্ট্রিতে আলাদাভাবে রাখা যাবে।</div>
+    <div class="notice" style="display: none;">প্রতিটি Management Entry একটি নির্দিষ্ট <b>Order No + Style No</b>-এর জন্য। Main Label, Size Label ও Care Label-সহ সব materials/accessories-এর quantity একই এন্ট্রিতে আলাদাভাবে রাখা যাবে।</div>
     <section class="summary-section" id="summaryView">
-      <div class="summary-head"><div><h2>Management Summary</h2><p>সব আইটেমের বর্তমান হিসাব এক জায়গায়। কোনো আইটেমে ক্লিক করে তার আলাদা কাজের অংশে যান।</p></div><button class="primary" onclick="openFunction()">+ New Input / নতুন ইনপুট</button></div>
-      <section class="department-panel"><h3>Department Management</h3><p>নিচে Department-এর নাম লিখে যোগ করুন। যোগ করার সঙ্গে সঙ্গে আলাদা বাটন তৈরি হবে।</p><form class="department-form" id="departmentForm"><input id="departmentName" required placeholder="যেমন: Merchandising"><button class="primary" type="submit">+ Department যোগ করুন</button></form><div class="department-grid" id="departmentButtons"></div><div class="small" id="departmentStatus"></div></section>
+      <div class="summary-head" style="justify-content: center; text-align: center;"><div><h2 style="margin: 0px auto;">Management Summary</h2></div></div>
+      <section class="department-panel"><div class="department-grid" id="departmentButtons"><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Administration" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Administration</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="MD" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">MD</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="GM" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">GM</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Director" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Director</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Account" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Account</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Commercial" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Commercial</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Merchandising" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Merchandising</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Knitting and Dyeing" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Knitting and Dyeing</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Store" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Store</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Production" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Production</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Line-1" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Line-1</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Line-2" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Line-2</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Line-3" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Line-3</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Line-4" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Line-4</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Cutting" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Cutting</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Finishing" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Finishing</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Packing" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Packing</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Quality" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Quality</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Sample" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Sample</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Maintenance" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Maintenance</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Electrical" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Electrical</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Driver" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Driver</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="Auditing" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">Auditing</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="admin1" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">admin1</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="admin2" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">admin2</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="admin3" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">admin3</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="admin4" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">admin4</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button class="department-button department-locked" type="button" data-department="admin5" data-context-ready="yes" title="এই Department-এ প্রবেশাধিকার নেই">admin5</button><button type="button" class="delete-department" title="এই Department বাদ দিন">×</button></span><span class="dept-control"><button type="button" class="department-button department-locked" data-department="Other Department" title="এই Department-এ প্রবেশাধিকার নেই">Other Department</button></span></div><form class="department-form" id="departmentForm"><input id="departmentName" required="" placeholder="যেমন: Merchandising"><button class="primary" type="submit">+ Department যোগ করুন</button></form><div class="small" id="departmentStatus">28টি Department যোগ করা হয়েছে।</div></section>
     </section>
-    <section class="store-view" id="storeView"><div class="summary-head"><div><h2>Store Page</h2><p>Buyer, Style, Order এবং Accessories-এর quantity এখানে দিন।</p></div><button class="secondary" type="button" onclick="openStorePageHome()">← Store Page</button></div><div class="card store-card"><div class="card-head"><div><h2>Accessories Entry</h2><div class="small">Receive Balance = Received − Booking; Balance = Received − Delivery। ফলাফলে + বা − চিহ্ন দেখা যাবে।</div></div></div><div class="body"><form id="storeForm"><datalist id="accessoryOptions"><option value="Main Label"><option value="Size Label"><option value="Care Label"><option value="Button"><option value="Zipper"><option value="Sewing Thread"><option value="Mobilon Tape"><option value="Elastic"><option value="Interlining"><option value="Neck/Shoulder Tape"><option value="Hanger Loop"></datalist><div class="store-fields"><div class="store-row"><label>Buyer Name</label><input id="storeBuyer" required placeholder="Buyer Name লিখুন"></div><div class="store-row"><label>Style Number</label><input id="storeStyle" required placeholder="Style Number লিখুন"></div><div class="store-row"><label>Order Quantity</label><input id="storeOrderQty" type="number" min="0" value="0" placeholder="0"></div></div><div style="height:16px"></div><div class="accessory-table"><div class="accessory-table-head"><span>−</span><span>Accessories নাম</span><span>Size</span><span>Size Quantity</span><span>Booking Quantity</span><span>Received Quantity</span><span>Receive Balance</span><span>Delivery Quantity</span><span>Balance</span></div><div id="storeAccessoryRows"></div><div class="accessory-total-row"><span></span><span>Total</span><span>—</span><span id="totalSizeQty">0</span><span id="totalBookingQty">0</span><span id="totalReceivedQty">0</span><span id="totalReceiveBalanceQty">0</span><span id="totalDeliveryQty">0</span><span id="totalBalanceQty">0</span></div></div><button class="add-accessory" type="button" onclick="addAccessoryRow()">+ Accessories যোগ করুন</button><div class="actions"><button class="primary" type="submit">সব তথ্য Save করুন</button></div><div class="store-saved" id="storeSaved">Accessories-এর তথ্য সংরক্ষণ করা হয়েছে।</div></form></div></div><section class="card store-records" id="storeRecords"><div class="card-head"><div><h2>Save করা Store তথ্য</h2><div class="small">একই Buyer ও Style-এর সব Accessories একটি ঘরে দেখানো হবে।</div></div><button class="secondary no-print" type="button" onclick="printStoreRecords()">A4 প্রিন্ট</button></div><div class="body" id="storeRecordsBody"></div></section></section>
+    <section class="store-view" id="storeView"><div class="summary-head"><div><h2 style="font-size: 30px; letter-spacing: 2px; font-weight: 900;">STORE HOMEPAGE</h2><p style="display: none;">Buyer, Style, Order এবং Accessories-এর quantity এখানে দিন।</p></div><button class="secondary" type="button" onclick="openStorePageHome()">← Store</button></div><div class="store-actions no-print"><button class="store-action" type="button" style="display: none;">Accessories Entry</button><button class="store-action" type="button" style="display: none;">Accessories Delivery</button><button class="store-action" type="button" style="">Search Option</button><button type="button" class="store-action store-other-department" style="display: none;">Other Department</button></div><div class="store-search no-print"><input type="search" placeholder="Buyer, Style বা Accessories লিখে খুঁজুন"><button class="secondary" type="button">পরিষ্কার করুন</button></div><div class="card store-card" style="display: none;"><div class="card-head"><div><h2>Accessories Entry</h2><div class="small">Receive Balance = Received − Booking; Balance = Received − Delivery। ফলাফলে + বা − চিহ্ন দেখা যাবে।</div></div></div><div class="body"><form id="storeForm" style="display: none;"><datalist id="accessoryOptions"><option value="Main Label"></option><option value="Size Label"></option><option value="Care Label"></option><option value="Button"></option><option value="Zipper"></option><option value="Sewing Thread"></option><option value="Mobilon Tape"></option><option value="Elastic"></option><option value="Interlining"></option><option value="Neck/Shoulder Tape"></option><option value="Hanger Loop"></option></datalist><div class="store-fields"><div class="store-row"><label>Buyer Name</label><input id="storeBuyer" required="" placeholder="Buyer Name লিখুন"></div><div class="store-row"><label>Style Number</label><input id="storeStyle" required="" placeholder="Style Number লিখুন"></div><div class="store-row"><label>Order Quantity</label><input id="storeOrderQty" type="number" min="0" value="0" placeholder="0"></div></div><div style="height:16px"></div><div class="accessory-table"><div class="accessory-table-head"><span>−</span><span>Accessories নাম</span><span>Size</span><span>Size Quantity</span><span>Booking Quantity</span><span>Received Quantity</span><span>Receive Balance</span><span>Delivery Quantity</span><span>Balance</span></div><div id="storeAccessoryRows"><div class="accessory-table-row"><button class="delete-accessory" type="button" title="এই row বাদ দিন">−</button><input class="accessory-type" list="accessoryOptions" placeholder="Accessories নির্বাচন করুন" title="Double-click করে নাম লিখুন বা পরিবর্তন করুন"><select class="accessory-size"><option value="0" selected="">Size</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>Free Size</option><option>Other</option></select><input class="accessory-size-qty" type="number" min="0" value="0" placeholder="0"><input class="accessory-booking" type="number" min="0" value="0" placeholder="0"><input class="accessory-received" type="number" min="0" value="0" placeholder="0"><input class="receive-balance-field balance-field" type="text" readonly="" value="0"><input class="accessory-delivery" type="number" min="0" value="0" placeholder="0"><input class="balance-field final-balance-field" type="text" readonly="" value="0"></div></div><div class="accessory-total-row"><span></span><span>Total</span><span>—</span><span id="totalSizeQty">0</span><span id="totalBookingQty">0</span><span id="totalReceivedQty">0</span><span id="totalReceiveBalanceQty">0</span><span id="totalDeliveryQty">0</span><span id="totalBalanceQty">0</span></div></div><button class="add-accessory" type="button" onclick="addAccessoryRow()">+ Accessories যোগ করুন</button><div class="actions"><button class="primary" type="submit">সব তথ্য Save করুন</button></div><div class="store-saved" id="storeSaved">Accessories-এর তথ্য সংরক্ষণ করা হয়েছে।</div></form><div class="delivery-panel"><div class="delivery-fields"><div><label>Buyer Name</label><select id="deliveryBuyer"><option value="">Buyer নির্বাচন করুন</option></select></div><div><label>Style Number</label><select id="deliveryStyle"><option value="">Style নির্বাচন করুন</option></select></div><div><label>Order Quantity</label><select id="deliveryOrder"><option value="">Order নির্বাচন করুন</option></select></div></div><div id="deliverySheet" class="delivery-empty">Buyer ও Style নির্বাচন করলে Accessories তথ্য দেখা যাবে।</div><div class="actions"><button class="primary" id="saveDelivery" type="button">Delivery তথ্য Save করুন</button></div><div class="store-saved" id="deliverySaved">Delivery তথ্য সংরক্ষণ করা হয়েছে।</div></div></div></div><section class="card store-records" id="storeRecords" style="display: none;"><div class="card-head"><div><h2>Save করা Store তথ্য</h2><div class="small">একই Buyer ও Style-এর সব Accessories একটি ঘরে দেখানো হবে।</div></div><button class="secondary no-print" type="button" onclick="printStoreRecords()">A4 প্রিন্ট</button></div><div class="body" id="storeRecordsBody"><div class="empty">এখনও কোনো Store তথ্য Save করা হয়নি।</div></div></section></section><section id="otherDepartmentView"><div class="summary-head other-department-head"><div><h2>OTHER DEPARTMENT</h2></div><button class="secondary" type="button">← Store Homepage</button></div><div class="other-department-actions"><button class="store-action" type="button">Store Homepage</button><button class="store-action" type="button">Accessories Receive</button><button class="store-action" type="button">Accessories Delivery</button></div></section><section id="departmentPageView" style="display: none;"><div class="summary-head department-page-head"><div><h2 style="font-size: 30px; letter-spacing: 2px; font-weight: 900;"></h2></div><button class="secondary" type="button">← Management Summary</button></div><div class="department-page-actions"><button type="button" data-merch-original="New Input" title="">New Input</button><button type="button" data-merch-original="Department Report" title="">Department Report</button><button type="button" data-merch-original="Department Home" title="">Department Home</button><button type="button" class="merchandising-extra" data-merch-type="top" data-merch-index="0" title="" style="display: none !important;">Merchandising Entry</button><button type="button" class="merchandising-extra" data-merch-type="top" data-merch-index="1" title="" style="display: none !important;">Merchandising Report</button><button type="button" class="merchandising-extra" data-merch-type="top" data-merch-index="2" title="" style="display: none !important;">Buyer / Order</button><button type="button" class="merchandising-extra" data-merch-type="top" data-merch-index="3" title="" style="display: none !important;">Department</button></div><div class="other-department-blank"></div><section class="merchandising-inside-page" style="display: none;"><div class="summary-head"><div><h2 class="merchandising-inside-title">Merchandising</h2></div><button class="secondary merchandising-inside-back" type="button">← Merchandising Department</button></div><div class="merchandising-inner-actions"></div><p class="small merchandising-inside-note" style="text-align:center"></p></section></section><section id="productionView" class="production-view"><div class="summary-head"><div><h2 style="font-size: 30px; letter-spacing: 2px; font-weight: 900;">PRODUCTION</h2></div><button class="secondary" type="button">← Home Page</button></div><div class="production-actions"><button class="production-action" type="button">Production Schedule</button><button class="production-action" type="button">Cutting Schedule</button><button class="production-action" type="button">Quality Schedule</button><button class="production-action" type="button">Finishing Schedule</button><button class="production-action" type="button">Shipment Date</button></div></section><section id="administrationView" class="admin-view"><div class="summary-head"><div><h2 style="font-size: 30px; letter-spacing: 2px; font-weight: 900;">ADMINISTRATION</h2></div><button class="secondary" type="button">← Home Page</button></div><div class="admin-actions"><button class="admin-action" type="button">Service Benefit</button><button class="admin-action" type="button">Personal File</button><button class="admin-action" type="button">Maternity</button></div></section><section id="serviceBenefitView" class="service-benefit-view"><div class="summary-head"><div><h2>Service Benefit</h2></div><button class="secondary" type="button">← Administration Page</button></div><div class="service-benefit-actions"><button class="service-benefit-action" type="button">Entry</button><button class="service-benefit-action" type="button">Payment</button></div><section class="service-benefit-report"><div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input id="sbName" placeholder="Name লিখুন"></label><label>Designation <b>:</b><select id="sbDesignation"><option value="">Designation নির্বাচন করুন</option><option>Sr. Sewing Operator</option><option>Sewing Operator</option><option>Jr. Sewing Operator</option><option>Ast. Sewing Operator</option><option>Line Ironman</option><option>Input Man</option><option>Sr. Cutter man</option><option>Cutter man</option><option>Jr. Cutter man</option><option>Gen. Cutter man</option><option>Ast. Cutter man</option><option>Sr. Q/I</option><option>Q/I</option><option>Jr. Q.I.</option><option>General Q.I.</option><option>Ast. Q.I.</option><option>Poly Woman</option><option>Jr. Poly Women</option><option>General. Poly Women</option><option>Ast. Poly Women</option><option>Packingman</option><option>Jr. Poly Women</option><option>General Packingman</option><option>Ast. Packingman</option><option>Foldingman</option><option>Jr. Foldingman</option><option>General Foldingman</option><option>Ast. Foldingman</option><option>Finishing Ironman</option><option>Ast. Finishing</option><option>Line chief</option><option>Line Incharge</option><option>Supervisor</option><option>Driver</option><option>Nurse</option><option>Checker</option><option>Store Labour</option><option>Doctor</option><option>Safety Officer</option><option>Cleaner</option><option>Security Guard</option><option>Samplman</option></select></label><label>Card/Staff No <b>:</b><input id="sbCard" placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining (DD-MM-YYYY) <b>:</b><input id="sbJoining" type="date" lang="en-GB"></label><label>Release Date (DD-MM-YYYY) <b>:</b><input id="sbRelease" type="date" lang="en-GB"></label><label>Total Salary <b>:</b><input id="sbSalary" type="number" min="0" placeholder="0"></label><label>Basic (60%) <b>:</b><input id="sbBasic" type="number" readonly="" value="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody id="sbPeriods"></tbody></table><div class="benefit-total">Total Payment = <span id="sbTotal">0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div><div class="benefit-toolbar"><button class="primary" type="button" id="sbSave">Input Save</button><button class="secondary" type="button" id="sbPrint">Print</button></div></section><section class="benefit-list"><h3>Payment List</h3><div class="benefit-list-wrap"><table><thead><tr><th>Name</th><th>Card / ID No</th><th>Designation</th><th>Joining Date</th><th>Release Date</th><th>Payable Month</th><th>Total Payment</th></tr></thead><tbody></tbody></table></div></section><section class="service-benefit-report"><div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input id="sbName" placeholder="Name লিখুন"></label><label>Designation <b>:</b><input id="sbDesignation" placeholder="Designation লিখুন"></label><label>Card/Staff No <b>:</b><input id="sbCard" placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining <b>:</b><input id="sbJoining" type="date"></label><label>Release Date <b>:</b><input id="sbRelease" type="date"></label><label>Total Salary <b>:</b><input id="sbSalary" type="number" min="0" placeholder="0"></label><label>Basic (60%) <b>:</b><input id="sbBasic" type="number" readonly="" value="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody id="sbPeriods"></tbody></table><div class="benefit-total">Total Payment = <span id="sbTotal">0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div><div class="benefit-toolbar"><button class="primary" type="button" id="sbSave">Input Save</button><button class="secondary" type="button" id="sbPrint">Print</button></div></section><section class="benefit-list"><h3>Payment List</h3><div class="benefit-list-wrap"><table><thead><tr><th>Name</th><th>Card / ID No</th><th>Designation</th><th>Joining Date</th><th>Release Date</th><th>Payable Month</th><th>Total Payment</th></tr></thead><tbody></tbody></table></div></section></section>
     <div class="grid manage-view" id="manageView">
       <section class="card form-card"><div class="card-head"><div><button class="secondary back no-print" onclick="returnSummary()">← আগের পেজে ফিরে যান</button><h2 id="formTitle" style="margin-top:10px">New Input / নতুন ইনপুট</h2></div><span class="small" id="editing"></span></div><div class="body">
         <form id="cardForm">
           <div class="fields">
-            <div><label>Department *</label><select id="entryDepartment" required><option value="" selected disabled>আগে Department যোগ করুন</option></select></div>
-            <div><label>Buyer</label><input id="buyer" placeholder="Buyer নাম" /></div>
-            <div><label>Order No *</label><input id="order" required placeholder="যেমন: FG-1001" /></div>
-            <div><label>Style No *</label><input id="style" required placeholder="যেমন: ST-25" /></div>
+            <div><label>Department *</label><select id="entryDepartment" required=""><option value="" disabled="">Department নির্বাচন করুন</option><option value="Administration">Administration</option><option value="MD">MD</option><option value="GM">GM</option><option value="Director">Director</option><option value="Account">Account</option><option value="Commercial">Commercial</option><option value="Merchandising">Merchandising</option><option value="Knitting and Dyeing">Knitting and Dyeing</option><option value="Store">Store</option><option value="Production">Production</option><option value="Line-1">Line-1</option><option value="Line-2">Line-2</option><option value="Line-3">Line-3</option><option value="Line-4">Line-4</option><option value="Cutting">Cutting</option><option value="Finishing">Finishing</option><option value="Packing">Packing</option><option value="Quality">Quality</option><option value="Sample">Sample</option><option value="Maintenance">Maintenance</option><option value="Electrical">Electrical</option><option value="Driver">Driver</option><option value="Auditing">Auditing</option><option value="admin1">admin1</option><option value="admin2">admin2</option><option value="admin3">admin3</option><option value="admin4">admin4</option><option value="admin5">admin5</option></select></div>
+            <div><label>Buyer</label><input id="buyer" placeholder="Buyer নাম"></div>
+            <div><label>Order No *</label><input id="order" required="" placeholder="যেমন: FG-1001"></div>
+            <div><label>Style No *</label><input id="style" required="" placeholder="যেমন: ST-25"></div>
           </div>
           <div class="rule"></div>
           <label style="margin-bottom:10px">Materials / Accessories / Labels (Quantity)</label>
           <div class="material"><label class="mat-name">Item</label><label>Order Qty</label><label>Booking Qty</label><label>Received Qty</label><label>Delivery Qty</label></div>
-          <div id="materials"></div>
+          <div id="materials"><div class="material"><input class="mat-name" data-n="Main Label" value="Main Label" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Care Label" value="Care Label" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Sewing Thread" value="Sewing Thread" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Mobilon Tape" value="Mobilon Tape" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Button" value="Button" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Zipper" value="Zipper" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Elastic" value="Elastic" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Interlining" value="Interlining" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Neck/Shoulder Tape" value="Neck/Shoulder Tape" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div><div class="material"><input class="mat-name" data-n="Hanger Loop" value="Hanger Loop" readonly=""><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div></div>
           <div class="actions"><button type="button" class="secondary" id="clearBtn">New Input / নতুন ইনপুট</button><button class="primary" type="submit">Save Management Entry</button></div>
         </form>
       </div></section>
-      <section class="card"><div class="card-head"><div><button class="secondary back no-print" onclick="returnSummary()">← সামারিতে ফিরে যান</button> <h2 id="listHeading" style="display:inline">Management তালিকা</h2></div><div class="toolbar no-print"><button class="secondary" onclick="window.print()">প্রিন্ট</button><input id="search" placeholder="Order বা Style খুঁজুন" /></div></div><div class="body print-only"><h2>FARNOOR GARMENTS LTD. — Management</h2></div><div class="list"><table><thead><tr><th>Order / Style</th><th>Buyer</th><th id="summaryHeading">Materials summary</th><th class="no-print">Action</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+      <section class="card"><div class="card-head"><div><button class="secondary back no-print" onclick="returnSummary()">← সামারিতে ফিরে যান</button> <h2 id="listHeading" style="display:inline">Management তালিকা</h2></div><div class="toolbar no-print"><button class="secondary" onclick="window.print()">প্রিন্ট</button><input id="search" placeholder="Order বা Style খুঁজুন"></div></div><div class="body print-only"><h2>FARNOOR GARMENTS LTD. — Management</h2></div><div class="list"><table><thead><tr><th>Order / Style</th><th>Buyer</th><th id="summaryHeading">Materials summary</th><th class="no-print">Action</th></tr></thead><tbody id="rows"><tr><td colspan="4" class="empty">এই অংশে এখনো কোনো quantity দেওয়া নেই।</td></tr></tbody></table></div></section>
     </div>
   </main></div>
   <script>
@@ -134,7 +144,7 @@
     function openServiceBenefitPage(){const page=document.getElementById('serviceBenefitView');document.getElementById('administrationView').classList.remove('visible');page.classList.add('visible');window.scrollTo({top:0,behavior:'smooth'});}function setupServiceBenefitPage(){const page=document.createElement('section');page.id='serviceBenefitView';page.className='service-benefit-view';page.innerHTML='<div class="summary-head"><div><h2>Service Benefit</h2></div><button class="secondary" type="button">← Administration Page</button></div><div class="service-benefit-actions"><button class="service-benefit-action" type="button">Service Benefit Entry</button><button class="service-benefit-action" type="button">Service Benefit List</button><button class="service-benefit-action" type="button">Service Benefit Report</button></div>';document.getElementById('administrationView').after(page);page.querySelector('.secondary').onclick=()=>{page.classList.remove('visible');document.getElementById('administrationView').classList.add('visible');};page.querySelectorAll('.service-benefit-action').forEach(button=>button.onclick=()=>page.querySelectorAll('.service-benefit-action').forEach(item=>item.classList.toggle('active',item===button)));document.querySelector('#administrationView .admin-action')?.addEventListener('click',openServiceBenefitPage);}setupServiceBenefitPage();
     function setupServiceBenefitReport(){const page=document.getElementById('serviceBenefitView'),actions=page.querySelector('.service-benefit-actions'),buttons=actions.querySelectorAll('.service-benefit-action');buttons[0].textContent='Entry';buttons[1].textContent='Payment';buttons[2]?.remove();const report=document.createElement('section');report.className='service-benefit-report';report.innerHTML='<div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input placeholder="Name লিখুন"></label><label>Designation <b>:</b><input placeholder="Designation লিখুন"></label><label>Card/Staff No <b>:</b><input placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining <b>:</b><input type="date"></label><label>Salary <b>:</b><input type="number" placeholder="0"></label><label>Basic <b>:</b><input type="number" placeholder="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody><tr><td>01</td><td><input type="date"></td><td><input placeholder="Month"></td><td><input placeholder="Days"></td><td><input type="number" placeholder="0"></td></tr></tbody></table><div class="benefit-total">Total Payment = <span>0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div>';page.append(report);buttons[0].onclick=()=>{buttons.forEach(item=>item.classList.remove('active'));buttons[0].classList.add('active');report.classList.add('visible');report.scrollIntoView({behavior:'smooth',block:'start'});};buttons[1].onclick=()=>{buttons.forEach(item=>item.classList.remove('active'));buttons[1].classList.add('active');report.classList.remove('visible');};}function setupDepartmentContextMenu(){const menu=document.createElement('div');menu.className='department-context-menu';menu.innerHTML='<button type="button">Delete Department</button>';document.body.append(menu);let selected='';const wire=()=>document.querySelectorAll('.department-button').forEach(button=>{if(button.dataset.contextReady)return;button.dataset.contextReady='yes';button.addEventListener('contextmenu',event=>{event.preventDefault();selected=button.dataset.department;menu.style.left=`${event.clientX}px`;menu.style.top=`${event.clientY}px`;menu.classList.add('visible');});});menu.querySelector('button').onclick=()=>{if(!selected)return;if(!confirm(`${selected} Department মুছে দিতে চান?`))return;departments=departments.filter(item=>item!==selected);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};document.addEventListener('click',()=>menu.classList.remove('visible'));const originalRender=renderDepartments;renderDepartments=function(){originalRender();wire();};wire();}setupServiceBenefitReport();setupDepartmentContextMenu();
     function upgradeServiceBenefit(){const page=document.getElementById('serviceBenefitView'),report=page.querySelector('.service-benefit-report'),actions=page.querySelector('.service-benefit-actions'),entryButton=actions.querySelectorAll('.service-benefit-action')[0],paymentButton=actions.querySelectorAll('.service-benefit-action')[1];report.innerHTML='<div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input id="sbName" placeholder="Name লিখুন"></label><label>Designation <b>:</b><input id="sbDesignation" placeholder="Designation লিখুন"></label><label>Card/Staff No <b>:</b><input id="sbCard" placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining <b>:</b><input id="sbJoining" type="date"></label><label>Release Date <b>:</b><input id="sbRelease" type="date"></label><label>Total Salary <b>:</b><input id="sbSalary" type="number" min="0" placeholder="0"></label><label>Basic (60%) <b>:</b><input id="sbBasic" type="number" readonly value="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody id="sbPeriods"></tbody></table><div class="benefit-total">Total Payment = <span id="sbTotal">0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div><div class="benefit-toolbar"><button class="primary" type="button" id="sbSave">Input Save</button><button class="secondary" type="button" id="sbPrint">Print</button></div>';const list=document.createElement('section');list.className='benefit-list';list.innerHTML='<h3>Payment List</h3><div class="benefit-list-wrap"><table><thead><tr><th>Name</th><th>Card / ID No</th><th>Designation</th><th>Joining Date</th><th>Release Date</th><th>Payable Month</th><th>Total Payment</th></tr></thead><tbody></tbody></table></div>';page.append(list);const $=id=>report.querySelector(`#${id}`),dateAtStart=value=>new Date(`${value}T00:00:00`),money=value=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(value||0),calculate=()=>{const salary=+$('sbSalary').value||0,basic=Math.round(salary*.6);$('sbBasic').value=basic;$('sbPeriods').innerHTML='';const joining=$('sbJoining').value,release=$('sbRelease').value;if(!joining||!release||dateAtStart(release)<dateAtStart(joining)){$('sbTotal').textContent='0';return;}const join=dateAtStart(joining),end=dateAtStart(release),rows=[];for(let year=join.getFullYear();year<=end.getFullYear();year++){const from=new Date(Math.max(join,new Date(year,0,1))),to=new Date(Math.min(end,new Date(year,11,31))),days=Math.floor((to-from)/86400000)+1,full=from.getTime()===new Date(year,0,1).getTime()&&to.getTime()===new Date(year,11,31).getTime(),months=Math.floor(days/30),remaining=days%30,pay=Math.round(full?basic:basic*(days/(new Date(year,11,31).getDate()===31&&new Date(year,1,29).getMonth()===1?366:365)));rows.push({year,months,remaining,pay});}$('sbPeriods').innerHTML=rows.map((row,index)=>`<tr><td>${String(index+1).padStart(2,'0')}</td><td>${row.year}</td><td>${row.months} Month</td><td>${row.remaining} Days</td><td>${money(row.pay)}</td></tr>`).join('');$('sbTotal').textContent=money(rows.reduce((sum,row)=>sum+row.pay,0));};['sbSalary','sbJoining','sbRelease'].forEach(id=>$(id).addEventListener('input',calculate));const renderList=()=>{const entries=JSON.parse(localStorage.getItem('farnoorServiceBenefitEntries')||'[]'),tbody=list.querySelector('tbody');tbody.innerHTML=entries.length?entries.map(item=>`<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.card)}</td><td>${escapeHtml(item.designation)}</td><td>${escapeHtml(item.joining)}</td><td>${escapeHtml(item.release)}</td><td>${escapeHtml(item.months)}</td><td>${escapeHtml(item.total)}</td></tr>`).join(''):'<tr><td colspan="7">এখনও কোনো Payment তথ্য Save করা হয়নি।</td></tr>';};$('sbSave').onclick=()=>{calculate();const joining=$('sbJoining').value,release=$('sbRelease').value;if(!$('sbName').value.trim()||!joining||!release){alert('Name, Joining Date এবং Release Date দিন।');return;}const days=Math.floor((dateAtStart(release)-dateAtStart(joining))/86400000)+1,entry={id:Date.now(),name:$('sbName').value.trim(),card:$('sbCard').value.trim(),designation:$('sbDesignation').value.trim(),joining,release,months:`${Math.floor(days/30)} Month ${days%30} Days`,total:$('sbTotal').textContent};const items=JSON.parse(localStorage.getItem('farnoorServiceBenefitEntries')||'[]');items.unshift(entry);localStorage.setItem('farnoorServiceBenefitEntries',JSON.stringify(items));renderList();alert('Service Benefit তথ্য Save করা হয়েছে।');};$('sbPrint').onclick=()=>window.print();entryButton.onclick=()=>{actions.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button===entryButton));list.classList.remove('visible');report.classList.add('visible');report.scrollIntoView({behavior:'smooth',block:'start'});};paymentButton.onclick=()=>{actions.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button===paymentButton));report.classList.remove('visible');renderList();list.classList.add('visible');list.scrollIntoView({behavior:'smooth',block:'start'});};$('sbRelease').value=new Date().toISOString().slice(0,10);calculate();}function upgradeDepartmentContextMenu(){const menu=document.querySelector('.department-context-menu');if(!menu)return;menu.innerHTML='<button class="rename-option" type="button">Rename</button><button class="delete-option" type="button">Delete</button>';let selected='';document.getElementById('departmentButtons').addEventListener('contextmenu',event=>{const button=event.target.closest('.department-button');if(!button)return;event.preventDefault();selected=button.dataset.department;menu.style.left=`${event.clientX}px`;menu.style.top=`${event.clientY}px`;menu.classList.add('visible');});menu.querySelector('.delete-option').onclick=()=>{if(!selected)return;if(!confirm(`${selected} Department মুছে দিতে চান?`))return;departments=departments.filter(item=>item!==selected);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};menu.querySelector('.rename-option').onclick=()=>{if(!selected)return;const name=prompt('Department-এর নতুন নাম লিখুন',selected);if(!name?.trim())return;if(departments.some(item=>item.toLowerCase()===name.trim().toLowerCase()&&item!==selected)){alert('এই নামের Department আগে থেকেই আছে।');return;}departments=departments.map(item=>item===selected?name.trim():item);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};}upgradeServiceBenefit();upgradeDepartmentContextMenu();
-  </script>
+  </script><div class="department-context-menu"><button class="rename-option" type="button">Rename</button><button class="delete-option" type="button">Delete</button></div>
   <script>
     (()=>{const page=document.getElementById('serviceBenefitView');if(!page)return;const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));page.querySelector('.service-benefit-actions').innerHTML='<button class="service-benefit-action" type="button">Entry</button><button class="service-benefit-action" type="button">Payment</button>';const [entryButton,paymentButton]=page.querySelectorAll('.service-benefit-action');const report=document.createElement('section');report.className='service-benefit-report';report.innerHTML='<div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input id="sbName" placeholder="Name লিখুন"></label><label>Designation <b>:</b><input id="sbDesignation" placeholder="Designation লিখুন"></label><label>Card/Staff No <b>:</b><input id="sbCard" placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining <b>:</b><input id="sbJoining" type="date"></label><label>Release Date <b>:</b><input id="sbRelease" type="date"></label><label>Total Salary <b>:</b><input id="sbSalary" type="number" min="0" placeholder="0"></label><label>Basic (60%) <b>:</b><input id="sbBasic" type="number" readonly value="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody id="sbPeriods"></tbody></table><div class="benefit-total">Total Payment = <span id="sbTotal">0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div><div class="benefit-toolbar"><button class="primary" type="button" id="sbSave">Input Save</button><button class="secondary" type="button" id="sbPrint">Print</button></div>';const list=document.createElement('section');list.className='benefit-list';list.innerHTML='<h3>Payment List</h3><div class="benefit-list-wrap"><table><thead><tr><th>Name</th><th>Card / ID No</th><th>Designation</th><th>Joining Date</th><th>Release Date</th><th>Payable Month</th><th>Total Payment</th></tr></thead><tbody></tbody></table></div>';page.append(report,list);const $=id=>report.querySelector('#'+id),dateOf=value=>new Date(value+'T00:00:00'),money=value=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(value||0),calculate=()=>{const salary=+$('sbSalary').value||0,basic=Math.round(salary*.6);$('sbBasic').value=basic;const joining=$('sbJoining').value,release=$('sbRelease').value,body=$('sbPeriods');body.innerHTML='';if(!joining||!release||dateOf(release)<dateOf(joining)){$('sbTotal').textContent='0';return;}const start=dateOf(joining),end=dateOf(release),periods=[];for(let year=start.getFullYear();year<=end.getFullYear();year++){const first=new Date(year,0,1),last=new Date(year,11,31),from=new Date(Math.max(start,first)),to=new Date(Math.min(end,last)),days=Math.floor((to-from)/86400000)+1,full=from.getTime()===first.getTime()&&to.getTime()===last.getTime(),leap=new Date(year,1,29).getMonth()===1,payment=Math.round(full?basic:basic*days/(leap?366:365));periods.push({year,days,months:Math.floor(days/30),remaining:days%30,payment});}body.innerHTML=periods.map((item,index)=>'<tr><td>'+String(index+1).padStart(2,'0')+'</td><td>'+item.year+'</td><td>'+item.months+' Month</td><td>'+item.remaining+' Days</td><td>'+money(item.payment)+'</td></tr>').join('');$('sbTotal').textContent=money(periods.reduce((sum,item)=>sum+item.payment,0));};const renderList=()=>{const items=JSON.parse(localStorage.getItem('farnoorServiceBenefitEntries')||'[]');list.querySelector('tbody').innerHTML=items.length?items.map(item=>'<tr><td>'+esc(item.name)+'</td><td>'+esc(item.card)+'</td><td>'+esc(item.designation)+'</td><td>'+esc(item.joining)+'</td><td>'+esc(item.release)+'</td><td>'+esc(item.months)+'</td><td>'+esc(item.total)+'</td></tr>').join(''):'<tr><td colspan="7">এখনও কোনো Payment তথ্য Save করা হয়নি।</td></tr>';};['sbSalary','sbJoining','sbRelease'].forEach(id=>$(id).addEventListener('input',calculate));$('sbRelease').value=new Date().toISOString().slice(0,10);calculate();$('sbSave').onclick=()=>{calculate();const joining=$('sbJoining').value,release=$('sbRelease').value;if(!$('sbName').value.trim()||!joining||!release){alert('Name, Joining Date এবং Release Date দিন।');return;}const days=Math.floor((dateOf(release)-dateOf(joining))/86400000)+1,items=JSON.parse(localStorage.getItem('farnoorServiceBenefitEntries')||'[]');items.unshift({name:$('sbName').value.trim(),card:$('sbCard').value.trim(),designation:$('sbDesignation').value.trim(),joining,release,months:Math.floor(days/30)+' Month '+(days%30)+' Days',total:$('sbTotal').textContent});localStorage.setItem('farnoorServiceBenefitEntries',JSON.stringify(items));alert('Service Benefit তথ্য Save করা হয়েছে।');};$('sbPrint').onclick=()=>window.print();entryButton.onclick=()=>{entryButton.classList.add('active');paymentButton.classList.remove('active');list.classList.remove('visible');report.classList.add('visible');};paymentButton.onclick=()=>{paymentButton.classList.add('active');entryButton.classList.remove('active');report.classList.remove('visible');renderList();list.classList.add('visible');};const menu=document.querySelector('.department-context-menu');if(menu){menu.innerHTML='<button class="rename-option" type="button">Rename</button><button class="delete-option" type="button">Delete</button>';let picked='';document.getElementById('departmentButtons').addEventListener('contextmenu',event=>{const button=event.target.closest('.department-button');if(!button)return;event.preventDefault();picked=button.dataset.department;menu.style.left=event.clientX+'px';menu.style.top=event.clientY+'px';menu.classList.add('visible');});menu.querySelector('.rename-option').onclick=()=>{const name=prompt('Department-এর নতুন নাম লিখুন',picked);if(!name?.trim())return;departments=departments.map(item=>item===picked?name.trim():item);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};menu.querySelector('.delete-option').onclick=()=>{if(!confirm(picked+' Department মুছে দিতে চান?'))return;departments=departments.filter(item=>item!==picked);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};}})();
   </script>
@@ -1400,5 +1410,546 @@
     setInterval(applyMerchandisingLayout, 400);
   })();
 </script>
-</body>
-</html>
+<style>
+  /* Header profile action stays compact so it does not dominate the page. */
+  #profileEditButton.profile-edit {
+    width: auto;
+    min-width: 0;
+    min-height: 28px;
+    padding: 5px 8px;
+    font-size: 11px;
+    line-height: 1.1;
+    border-radius: 8px;
+  }
+</style>
+<script>
+  /* প্রোফাইল এডিট এখন আলাদা বোতাম নয়—নামের উপর right-click করলে ছোট মেনুতে থাকবে। */
+  (() => {
+    const setupProfileContextMenu = () => {
+      const editButton = document.getElementById('profileEditButton');
+      const profileName = document.getElementById('welcome');
+      const avatar = document.getElementById('profileAvatar');
+      if (!editButton || !profileName) return;
+      editButton.style.display = 'none';
+      const menu = document.createElement('div');
+      menu.id = 'profileContextMenu';
+      menu.innerHTML = '<button type="button">প্রোফাইল এডিট</button>';
+      menu.style.cssText = 'display:none;position:fixed;z-index:1400;min-width:145px;padding:5px;background:#fff;border:1px solid #d7e6df;border-radius:10px;box-shadow:0 10px 24px #12382b2b;';
+      menu.querySelector('button').style.cssText = 'display:block;width:100%;padding:8px 10px;border:0;border-radius:7px;background:#fff;color:#075b45;text-align:left;font-size:12px;font-weight:800;cursor:pointer;';
+      document.body.append(menu);
+      const hideMenu = () => { menu.style.display = 'none'; };
+      const showMenu = event => {
+        event.preventDefault();
+        menu.style.left = `${Math.min(event.clientX, window.innerWidth - 160)}px`;
+        menu.style.top = `${Math.min(event.clientY, window.innerHeight - 55)}px`;
+        menu.style.display = 'block';
+      };
+      [profileName, avatar].filter(Boolean).forEach(target => target.addEventListener('contextmenu', showMenu));
+      menu.querySelector('button').addEventListener('click', () => { hideMenu(); editButton.click(); });
+      document.addEventListener('click', event => { if (!menu.contains(event.target)) hideMenu(); });
+      window.addEventListener('resize', hideMenu);
+    };
+    window.addEventListener('load', setupProfileContextMenu, { once: true });
+  })();
+</script>
+<script>
+  /* Merchandising Entry form: buyer/order header plus style, colour and size rows. */
+  (() => {
+    const normalize = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    const makeRow = () => {
+      const row = document.createElement('tr');
+      ['Style No', 'Color', 'Size', 'QTY', 'Pcs'].forEach(label => {
+        const cell = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = label === 'QTY' || label === 'Pcs' ? 'number' : 'text';
+        input.min = '0';
+        input.placeholder = label;
+        input.setAttribute('aria-label', label);
+        cell.append(input); row.append(cell);
+      });
+      const removeCell = document.createElement('td');
+      const remove = document.createElement('button');
+      remove.type = 'button'; remove.className = 'secondary merch-remove-row'; remove.textContent = '−'; remove.title = 'এই রো মুছুন';
+      remove.onclick = () => row.remove();
+      removeCell.append(remove); row.append(removeCell);
+      return row;
+    };
+    const renderEntryForm = inside => {
+      if (!inside) return;
+      let form = inside.querySelector('.merchandising-entry-form');
+      if (form) { form.style.display = 'block'; return; }
+      form = document.createElement('section'); form.className = 'merchandising-entry-form';
+      form.innerHTML = `
+        <h3>Merchandising Entry</h3>
+        <div class="merch-entry-meta">
+          <label>Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label>
+          <label>Order No<input name="orderNo" type="text" placeholder="Order No"></label>
+          <label>Article No<input name="articleNo" type="text" placeholder="Article No"></label>
+          <label>Shipping Date<input name="shippingDate" type="date"></label>
+        </div>
+        <div class="merch-entry-table-wrap"><table><thead><tr><th>Style No</th><th>Color</th><th>Size</th><th>QTY</th><th>Pcs</th><th></th></tr></thead><tbody></tbody></table></div>
+        <div class="merch-entry-actions"><button type="button" class="secondary merch-add-row">+ Add Row</button><button type="button" class="primary merch-save-entry">Save Entry</button></div>
+        <p class="small merch-entry-status" role="status"></p>`;
+      inside.append(form);
+      const tbody = form.querySelector('tbody'); tbody.append(makeRow());
+      form.querySelector('.merch-add-row').onclick = () => tbody.append(makeRow());
+      form.querySelector('.merch-save-entry').onclick = () => {
+        const values = Object.fromEntries([...form.querySelectorAll('.merch-entry-meta input')].map(input => [input.name, input.value.trim()]));
+        values.rows = [...tbody.querySelectorAll('tr')].map(row => Object.fromEntries([...row.querySelectorAll('input')].map(input => [input.getAttribute('aria-label'), input.value.trim()])));
+        try {
+          const saved = JSON.parse(localStorage.getItem('farnoorMerchandisingEntries') || '[]') || [];
+          saved.push({ ...values, savedAt: new Date().toISOString() });
+          localStorage.setItem('farnoorMerchandisingEntries', JSON.stringify(saved));
+          form.querySelector('.merch-entry-status').textContent = 'Entry saved successfully.';
+        } catch { form.querySelector('.merch-entry-status').textContent = 'Entry save করা যায়নি।'; }
+      };
+    };
+    const showForEntryButton = event => {
+      const button = event.target.closest('.merchandising-inner-button');
+      if (!button) return;
+      const label = normalize(button.textContent);
+      if (!label.includes('newinput') && !label.includes('entry')) return;
+      window.setTimeout(() => renderEntryForm(button.closest('.merchandising-inside-page')), 0);
+    };
+    document.addEventListener('click', showForEntryButton, true);
+    const style = document.createElement('style');
+    style.textContent = `.merchandising-entry-form{display:none;max-width:1120px;margin:22px auto;padding:20px;background:#fff;border:1px solid #cde0d6;border-radius:16px;box-shadow:0 8px 22px #173b3014}.merchandising-entry-form h3{margin:0 0 16px;color:var(--deep);text-align:center;font-size:24px}.merch-entry-meta{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:12px;margin-bottom:18px}.merch-entry-meta label{font-size:12px;font-weight:800;color:var(--deep)}.merch-entry-meta input{display:block;width:100%;margin-top:6px}.merch-entry-table-wrap{overflow-x:auto}.merchandising-entry-form table{width:100%;min-width:700px;border-collapse:collapse}.merchandising-entry-form th,.merchandising-entry-form td{border:1px solid #d7e5de;padding:8px;text-align:center}.merchandising-entry-form th{background:#eaf6ef;color:var(--deep)}.merchandising-entry-form td input{width:100%;min-width:90px}.merch-entry-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}.merch-entry-actions button{width:auto;min-width:120px}.merch-remove-row{min-width:34px!important;width:34px!important;padding:5px!important}.merch-entry-status{text-align:right;color:var(--deep);min-height:18px}@media(max-width:800px){.merch-entry-meta{grid-template-columns:repeat(2,minmax(150px,1fr))}}@media(max-width:500px){.merch-entry-meta{grid-template-columns:1fr}.merch-entry-actions{justify-content:stretch;flex-direction:column}.merch-entry-actions button{width:100%}}`;
+    document.head.append(style);
+  })();
+</script>
+<script>
+  /* Merchandising Entry opens the store-style header form directly. */
+  (() => {
+    const buildDirectMerchEntry = inside => {
+      if (!inside) return;
+      const actions = inside.querySelector('.merchandising-inner-actions');
+      if (actions) actions.style.display = 'none';
+      inside.querySelector('.merchandising-inside-title').textContent = 'Merchandising Entry';
+      let form = inside.querySelector('.merchandising-entry-form');
+      if (form) { form.style.display = 'block'; return; }
+      form = document.createElement('section');
+      form.className = 'merchandising-entry-form';
+      form.innerHTML = `
+        <h3>Merchandising Entry</h3>
+        <div class="merch-entry-meta merch-entry-meta-rows">
+          <label><span>Buyer Name</span><input name="buyerName" type="text" placeholder="Buyer Name"></label>
+          <label><span>Order No</span><input name="orderNo" type="text" placeholder="Order No"></label>
+          <label><span>Article No</span><input name="articleNo" type="text" placeholder="Article No"></label>
+          <label><span>Public Style No</span><input name="publicStyleNo" type="text" placeholder="Public Style No"></label>
+          <label><span>Shipping Date</span><input name="shippingDate" type="date"></label>
+        </div>
+        <div class="merch-entry-table-wrap"><table><thead><tr><th>Style No</th><th>Color</th><th>Size</th><th>QTY</th><th>Pcs</th><th></th></tr></thead><tbody><tr>
+          <td><input aria-label="Style No" placeholder="Style No"></td><td><input aria-label="Color" placeholder="Color"></td><td><input aria-label="Size" placeholder="Size"></td><td><input aria-label="QTY" type="number" min="0" placeholder="QTY"></td><td><input aria-label="Pcs" type="number" min="0" placeholder="Pcs"></td><td><button type="button" class="secondary merch-remove-row" title="এই রো মুছুন">−</button></td>
+        </tr></tbody></table></div>
+        <div class="merch-entry-actions"><button type="button" class="secondary merch-add-row">+ Add Row</button><button type="button" class="primary merch-save-entry">Save Entry</button></div>
+        <p class="small merch-entry-status" role="status"></p>`;
+      inside.append(form);
+      const tbody = form.querySelector('tbody');
+      const addRow = () => {
+        const row = document.createElement('tr');
+        ['Style No','Color','Size','QTY','Pcs'].forEach(label => { const cell = document.createElement('td'); const input = document.createElement('input'); input.setAttribute('aria-label',label); input.placeholder=label; input.type = label === 'QTY' || label === 'Pcs' ? 'number' : 'text'; input.min='0'; cell.append(input); row.append(cell); });
+        const cell = document.createElement('td'); const remove = document.createElement('button'); remove.type='button'; remove.className='secondary merch-remove-row'; remove.textContent='−'; remove.title='এই রো মুছুন'; remove.onclick=()=>row.remove(); cell.append(remove); row.append(cell); tbody.append(row);
+      };
+      form.querySelector('.merch-add-row').onclick = addRow;
+      form.querySelector('.merch-remove-row').onclick = () => tbody.querySelector('tr')?.remove();
+      form.querySelector('.merch-save-entry').onclick = () => {
+        const values = Object.fromEntries([...form.querySelectorAll('.merch-entry-meta input')].map(input => [input.name, input.value.trim()]));
+        values.rows = [...tbody.querySelectorAll('tr')].map(row => Object.fromEntries([...row.querySelectorAll('input')].map(input => [input.getAttribute('aria-label'), input.value.trim()])));
+        const saved = JSON.parse(localStorage.getItem('farnoorMerchandisingEntries') || '[]') || [];
+        saved.push({ ...values, savedAt: new Date().toISOString() }); localStorage.setItem('farnoorMerchandisingEntries', JSON.stringify(saved));
+        form.querySelector('.merch-entry-status').textContent = 'Entry saved successfully.';
+      };
+      const back = inside.querySelector('.merchandising-inside-back');
+      if (back) back.onclick = () => { form.style.display='none'; if (actions) actions.style.display=''; inside.style.display='none'; document.querySelector('.department-page-actions')?.style.removeProperty('display'); };
+    };
+    document.addEventListener('click', event => {
+      const button = event.target.closest('.merchandising-extra');
+      if (!button || !String(button.textContent).toLowerCase().includes('merchandising entry')) return;
+      window.setTimeout(() => buildDirectMerchEntry(document.querySelector('.merchandising-inside-page')), 0);
+    }, true);
+    const style = document.createElement('style');
+    style.textContent = `.merch-entry-meta-rows{display:grid;grid-template-columns:minmax(190px,340px) minmax(280px,1fr);max-width:760px;margin:0 auto 20px;gap:10px 18px}.merch-entry-meta-rows label{display:grid;grid-template-columns:150px minmax(0,1fr);align-items:center;gap:10px;font-size:13px;font-weight:800;color:var(--deep)}.merch-entry-meta-rows input{margin:0;width:100%}.merchandising-entry-form .merch-entry-table-wrap{margin-top:8px}.merchandising-entry-form .merch-entry-table-wrap th{white-space:nowrap}@media(max-width:700px){.merch-entry-meta-rows{grid-template-columns:1fr}.merch-entry-meta-rows label{grid-template-columns:130px minmax(0,1fr)}}`;
+    document.head.append(style);
+  })();
+</script>
+<script>
+  /* Store homepage tools are also available at the bottom of Merchandising home. */
+  (() => {
+    const setupMerchandisingStoreTools = () => {
+      const page = document.getElementById('departmentPageView');
+      const actions = page?.querySelector('.department-page-actions');
+      const heading = page?.querySelector('.department-page-head h2');
+      if (!page || !actions || !heading || !String(heading.textContent).toLowerCase().includes('merchandising')) return;
+      if (page.querySelector('.merchandising-store-home')) return;
+      const panel = document.createElement('section');
+      panel.className = 'merchandising-store-home';
+      panel.innerHTML = '<h3>Merchandising Home Page</h3><div class="merch-store-home-actions"><button type="button">Accessories Receive</button><button type="button">Accessories Delivery</button><button type="button">Search Option</button></div>';
+      actions.after(panel);
+      const returnToMerchandising = () => {
+        document.getElementById('storeView')?.classList.remove('visible');
+        document.getElementById('summaryView').style.display = 'none';
+        document.querySelector('.notice')?.style.setProperty('display','none');
+        page.style.display = 'block';
+        heading.textContent = 'Merchandising';
+        window.scrollTo({top:0,behavior:'smooth'});
+      };
+      panel.querySelectorAll('button').forEach((button,index) => {
+        button.onclick = () => {
+          page.style.display = 'none';
+          window.openStoreForm?.('Merchandising');
+          const store = document.getElementById('storeView');
+          const back = store?.querySelector('.summary-head .secondary');
+          if (back) { back.textContent = '← Merchandising'; back.onclick = returnToMerchandising; }
+          window.setTimeout(() => store?.querySelectorAll('.store-action')[index]?.click(), 80);
+        };
+      });
+    };
+    const watch = () => { setupMerchandisingStoreTools(); window.setTimeout(watch, 500); };
+    if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', watch, {once:true}); else watch();
+    const style = document.createElement('style');
+    style.textContent = `.merchandising-store-home{max-width:1120px;margin:28px auto 0;padding:20px;background:linear-gradient(135deg,#f7fcf9,#edf8f3);border:1px solid #bfdccd;border-radius:16px}.merchandising-store-home h3{margin:0 0 16px;text-align:center;color:var(--deep);font-size:22px}.merch-store-home-actions{display:grid;grid-template-columns:repeat(3,minmax(190px,1fr));gap:16px}.merch-store-home-actions button{width:100%;min-height:86px;padding:18px 14px;color:#fff;border:0;border-radius:14px;font-size:17px;font-weight:900;background:linear-gradient(135deg,#087c5b,#07533f);box-shadow:0 8px 18px #173b3029}.merch-store-home-actions button:nth-child(2){background:linear-gradient(135deg,#287fa4,#174d76)}.merch-store-home-actions button:nth-child(3){background:linear-gradient(135deg,#a66b36,#65401f)}.merch-store-home-actions button:hover{filter:brightness(1.1);transform:translateY(-3px)}@media(max-width:700px){.merch-store-home{margin-left:0;margin-right:0}.merch-store-home-actions{grid-template-columns:1fr}}`;
+    document.head.append(style);
+  })();
+</script>
+<script>
+  /* Merchandising Entry contains the complete Store accessories function set. */
+  (() => {
+    const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    const isSuperAdmin = () => { try { const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; return ['superadmin','owner','alldepartments'].includes(clean(session.department)) || String(session.email || '').trim().toLowerCase() === 'lutfarbabu@gmail.com'; } catch { return false; } };
+    const options = ['Accessories Receive','Accessories Delivery','Accessories Report','Search Option'];
+    const openStoreFunction = index => {
+      const page = document.getElementById('departmentPageView');
+      page?.style.setProperty('display','none');
+      window.openStoreForm?.('Merchandising');
+      const store = document.getElementById('storeView');
+      if (!store) return;
+      store.querySelector('.store-actions')?.style.setProperty('display','none');
+      store.querySelector('.store-search')?.classList.remove('visible');
+      const back = store.querySelector('.summary-head .secondary');
+      if (back) { back.textContent = '← Merchandising Entry'; back.onclick = () => { store.classList.remove('visible'); document.getElementById('summaryView').style.display='none'; page.style.display='block'; }; }
+      if (index === 2) {
+        const card = store.querySelector('.store-card'), records = document.getElementById('storeRecords'), search = store.querySelector('.store-search');
+        if (card) card.style.display='none'; if (search) search.classList.remove('visible'); if (records) records.style.display='block';
+        store.querySelector('.store-card .card-head h2')?.replaceChildren(document.createTextNode('Accessories Report'));
+        store.querySelectorAll('.store-action').forEach((button,i) => button.classList.toggle('active', i === 2));
+        return;
+      }
+      window.setTimeout(() => store.querySelectorAll('.store-action')[index === 3 ? 2 : index]?.click(), 80);
+    };
+    const addContextRename = button => {
+      button.oncontextmenu = event => {
+        if (!isSuperAdmin()) return;
+        event.preventDefault();
+        const next = window.prompt('এই বাটনের নতুন নাম লিখুন', button.textContent.trim());
+        if (next?.trim()) button.textContent = next.trim();
+      };
+      button.title = isSuperAdmin() ? 'Super Admin: right-click করে নাম পরিবর্তন করুন' : '';
+    };
+    const render = () => {
+      const page = document.getElementById('departmentPageView');
+      const heading = page?.querySelector('.department-page-head h2');
+      if (!page || !heading || !clean(heading.textContent).includes('merchandising')) return;
+      page.querySelector('.merchandising-store-home')?.remove();
+    };
+    document.addEventListener('click', event => {
+      const top = event.target.closest('.merchandising-extra');
+      if (!top || !clean(top.textContent).includes('merchandisingentry')) return;
+      window.setTimeout(() => {
+        const inside = document.querySelector('#departmentPageView .merchandising-inside-page');
+        const box = inside?.querySelector('.merchandising-inner-actions');
+        if (!inside || !box) return;
+        const oldForm = inside.querySelector('.merchandising-entry-form'); oldForm?.remove();
+        box.style.display = 'grid'; box.innerHTML = '';
+        inside.querySelector('.merchandising-inside-title').textContent = 'Merchandising Entry';
+        options.forEach((label,index) => { const button = document.createElement('button'); button.type='button'; button.className='merchandising-inner-button'; button.textContent=label; button.onclick=()=>openStoreFunction(index); addContextRename(button); box.append(button); });
+      }, 0);
+    }, true);
+    const style = document.createElement('style');
+    style.textContent = `#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:repeat(4,minmax(190px,1fr));max-width:1120px}#departmentPageView.merchandising-mode .merchandising-inner-button{height:104px;min-height:104px;width:100%;font-size:17px}@media(max-width:1000px){#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:repeat(2,minmax(190px,1fr))}}@media(max-width:520px){#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:1fr}}`;
+    document.head.append(style);
+    window.setInterval(render, 500);
+  })();
+</script>
+<style>
+  /* Merchandising-এর নিচের duplicate Store/Home panel থাকবে না; ফাংশনগুলো Entry-এর ভিতরেই থাকবে। */
+  #departmentPageView .merchandising-store-home { display: none !important; }
+</style>
+<script>
+  /* Merchandising Entry এখন শুধু Store-এর Accessories Receive খুলবে। */
+  (() => {
+    const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    const openAccessoriesReceive = () => {
+      const page = document.getElementById('departmentPageView');
+      page?.style.setProperty('display','none');
+      window.openStoreForm?.('Merchandising');
+      const store = document.getElementById('storeView');
+      const back = store?.querySelector('.summary-head .secondary');
+      if (back) { back.textContent = '← Merchandising Entry'; back.onclick = () => { store.classList.remove('visible'); document.getElementById('summaryView').style.display='none'; page.style.display='block'; }; }
+      window.setTimeout(() => store?.querySelector('.store-action')?.click(), 80);
+    };
+    document.addEventListener('click', event => {
+      const top = event.target.closest('.merchandising-extra');
+      if (!top || !clean(top.textContent).includes('merchandisingentry')) return;
+      window.setTimeout(() => {
+        const inside = document.querySelector('#departmentPageView .merchandising-inside-page');
+        const box = inside?.querySelector('.merchandising-inner-actions');
+        if (!inside || !box) return;
+        inside.querySelector('.merchandising-entry-form')?.remove();
+        inside.querySelector('.merchandising-inside-title').textContent = 'Accessories Receive';
+        box.innerHTML = '';
+        box.style.display = 'grid';
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'merchandising-inner-button'; button.textContent = 'Accessories Receive'; button.onclick = openAccessoriesReceive; box.append(button);
+      }, 40);
+    }, true);
+    const style = document.createElement('style');
+    style.textContent = `#departmentPageView.merchandising-mode .merchandising-inner-actions:has(.merchandising-inner-button:only-child){grid-template-columns:minmax(260px,420px);justify-content:center}#departmentPageView.merchandising-mode .merchandising-inner-actions:has(.merchandising-inner-button:only-child) .merchandising-inner-button{width:100%}`;
+    document.head.append(style);
+  })();
+</script>
+<script>
+  /* Entry click opens a clean, separate merchandising form without the Store label. */
+  (() => {
+    const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    const openCleanMerchForm = () => {
+      const page = document.getElementById('departmentPageView');
+      const inside = page?.querySelector('.merchandising-inside-page');
+      if (inside) { inside.style.display = 'none'; inside.querySelector('.merchandising-inner-actions')?.replaceChildren(); }
+      page?.style.setProperty('display','none');
+      window.openStoreForm?.('Merchandising');
+      const store = document.getElementById('storeView');
+      if (!store) return;
+      const back = store.querySelector('.summary-head .secondary');
+      const setLabels = () => {
+        store.querySelector('.summary-head h2')?.replaceChildren(document.createTextNode('Merchandising Entry'));
+        store.querySelector('.store-card .card-head h2')?.replaceChildren(document.createTextNode('Merchandising Entry'));
+      };
+      setLabels();
+      if (back) { back.textContent = '← Merchandising'; back.onclick = () => { store.querySelector('.store-actions')?.style.removeProperty('display'); store.classList.remove('visible'); document.getElementById('summaryView').style.display='none'; page.style.display='block'; }; }
+      window.setTimeout(() => { store.querySelector('.store-action')?.click(); setLabels(); }, 100);
+    };
+    document.addEventListener('click', event => {
+      const top = event.target.closest('.merchandising-extra');
+      if (!top || !clean(top.textContent).includes('merchandisingentry')) return;
+      window.setTimeout(openCleanMerchForm, 100);
+    }, true);
+    const style = document.createElement('style');
+    style.textContent = `#departmentPageView .merchandising-store-home{display:none!important}`;
+    document.head.append(style);
+  })();
+</script>
+<script>
+  /* Extra merchandising header fields sit above the existing Store accessories table. */
+  (() => {
+    const enhanceMerchandisingForm = () => {
+      const store = document.getElementById('storeView');
+      const fields = store?.querySelector('.store-fields');
+      const table = store?.querySelector('.accessory-table');
+      const form = store?.querySelector('#storeForm');
+      if (!store || !fields || !table || !form || form.querySelector('.merch-enhanced-fields')) return;
+      const extra = document.createElement('div');
+      extra.className = 'merch-enhanced-fields';
+      extra.innerHTML = '<div class="store-row"><label>Order Number</label><input id="merchOrderNumber" placeholder="Order Number লিখুন"></div><div class="store-row"><label>Shipping Date</label><input id="merchShippingDate" type="date"></div><div class="store-row"><label>Style Number (Accessories)</label><input id="merchAccessoryStyle" placeholder="Style Number লিখুন"></div><div class="store-row"><label>Color</label><input id="merchAccessoryColor" placeholder="Color লিখুন"></div>';
+      fields.after(extra);
+      const oldSubmit = form.onsubmit;
+      form.addEventListener('submit', () => {
+        try {
+          const meta = { orderNumber: document.getElementById('merchOrderNumber')?.value || '', shippingDate: document.getElementById('merchShippingDate')?.value || '', accessoryStyle: document.getElementById('merchAccessoryStyle')?.value || '', color: document.getElementById('merchAccessoryColor')?.value || '', savedAt: new Date().toISOString() };
+          localStorage.setItem('farnoorMerchandisingMeta', JSON.stringify(meta));
+        } catch {}
+      });
+      const heading = store.querySelector('.summary-head h2');
+      if (heading) heading.textContent = 'Merchandising Entry';
+      const cardHeading = store.querySelector('.store-card .card-head h2');
+      if (cardHeading) cardHeading.textContent = 'Merchandising Entry';
+    };
+    document.addEventListener('click', event => {
+      const top = event.target.closest('.merchandising-extra');
+      if (!top || !String(top.textContent).toLowerCase().replace(/[\s_-]+/g,'').includes('merchandisingentry')) return;
+      window.setTimeout(enhanceMerchandisingForm, 220);
+    }, true);
+  })();
+</script>
+<script>
+  /* Style Number and Color belong in the two columns before Accessories Name. */
+  (() => {
+    const moveStyleAndColorIntoTable = () => {
+      const store = document.getElementById('storeView');
+      const cardHeading = store?.querySelector('.store-card .card-head h2');
+      const head = store?.querySelector('.accessory-table-head');
+      const total = store?.querySelector('.accessory-total-row');
+      if (!store || !head || !total || !cardHeading || !String(cardHeading.textContent).toLowerCase().includes('merchandising')) return;
+      store.classList.add('merchandising-entry-mode');
+      ['merchAccessoryStyle','merchAccessoryColor'].forEach(id => document.getElementById(id)?.closest('.store-row')?.remove());
+      if (!head.querySelector('.merch-style-heading')) {
+        const styleHead = document.createElement('span'); styleHead.className='merch-style-heading'; styleHead.textContent='Style Number';
+        const colorHead = document.createElement('span'); colorHead.className='merch-color-heading'; colorHead.textContent='Color';
+        head.children[0]?.after(colorHead); head.children[0]?.after(styleHead);
+      }
+      store.querySelectorAll('.accessory-table-row').forEach(row => {
+        if (row.querySelector('.merch-style-number')) return;
+        const makeInput = (className, placeholder) => { const input=document.createElement('input'); input.className=className; input.type='text'; input.placeholder=placeholder; input.title=placeholder; return input; };
+        const deleteButton = row.children[0];
+        deleteButton?.after(makeInput('merch-style-number','Style Number'), makeInput('merch-color','Color'));
+      });
+      if (!total.querySelector('.merch-total-spacer')) {
+        const first=total.children[0]; const spacer1=document.createElement('span'); spacer1.className='merch-total-spacer'; const spacer2=document.createElement('span'); spacer2.className='merch-total-spacer'; first?.after(spacer2,spacer1);
+      }
+      const form = store.querySelector('#storeForm');
+      if (form && !form.dataset.merchColumnsBound) {
+        form.dataset.merchColumnsBound='1';
+        form.addEventListener('submit', () => {
+          const rows=[...store.querySelectorAll('.accessory-table-row')].map(row => ({styleNumber:row.querySelector('.merch-style-number')?.value||'',color:row.querySelector('.merch-color')?.value||'',accessoryName:row.querySelector('.accessory-type')?.value||'',size:row.querySelector('.accessory-size')?.value||'',sizeQuantity:row.querySelector('.accessory-size-qty')?.value||'0'}));
+          localStorage.setItem('farnoorMerchandisingAccessoryRows',JSON.stringify(rows));
+        });
+      }
+    };
+    window.setInterval(moveStyleAndColorIntoTable, 350);
+  })();
+</script>
+<style>
+  #storeView.merchandising-entry-mode .accessory-table-head,
+  #storeView.merchandising-entry-mode .accessory-table-row,
+  #storeView.merchandising-entry-mode .accessory-total-row {
+    grid-template-columns:38px 1.2fr 1.2fr 1.8fr .75fr repeat(6,1fr);
+    min-width:1220px;
+  }
+</style>
+<script>
+  /* Merchandising-only compact columns; Store and every other page remain unchanged. */
+  (() => {
+    const compactMerchandisingTable = () => {
+      const store = document.getElementById('storeView');
+      const cardTitle = store?.querySelector('.store-card .card-head h2');
+      const head = store?.querySelector('.accessory-table-head');
+      const total = store?.querySelector('.accessory-total-row');
+      if (!store || !cardTitle || !head || !total || !String(cardTitle.textContent).toLowerCase().includes('merchandising')) return;
+      store.classList.add('merchandising-entry-mode');
+      const oldHeaders = [...head.children];
+      if (!head.querySelector('.merch-total-heading')) {
+        oldHeaders.slice(6).forEach(cell => cell.classList.add('merch-hidden-column'));
+        if (oldHeaders[5]) oldHeaders[5].textContent = 'Quantity';
+        const totalHeader = document.createElement('span'); totalHeader.className='merch-total-heading'; totalHeader.textContent='Total Quantity'; oldHeaders[5]?.after(totalHeader);
+      }
+      store.querySelectorAll('.accessory-table-row').forEach(row => {
+        const cells = [...row.children];
+        cells.slice(6).forEach(cell => cell.classList.add('merch-hidden-column'));
+        if (!row.querySelector('.merch-total-quantity')) {
+          const totalInput = document.createElement('input'); totalInput.className='merch-total-quantity'; totalInput.type='number'; totalInput.readOnly=true; totalInput.setAttribute('aria-label','Total Quantity'); totalInput.placeholder='0'; cells[5]?.after(totalInput);
+        }
+      });
+      const totalCells = [...total.children];
+      totalCells.slice(6).forEach(cell => cell.classList.add('merch-hidden-column'));
+      if (!total.querySelector('.merch-total-value')) { const value=document.createElement('span'); value.className='merch-total-value'; value.textContent='0'; totalCells[5]?.after(value); }
+      const rows=[...store.querySelectorAll('.accessory-table-row')];
+      const sum=rows.reduce((n,row)=>n+(Number(row.querySelector('.accessory-size-qty')?.value)||0),0);
+      rows.forEach(row => { const input=row.querySelector('.merch-total-quantity'); if(input) input.value=String(sum); });
+      const totalValue=total.querySelector('.merch-total-value'); if(totalValue) totalValue.textContent=String(sum);
+    };
+    window.setInterval(compactMerchandisingTable, 350);
+  })();
+</script>
+<style>
+  #storeView.merchandising-entry-mode .accessory-table-head,
+  #storeView.merchandising-entry-mode .accessory-table-row,
+  #storeView.merchandising-entry-mode .accessory-total-row { grid-template-columns:38px 1.25fr 1.15fr 1.8fr .8fr 1fr 1.15fr; min-width:900px; }
+  #storeView.merchandising-entry-mode .merch-hidden-column { display:none !important; }
+  #storeView.merchandising-entry-mode .merch-total-quantity { background:#eef7f3; font-weight:800; }
+</style>
+<script>
+  /* Merchandising-only editing, save list and A4-style print report. */
+  (() => {
+    const isMerchandising = () => document.getElementById('storeView')?.classList.contains('merchandising-entry-mode');
+    const esc = value => typeof escapeHtml === 'function' ? escapeHtml(value) : String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const enhanceRows = () => {
+      const store = document.getElementById('storeView'); if (!isMerchandising() || !store) return;
+      store.querySelectorAll('.accessory-type').forEach(input => { input.removeAttribute('list'); input.placeholder='Accessories Name লিখুন'; });
+      store.querySelectorAll('.accessory-size-qty').forEach(input => { if (input.value === '0' && document.activeElement !== input) input.value=''; input.placeholder='Quantity'; });
+      store.querySelectorAll('.accessory-size').forEach(size => {
+        if (size.dataset.merchRename) return;
+        size.dataset.merchRename='1';
+        size.ondblclick = () => { const next=window.prompt('সাইজের নাম লিখুন',size.value==='0'?'':size.value); if (next?.trim()) { const value=next.trim(); let option=[...size.options].find(o=>o.value===value); if(!option){option=document.createElement('option');option.value=value;option.textContent=value;size.append(option);} size.value=value; } };
+      });
+      store.querySelectorAll('.accessory-table-head span').forEach(span => span.style.textAlign='center');
+      store.querySelectorAll('.accessory-table-row input,.accessory-table-row select,.accessory-total-row span').forEach(cell => cell.style.textAlign='center');
+    };
+    const renderRecords = () => {
+      const store=document.getElementById('storeView'); if(!store) return;
+      let records=document.getElementById('merchandisingRecords');
+      if(!records){ records=document.createElement('section'); records.id='merchandisingRecords'; records.className='card merchandising-printable'; store.append(records); }
+      const data=JSON.parse(localStorage.getItem('farnoorMerchandisingEntries')||'[]')||[];
+      records.innerHTML = '<div class="card-head"><div><h2>Merchandising Saved Entries</h2><div class="small">সেভ করা তথ্য নিচে দেখা যাবে।</div></div><button class="secondary no-print" type="button" id="printMerchandisingButton">A4 Print</button></div><div class="body">' + (data.length ? data.map(entry => `<section class="merch-saved-entry"><div class="merch-print-header"><img src="../assets/Farnoor_New_Logo.jpg-removebg-preview.png" alt="Farnoor logo"><div><strong>FARNOOR GARMENTS LTD.</strong><span>1028/1/2, Malibagh Bazar Road, Dhaka-1217</span></div></div><h3>MERCHANDISING SECTION REPORT</h3><div class="merch-saved-info"><div><b>Buyer Name</b><span>${esc(entry.buyer)}</span></div><div><b>Style Number</b><span>${esc(entry.style)}</span></div><div><b>Order Number</b><span>${esc(entry.orderNumber)}</span></div><div><b>Shipping Date</b><span>${esc(entry.shippingDate)}</span></div></div><table><thead><tr><th>Style Number</th><th>Color</th><th>Accessories Name</th><th>Size</th><th>Quantity</th><th>Total Quantity</th></tr></thead><tbody>${entry.rows.map(row => `<tr><td>${esc(row.styleNumber)}</td><td>${esc(row.color)}</td><td>${esc(row.name)}</td><td>${esc(row.size)}</td><td>${esc(row.quantity)}</td><td>${esc(row.totalQuantity)}</td></tr>`).join('')}</tbody></table><div class="merch-signatures"><span>MERCHANDISING OFFICER</span><span>AUTHORIZED</span></div></section>`).join('') : '<div class="empty">এখনও কোনো Merchandising তথ্য Save করা হয়নি।</div>') + '</div>';
+      records.style.display=data.length?'block':'none';
+      records.querySelector('#printMerchandisingButton')?.addEventListener('click', () => { document.body.classList.add('printing-merchandising'); window.print(); window.setTimeout(()=>document.body.classList.remove('printing-merchandising'),500); });
+    };
+    const saveBeforeStoreReset = event => {
+      if (!isMerchandising() || event.target?.id!=='storeForm') return;
+      const store=document.getElementById('storeView');
+      const rows=[...store.querySelectorAll('.accessory-table-row')].map(row => ({styleNumber:row.querySelector('.merch-style-number')?.value||'',color:row.querySelector('.merch-color')?.value||'',name:row.querySelector('.accessory-type')?.value||'',size:row.querySelector('.accessory-size')?.value||'',quantity:row.querySelector('.accessory-size-qty')?.value||'',totalQuantity:row.querySelector('.merch-total-quantity')?.value||row.querySelector('.accessory-size-qty')?.value||''}));
+      const entries=JSON.parse(localStorage.getItem('farnoorMerchandisingEntries')||'[]')||[];
+      entries.unshift({buyer:document.getElementById('storeBuyer')?.value||'',style:document.getElementById('storeStyle')?.value||'',orderNumber:document.getElementById('merchOrderNumber')?.value||'',shippingDate:document.getElementById('merchShippingDate')?.value||'',rows,savedAt:new Date().toISOString()});
+      localStorage.setItem('farnoorMerchandisingEntries',JSON.stringify(entries));
+      window.setTimeout(renderRecords,120);
+    };
+    document.addEventListener('submit',saveBeforeStoreReset,true);
+    window.setInterval(enhanceRows,350);
+    window.setInterval(() => { if(isMerchandising()) enhanceRows(); }, 500);
+  })();
+</script>
+<style>
+  #merchandisingRecords{display:none;max-width:1280px;margin:20px auto;background:#fff;border:1px solid #c8d8d0;border-radius:12px;overflow:hidden}
+  .merch-saved-entry{margin:0 0 22px;padding:18px;border-bottom:2px solid #b9d5ca}
+  .merch-print-header{display:flex;align-items:center;justify-content:center;gap:12px;text-align:center;border-bottom:1px solid #d8e6df;padding-bottom:10px}.merch-print-header img{width:45px;height:45px;object-fit:contain}.merch-print-header strong,.merch-print-header span{display:block}.merch-saved-entry>h3{text-align:center;text-decoration:underline;margin:12px 0}
+  .merch-saved-info{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #cadbd3;margin-bottom:12px}.merch-saved-info div{display:grid;grid-template-columns:1fr 1fr;border-right:1px solid #cadbd3;padding:7px}.merch-saved-info div:last-child{border-right:0}.merch-saved-entry table{width:100%;border-collapse:collapse}.merch-saved-entry th,.merch-saved-entry td{border:1px solid #b9d5ca;padding:8px;text-align:center}.merch-saved-entry th{background:#075b45;color:#fff}.merch-signatures{display:flex;justify-content:space-between;padding:70px 28px 10px;font-weight:800}.merch-signatures span{border-top:1px solid #222;padding-top:6px}
+  @media print{body.printing-merchandising #loginPage,body.printing-merchandising #appShell>header,body.printing-merchandising .summary-section,body.printing-merchandising .notice,body.printing-merchandising #storeView>.summary-head,body.printing-merchandising #storeView>.store-actions,body.printing-merchandising #storeView>.store-search,body.printing-merchandising #storeView>.store-card,body.printing-merchandising #storeView>#storeRecords,body.printing-merchandising .no-print{display:none!important}body.printing-merchandising #storeView{display:block!important}.merch-saved-entry{page-break-inside:avoid}.merch-saved-info{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:700px){.merch-saved-info{grid-template-columns:1fr 1fr}.merch-saved-info div{border-bottom:1px solid #cadbd3}.merch-signatures{font-size:11px;padding-left:8px;padding-right:8px}}
+</style>
+<script>
+  /* Final Merchandising Entry layout: renameable labels, right-side delete and add controls. */
+  (() => {
+    const key = 'farnoorMerchandisingLayoutV1';
+    const defaults = {style:'Style Number', color:'Color', name:'Accessories Name', size:'Size', quantity:'Quantity', total:'Total Quantity', extras:[]};
+    const readState = () => { try { return {...defaults, ...(JSON.parse(localStorage.getItem(key)||'{}')||{})}; } catch { return {...defaults, extras:[]}; } };
+    const saveState = state => localStorage.setItem(key, JSON.stringify(state));
+    const isMerch = () => { const store=document.getElementById('storeView'); const title=store?.querySelector('.store-card .card-head h2')?.textContent||''; return !!store && (store.classList.contains('merchandising-entry-mode') || /merchandising/i.test(title)); };
+    const askRename = (element, stateKey, fallback) => { const state=readState(); element.oncontextmenu = event => { event.preventDefault(); const next=window.prompt('নতুন নাম লিখুন', element.textContent.trim() || fallback); if(!next?.trim()) return; element.textContent=next.trim(); if(stateKey?.startsWith('extra')) { const index=Number(stateKey.slice(5)); state.extras[index]=next.trim(); } else if(stateKey) state[stateKey]=next.trim(); saveState(state); }; element.title='রাইট-ক্লিক করে নাম পরিবর্তন করুন'; };
+    const input = (cls, value, placeholder, type='text') => { const el=document.createElement('input'); el.className=cls; el.type=type; el.placeholder=placeholder; if(value !== undefined && value !== null && String(value)!=='0') el.value=String(value); if(type==='number') el.min='0'; return el; };
+    const rowValues = row => ({style:row.querySelector('.merch-style-number')?.value||'', color:row.querySelector('.merch-color')?.value||'', name:row.querySelector('.accessory-type')?.value||'', size:row.querySelector('.accessory-size')?.value||'', quantity:row.querySelector('.accessory-size-qty')?.value||'', extras:[...row.querySelectorAll('.merch-extra-cell')].map(el=>el.value||'')});
+    const rebuild = () => {
+      if(!isMerch()) return;
+      const store=document.getElementById('storeView'), table=store.querySelector('.accessory-table'); if(!table) return;
+      const state=readState(); table.classList.add('merch-final-table');
+      const head=table.querySelector('.accessory-table-head'); if(head){ head.replaceChildren(); [state.style,state.color,state.name,state.size,state.quantity,state.total,...state.extras,''].forEach((label,index)=>{ const span=document.createElement('span'); span.textContent=label; span.dataset.merchHeader=index<6?['style','color','name','size','quantity','total'][index]:'extra'; if(index===6+state.extras.length) span.className='merch-delete-heading'; head.append(span); }); [...head.children].forEach((span,index)=>askRename(span,index<6?['style','color','name','size','quantity','total'][index]:`extra${index-6}` ,span.textContent)); }
+      table.querySelectorAll('.accessory-table-row').forEach(row => {
+        const old=rowValues(row); row.replaceChildren();
+        row.append(input('merch-style-number',old.style,'Style Number'),input('merch-color',old.color,'Color'),input('accessory-type',old.name,'Accessories Name'),input('accessory-size',old.size,'Size'),input('accessory-size-qty',old.quantity,'Quantity','number'),input('merch-total-quantity',old.quantity,'Total Quantity','number'));
+        state.extras.forEach((name,i)=>row.append(input('merch-extra-cell',old.extras[i]||'',name)));
+        const del=document.createElement('button'); del.type='button'; del.className='delete-accessory merch-delete-right'; del.textContent='−'; del.title='এই রো বাদ দিন'; del.onclick=()=>{ if(table.querySelectorAll('.accessory-table-row').length>1){row.remove(); updateTotals();} }; row.append(del);
+        row.querySelector('.accessory-size').ondblclick=event=>{ event.preventDefault(); const next=window.prompt('সাইজের নাম লিখুন',event.target.value); if(next?.trim()) event.target.value=next.trim(); };
+        row.querySelector('.accessory-size-qty').addEventListener('input',updateTotals); row.dataset.merchReady='1';
+      });
+      const total=table.querySelector('.accessory-total-row'); if(total){ total.replaceChildren(); const blank=document.createElement('span'); blank.textContent='Total'; total.append(blank); for(let i=1;i<5+state.extras.length;i++){ const span=document.createElement('span'); span.textContent=i===4?'Total':''; total.append(span); } const totalQty=document.createElement('span'); totalQty.className='merch-total-value'; totalQty.textContent='0'; total.append(totalQty); const del=document.createElement('span'); del.textContent=''; total.append(del); updateTotals(); }
+      const toolbar=ensureToolbar(table); toolbar.querySelectorAll('button').forEach(button=>button.oncontextmenu=event=>{event.preventDefault(); const next=window.prompt('বাটনের নতুন নাম লিখুন',button.textContent); if(next?.trim()) button.textContent=next.trim();});
+      store.querySelectorAll('.merchandising-inner-button,.store-card .card-head h2,.summary-head h2').forEach(element=>{ if(!element.dataset.merchRename) { element.dataset.merchRename='1'; askRename(element,null,element.textContent.trim()); } });
+    };
+    const updateTotals=()=>{ const store=document.getElementById('storeView'); if(!isMerch()||!store)return; const rows=[...store.querySelectorAll('.accessory-table-row')]; const sum=rows.reduce((n,row)=>n+(Number(row.querySelector('.accessory-size-qty')?.value)||0),0); rows.forEach(row=>{const total=row.querySelector('.merch-total-quantity'); if(total) total.value=String(Number(row.querySelector('.accessory-size-qty')?.value)||0);}); const value=store.querySelector('.merch-total-value'); if(value)value.textContent=String(sum); };
+    const ensureToolbar=table=>{ let toolbar=table.parentElement.querySelector('.merch-row-toolbar'); if(toolbar)return toolbar; toolbar=document.createElement('div'); toolbar.className='merch-row-toolbar'; toolbar.innerHTML='<button type="button" class="secondary merch-add-row-button">+ রো যোগ</button><button type="button" class="secondary merch-add-column-button">+ Accessories কলাম</button>'; table.after(toolbar); toolbar.querySelector('.merch-add-row-button').onclick=()=>{ if(typeof addAccessoryRow==='function') addAccessoryRow(); window.setTimeout(rebuild,80); }; toolbar.querySelector('.merch-add-column-button').onclick=()=>{ const name=window.prompt('নতুন Accessories কলামের নাম লিখুন','Accessories কলাম'); if(!name?.trim())return; const state=readState(); state.extras=[...(state.extras||[]),name.trim()]; saveState(state); rebuild(); }; return toolbar; };
+    const saveEntry = event => { if(!isMerch()||event.target?.id!=='storeForm')return; const store=document.getElementById('storeView'), state=readState(), rows=[...store.querySelectorAll('.accessory-table-row')].map(row=>rowValues(row)); const entries=JSON.parse(localStorage.getItem('farnoorMerchandisingEntriesV2')||'[]')||[]; entries.unshift({buyer:document.getElementById('storeBuyer')?.value||'', style:document.getElementById('storeStyle')?.value||'', orderNumber:document.getElementById('merchOrderNumber')?.value||'', shippingDate:document.getElementById('merchShippingDate')?.value||'', rows, columns:{...state}, savedAt:new Date().toISOString()}); localStorage.setItem('farnoorMerchandisingEntriesV2',JSON.stringify(entries)); };
+    document.addEventListener('submit',saveEntry,true);
+    window.setInterval(()=>{ if(!isMerch()) return; const table=document.querySelector('#storeView .accessory-table'); const rows=[...(table?.querySelectorAll('.accessory-table-row')||[])]; if(table && (!table.classList.contains('merch-final-table') || rows.some(row=>!row.dataset.merchReady))) rebuild(); },700);
+  })();
+</script>
+<style>
+  #storeView.merchandising-entry-mode .merch-final-table .accessory-table-head,
+  #storeView.merchandising-entry-mode .merch-final-table .accessory-table-row,
+  #storeView.merchandising-entry-mode .merch-final-table .accessory-total-row{grid-template-columns:1.25fr 1.15fr 1.8fr .8fr 1fr 1.15fr repeat(auto-fit,minmax(110px,1fr)) 38px;min-width:980px;align-items:stretch}
+  #storeView.merchandising-entry-mode .merch-final-table .accessory-table-head span,#storeView.merchandising-entry-mode .merch-final-table .accessory-total-row span{text-align:center;padding:11px 7px}
+  #storeView.merchandising-entry-mode .merch-final-table .accessory-table-row input{border-left:1px solid var(--line);padding:11px 7px;width:100%;min-width:0;text-align:center}
+  #storeView.merchandising-entry-mode .merch-final-table .merch-delete-right{grid-column:-1;order:99;border-left:1px solid var(--line);border-radius:0}
+  #storeView.merchandising-entry-mode .merch-row-toolbar{display:flex;justify-content:flex-end;gap:8px;margin:10px 0 0}
+  #storeView.merchandising-entry-mode .merch-row-toolbar button{width:auto;min-width:116px;padding:8px 11px;font-size:12px;border-radius:8px}
+  @media(max-width:700px){#storeView.merchandising-entry-mode .merch-row-toolbar{justify-content:stretch}#storeView.merchandising-entry-mode .merch-row-toolbar button{flex:1}}
+</style>
+
+
+<datalist id="farnoorEmailSuggestions"></datalist><div id="profileEditModal" style="display: none; position: fixed; inset: 0px; z-index: 1200; background: rgba(3, 41, 31, 0.6); place-items: center; padding: 18px;"><div style="width:min(390px,100%);background:#fff;border-radius:16px;padding:22px;box-shadow:0 18px 50px #001e175c"><h3 style="margin:0 0 14px;color:#075b45">প্রোফাইল এডিট</h3><label>নাম পরিবর্তন</label><input id="profileNameInput" placeholder="আপনার নাম লিখুন"><label style="display:block;margin-top:12px">ছবি এড করুন</label><input id="profilePhotoInput" type="file" accept="image/*"><div id="profileEditError" style="min-height:18px;color:#b42318;font-size:12px;margin-top:8px"></div><div style="display:flex;gap:8px;margin-top:14px"><button id="profileSaveButton" class="primary" type="button">সেভ করুন</button><button id="profileCancelButton" class="secondary" type="button">বন্ধ করুন</button></div></div></div><div id="profileContextMenu" style="display: none; position: fixed; z-index: 1400; min-width: 145px; padding: 5px; background: rgb(255, 255, 255); border: 1px solid rgb(215, 230, 223); border-radius: 10px; box-shadow: rgba(18, 56, 43, 0.17) 0px 10px 24px;"><button type="button" style="display: block; width: 100%; padding: 8px 10px; border: 0px; border-radius: 7px; background: rgb(255, 255, 255); color: rgb(7, 91, 69); text-align: left; font-size: 12px; font-weight: 800; cursor: pointer;">প্রোফাইল এডিট</button></div></body><div id="codex-browser-sidebar-comments-root" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483647;"></div><grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration></html>
