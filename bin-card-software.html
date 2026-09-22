@@ -307,6 +307,8 @@
       const resetCodeLabel = resetPanel.querySelector('#resetCodeLabel');
       const resetPassLabel = resetPanel.querySelector('#resetPassLabel');
       const resetConfirmLabel = resetPanel.querySelector('#resetConfirmLabel');
+      /* Keep the Forgot Password panel direct and uncluttered; errors still use the main login message area. */
+      resetStatus.style.display = 'none';
       const normalizeResetCode = value => String(value || '').replace(/[০-৯]/g, digit => String('০১২৩৪৫৬৭৮৯'.indexOf(digit))).replace(/[٠-٩]/g, digit => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit))).replace(/\s+/g, '');
       const friendlyResetError = error => error instanceof TypeError && /fetch/i.test(error.message || '')
         ? 'অনলাইন যাচাই সেবা এখন সংযোগ করা যাচ্ছে না। কিছুক্ষণ পরে আবার চেষ্টা করুন।'
