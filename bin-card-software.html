@@ -1357,5 +1357,48 @@
     if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', boot, { once:true }); else boot();
   })();
 </script>
+<script>
+  /* মার্চেন্ডাইজিং পেজকে পরিষ্কার, সমান মাপের nested button layout দিই। */
+  (() => {
+    const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    const isSuperAdmin = () => {
+      try {
+        const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {};
+        return ['superadmin','owner','alldepartments'].includes(clean(session.department)) || String(session.email || '').trim().toLowerCase() === 'lutfarbabu@gmail.com';
+      } catch { return false; }
+    };
+    const applyMerchandisingLayout = () => {
+      const page = document.getElementById('departmentPageView');
+      const heading = page?.querySelector('.department-page-head h2');
+      if (!page || !heading || !clean(heading.textContent).includes('merchandising')) return;
+      page.classList.add('merchandising-mode');
+      const summaryBack = page.querySelector('.department-page-head > button');
+      if (summaryBack) {
+        summaryBack.textContent = '← Management Summary';
+        summaryBack.style.display = isSuperAdmin() ? '' : 'none';
+      }
+      // New Input, Department Info এবং Department Home মার্চেন্ডাইজিং পেজে থাকবে না।
+      page.querySelectorAll('.department-page-actions > button:not(.merchandising-extra)').forEach(button => { button.style.display = 'none'; });
+      page.querySelector('.department-page-actions')?.classList.add('merchandising-top-actions');
+    };
+    const style = document.createElement('style');
+    style.textContent = `
+      #departmentPageView.merchandising-mode .department-page-head{justify-content:center;text-align:center;position:relative}
+      #departmentPageView.merchandising-mode .department-page-head h2{margin:0 auto;font-size:32px;letter-spacing:2px;font-weight:900;color:var(--deep)}
+      #departmentPageView.merchandising-mode .department-page-head>.secondary{position:absolute;right:0}
+      #departmentPageView.merchandising-mode .merchandising-top-actions{display:grid!important;grid-template-columns:repeat(4,minmax(190px,1fr));gap:16px;max-width:1120px;margin:26px auto}
+      #departmentPageView.merchandising-mode .merchandising-extra{width:100%;height:104px;min-height:104px;display:block!important;padding:20px 14px;font-size:17px;line-height:1.25}
+      #departmentPageView.merchandising-mode .merchandising-inside-page .summary-head{justify-content:center;text-align:center;position:relative}
+      #departmentPageView.merchandising-mode .merchandising-inside-page .summary-head h2{margin:0 auto;font-size:29px;letter-spacing:1.5px;font-weight:900}
+      #departmentPageView.merchandising-mode .merchandising-inner-actions{display:grid;grid-template-columns:repeat(4,minmax(190px,1fr));gap:16px;max-width:1120px;margin:26px auto}
+      #departmentPageView.merchandising-mode .merchandising-inner-button{width:100%;height:104px;min-height:104px;padding:20px 14px;font-size:17px;line-height:1.25}
+      @media(max-width:1000px){#departmentPageView.merchandising-mode .merchandising-top-actions,#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:repeat(2,minmax(190px,1fr))}}
+      @media(max-width:520px){#departmentPageView.merchandising-mode .merchandising-top-actions,#departmentPageView.merchandising-mode .merchandising-inner-actions{grid-template-columns:1fr}#departmentPageView.merchandising-mode .department-page-head>.secondary{position:static;margin-top:10px}}
+    `;
+    document.head.append(style);
+    applyMerchandisingLayout();
+    setInterval(applyMerchandisingLayout, 400);
+  })();
+</script>
 </body>
 </html>
