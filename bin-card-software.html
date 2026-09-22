@@ -280,7 +280,7 @@
       const resetRequest = async (name, body) => {
         const response = await fetch(resetFunctionBase + '/' + name, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey },
           body: JSON.stringify(body)
         });
         const raw = await response.text();
