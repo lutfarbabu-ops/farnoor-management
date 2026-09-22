@@ -1348,7 +1348,7 @@
       const merch = isMerch();
       [...actions.querySelectorAll('button')].slice(0,3).forEach((button,index) => { if (!button.dataset.merchOriginal) button.dataset.merchOriginal = button.textContent.trim(); if (merch) { button.textContent = labels.base[index]; button.dataset.merchType = 'base'; button.dataset.merchIndex = String(index); renameOnRightClick(button); } else { button.textContent = button.dataset.merchOriginal; button.oncontextmenu = null; button.title = ''; } });
       let extras = [...actions.querySelectorAll('.merchandising-extra')];
-      labels.top.forEach((item,index) => { let button = extras[index]; if (!button) { button = makeButton(item, 'top', index, () => openInside(item)); actions.append(button); extras.push(button); } button.textContent = item; button.style.display = merch ? 'block' : 'none'; button.onclick = () => openInside(item); renameOnRightClick(button); });
+      labels.top.forEach((item,index) => { let button = extras[index]; if (!button) { button = makeButton(item, 'top', index, () => openInside(item)); actions.append(button); extras.push(button); } button.textContent = item; button.style.setProperty('display', merch ? 'block' : 'none', 'important'); button.onclick = () => openInside(item); renameOnRightClick(button); });
       const inside = ensureInsidePage(); if (inside && !merch) inside.style.display = 'none';
       if (inside && merch && !inside.style.display) inside.style.display = 'none';
     };
