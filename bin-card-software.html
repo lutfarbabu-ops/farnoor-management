@@ -1292,5 +1292,65 @@
     })();
   </script>
 <style>#loginPanel p{display:none!important}</style>
+<script>
+  /* Merchandising-এর ভেতরের পেজ ও Super Admin-এর right-click rename ব্যবস্থা। */
+  (() => {
+    const key = 'farnoorMerchandisingButtonsV2';
+    const defaults = {
+      base: ['New Input', 'Department Info', 'Department Home'],
+      top: ['Merchandising Entry', 'Merchandising Report', 'Buyer / Order', 'Department'],
+      inner: ['New Input', 'Report', 'Search', 'Department Home']
+    };
+    const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    const isSuperAdmin = () => { try { const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; return ['superadmin','owner','alldepartments'].includes(clean(session.department)) || String(session.email || '').toLowerCase() === 'lutfarbabu@gmail.com'; } catch { return false; } };
+    const read = () => { try { const saved = JSON.parse(localStorage.getItem(key) || '{}') || {}; return { base: defaults.base.map((x,i) => String(saved.base?.[i] || x)), top: defaults.top.map((x,i) => String(saved.top?.[i] || x)), inner: defaults.inner.map((x,i) => String(saved.inner?.[i] || x)) }; } catch { return JSON.parse(JSON.stringify(defaults)); } };
+    let labels = read();
+    const save = () => localStorage.setItem(key, JSON.stringify(labels));
+    const page = () => document.getElementById('departmentPageView');
+    const title = () => page()?.querySelector('.department-page-head h2');
+    const isMerch = () => clean(title()?.textContent) === 'merchandising';
+    const makeButton = (label, type, index, handler) => { const button = document.createElement('button'); button.type = 'button'; button.className = type === 'top' ? 'merchandising-extra' : 'merchandising-inner-button'; button.textContent = label; button.dataset.merchType = type; button.dataset.merchIndex = String(index); button.onclick = handler; return button; };
+    const renameOnRightClick = button => {
+      button.oncontextmenu = event => {
+        if (!isSuperAdmin()) return;
+        event.preventDefault();
+        const type = button.dataset.merchType, index = Number(button.dataset.merchIndex);
+        const next = window.prompt('এই বাটনের নতুন নাম লিখুন', button.textContent.trim());
+        if (!next || !next.trim()) return;
+        labels[type][index] = next.trim(); save(); render();
+      };
+      button.title = isSuperAdmin() ? 'Super Admin: right-click করে নাম পরিবর্তন করুন' : '';
+    };
+    const ensureInsidePage = () => {
+      const host = page(); if (!host) return null;
+      let inside = host.querySelector('.merchandising-inside-page');
+      if (inside) return inside;
+      inside = document.createElement('section'); inside.className = 'merchandising-inside-page';
+      inside.innerHTML = '<div class="summary-head"><div><h2 class="merchandising-inside-title">Merchandising</h2></div><button class="secondary merchandising-inside-back" type="button">← Merchandising Department</button></div><div class="merchandising-inner-actions"></div><p class="small merchandising-inside-note" style="text-align:center"></p>';
+      host.append(inside);
+      return inside;
+    };
+    const openInside = label => {
+      const host = page(), actions = host?.querySelector('.department-page-actions'), inside = ensureInsidePage(); if (!host || !inside) return;
+      actions.style.display = 'none'; inside.style.display = 'block'; inside.querySelector('.merchandising-inside-title').textContent = label;
+      inside.querySelector('.merchandising-inside-back').textContent = '← Merchandising Department';
+      inside.querySelector('.merchandising-inside-back').onclick = () => { inside.style.display = 'none'; actions.style.display = ''; };
+      const box = inside.querySelector('.merchandising-inner-actions'); box.innerHTML = '';
+      labels.inner.forEach((item, index) => { const button = makeButton(item, 'inner', index, () => { inside.querySelector('.merchandising-inside-title').textContent = item; inside.querySelector('.merchandising-inside-back').textContent = '← আগের পেজে ফিরে যান'; inside.querySelector('.merchandising-inside-back').onclick = () => openInside(label); inside.querySelector('.merchandising-inside-note').textContent = item + ' পেজ'; }); box.append(button); renameOnRightClick(button); });
+    };
+    const render = () => {
+      const host = page(), actions = host?.querySelector('.department-page-actions'); if (!host || !actions) return;
+      const merch = isMerch();
+      [...actions.querySelectorAll('button')].slice(0,3).forEach((button,index) => { if (!button.dataset.merchOriginal) button.dataset.merchOriginal = button.textContent.trim(); if (merch) { button.textContent = labels.base[index]; button.dataset.merchType = 'base'; button.dataset.merchIndex = String(index); renameOnRightClick(button); } else { button.textContent = button.dataset.merchOriginal; button.oncontextmenu = null; button.title = ''; } });
+      let extras = [...actions.querySelectorAll('.merchandising-extra')];
+      labels.top.forEach((item,index) => { let button = extras[index]; if (!button) { button = makeButton(item, 'top', index, () => openInside(item)); actions.append(button); extras.push(button); } button.textContent = item; button.style.display = merch ? '' : 'none'; button.onclick = () => openInside(item); renameOnRightClick(button); });
+      const inside = ensureInsidePage(); if (inside && !merch) inside.style.display = 'none';
+      if (inside && merch && !inside.style.display) inside.style.display = 'none';
+    };
+    const style = document.createElement('style'); style.textContent = '.merchandising-extra{display:none;min-height:82px;padding:17px;color:#fff;border:0;border-radius:14px;font-size:16px;font-weight:900;background:linear-gradient(135deg,#087c5b,#07533f);box-shadow:0 8px 18px #173b3029}.merchandising-extra:nth-last-child(2n){background:linear-gradient(135deg,#287fa4,#174d76)}.merchandising-extra:hover,.merchandising-inner-button:hover{filter:brightness(1.1);transform:translateY(-3px)}.merchandising-inside-page{display:none;margin-top:18px;padding:4px 0}.merchandising-inside-page .summary-head{justify-content:center;text-align:center}.merchandising-inside-page .summary-head h2{font-size:28px;letter-spacing:1px;color:var(--deep)}.merchandising-inside-page .summary-head .secondary{position:absolute;right:0}.merchandising-inner-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;max-width:980px;margin:26px auto}.merchandising-inner-button{min-height:88px;padding:18px;color:#fff;border:0;border-radius:14px;font-size:16px;font-weight:900;background:linear-gradient(135deg,#8a68ad,#55417d);box-shadow:0 8px 18px #173b3029}.merchandising-inner-button:nth-child(2n){background:linear-gradient(135deg,#a66b36,#65401f)}@media(max-width:700px){.merchandising-inside-page .summary-head .secondary{position:static;margin-top:10px}}'; document.head.append(style);
+    const boot = () => { render(); setInterval(render, 400); };
+    if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', boot, { once:true }); else boot();
+  })();
+</script>
 </body>
 </html>
