@@ -334,7 +334,7 @@
         showResetField(resetCode, resetCodeLabel, false);
         showResetField(resetPass, resetPassLabel, false);
         showResetField(resetConfirm, resetConfirmLabel, false);
-        resetAction.style.display = 'inline-block';
+        resetAction.style.display = 'none';
         resetAction.disabled = false;
         resetBusy = true;
         resetAction.textContent = 'কোড পাঠান';
@@ -344,6 +344,7 @@
           const result = await resetRequest('send-password-reset-code', { loginEmail: email });
           resetVerificationId = result.verificationId;
           showResetField(resetCode, resetCodeLabel, true);
+          resetAction.style.display = 'inline-block';
           resetAction.textContent = 'কোড যাচাই করুন';
           resetStatus.textContent = 'ভেরিফিকেশন কোড ' + (result.destinationEmail || 'lutfarbabu@gmail.com') + ' ঠিকানায় পাঠানো হয়েছে।';
           resetCode.focus();
@@ -1276,6 +1277,7 @@
       window.addEventListener('load', setup, { once: true });
     })();
   </script>
+<style>#loginPanel > p{display:none!important}</style>
 </body>
 </html>
 
