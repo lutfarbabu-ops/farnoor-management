@@ -2450,14 +2450,15 @@
     const entryLabelKey='farnoorMerchandisingEntryLabelsV1';
     const entryColumnsKey='farnoorMerchandisingEntryColumnsV1';
     const entryListsKey='farnoorMerchandisingEntryListsV1';
-    const suggestedEntryColumns=['Accessories Name','Style Number','Size','Qty/Quantity','Booking'];
+    const suggestedEntryColumns=['Style Number','Accessories Name','Color','Size','Quantity','Total Quantity'];
     const accessoryNames=['Main Label','Size Label','Care Label','Label','Sewing Thread','Zipper','Piping Cord','Elastic','Neck Tape','Twill Tape','Solder Tape','Contrast Fabric','Nylon Tape','Interlining','Cutting Number Sticker','Button','Eyelet','Mattel End','Drawstring','Hite Seal','Mobilon Tape','Side Label','Micro Pack','Hang tag','Hang Tag Sticker','Hang Tag Sting','Tag Pins','Saftey Pin','Hanger Loop/Code','Tissue Paper','Printed Tissue Paper','Back Board','Neck Board','Printed Pcs Poly','Blister Poly','Poly Sticker','Blister Sticker','RF Sizer Box','Carton','Carton Sticker','B.P Sticker','Gum Tape'];
     const sizeNames=['XS','S','M','L','XL','XXL','3XL','4XL','5XL','6XL','7XL','8XL','9XL','10XL'];
     const readEntryLists=()=>{try{const saved=JSON.parse(localStorage.getItem(entryListsKey)||'null')||{};return {accessory:Array.isArray(saved.accessory)&&saved.accessory.length?saved.accessory.map(String):[...accessoryNames],size:Array.isArray(saved.size)&&saved.size.length?saved.size.map(String):[...sizeNames]};}catch{return {accessory:[...accessoryNames],size:[...sizeNames]};}};
     const saveEntryLists=lists=>{try{localStorage.setItem(entryListsKey,JSON.stringify(lists));}catch{}};
     const entryLists=readEntryLists();
-    let entryColumns=['Style No'];
-    try{const savedColumns=JSON.parse(localStorage.getItem(entryColumnsKey)||'null');if(Array.isArray(savedColumns)&&savedColumns.length)entryColumns=savedColumns.map(String).filter(Boolean);}catch{}
+    const defaultEntryColumns=['Style Number','Accessories Name','Color','Size','Quantity','Total Quantity'];
+    let entryColumns=[...defaultEntryColumns];
+    try{const savedColumns=JSON.parse(localStorage.getItem(entryColumnsKey)||'null');const saved=Array.isArray(savedColumns)?savedColumns.map(String).filter(Boolean):[];const hasColor=saved.some(name=>/^color$/i.test(name.trim()));const hasTotal=saved.some(name=>/total\s*(qty|quantity)/i.test(name));if(saved.length&&hasColor&&hasTotal)entryColumns=saved;else localStorage.setItem(entryColumnsKey,JSON.stringify(defaultEntryColumns));}catch{entryColumns=[...defaultEntryColumns];}
     const saveEntryColumns=()=>{try{localStorage.setItem(entryColumnsKey,JSON.stringify(entryColumns));}catch{}};
     const entryLabelDefaults={entryTitle:'Entry',buyerName:'Buyer Name',styleNumber:'Style Number',orderQuantity:'Order Quantity',entryDate:'Date',shippingQuantity:'Shipment Date',styleNo:'Style No',color:'Color',size:'Size',qty:'QTY',pcs:'Pcs',remove:'',addRow:'+ Add Row',saveEntry:'Save Entry'};
     const readEntryLabels=()=>{try{const labels={...entryLabelDefaults,...(JSON.parse(localStorage.getItem(entryLabelKey)||'{}')||{})};if(labels.shippingQuantity==='Shipment Quantity')labels.shippingQuantity='Shipment Date';return labels;}catch{return {...entryLabelDefaults};}};
@@ -2739,6 +2740,24 @@
     const normalizeColors = () => document.querySelectorAll('#storeView.merchandising-entry-mode .merch-simple-color').forEach(input => { if (input.tagName === 'SELECT') return; const select=document.createElement('select'); select.className=input.className; select.setAttribute('aria-label','Color'); select.innerHTML='<option value="">Color</option>'+colors.map(color=>`<option value="${esc(color)}">${esc(color)}</option>`).join(''); select.value=input.value || ''; input.replaceWith(select); });
     const normalizeDates = () => { const input=document.getElementById('merchShippingDate'); if(input && input.type!=='date'){input.type='date';input.removeAttribute('min');} if(input){input.lang='en-GB';input.setAttribute('placeholder','DD/MM/YYYY');} if(input?.closest('.store-row')?.querySelector('label')) input.closest('.store-row').querySelector('label').textContent='Shipment Date'; document.querySelectorAll('.summary-saved-entry-head span').forEach(node=>{if(/^(Date|Shipment Date):/.test(node.textContent)){const parts=node.textContent.split(':');node.textContent=parts.shift()+': '+dmy(parts.join(':').trim());}}); };
     window.setInterval(() => { normalizeDates(); normalizeColors(); render(); }, 300);
+  })();
+</script>
+<script>
+  /* Final saved-report view: one separate report box per Save operation. */
+  (() => {
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const dmy = value => { const raw=String(value??'').trim(); if(!raw)return ''; const iso=raw.match(/^(\d{4})-(\d{2})-(\d{2})/); if(iso)return `${iso[3]}/${iso[2]}/${iso[1]}`; const parsed=new Date(raw); return Number.isNaN(parsed.getTime())?raw:`${String(parsed.getDate()).padStart(2,'0')}/${String(parsed.getMonth()+1).padStart(2,'0')}/${parsed.getFullYear()}`; };
+    const getEntries = () => { try { return JSON.parse(localStorage.getItem('farnoorMerchandisingEntries')||'[]')||[]; } catch { return []; } };
+    const valueOf = (entry, names) => { for(const name of names){ const value=entry?.[name]; if(value!==undefined&&value!==null&&String(value).trim()) return value; } return ''; };
+    const render = () => {
+      const panel=document.querySelector('#summaryView .summary-saved-entries'); if(!panel)return;
+      const entries=getEntries(); if(!entries.length)return;
+      const signature=JSON.stringify(entries); if(panel.dataset.finalHistorySignature===signature)return; panel.dataset.finalHistorySignature=signature;
+      const boxes=entries.map((entry,index)=>{ const rows=Array.isArray(entry.rows)?entry.rows:[]; const headers=[...new Set(rows.flatMap(row=>Object.keys(row||{})).filter(key=>!['savedAt','rows'].includes(key)))]; const buyer=valueOf(entry,['buyerName','buyer']),style=valueOf(entry,['styleNumber','style']),order=valueOf(entry,['orderQuantity','order']); const date=dmy(valueOf(entry,['entryDate'])),shipment=dmy(valueOf(entry,['shippingQuantity','shippingDate'])); const cells=row=>headers.map(key=>`<td>${esc(row?.[key]??'')}</td>`).join(''); return `<section class="summary-saved-entry" data-final-entry-index="${index}"><div class="summary-saved-entry-head"><span>Buyer: ${esc(buyer)}</span><strong>Style: ${esc(style||'—')}</strong><span>Order: ${esc(order)}</span><span>Date: ${esc(date)}</span><span>Shipment Date: ${esc(shipment)}</span><span>${rows.length} row(s)</span><button type="button" class="summary-saved-delete" data-final-entry-index="${index}">Delete</button></div>${headers.length&&rows.length?`<table><thead><tr>${headers.map(key=>`<th>${esc(key)}</th>`).join('')}</tr></thead><tbody>${rows.map(cells).join('')}</tbody></table>`:''}</section>`; }).join('');
+      panel.innerHTML=`<h4>Saved Entries</h4><div class="summary-saved-list">${boxes}</div>`;
+      panel.querySelectorAll('.summary-saved-delete').forEach(button=>button.onclick=()=>{const index=Number(button.dataset.finalEntryIndex);const current=getEntries();if(!Number.isInteger(index)||!current[index]||!window.confirm('এই Entry মুছে ফেলবেন?'))return;current.splice(index,1);localStorage.setItem('farnoorMerchandisingEntries',JSON.stringify(current));panel.dataset.finalHistorySignature='';render();});
+    };
+    window.setInterval(render,350);
   })();
 </script>
 </body>
