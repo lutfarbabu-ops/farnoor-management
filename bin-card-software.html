@@ -2701,6 +2701,8 @@
   #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-document table td{display:table-cell!important;float:none!important;vertical-align:middle!important}
   #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-history{display:block!important;width:100%!important}
   #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-history-item{display:block!important;width:100%!important;margin:0 0 16px;padding:0 0 14px;border-bottom:1px solid #cfe2d8}
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-actions,
+  #summaryView .summary-saved-toolbar{display:none!important}
 </style>
 <script>
   /* Show every saved entry vertically and print dates as day/month/year. */
@@ -2733,8 +2735,10 @@
       file.innerHTML = `<div class="merch-saved-actions"><button type="button" class="secondary merch-saved-print">Print</button><button type="button" class="secondary merch-saved-pdf">PDF</button><button type="button" class="secondary merch-saved-excel">Excel</button></div><div class="merch-saved-history">${history}</div>`;
       wire(file);
     };
-    const normalizeDates = () => { const input=document.getElementById('merchShippingDate'); if(input && input.type!=='date'){input.type='date';input.removeAttribute('min');} if(input?.closest('.store-row')?.querySelector('label')) input.closest('.store-row').querySelector('label').textContent='Shipment Date'; document.querySelectorAll('.summary-saved-entry-head span').forEach(node=>{if(/^(Date|Shipment Date):/.test(node.textContent)){const parts=node.textContent.split(':');node.textContent=parts.shift()+': '+dmy(parts.join(':').trim());}}); };
-    window.setInterval(() => { normalizeDates(); render(); }, 300);
+    const colors = ['Black','White','Red','Blue','Navy Blue','Sky Blue','Green','Yellow','Orange','Pink','Purple','Brown','Grey','Maroon','Beige','Cream','Other'];
+    const normalizeColors = () => document.querySelectorAll('#storeView.merchandising-entry-mode .merch-simple-color').forEach(input => { if (input.tagName === 'SELECT') return; const select=document.createElement('select'); select.className=input.className; select.setAttribute('aria-label','Color'); select.innerHTML='<option value="">Color</option>'+colors.map(color=>`<option value="${esc(color)}">${esc(color)}</option>`).join(''); select.value=input.value || ''; input.replaceWith(select); });
+    const normalizeDates = () => { const input=document.getElementById('merchShippingDate'); if(input && input.type!=='date'){input.type='date';input.removeAttribute('min');} if(input){input.lang='en-GB';input.setAttribute('placeholder','DD/MM/YYYY');} if(input?.closest('.store-row')?.querySelector('label')) input.closest('.store-row').querySelector('label').textContent='Shipment Date'; document.querySelectorAll('.summary-saved-entry-head span').forEach(node=>{if(/^(Date|Shipment Date):/.test(node.textContent)){const parts=node.textContent.split(':');node.textContent=parts.shift()+': '+dmy(parts.join(':').trim());}}); };
+    window.setInterval(() => { normalizeDates(); normalizeColors(); render(); }, 300);
   })();
 </script>
 </body>
