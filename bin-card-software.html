@@ -2375,6 +2375,8 @@
   .summary-department-context-menu button:hover{background:#dff2ea}
   #summaryView .summary-department-main[data-department="Store"],#summaryView .summary-department-main[data-department="Line-1"]{background:linear-gradient(135deg,#087b5c,#064b3b)}
   #summaryView .summary-department-main[data-department="Production"]{background:linear-gradient(135deg,#8a68ad,#55417d)}
+  #summaryView .summary-store-department{background:linear-gradient(135deg,#1769aa,#224b8e)!important;color:#fff!important;border-color:#79b8e6!important;box-shadow:0 5px 12px #164d8e28!important}
+  #summaryView .summary-store-department:hover{filter:brightness(1.1);transform:translateX(2px)!important}
   @media(max-width:700px){#summaryView .summary-management-layout{grid-template-columns:1fr;gap:12px}#summaryView .summary-entry-panel{border-left:0;border-top:2px solid #b7d6c8}#summaryView .summary-entry-options{grid-template-columns:1fr}#summaryView .summary-merch-meta{grid-template-columns:1fr}#summaryView .summary-merch-meta label{grid-template-columns:120px minmax(0,1fr)}}
   @media(max-width:600px){#summaryView .summary-department-main{min-width:160px;font-size:14px}#summaryView .summary-department-children{margin-left:24px}}
 </style>
@@ -2424,7 +2426,9 @@
   /* Keep Management Summary limited to the single Merchandising department. */
   (() => {
     let merchandisingExpanded=false;
+    let storeExpanded=false;
     let selectedSubDepartment='';
+    let selectedStoreSubDepartment='';
     const summaryTreeKey='farnoorSummaryDepartmentTreeV1';
     const defaultMerchandisingSubDepartments=['Entry'];
     let merchandisingName='Merchandising';
@@ -2455,10 +2459,11 @@
     const renderMerchandising=()=>{
       const grid=document.getElementById('departmentButtons');
       if(!grid)return;
-      const stateKey=`${merchandisingExpanded?'open':'closed'}:${selectedSubDepartment}`;
+      const stateKey=`${merchandisingExpanded?'open':'closed'}:${selectedSubDepartment}|store:${storeExpanded?'open':'closed'}:${selectedStoreSubDepartment}`;
       if(grid.dataset.summaryState===stateKey && grid.querySelector('.summary-department-expand'))return;
       grid.dataset.summaryState=stateKey;
-      const children=merchandisingExpanded?`<div class="summary-department-children summary-department-text-children">${merchandisingSubDepartments.map(name=>`<div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===name?'selected':''}" data-summary-subdepartment="${esc(name)}" role="button" tabindex="0">${String(name).trim().toLowerCase().replace(/[\s_-]+/g,'')==='storedepartment'?'🏢':'📄'} ${esc(name)}</div>`).join('')}</div>`:'';
+      const children=merchandisingExpanded?`<div class="summary-department-children summary-department-text-children">${merchandisingSubDepartments.map(name=>`<div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===name?'selected':''}" data-summary-subdepartment="${esc(name)}" role="button" tabindex="0">📄 ${esc(name)}</div>`).join('')}</div>`:'';
+      const storeChildren=storeExpanded?`<div class="summary-department-children summary-department-text-children"> <div class="summary-department-child summary-department-label summary-store-subdepartment-text ${selectedStoreSubDepartment==='Entry'?'selected':''}" data-store-subdepartment="Entry" role="button" tabindex="0">📄 Entry</div></div>`:'';
       const isNumericColumn=name=>/(qty|quantity|booking)/i.test(String(name));
       const isAccessoryColumn=name=>/accessor(y|ies)\s*name/i.test(String(name));
       const isSizeColumn=name=>/^size$/i.test(String(name).trim());
@@ -2468,15 +2473,16 @@
       const columnHeaders=entryColumns.map((name,index)=>`<th class="summary-column-header" data-summary-column-index="${index}">${esc(name)}</th>`).join('');
       const columnCells=entryColumns.map(fieldMarkup).join('');
       const totalCells=entryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
-      const entryPanel=selectedSubDepartment===merchandisingSubDepartments[0]?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">Entry</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="shippingQuantity">Shipment Quantity<input name="shippingQuantity" type="number" min="0" placeholder="Shipment Quantity"></label></div><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save Entry</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
-      grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 ${esc(merchandisingName)}</div></div>${children}</div><div class="summary-department-group summary-store-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-store-department" role="button" tabindex="0">🏢 Store Department</div></div></div></div>${entryPanel}</div>`;
+      const entryPanel=(selectedSubDepartment===merchandisingSubDepartments[0]||selectedStoreSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">Entry</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="shippingQuantity">Shipment Quantity<input name="shippingQuantity" type="number" min="0" placeholder="Shipment Quantity"></label></div><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save Entry</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
+      grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 ${esc(merchandisingName)}</div></div>${children}</div><div class="summary-department-group summary-store-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-store-department" role="button" tabindex="0" aria-expanded="${storeExpanded}">🏬 Store</div></div>${storeChildren}</div></div>${entryPanel}</div>`;
       const main=grid.querySelector('.summary-department-expand');
       const toggle=()=>{merchandisingExpanded=!merchandisingExpanded;renderMerchandising();};
       main?.addEventListener('click',toggle); main?.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}});
       const storeDepartment=grid.querySelector('.summary-store-department');
-      const openStore=()=>window.openStoreForm?.('Store');
-      storeDepartment?.addEventListener('click',openStore); storeDepartment?.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openStore();}});
-      grid.querySelectorAll('[data-summary-subdepartment]').forEach(item=>{const name=item.dataset.summarySubdepartment||'';const open=()=>{if(String(name).trim().toLowerCase().replace(/[\s_-]+/g,'')==='storedepartment'){window.openStoreForm?.('Store');return;}selectedSubDepartment=name;renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});item.oncontextmenu=event=>openSummaryContextMenu(event,'sub',name);});
+      const toggleStore=()=>{storeExpanded=!storeExpanded;selectedStoreSubDepartment='';selectedSubDepartment='';renderMerchandising();};
+      storeDepartment?.addEventListener('click',toggleStore); storeDepartment?.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleStore();}});
+      grid.querySelectorAll('[data-store-subdepartment]').forEach(item=>{const open=()=>{selectedStoreSubDepartment=item.dataset.storeSubdepartment||'Entry';selectedSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});});
+      grid.querySelectorAll('[data-summary-subdepartment]').forEach(item=>{const name=item.dataset.summarySubdepartment||'';const open=()=>{selectedSubDepartment=name;selectedStoreSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});item.oncontextmenu=event=>openSummaryContextMenu(event,'sub',name);});
       main.oncontextmenu=event=>openSummaryContextMenu(event,'main',merchandisingName);
       const form=grid.querySelector('.summary-merch-entry-form');
       if(form){
