@@ -1734,7 +1734,7 @@
       if (!store || !fields || !table || !form || form.querySelector('.merch-enhanced-fields')) return;
       const extra = document.createElement('div');
       extra.className = 'merch-enhanced-fields';
-      extra.innerHTML = '<div class="store-row"><label>Shipment Quantity</label><input id="merchShippingDate" type="number" min="0" placeholder="Shipment Quantity"></div>';
+      extra.innerHTML = '<div class="store-row"><label>Shipment Date</label><input id="merchShippingDate" type="date" placeholder="Shipment Date"></div>';
       fields.after(extra);
       const oldSubmit = form.onsubmit;
       form.addEventListener('submit', () => {
@@ -2689,6 +2689,52 @@
     };
     const watch = () => { document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(setup); };
     watch(); window.setInterval(watch,300);
+  })();
+</script>
+<style>
+  /* Saved merchandising rows always stay as table rows, one below another. */
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-document table{display:table!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important}
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-document table thead{display:table-header-group!important}
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-document table tbody{display:table-row-group!important}
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-document table tr{display:table-row!important;float:none!important;position:static!important;width:auto!important}
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-document table th,
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-document table td{display:table-cell!important;float:none!important;vertical-align:middle!important}
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-history{display:block!important;width:100%!important}
+  #storeView.merchandising-entry-mode .merch-simple-saved-file .merch-saved-history-item{display:block!important;width:100%!important;margin:0 0 16px;padding:0 0 14px;border-bottom:1px solid #cfe2d8}
+</style>
+<script>
+  /* Show every saved entry vertically and print dates as day/month/year. */
+  (() => {
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const dmy = value => {
+      const raw = String(value ?? '').trim(); if (!raw) return '';
+      const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/); if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
+      const parsed = new Date(raw); if (!Number.isNaN(parsed.getTime())) return `${String(parsed.getDate()).padStart(2,'0')}/${String(parsed.getMonth()+1).padStart(2,'0')}/${parsed.getFullYear()}`;
+      return raw;
+    };
+    const read = () => { try { return JSON.parse(localStorage.getItem('farnoorMerchandisingSimpleEntries') || '[]') || []; } catch { return []; } };
+    const wire = file => {
+      file.querySelector('.merch-saved-print')?.addEventListener('click', () => { document.body.classList.add('printing-merch-saved'); window.print(); window.setTimeout(() => document.body.classList.remove('printing-merch-saved'), 600); });
+      file.querySelector('.merch-saved-pdf')?.addEventListener('click', () => { document.body.classList.add('printing-merch-saved'); window.print(); window.setTimeout(() => document.body.classList.remove('printing-merch-saved'), 600); });
+      file.querySelector('.merch-saved-excel')?.addEventListener('click', () => {
+        const all = read(); const lines = []; all.forEach(item => { lines.push(item.headers || []); (item.rows || []).forEach(row => lines.push(row)); });
+        const csv = lines.map(row => row.map(value => `"${String(value ?? '').replace(/"/g,'""')}"`).join(',')).join('\r\n'); const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'merchandising-entry.csv'; link.click(); URL.revokeObjectURL(link.href);
+      });
+    };
+    const render = () => {
+      const store = document.getElementById('storeView'); const box = store?.querySelector('.merch-simple-fields'); const form = store?.querySelector('#storeForm'); const file = form?.nextElementSibling;
+      if (!store?.classList.contains('merchandising-entry-mode') || !box || !form || !file?.classList.contains('merch-simple-saved-file')) return;
+      const all = read(); if (!all.length) return;
+      const signature = JSON.stringify(all);
+      if (file.dataset.historySignature === signature) return;
+      file.dataset.historySignature = signature;
+      const safeHeader = item => Array.isArray(item.headers) && item.headers.length ? item.headers : ['Style Number','Accessories Name','Color','Size','Quantity','Total Quantity'];
+      const history = all.map((item, index) => { const headers=safeHeader(item); const rows=Array.isArray(item.rows)?item.rows:[]; return `<section class="merch-saved-history-item"><div class="merch-saved-document"><h2>Merchandising Entry${all.length>1?` #${all.length-index}`:''}</h2><div class="merch-saved-meta"><div><b>Buyer Name</b><span>${esc(item.buyerName)}</span></div><div><b>Style Number</b><span>${esc(item.styleNumberTop)}</span></div><div><b>Order Quantity</b><span>${esc(item.orderQuantity)}</span></div><div><b>Shipment Date</b><span>${esc(dmy(item.shipmentQuantity))}</span></div></div><table><thead><tr>${headers.map(header=>`<th>${esc(header)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${headers.map((_,i)=>`<td>${esc(row?.[i] || '')}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>`; }).join('');
+      file.innerHTML = `<div class="merch-saved-actions"><button type="button" class="secondary merch-saved-print">Print</button><button type="button" class="secondary merch-saved-pdf">PDF</button><button type="button" class="secondary merch-saved-excel">Excel</button></div><div class="merch-saved-history">${history}</div>`;
+      wire(file);
+    };
+    const normalizeDates = () => { const input=document.getElementById('merchShippingDate'); if(input && input.type!=='date'){input.type='date';input.removeAttribute('min');} if(input?.closest('.store-row')?.querySelector('label')) input.closest('.store-row').querySelector('label').textContent='Shipment Date'; document.querySelectorAll('.summary-saved-entry-head span').forEach(node=>{if(/^(Date|Shipment Date):/.test(node.textContent)){const parts=node.textContent.split(':');node.textContent=parts.shift()+': '+dmy(parts.join(':').trim());}}); };
+    window.setInterval(() => { normalizeDates(); render(); }, 300);
   })();
 </script>
 </body>
