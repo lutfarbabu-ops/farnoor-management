@@ -2338,6 +2338,8 @@
   #summaryView .summary-department-child{display:block;width:calc(100% - 8px);max-width:330px;margin:4px 0;padding:8px 12px;border:1px solid #c3ddd1;border-radius:7px;background:#edf8f2;color:#164d3b;font-size:12px;font-weight:700;text-align:left;cursor:pointer}
   #summaryView .summary-department-child:hover,#summaryView .summary-department-child.active{background:#0b6b50;color:#fff}
   #summaryView .summary-department-label{display:block;min-width:0!important;min-height:0!important;width:auto!important;padding:5px 0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#164d3b!important;box-shadow:none!important;font-size:16px!important;font-weight:900!important;text-align:left!important;transform:none!important}
+  #summaryView .summary-department-text-children .summary-department-label{width:fit-content!important;min-width:150px!important;padding:7px 12px!important;border:1px solid #c6e2d5!important;border-left:3px solid #76b89f!important;border-radius:7px!important;background:linear-gradient(135deg,#f3fbf7,#e5f4ed)!important;color:#2b715d!important;box-shadow:0 2px 6px #246b5514!important;font-size:14px!important;line-height:1.15!important}
+  #summaryView .summary-department-text-children .summary-department-label:hover,#summaryView .summary-department-text-children .summary-department-label.selected{background:#d9f0e5!important;color:#075b45!important}
   #summaryView .summary-management-layout{display:grid;grid-template-columns:minmax(170px,190px) minmax(0,1fr);gap:14px;align-items:start;width:100%;max-width:none;margin-left:-8px;margin-right:0}
   #summaryView .department-grid{max-width:none!important;width:100%}
   #summaryView .summary-department-side{min-width:0}
@@ -2350,16 +2352,16 @@
   #summaryView .summary-entry-options button{min-height:42px;padding:8px 10px;border:1px solid #a6d7c4;border-radius:7px;background:#fff;color:#164d3b;font-size:13px;font-weight:800;text-align:left;cursor:pointer}
   #summaryView .summary-entry-options button:hover{background:#e4f4ed}
   #summaryView .summary-merch-entry-form{width:100%;margin:0;padding:0}
-  #summaryView .summary-merch-meta{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
-  #summaryView .summary-merch-meta label{display:grid;grid-template-columns:150px minmax(0,1fr);align-items:center;gap:10px;color:#164d3b;font-size:11px;font-weight:800}
-  #summaryView .summary-merch-meta input{width:100%;min-width:0;padding:7px 8px;border:1px solid #c3ddd1;border-radius:5px}
+  #summaryView .summary-merch-meta{display:grid;grid-template-columns:1fr;gap:5px;margin-bottom:10px}
+  #summaryView .summary-merch-meta label{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:center;gap:5px;color:#164d3b;font-size:11px;font-weight:800}
+  #summaryView .summary-merch-meta input{width:100%;min-width:0;padding:6px 7px;border:1px solid #c3ddd1;border-radius:5px}
   #summaryView .summary-merch-table-wrap{overflow-x:auto}
   #summaryView .summary-merch-table-wrap table{width:100%;min-width:560px;border-collapse:collapse;font-size:11px}
-  #summaryView .summary-merch-table-wrap th,#summaryView .summary-merch-table-wrap td{border:1px solid #d7e5de;padding:5px;text-align:center}
+  #summaryView .summary-merch-table-wrap th,#summaryView .summary-merch-table-wrap td{border:1px solid #d7e5de;padding:3px 4px;text-align:center}
   #summaryView .summary-merch-table-wrap th{background:#eaf6ef;color:#164d3b}
   #summaryView .summary-column-header{cursor:context-menu}
-  #summaryView .summary-merch-table-wrap input{width:100%;min-width:60px;padding:5px;border:1px solid #c3ddd1;border-radius:4px}
-  #summaryView .summary-merch-table-wrap select{width:100%;min-width:110px;padding:5px;border:1px solid #c3ddd1;border-radius:4px}
+  #summaryView .summary-merch-table-wrap input{width:100%;min-width:56px;padding:4px 5px;border:1px solid #c3ddd1;border-radius:4px}
+  #summaryView .summary-merch-table-wrap select{width:100%;min-width:96px;padding:4px 5px;border:1px solid #c3ddd1;border-radius:4px}
   #summaryView .summary-total-row th,#summaryView .summary-total-row td{background:#e4f4ed;color:#075b45;font-weight:900}
   #summaryView .summary-custom-toggle{display:block;width:auto!important;min-width:50px!important;margin:3px auto 0;padding:3px 6px!important;border:1px solid #b7d6c8;border-radius:4px;background:#f1f8f4;color:#164d3b;font-size:10px;cursor:pointer}
   #summaryView .summary-custom-input{display:block;margin-top:3px}
@@ -2545,5 +2547,14 @@
     window.setInterval(cleanMerchandisingPage,350);
   })();
 </script>
+<style>
+  /* Compact header and a softer department label on the left. */
+  #appShell>header{padding:18px clamp(18px,5vw,70px);gap:15px}
+  #appShell>header .brand-wrap{gap:10px}
+  #appShell>header .brand-logo{width:48px;height:48px}
+  #appShell>header h1{font-size:clamp(21px,2.7vw,30px);letter-spacing:2.5px;margin-bottom:3px}
+  #summaryView .summary-department-text-children .summary-department-label{width:fit-content!important;min-width:150px!important;padding:7px 12px!important;border:1px solid #c6e2d5!important;border-left:3px solid #76b89f!important;border-radius:7px!important;background:linear-gradient(135deg,#f3fbf7,#e5f4ed)!important;color:#2b715d!important;box-shadow:0 2px 6px #246b5514!important;font-size:14px!important;line-height:1.15!important}
+  #summaryView .summary-department-text-children .summary-department-label:hover,#summaryView .summary-department-text-children .summary-department-label.selected{background:#d9f0e5!important;color:#075b45!important}
+</style>
 </body>
 </html>
