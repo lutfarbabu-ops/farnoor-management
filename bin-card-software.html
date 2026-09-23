@@ -2484,7 +2484,7 @@
       const columnHeaders=entryColumns.map((name,index)=>`<th class="summary-column-header" data-summary-column-index="${index}">${esc(name)}</th>`).join('');
       const columnCells=entryColumns.map(fieldMarkup).join('');
       const totalCells=entryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
-      const entryPanel=(selectedSubDepartment===merchandisingSubDepartments[0]||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">Entry</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="shippingQuantity">Shipment Quantity<input name="shippingQuantity" type="number" min="0" placeholder="Shipment Quantity"></label></div><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save Entry</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
+      const entryPanel=(selectedSubDepartment===merchandisingSubDepartments[0]||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">Entry</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="date"></label></div><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save Entry</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
       grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 ${esc(merchandisingName)}</div></div>${children}</div></div>${entryPanel}</div>`;
       const main=grid.querySelector('.summary-department-expand');
       const toggle=()=>{merchandisingExpanded=!merchandisingExpanded;renderMerchandising();};
@@ -2608,24 +2608,39 @@
   #summaryView .summary-saved-entry table{width:100%;margin-top:7px;border-collapse:collapse;font-size:11px}
   #summaryView .summary-saved-entry th,#summaryView .summary-saved-entry td{border:1px solid #d7e5de;padding:4px;text-align:center}
   #summaryView .summary-saved-entry th{background:#eaf6ef;color:#164d3b}
+  #summaryView .summary-saved-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:10px;padding:8px;background:#f1faf5;border:1px solid #cfe2d8;border-radius:7px}
+  #summaryView .summary-saved-toolbar input{flex:1 1 180px;min-width:150px;padding:7px 8px;border:1px solid #b9d5ca;border-radius:5px}
+  #summaryView .summary-saved-toolbar button{min-width:62px;padding:6px 8px;font-size:11px}
+  #summaryView .summary-saved-date{margin-top:8px;padding:7px;border-top:1px solid #d7e5de}
+  #summaryView .summary-saved-date-head{display:flex;flex-wrap:wrap;gap:14px;color:#2b715d;font-size:11px;font-weight:700}
+  #summaryView .summary-merch-meta input[type="date"]{min-height:31px;cursor:pointer}
+  @media print{body.printing-summary-saved *{visibility:hidden!important}body.printing-summary-saved #summaryView,body.printing-summary-saved #summaryView *{visibility:visible!important}body.printing-summary-saved #summaryView{display:block!important;position:absolute;left:0;top:0;width:100%}body.printing-summary-saved .summary-saved-toolbar{display:none!important}body.printing-summary-saved .summary-entry-panel{display:none!important}}
 </style>
 <script>
-  /* Merchandising Entry keyboard flow and saved results. */
+  /* Merchandising Entry keyboard flow, grouped saved pages, search and export tools. */
   (() => {
     const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     const savedEntries = () => { try { return JSON.parse(localStorage.getItem('farnoorMerchandisingEntries') || '[]') || []; } catch { return []; } };
+    const groupEntries = entries => { const groups=[]; const index=new Map(); entries.forEach(entry=>{const style=String(entry.styleNumber||'').trim()||'—';const key=style.toLowerCase();if(!index.has(key)){index.set(key,groups.length);groups.push({style,entries:[]});}groups[index.get(key)].entries.push(entry);});return groups; };
+    const allHeaders = entries => [...new Set(entries.flatMap(entry=>(Array.isArray(entry.rows)?entry.rows:[]).flatMap(row=>Object.keys(row||{}))).filter(key=>!['savedAt','rows'].includes(key)))];
     const renderSaved = form => {
       let panel = form.parentElement.querySelector('.summary-saved-entries');
       if (!panel) { panel = document.createElement('div'); panel.className='summary-saved-entries'; form.after(panel); }
       const entries=savedEntries();
       if (!entries.length) { panel.innerHTML=''; panel.style.display='none'; return; }
       panel.style.display='block';
-      panel.innerHTML='<h4>Saved Entries</h4>'+entries.map((entry,index)=>{
-        const rows=Array.isArray(entry.rows)?entry.rows:[];
-        const headers=rows.length?Object.keys(rows[0]).filter(key=>key!=='savedAt'&&key!=='rows'):[];
-        const cells=row=>headers.map(key=>`<td>${esc(Array.isArray(row)?row[key]||'':row[key]??'')}</td>`).join('');
-        return `<section class="summary-saved-entry"><div class="summary-saved-entry-head"><span>${index+1}.</span><span>Buyer: ${esc(entry.buyerName||'')}</span><span>Style: ${esc(entry.styleNumber||'')}</span><span>Order: ${esc(entry.orderQuantity||'')}</span><span>Shipment: ${esc(entry.shippingQuantity||'')}</span></div>${headers.length&&rows.length?`<table><thead><tr>${headers.map(key=>`<th>${esc(key)}</th>`).join('')}</tr></thead><tbody>${rows.map(cells).join('')}</tbody></table>`:''}</section>`;
+      const groups=groupEntries(entries);
+      const groupedMarkup=groups.map((group,index)=>{
+        const buyer=group.entries[0]?.buyerName||''; const order=group.entries[0]?.orderQuantity||''; const headers=allHeaders(group.entries);
+        const dateBlocks=group.entries.map((entry,dateIndex)=>{const rows=Array.isArray(entry.rows)?entry.rows:[];const cells=row=>headers.map(key=>`<td>${esc(row?.[key]??'')}</td>`).join('');return `<div class="summary-saved-date"><div class="summary-saved-date-head"><span>Date ${dateIndex+1}: ${esc(entry.shippingQuantity||entry.savedAt?.slice(0,10)||'')}</span><span>Saved: ${esc(entry.savedAt?.slice(0,10)||'')}</span></div>${headers.length&&rows.length?`<table><thead><tr>${headers.map(key=>`<th>${esc(key)}</th>`).join('')}</tr></thead><tbody>${rows.map(cells).join('')}</tbody></table>`:''}</div>`;}).join('');
+        return `<section class="summary-saved-entry" data-search="${esc(`${group.style} ${buyer} ${order}`.toLowerCase())}"><div class="summary-saved-entry-head"><strong>${index+1}. Style: ${esc(group.style)}</strong><span>Buyer: ${esc(buyer)}</span><span>Order: ${esc(order)}</span><span>${group.entries.length} date(s)</span></div>${dateBlocks}</section>`;
       }).join('');
+      panel.innerHTML=`<div class="summary-saved-toolbar"><input type="search" class="summary-saved-search" placeholder="Style / Buyer Search"><button type="button" class="secondary summary-saved-search-button">Search</button><button type="button" class="secondary summary-saved-print">Print</button><button type="button" class="secondary summary-saved-pdf">PDF</button><button type="button" class="secondary summary-saved-excel">Excel</button></div><h4>Saved Entries</h4><div class="summary-saved-list">${groupedMarkup}</div>`;
+      const search=panel.querySelector('.summary-saved-search'); const applySearch=()=>{const term=(search.value||'').trim().toLowerCase();panel.querySelectorAll('.summary-saved-entry').forEach(item=>{item.style.display=!term||item.dataset.search.includes(term)?'block':'none';});};
+      search.addEventListener('input',applySearch); panel.querySelector('.summary-saved-search-button').onclick=applySearch;
+      const print=()=>{document.body.classList.add('printing-summary-saved');window.print();window.setTimeout(()=>document.body.classList.remove('printing-summary-saved'),600);};
+      panel.querySelector('.summary-saved-print').onclick=print; panel.querySelector('.summary-saved-pdf').onclick=print;
+      panel.querySelector('.summary-saved-excel').onclick=()=>{const lines=['Style Number,Buyer Name,Order Quantity,Shipment Date,Rows'];groups.forEach(group=>group.entries.forEach(entry=>{const rows=(Array.isArray(entry.rows)?entry.rows:[]).map(row=>Object.values(row||{}).filter((value,index)=>index<6).join(' | ')).join(' / ');lines.push([group.style,entry.buyerName||'',entry.orderQuantity||'',entry.shippingQuantity||'',rows].map(value=>`"${String(value).replace(/"/g,'""')}"`).join(','));}));const blob=new Blob(['\\ufeff'+lines.join('\\r\\n')],{type:'text/csv;charset=utf-8'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='merchandising-saved-entries.csv';link.click();URL.revokeObjectURL(link.href);};
     };
     const setup = form => {
       if (!form || form.dataset.keyboardFlowBound==='1') return;
@@ -2640,6 +2655,12 @@
         event.preventDefault(); event.stopPropagation();
         const list=focusables(); const index=list.indexOf(target); const next=list[index+1];
         if (next) next.focus(); else form.querySelector('[data-summary-save]')?.focus();
+      }, true);
+      form.addEventListener('dblclick', event => {
+        const target=event.target; if (!target.matches('input,select,textarea')) return;
+        event.preventDefault(); event.stopImmediatePropagation(); const current=target.value||''; const next=window.prompt('এই ঘরে লিখুন',current); if(next===null)return; const value=next.trim();
+        if(target.tagName==='SELECT'){let option=[...target.options].find(item=>item.value===value);if(!option){option=document.createElement('option');option.value=value;option.textContent=value;target.append(option);}target.value=value;}else target.value=value;
+        target.dispatchEvent(new Event('input',{bubbles:true}));
       }, true);
       form.querySelectorAll('.summary-merch-remove,[data-summary-row-add]').forEach(button => { button.tabIndex=-1; button.addEventListener('keydown',event=>{event.preventDefault();event.stopImmediatePropagation();},true); });
       form.querySelectorAll('select[aria-label="Size"]').forEach(select=>{if(select.options[0])select.options[0].textContent='Size';});
