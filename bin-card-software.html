@@ -2408,12 +2408,12 @@
     const onlyKey='farnoorManagementMerchandisingOnlySep2026v1';
     try {
       if(!localStorage.getItem(onlyKey)){
-        departments.splice(0,departments.length,'Merchandising');
+        departments.splice(0,departments.length,'Merchandising','Store');
         localStorage.setItem('farnoorDepartments',JSON.stringify(departments));
         localStorage.setItem(onlyKey,'done');
       } else {
         const saved=JSON.parse(localStorage.getItem('farnoorDepartments')||'[]')||[];
-        departments.splice(0,departments.length,...(saved.length?saved:['Merchandising']));
+        departments.splice(0,departments.length,...(saved.length?saved:['Merchandising','Store']));
       }
       window.renderDepartments?.();
       window.renderSummary?.();
@@ -2498,14 +2498,14 @@
     };
     const watchSummaryGrid=()=>{const grid=document.getElementById('departmentButtons');if(!grid||grid.dataset.summaryObserver)return;new MutationObserver(()=>{if(!grid.querySelector('.summary-department-expand'))renderMerchandising();}).observe(grid,{childList:true,subtree:true});grid.dataset.summaryObserver='yes';};
     const enforceMerchandisingOnly=()=>{
-      try { localStorage.setItem('farnoorDepartments',JSON.stringify(['Merchandising'])); } catch {}
+      try { localStorage.setItem('farnoorDepartments',JSON.stringify(['Merchandising','Store'])); } catch {}
       renderMerchandising();
       const select=document.getElementById('entryDepartment');
-      if(select){select.innerHTML='<option value="" disabled>Department নির্বাচন করুন</option><option value="Merchandising">Merchandising</option>';select.value='Merchandising';}
+      if(select){select.innerHTML='<option value="" disabled>Department নির্বাচন করুন</option><option value="Merchandising">Merchandising</option><option value="Store">Store</option>';select.value='Merchandising';}
       const form=document.getElementById('departmentForm');
       if(form)form.style.display='none';
       const status=document.getElementById('departmentStatus');
-      if(status)status.textContent='শুধু Merchandising Department রাখা হয়েছে।';
+      if(status)status.textContent='Merchandising ও Store Department রাখা হয়েছে।';
     };
     watchSummaryGrid();
     enforceMerchandisingOnly();
