@@ -1286,7 +1286,7 @@
     const key = 'farnoorMerchandisingButtonsV2';
     const defaults = {
       base: ['New Input', 'Department Info', 'Department Home'],
-      top: ['Merchandising Entry', 'Merchandising Report', 'Buyer / Order', 'Department'],
+      top: ['Merchandising Entry'],
       inner: ['New Input', 'Report', 'Search', 'Department Home']
     };
     const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
@@ -1337,6 +1337,7 @@
       [...actions.querySelectorAll('button')].slice(0,3).forEach((button,index) => { if (!button.dataset.merchOriginal) button.dataset.merchOriginal = button.textContent.trim(); if (merch) { button.textContent = labels.base[index]; button.dataset.merchType = 'base'; button.dataset.merchIndex = String(index); renameOnRightClick(button); } else { button.textContent = button.dataset.merchOriginal; button.oncontextmenu = null; button.title = ''; } });
       let extras = [...actions.querySelectorAll('.merchandising-extra')];
       labels.top.forEach((item,index) => { let button = extras[index]; if (!button) { button = makeButton(item, 'top', index, () => openInside(item)); actions.append(button); extras.push(button); } button.textContent = item; button.style.setProperty('display', merch ? 'block' : 'none', 'important'); button.onclick = () => openInside(item); renameOnRightClick(button); });
+      extras.slice(labels.top.length).forEach(button => button.remove());
       const inside = ensureInsidePage(); if (inside && !merch) inside.style.display = 'none';
       if (inside && merch && !inside.style.display) inside.style.display = 'none';
     };
@@ -1762,7 +1763,7 @@
       const cardHeading = store?.querySelector('.store-card .card-head h2');
       const head = store?.querySelector('.accessory-table-head');
       const total = store?.querySelector('.accessory-total-row');
-      if (!store || !head || !total || !cardHeading || !String(cardHeading.textContent).toLowerCase().includes('merchandising')) return;
+      if (!store || !head || !total || !cardHeading || !String(cardHeading.textContent).toLowerCase().includes('merchandising') || table.classList.contains('merch-final-table')) return;
       store.classList.add('merchandising-entry-mode');
       ['merchAccessoryStyle','merchAccessoryColor'].forEach(id => document.getElementById(id)?.closest('.store-row')?.remove());
       if (!head.querySelector('.merch-style-heading')) {
