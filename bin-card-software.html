@@ -2479,13 +2479,13 @@
       const isAccessoryColumn=name=>/accessor(y|ies)\s*name/i.test(String(name));
       const isSizeColumn=name=>/^size$/i.test(String(name).trim());
       const optionsMarkup=items=>items.map(item=>`<option value="${esc(item)}">${esc(item)}</option>`).join('');
-      const dropdownMarkup=(name,items)=>`<select aria-label="${esc(name)}"><option value="">${esc(name)} নির্বাচন করুন</option>${optionsMarkup(items)}</select>`;
+      const dropdownMarkup=(name,items)=>`<select aria-label="${esc(name)}"><option value="">${isSizeColumn(name)?'Size':esc(name)+' নির্বাচন করুন'}</option>${optionsMarkup(items)}</select>`;
       const fieldMarkup=name=>isAccessoryColumn(name)||isSizeColumn(name)?`<td data-column-field="${esc(name)}">${dropdownMarkup(name,isAccessoryColumn(name)?entryLists.accessory:entryLists.size)}</td>`:`<td data-column-field="${esc(name)}"><input aria-label="${esc(name)}" placeholder="${esc(name)}"${isNumericColumn(name)?' type="number" min="0"':''}></td>`;
       const columnHeaders=entryColumns.map((name,index)=>`<th class="summary-column-header" data-summary-column-index="${index}">${esc(name)}</th>`).join('');
       const columnCells=entryColumns.map(fieldMarkup).join('');
       const totalCells=entryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
       const entryPanel=(selectedSubDepartment===merchandisingSubDepartments[0]||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">Entry</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="shippingQuantity">Shipment Quantity<input name="shippingQuantity" type="number" min="0" placeholder="Shipment Quantity"></label></div><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save Entry</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
-      grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 ${esc(merchandisingName)}</div></div>${children}</div><div class="summary-department-group summary-production-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-production-department" role="button" tabindex="0" aria-expanded="${productionExpanded}">🏭 Production</div></div>${productionChildren}</div><div class="summary-department-group summary-store-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-store-department" role="button" tabindex="0" aria-expanded="${storeExpanded}">🏬 Store</div></div>${storeChildren}</div><div class="summary-department-group summary-finishing-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-finishing-department" role="button" tabindex="0" aria-expanded="${finishingExpanded}">🏁 Finishing</div></div>${finishingChildren}</div></div>${entryPanel}</div>`;
+      grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 ${esc(merchandisingName)}</div></div>${children}</div></div>${entryPanel}</div>`;
       const main=grid.querySelector('.summary-department-expand');
       const toggle=()=>{merchandisingExpanded=!merchandisingExpanded;renderMerchandising();};
       main?.addEventListener('click',toggle); main?.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}});
@@ -2526,14 +2526,14 @@
     };
     const watchSummaryGrid=()=>{const grid=document.getElementById('departmentButtons');if(!grid||grid.dataset.summaryObserver)return;new MutationObserver(()=>{if(!grid.querySelector('.summary-department-expand'))renderMerchandising();}).observe(grid,{childList:true,subtree:true});grid.dataset.summaryObserver='yes';};
     const enforceMerchandisingOnly=()=>{
-      try { localStorage.setItem('farnoorDepartments',JSON.stringify(['Merchandising','Store','Production','Finishing'])); } catch {}
+      try { localStorage.setItem('farnoorDepartments',JSON.stringify(['Merchandising'])); } catch {}
       renderMerchandising();
       const select=document.getElementById('entryDepartment');
-      if(select){select.innerHTML='<option value="" disabled>Department নির্বাচন করুন</option><option value="Merchandising">Merchandising</option><option value="Store">Store</option><option value="Production">Production</option><option value="Finishing">Finishing</option>';select.value='Merchandising';}
+      if(select){select.innerHTML='<option value="" disabled>Department নির্বাচন করুন</option><option value="Merchandising">Merchandising</option>';select.value='Merchandising';}
       const form=document.getElementById('departmentForm');
       if(form)form.style.display='none';
       const status=document.getElementById('departmentStatus');
-      if(status)status.textContent='Merchandising, Store, Production ও Finishing Department রাখা হয়েছে।';
+      if(status)status.textContent='শুধু Merchandising Department রাখা হয়েছে।';
     };
     watchSummaryGrid();
     enforceMerchandisingOnly();
@@ -2600,5 +2600,55 @@
   #summaryView .summary-department-main.summary-department-expand:hover{filter:brightness(1.08);transform:translateY(-1px)!important}
   #summaryView .summary-department-text-children .summary-department-label{border-color:#b9dfe1!important;border-left-color:#2d8c94!important;background:linear-gradient(135deg,#f2fbf8,#e2f1f7)!important;color:#1c6470!important;box-shadow:0 3px 9px #2d78851c!important}
 </style>
+<style>
+  #summaryView .summary-saved-entries{margin-top:14px;padding-top:12px;border-top:1px solid #c6ddd2}
+  #summaryView .summary-saved-entries h4{margin:0 0 8px;color:#075b45;font-size:15px}
+  #summaryView .summary-saved-entry{margin:0 0 8px;padding:9px;border:1px solid #c6ddd2;border-radius:7px;background:#fff}
+  #summaryView .summary-saved-entry-head{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#164d3b;font-weight:700}
+  #summaryView .summary-saved-entry table{width:100%;margin-top:7px;border-collapse:collapse;font-size:11px}
+  #summaryView .summary-saved-entry th,#summaryView .summary-saved-entry td{border:1px solid #d7e5de;padding:4px;text-align:center}
+  #summaryView .summary-saved-entry th{background:#eaf6ef;color:#164d3b}
+</style>
+<script>
+  /* Merchandising Entry keyboard flow and saved results. */
+  (() => {
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const savedEntries = () => { try { return JSON.parse(localStorage.getItem('farnoorMerchandisingEntries') || '[]') || []; } catch { return []; } };
+    const renderSaved = form => {
+      let panel = form.parentElement.querySelector('.summary-saved-entries');
+      if (!panel) { panel = document.createElement('div'); panel.className='summary-saved-entries'; form.after(panel); }
+      const entries=savedEntries();
+      if (!entries.length) { panel.innerHTML=''; panel.style.display='none'; return; }
+      panel.style.display='block';
+      panel.innerHTML='<h4>Saved Entries</h4>'+entries.map((entry,index)=>{
+        const rows=Array.isArray(entry.rows)?entry.rows:[];
+        const headers=rows.length?Object.keys(rows[0]).filter(key=>key!=='savedAt'&&key!=='rows'):[];
+        const cells=row=>headers.map(key=>`<td>${esc(Array.isArray(row)?row[key]||'':row[key]??'')}</td>`).join('');
+        return `<section class="summary-saved-entry"><div class="summary-saved-entry-head"><span>${index+1}.</span><span>Buyer: ${esc(entry.buyerName||'')}</span><span>Style: ${esc(entry.styleNumber||'')}</span><span>Order: ${esc(entry.orderQuantity||'')}</span><span>Shipment: ${esc(entry.shippingQuantity||'')}</span></div>${headers.length&&rows.length?`<table><thead><tr>${headers.map(key=>`<th>${esc(key)}</th>`).join('')}</tr></thead><tbody>${rows.map(cells).join('')}</tbody></table>`:''}</section>`;
+      }).join('');
+    };
+    const setup = form => {
+      if (!form || form.dataset.keyboardFlowBound==='1') return;
+      form.dataset.keyboardFlowBound='1';
+      const focusables = () => [...form.querySelectorAll('input,select,textarea,button')].filter(element => !element.disabled && element.tabIndex!==-1 && !element.matches('.summary-merch-remove,[data-summary-row-add]'));
+      form.addEventListener('keydown', event => {
+        if (event.key!=='Enter') return;
+        const target=event.target;
+        if (target.matches('.summary-merch-remove,[data-summary-row-add]')) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+        if (target.matches('[data-summary-save]')) { event.preventDefault(); target.click(); return; }
+        if (!target.matches('input,select,textarea')) return;
+        event.preventDefault(); event.stopPropagation();
+        const list=focusables(); const index=list.indexOf(target); const next=list[index+1];
+        if (next) next.focus(); else form.querySelector('[data-summary-save]')?.focus();
+      }, true);
+      form.querySelectorAll('.summary-merch-remove,[data-summary-row-add]').forEach(button => { button.tabIndex=-1; button.addEventListener('keydown',event=>{event.preventDefault();event.stopImmediatePropagation();},true); });
+      form.querySelectorAll('select[aria-label="Size"]').forEach(select=>{if(select.options[0])select.options[0].textContent='Size';});
+      form.querySelector('[data-summary-save]')?.addEventListener('click',()=>window.setTimeout(()=>renderSaved(form),0));
+      renderSaved(form);
+    };
+    const watch = () => { document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(setup); };
+    watch(); window.setInterval(watch,300);
+  })();
+</script>
 </body>
 </html>
