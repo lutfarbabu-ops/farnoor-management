@@ -2519,5 +2519,31 @@
     bind();window.setInterval(bind,400);
   })();
 </script>
+<script>
+  /* Merchandising পেজে শুধু Entry বোতামটি দৃশ্যমান রাখি এবং পুরোনো ডুপ্লিকেট হেডার সরাই। */
+  (()=>{
+    const clean=value=>String(value||'').trim().toLowerCase().replace(/[\s_-]+/g,'');
+    const cleanMerchandisingPage=()=>{
+      const page=document.getElementById('departmentPageView');
+      const heading=page?.querySelector('.department-page-head h2');
+      if(page&&clean(heading?.textContent).includes('merchandising')){
+        const actions=page.querySelector('.department-page-actions');
+        if(actions){
+          const extras=[...actions.querySelectorAll('.merchandising-extra')];
+          extras.forEach((button,index)=>{if(index===0){button.textContent='Merchandising Entry';button.style.setProperty('display','block','important');}else button.remove();});
+          actions.querySelectorAll('button:not(.merchandising-extra)').forEach(button=>button.style.setProperty('display','none','important'));
+        }
+      }
+      const table=document.querySelector('#storeView.merchandising-entry-mode .merch-final-table');
+      const head=table?.querySelector('.accessory-table-head');
+      if(head){
+        const line=head.querySelector('.merch-header-line');
+        [...head.children].forEach(child=>{if(child!==line)child.remove();});
+      }
+    };
+    cleanMerchandisingPage();
+    window.setInterval(cleanMerchandisingPage,350);
+  })();
+</script>
 </body>
 </html>
