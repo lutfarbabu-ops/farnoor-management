@@ -2944,7 +2944,7 @@
   /* Entry Report actions: print the saved report and rename its heading. */
   (() => {
     const reportNameKey='farnoorMerchandisingEntryReportNameV1';
-      const bind=()=>{const panel=document.querySelector('#summaryView .summary-entry-report-panel'); if(!panel)return; const title=panel.querySelector('[data-report-title]'); try{const savedName=localStorage.getItem(reportNameKey);title.textContent=savedName&&savedName!=='Entry Report'?savedName:'Merchandising Report';}catch{};
+      const bind=()=>{const panel=document.querySelector('#summaryView .summary-entry-report-panel'); if(!panel)return; const title=panel.querySelector('[data-report-title]'); const requested=panel.querySelector('.summary-entry-report-content')?.getAttribute('aria-label')||''; try{const savedName=localStorage.getItem(reportNameKey);title.textContent=requested==='Booking Report'?'Booking Report':(savedName&&savedName!=='Entry Report'?savedName:'Merchandising Report');}catch{};
       const print=panel.querySelector('.summary-report-print'); if(print&&!print.dataset.bound){print.dataset.bound='1'; print.onclick=()=>{document.body.classList.add('printing-entry-report');window.print();window.setTimeout(()=>document.body.classList.remove('printing-entry-report'),700);};}
       const rename=panel.querySelector('.summary-report-rename'); if(rename&&!rename.dataset.bound){rename.dataset.bound='1'; rename.onclick=()=>{const next=window.prompt('রিপোর্টের নতুন নাম লিখুন',title.textContent||'Merchandising Report');if(!next?.trim())return;try{localStorage.setItem(reportNameKey,next.trim());}catch{} title.textContent=next.trim();};}
     };
