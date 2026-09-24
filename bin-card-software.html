@@ -3250,7 +3250,7 @@
       const form=root.querySelector('.summary-merch-entry-form');
       const wrap=form?.querySelector('.summary-merch-table-wrap');
       if(!entryButton||!form||!wrap||form.dataset.entryRowLayout==='v2')return;
-      wrap.innerHTML=`<table class="merch-entry-row-table"><thead><tr><th class="merch-entry-sl">SL</th>${defs.map(def=>`<th>${def.key}</th>`).join('')}<th aria-hidden="true"></th></tr></thead><tbody>${rowMarkup(1)}</tbody></table>`;
+      wrap.innerHTML=`<table class="merch-entry-row-table"><thead><tr><th class="merch-entry-sl">SL</th>${defs.map(def=>`<th>${def.key}</th>`).join('')}<th aria-hidden="true"></th></tr></thead><tbody>${Array.from({length:6},(_,index)=>rowMarkup(index+1)).join('')}</tbody></table>`;
       const replaceButton=selector=>{const old=form.querySelector(selector);if(!old)return null;const fresh=old.cloneNode(true);old.replaceWith(fresh);return fresh;};
       const addButton=replaceButton('[data-summary-row-add]');
       const saveButton=replaceButton('[data-summary-save]');
@@ -3267,7 +3267,7 @@
         saved.push({buyerName:first['Buyer Name']||'',styleNumber:first['Style Number']||'',itemName:first['Item Name']||'',orderQuantity:first['Order Quantity']||'',orderDate:first['Order Date']||'',entryDate:form.querySelector('[name="entryDate"]')?.value.trim()||'',shippingQuantity:first['Shipment Date']||'',rows,savedAt:new Date().toISOString()});
         localStorage.setItem('farnoorMerchandisingEntries',JSON.stringify(saved));
         const status=form.querySelector('.summary-merch-status');if(status)status.textContent='Entry saved successfully.';
-        tbody.innerHTML=rowMarkup(1);
+        tbody.innerHTML=Array.from({length:6},(_,index)=>rowMarkup(index+1)).join('');
         bindDelete();bindDateFields();
         window.setTimeout(()=>root.querySelector('[data-summary-subdepartment="Entry Report"]')?.click(),80);
       });
@@ -3306,8 +3306,8 @@
   #summaryView .summary-department-side .summary-department-child{max-width:220px!important}
   #summaryView .summary-entry-panel.merch-entry-large{margin-left:0!important}
   #summaryView .merch-entry-row-table td input{min-height:52px!important;padding-top:12px!important;padding-bottom:12px!important}
-  #summaryView .merch-entry-row-table .merch-entry-row-delete{width:22px!important;padding:2px!important}
-  #summaryView .merch-entry-row-table .merch-entry-row-delete button{width:18px!important;height:18px!important;font-size:12px!important;line-height:14px!important}
+  #summaryView .merch-entry-row-table .merch-entry-row-delete{width:16px!important;padding:0!important}
+  #summaryView .merch-entry-row-table .merch-entry-row-delete button{width:14px!important;height:16px!important;font-size:11px!important;line-height:12px!important}
 </style>
 </body>
 </html>
