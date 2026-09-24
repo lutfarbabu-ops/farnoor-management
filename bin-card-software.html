@@ -3060,6 +3060,13 @@
   @page{size:A4 portrait;margin:10mm}
   @media print{html,body.printing-entry-report{height:auto!important;min-height:0!important;margin:0!important;overflow:hidden!important}body.printing-entry-report #summaryView{position:fixed!important;left:0!important;top:0!important;height:auto!important;min-height:0!important;overflow:visible!important}body.printing-entry-report #summaryView .summary-entry-report-item.print-target{border:0!important;outline:0!important;box-shadow:none!important;margin:0!important;max-height:270mm!important;overflow:hidden!important;page-break-before:avoid!important;page-break-after:avoid!important;break-before:avoid!important;break-after:avoid!important}}
   @media print{body.printing-entry-report #summaryView .department-panel{display:block!important;visibility:visible!important;background:#fff!important;border:0!important;padding:0!important;margin:0!important;box-shadow:none!important}body.printing-entry-report #summaryView .department-panel>h3,body.printing-entry-report #summaryView .department-panel>p,body.printing-entry-report #summaryView .department-panel>.department-form,body.printing-entry-report #summaryView .department-panel>.small{display:none!important}body.printing-entry-report #summaryView .department-panel>.department-grid{display:block!important;visibility:visible!important;width:100%!important;margin:0!important;padding:0!important}}
+  /* Keep Merchandising sub-departments in the same boxed style as Production. */
+  #summaryView .summary-department-text-children .summary-subdepartment-text,
+  #summaryView .summary-department-text-children .summary-production-subdepartment-text{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;margin:4px 0!important;padding:8px 12px!important;border:1px solid #b9dfe1!important;border-left:3px solid #2d8c94!important;border-radius:8px!important;background:linear-gradient(135deg,#f2fbf8,#e2f1f7)!important;color:#1c6470!important;box-shadow:0 3px 9px #2d78851c!important;box-sizing:border-box!important;text-decoration:none!important}
+  #summaryView .summary-department-text-children .summary-subdepartment-text:hover,
+  #summaryView .summary-department-text-children .summary-subdepartment-text.selected,
+  #summaryView .summary-department-text-children .summary-production-subdepartment-text:hover,
+  #summaryView .summary-department-text-children .summary-production-subdepartment-text.selected{background:#d9f0e5!important;color:#075b45!important}
 </style>
 </body>
 </html>
