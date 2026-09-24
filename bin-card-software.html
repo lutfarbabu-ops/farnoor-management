@@ -2922,7 +2922,12 @@
       const all=read(), matches=Number.isInteger(entryIndex)&&all[entryIndex]?[all[entryIndex]]:all.filter(e=>styleOf(e).toLowerCase()===String(styleText).toLowerCase()); if(!matches.length)return;
       const first=matches[0], rows=matches.flatMap(e=>Array.isArray(e.rows)?e.rows:[]), value=(e,names)=>{for(const n of names){if(e?.[n]!==undefined&&e?.[n]!==null&&String(e[n]).trim())return e[n];}return '';};
       const overlay=document.createElement('div'); overlay.className='summary-report-editor-overlay';
-      overlay.innerHTML=`<div class="summary-report-editor" role="dialog" aria-modal="true"><div class="summary-report-editor-head"><h3>Edit Entry Report</h3><button type="button" class="summary-report-editor-close">×</button></div><div class="summary-report-editor-meta"><label>Buyer Name<input name="buyerName" value="${esc(value(first,['buyerName','buyer']))}"></label><label>Style Number<input name="styleNumber" value="${esc(styleText)}"></label><label>Order Quantity<input name="orderQuantity" value="${esc(value(first,['orderQuantity','order']))}"></label><label>Entry Date<input name="entryDate" value="${esc(value(first,['entryDate']))}"></label><label>Shipment Date<input name="shippingQuantity" value="${esc(value(first,['shippingQuantity','shippingDate']))}"></label></div><table><thead><tr><th>Style Number</th><th>Accessories Name</th><th>Color</th><th>Size</th><th>Quantity</th><th>Total Quantity</th></tr></thead><tbody>${rows.map(row=>`<tr>${[['Style Number',['Style Number','Style No']],[ 'Accessories Name',['Accessories Name','Accessories']],[ 'Color',['Color']],[ 'Size',['Size']],[ 'Quantity',['Quantity','Qty/Quantity','QTY']],[ 'Total Quantity',['Total Quantity','Quantity','Qty/Quantity','QTY']]].map(([label,names])=>`<td><input data-column="${label}" value="${esc(value(row,names))}"></td>`).join('')}</tr>`).join('')}</tbody></table><div class="summary-report-editor-actions"><button type="button" class="secondary summary-report-editor-cancel">Cancel</button><button type="button" class="primary summary-report-editor-save">Save Changes</button></div></div>`;
+      const savedHeaders=[...new Set(rows.flatMap(row=>Object.keys(row||{}).map(String).filter(name=>name.trim()&&String(name).trim().toLowerCase()!=='sl')))];
+      const dataHeaders=savedHeaders.length?savedHeaders:['Style Number','Accessories Name','Color','Size','Quantity','Total Quantity'];
+      const headers=['SL',...dataHeaders];
+      const headerMarkup=headers.map(header=>`<th>${esc(header)}</th>`).join('');
+      const rowMarkup=rows.map((row,rowIndex)=>`<tr>${headers.map(header=>header==='SL'?`<td class="report-editor-sl">${rowIndex+1}</td>`:`<td><input data-column="${esc(header)}" value="${esc(row?.[header]??'')}"></td>`).join('')}</tr>`).join('');
+      overlay.innerHTML=`<div class="summary-report-editor" role="dialog" aria-modal="true"><div class="summary-report-editor-head"><h3>Edit Entry Report</h3><button type="button" class="summary-report-editor-close">×</button></div><table><thead><tr>${headerMarkup}</tr></thead><tbody>${rowMarkup}</tbody></table><div class="summary-report-editor-actions"><button type="button" class="secondary summary-report-editor-cancel">Cancel</button><button type="button" class="primary summary-report-editor-save">Save Changes</button></div></div>`;
       document.body.append(overlay); const close=()=>overlay.remove(); overlay.querySelector('.summary-report-editor-close').onclick=close; overlay.querySelector('.summary-report-editor-cancel').onclick=close;
       overlay.querySelector('.summary-report-editor-save').onclick=()=>{const form=overlay.querySelector('.summary-report-editor-meta');const updated={...first,buyerName:form.querySelector('[name="buyerName"]').value.trim(),styleNumber:form.querySelector('[name="styleNumber"]').value.trim()||styleText,orderQuantity:form.querySelector('[name="orderQuantity"]').value.trim(),entryDate:form.querySelector('[name="entryDate"]').value.trim(),shippingQuantity:form.querySelector('[name="shippingQuantity"]').value.trim(),rows:[...overlay.querySelectorAll('tbody tr')].map(row=>Object.fromEntries([...row.querySelectorAll('input[data-column]')].map(input=>[input.dataset.column,input.value.trim()])))};let result;if(Number.isInteger(entryIndex)&&all[entryIndex]){result=all.map((entry,index)=>index===entryIndex?updated:entry);}else{result=[];let inserted=false;all.forEach(entry=>{if(styleOf(entry).toLowerCase()===String(styleText).toLowerCase()){if(!inserted){result.push(updated);inserted=true;}}else result.push(entry);});if(!inserted)result.push(updated);}localStorage.setItem('farnoorMerchandisingEntries',JSON.stringify(result));close();content.dataset.groupSignature='';content.dataset.actionSignature='';};
     };
@@ -3262,7 +3267,7 @@
       addButton?.addEventListener('click',()=>{tbody.insertAdjacentHTML('beforeend',rowMarkup(tbody.querySelectorAll('tr').length+1));bindDelete();bindDateFields();});
       saveButton?.addEventListener('click',()=>{
         tbody.querySelectorAll('input[name="orderDate"],input[name="shippingQuantity"]').forEach(input=>{input.value=normalizeDate(input.value);});
-        const rows=[...tbody.querySelectorAll('tr')].map(row=>Object.fromEntries([...row.querySelectorAll('[data-column-field]')].map(cell=>[cell.dataset.columnField,cell.querySelector('input')?.value.trim()||''])));
+        const rows=[...tbody.querySelectorAll('tr')].map(row=>Object.fromEntries([...row.querySelectorAll('[data-column-field]')].map(cell=>[cell.dataset.columnField,cell.querySelector('input,select')?.value.trim()||'']))).filter(row=>Object.values(row).some(value=>String(value||'').trim()));
         const first=rows[0]||{};let saved=[];try{saved=JSON.parse(localStorage.getItem('farnoorMerchandisingEntries')||'[]')||[];}catch{}
         saved.push({buyerName:first['Buyer Name']||'',styleNumber:first['Style Number']||'',itemName:first['Item Name']||'',orderQuantity:first['Order Quantity']||'',orderDate:first['Order Date']||'',entryDate:form.querySelector('[name="entryDate"]')?.value.trim()||'',shippingQuantity:first['Shipment Date']||'',rows,savedAt:new Date().toISOString()});
         localStorage.setItem('farnoorMerchandisingEntries',JSON.stringify(saved));
@@ -3309,5 +3314,272 @@
   #summaryView .merch-entry-row-table .merch-entry-row-delete{width:16px!important;padding:0!important}
   #summaryView .merch-entry-row-table .merch-entry-row-delete button{width:14px!important;height:16px!important;font-size:11px!important;line-height:12px!important}
 </style>
+<style>
+  /* Match the compact Date box and keep the row-delete column narrow. */
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta{display:grid!important;grid-template-columns:1fr!important;justify-items:start!important}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label{grid-template-columns:120px 230px!important;width:350px!important;max-width:100%!important}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label input{width:230px!important;max-width:230px!important}
+  #summaryView .merch-entry-row-table{table-layout:auto!important}
+  #summaryView .merch-entry-row-table th:last-child,#summaryView .merch-entry-row-table td:last-child{width:16px!important;min-width:16px!important;max-width:16px!important;padding-left:0!important;padding-right:0!important}
+  /* Match the reference layout: a wide left department rail and a full-width work area. */
+  #summaryView .summary-management-layout{grid-template-columns:minmax(300px,330px) minmax(0,1fr)!important;gap:18px!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+  #summaryView .summary-department-side{width:100%!important;box-sizing:border-box!important;padding-left:0!important;padding-right:12px!important}
+  #summaryView .summary-department-side .summary-department-main,
+  #summaryView .summary-department-side .summary-department-child{width:100%!important;max-width:none!important;box-sizing:border-box!important}
+  #summaryView .summary-entry-panel,
+  #summaryView .summary-entry-report-panel,
+  #summaryView .summary-merch-home-panel,
+  #summaryView .summary-home-blank{width:100%!important;max-width:none!important;box-sizing:border-box!important}
+  /* Keep the minus control outside the data grid instead of reserving a visible column for it. */
+  #summaryView .merch-entry-row-table{overflow:visible!important}
+  #summaryView .merch-entry-row-table th:last-child,
+  #summaryView .merch-entry-row-table td:last-child{width:0!important;min-width:0!important;max-width:0!important;padding:0!important;border:0!important;background:transparent!important;position:relative!important;overflow:visible!important}
+  #summaryView .merch-entry-row-table td:last-child button{position:absolute!important;left:100%!important;top:50%!important;transform:translate(5px,-50%)!important;width:16px!important;height:18px!important;padding:0!important;font-size:12px!important;line-height:16px!important;z-index:3!important}
+  #summaryView .summary-entry-panel .summary-merch-table-wrap{overflow-x:visible!important;padding-right:22px!important}
+  /* Department Control belongs at the far right of the Management Summary heading. */
+  #summaryView>.summary-head{position:relative!important;display:block!important;text-align:center!important;padding-right:0!important}
+  #summaryView>.summary-head #departmentControlButton{position:absolute!important;right:0!important;top:0!important;margin:0!important}
+  @media(max-width:850px){#summaryView .summary-management-layout{grid-template-columns:minmax(220px,270px) minmax(0,1fr)!important;gap:10px!important}#summaryView>.summary-head #departmentControlButton{position:static!important;margin-top:8px!important}}
+</style>
+<script>
+  /* Keep fixed Entry labels editable for Super Admin even after the form re-renders. */
+  (()=>{
+    const key='farnoorMerchandisingEntryLabelsV1';
+    const isSuper=()=>{try{const s=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null')||{};const role=String(s.department||'').trim().toLowerCase().replace(/[\s_-]+/g,'');return ['superadmin','owner','alldepartments'].includes(role)||['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(s.email||'').trim().toLowerCase());}catch{return false;}};
+    document.addEventListener('contextmenu',event=>{
+      const el=event.target?.closest?.('[data-fixed-label]');
+      if(!el||!isSuper())return;
+      event.preventDefault();event.stopPropagation();
+      let labels={};try{labels=JSON.parse(localStorage.getItem(key)||'{}')||{};}catch{}
+      const current=String(labels[el.dataset.fixedLabel]??(el.tagName==='LABEL'?el.firstChild?.nodeValue:el.textContent)).trim();
+      const next=window.prompt('এই লেখার নতুন নাম লিখুন',current);
+      if(!next?.trim())return;
+      labels[el.dataset.fixedLabel]=next.trim();
+      localStorage.setItem(key,JSON.stringify(labels));
+      if(el.tagName==='LABEL'){if(el.firstChild)el.firstChild.nodeValue=next.trim();const input=el.querySelector('input');if(input)input.placeholder=next.trim();}
+      else el.textContent=next.trim();
+    },true);
+  })();
+</script>
+<style>
+  /* Final compact management layout: smaller Merchandising rail and earlier work area. */
+  #summaryView .summary-management-layout{grid-template-columns:minmax(240px,250px) minmax(0,1fr)!important;gap:8px!important;margin-left:0!important;margin-right:0!important}
+  #summaryView .summary-department-side{padding:8px 8px 8px 0!important}
+  #summaryView .summary-department-side .summary-department-main,
+  #summaryView .summary-department-side .summary-department-child{width:100%!important;max-width:250px!important;box-sizing:border-box!important}
+  #summaryView .summary-department-side .summary-department-main{padding:7px 10px!important;font-size:15px!important;line-height:1.15!important;min-height:0!important}
+  #summaryView .summary-department-side .summary-department-child{padding:6px 10px!important;font-size:13px!important;line-height:1.15!important}
+  #summaryView .summary-entry-panel,
+  #summaryView .summary-entry-report-panel,
+  #summaryView .summary-merch-home-panel{margin-left:0!important;padding-left:18px!important}
+  #summaryView>.summary-head #departmentControlButton{right:24px!important}
+  @media(max-width:850px){#summaryView .summary-management-layout{grid-template-columns:minmax(210px,230px) minmax(0,1fr)!important;gap:7px!important}#summaryView>.summary-head #departmentControlButton{right:auto!important}}
+</style>
+<style>
+  /* Extra-left compact rail requested for the Management Summary. */
+  #summaryView .summary-management-layout{grid-template-columns:minmax(198px,205px) minmax(0,1fr)!important;gap:4px!important}
+  #summaryView .summary-department-side{padding-right:4px!important}
+  #summaryView .summary-department-side .summary-department-main,
+  #summaryView .summary-department-side .summary-department-child{max-width:205px!important}
+  #summaryView .summary-department-side .summary-department-main{padding-left:7px!important;padding-right:7px!important;font-size:14px!important}
+  #summaryView .summary-department-side .summary-department-child{padding-left:7px!important;padding-right:7px!important;font-size:12px!important}
+  #summaryView .summary-entry-panel,
+  #summaryView .summary-entry-report-panel,
+  #summaryView .summary-merch-home-panel{padding-left:14px!important}
+</style>
+<style>
+  /* Compact Entry rows while keeping the row-action button unchanged. */
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap th,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap td{min-height:0!important;padding:6px 6px!important;font-size:14px!important;line-height:1.15!important}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap input,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap select{min-height:36px!important;height:36px!important;padding:6px 7px!important;font-size:14px!important;line-height:1.1!important}
+  #summaryView .summary-entry-panel.merch-entry-large .merch-entry-row-delete button,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-remove{width:14px!important;height:16px!important;min-height:16px!important;padding:0!important;font-size:11px!important;line-height:14px!important}
+  /* Date, Shipment Date and Order Quantity fields use a narrower input box. */
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label:has(input[name="orderQuantity"]),
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label:has(input[name="entryDate"]),
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label:has(input[name="shippingQuantity"]){width:270px!important;grid-template-columns:120px 150px!important}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label:has(input[name="orderQuantity"]) input,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label:has(input[name="entryDate"]) input,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label:has(input[name="shippingQuantity"]) input{width:150px!important;max-width:150px!important;min-height:38px!important;height:38px!important;padding:7px 9px!important;font-size:15px!important}
+</style>
+<style>
+  /* Make the main company header shorter without removing any controls. */
+  #appShell>header{padding:10px clamp(12px,3vw,38px)!important;gap:10px!important}
+  #appShell>header .brand-wrap{gap:7px!important}
+  #appShell>header .brand-logo{width:40px!important;height:40px!important}
+  #appShell>header h1{font-size:clamp(18px,2.2vw,25px)!important;letter-spacing:1.7px!important;margin-bottom:1px!important;line-height:1!important}
+  #appShell>header p{font-size:11px!important;line-height:1.1!important}
+  #appShell>header .user-area{gap:6px!important}
+  #appShell>header .welcome{font-size:10px!important}
+  #appShell>header .profile-avatar{width:31px!important;height:31px!important}
+  #appShell>header .profile-edit,
+  #appShell>header .logout{padding:5px 8px!important;font-size:11px!important}
+  #appShell>header .badge{padding:5px 8px!important;font-size:10px!important;letter-spacing:.7px!important}
+
+  /* Keep Entry rows close together while leaving a comfortable input height. */
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap table{border-spacing:0!important;border-collapse:collapse!important}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap th,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap td{padding-top:3px!important;padding-bottom:3px!important;line-height:1.05!important}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap input,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap select{height:40px!important;min-height:40px!important;padding-top:7px!important;padding-bottom:7px!important}
+</style>
+<script>
+  /* Entry rows inherit the first row's Color until a lower row is changed manually. */
+  (()=>{
+    const rowsOf=form=>[...form.querySelectorAll('.summary-merch-table-wrap tbody tr')];
+    const colorField=row=>[...row.querySelectorAll('[data-column-field]')].find(cell=>String(cell.dataset.columnField||'').trim().toLowerCase()==='color')?.querySelector('input,select');
+    const syncBlankRows=form=>{
+      const rows=rowsOf(form),first=colorField(rows[0]);
+      if(!first||!String(first.value||'').trim())return;
+      rows.slice(1).filter(row=>row.style.display!=='none').forEach(row=>{const field=colorField(row);if(field&&!String(field.value||'').trim()){field.value=first.value;field.dataset.colorSynced='yes';}});
+    };
+    const bind=form=>{
+      if(form.dataset.colorSyncBound==='yes')return;
+      form.dataset.colorSyncBound='yes';
+      form.addEventListener('change',event=>{
+        const field=event.target?.closest?.('[data-column-field="Color"] input,[data-column-field="Color"] select');
+        if(!field)return;
+        const row=field.closest('tr'),rows=rowsOf(form);
+        if(row===rows[0])syncBlankRows(form);else field.dataset.colorSynced='no';
+      });
+      form.addEventListener('input',event=>{
+        const field=event.target?.closest?.('[data-column-field="Color"] input');
+        if(!field)return;
+        const row=field.closest('tr'),rows=rowsOf(form);
+        if(row===rows[0])syncBlankRows(form);else field.dataset.colorSynced='no';
+      });
+    };
+    const apply=()=>document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(form=>{bind(form);syncBlankRows(form);});
+    apply();window.setInterval(apply,300);
+  })();
+</script>
+<script>
+  /* Enter advances left-to-right, then starts the next Entry row. */
+  (()=>{
+    const bind=form=>{
+      if(form.dataset.verticalEnterBound==='yes')return;
+      form.dataset.verticalEnterBound='yes';
+      form.addEventListener('keydown',event=>{
+        if(event.key!=='Enter'||event.target?.matches?.('button,textarea'))return;
+        const field=event.target.closest?.('[data-column-field] input,[data-column-field] select');
+        if(!field)return;
+        const row=field.closest('tr'),rows=[...form.querySelectorAll('.summary-merch-table-wrap tbody tr')];
+        if(!row)return;
+        event.preventDefault();event.stopImmediatePropagation();
+        const cells=[...row.querySelectorAll('[data-column-field]')],cell=field.closest('[data-column-field]'),columnIndex=cells.indexOf(cell),rowIndex=rows.indexOf(row);
+        let nextRow=row,nextIndex=columnIndex+1;
+        if(nextIndex>=cells.length){nextIndex=0;nextRow=rows[rowIndex+1];}
+        if(!nextRow){form.querySelector('[data-summary-row-add]')?.click();nextRow=form.querySelectorAll('.summary-merch-table-wrap tbody tr')[rowIndex+1];}
+        if(nextRow&&nextRow.dataset.entryRowVisible!=='yes'){window.revealEntryNextRow?.(form,row,true);nextRow=form.querySelectorAll('.summary-merch-table-wrap tbody tr')[rowIndex+1];}
+        if(nextRow){nextRow.style.display='';nextRow.dataset.entryRowVisible='yes';}
+        const nextField=nextRow?.querySelectorAll('[data-column-field]')[nextIndex]?.querySelector('input,select');
+        if(nextField){nextField.focus();if(typeof nextField.select==='function')nextField.select();}
+      },true);
+    };
+    const apply=()=>document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(bind);
+    apply();window.setInterval(apply,300);
+  })();
+</script>
+<script>
+  /* Reveal one Entry row at a time; do not show all blank rows at once. */
+  (()=>{
+    const rowsOf=form=>[...form.querySelectorAll('.summary-merch-table-wrap tbody tr')];
+    const fieldsOf=row=>[...row.querySelectorAll('[data-column-field] input,[data-column-field] select')];
+    const fieldKey=field=>String(field.closest('[data-column-field]')?.dataset.columnField||field.name||'').trim();
+    const lowerRowEditable=key=>/^(item\s*name|quantity|qty|order\s*quantity)$/i.test(String(key||''));
+    const copyValues=(source,target)=>{
+      const sourceFields=fieldsOf(source),targetFields=fieldsOf(target);
+      sourceFields.forEach((field,index)=>{const targetField=targetFields[index];if(!targetField)return;if(!String(targetField.value||'').trim())targetField.value=field.value;targetField.dataset.autoCopied='yes';if(lowerRowEditable(fieldKey(targetField))){targetField.readOnly=false;targetField.disabled=false;targetField.tabIndex=0;}else{if(targetField.tagName==='SELECT')targetField.disabled=true;else targetField.readOnly=true;targetField.tabIndex=-1;}});
+    };
+    const revealNext=(form,row,force=false)=>{
+      const rows=rowsOf(form),rowIndex=rows.indexOf(row),fields=fieldsOf(row);
+      if(rowIndex<0||!fields.length||(!force&&!fields.every(field=>String(field.value||'').trim())))return;
+      const next=rows[rowIndex+1];
+      if(!next||next.dataset.entryRowVisible==='yes')return;
+      next.style.display='';next.dataset.entryRowVisible='yes';copyValues(row,next);
+    };
+    const setup=form=>{
+      const rows=rowsOf(form);
+      rows.forEach((row,index)=>{if(index>0&&row.dataset.entryRowVisible!=='yes')row.style.display='none';});
+    };
+    const bind=form=>{
+      if(form.dataset.sequentialRowsBound==='yes')return;
+      form.dataset.sequentialRowsBound='yes';
+      const handle=event=>{
+        const field=event.target?.closest?.('[data-column-field] input,[data-column-field] select');
+        const row=field?.closest('tr');if(!field||!row)return;
+        const cells=[...row.querySelectorAll('[data-column-field]')],cell=field.closest('[data-column-field]');
+        const editableCells=cells.filter(item=>{const control=item.querySelector('input,select');return control&&!control.disabled&&!control.readOnly;});
+        if(editableCells.indexOf(cell)!==editableCells.length-1)return;
+        revealNext(form,row);
+      };
+      form.addEventListener('input',handle,true);form.addEventListener('change',handle,true);
+    };
+    window.revealEntryNextRow=(form,row,force=false)=>revealNext(form,row,force);
+    const apply=()=>document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(form=>{bind(form);setup(form);});
+    apply();window.setInterval(apply,250);
+  })();
+</script>
+<script>
+  /* Final row navigation: Enter moves across, then starts the next row. */
+  (()=>{
+    document.addEventListener('keydown',event=>{
+      if(event.key!=='Enter')return;
+      const field=event.target?.closest?.('#summaryView .summary-merch-entry-form .summary-merch-table-wrap tbody tr input,#summaryView .summary-merch-entry-form .summary-merch-table-wrap tbody tr select');
+      if(!field)return;
+      const form=field.closest('form'),row=field.closest('tr');if(!form||!row)return;
+      const rows=[...form.querySelectorAll('.summary-merch-table-wrap tbody tr')],cells=[...row.querySelectorAll('td')].filter(item=>{const control=item.querySelector('input,select');return control&&!control.disabled&&!control.readOnly;}),cell=field.closest('td'),columnIndex=cells.indexOf(cell),rowIndex=rows.indexOf(row);
+      if(columnIndex<0||rowIndex<0)return;
+      event.preventDefault();event.stopImmediatePropagation();
+      let nextRow=row,nextIndex=columnIndex+1;
+      if(nextIndex>=cells.length){nextIndex=0;nextRow=rows[rowIndex+1];}
+      if(!nextRow){form.querySelector('[data-summary-row-add]')?.click();nextRow=form.querySelectorAll('.summary-merch-table-wrap tbody tr')[rowIndex+1];}
+      if(nextRow&&nextRow.dataset.entryRowVisible!=='yes'){window.revealEntryNextRow?.(form,row,true);nextRow=form.querySelectorAll('.summary-merch-table-wrap tbody tr')[rowIndex+1];}
+      if(nextRow){nextRow.style.display='';nextRow.dataset.entryRowVisible='yes';}
+      const nextField=nextRow?[...nextRow.querySelectorAll('td')].filter(item=>{const control=item.querySelector('input,select');return control&&!control.disabled&&!control.readOnly;})[nextIndex]?.querySelector('input,select'):null;
+      if(nextField){nextField.focus();if(typeof nextField.select==='function')nextField.select();}
+    },true);
+  })();
+</script>
+<script>
+  /* Entry Report tables use the exact column names saved with each file. */
+  (()=>{
+    const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const read=()=>{try{return JSON.parse(localStorage.getItem('farnoorMerchandisingEntries')||'[]')||[];}catch{return[];}};
+    const apply=()=>{
+      const content=document.querySelector('#summaryView .summary-entry-report-content');if(!content)return;
+      const entries=read();content.querySelectorAll('.summary-entry-report-item[data-entry-index]').forEach(item=>{
+        const index=Number(item.dataset.entryIndex),entry=Number.isInteger(index)?entries[index]:null,rows=Array.isArray(entry?.rows)?entry.rows:[];if(!rows.length)return;
+        const rawHeaders=[...new Set(rows.flatMap(row=>Object.keys(row||{}).map(String).filter(name=>name.trim()&&String(name).trim().toLowerCase()!=='sl')))];const headers=['SL',...rawHeaders];if(!rawHeaders.length)return;
+        const signature=JSON.stringify([index,headers,rows]);if(item.dataset.savedHeadersSignature===signature)return;item.dataset.savedHeadersSignature=signature;
+        let table=item.querySelector('table');if(!table){table=document.createElement('table');item.append(table);}
+        table.innerHTML=`<thead><tr>${headers.map(header=>`<th>${esc(header)}</th>`).join('')}</tr></thead><tbody>${rows.map((row,rowIndex)=>`<tr>${headers.map(header=>`<td>${esc(header==='SL'?rowIndex+1:(row?.[header]??''))}</td>`).join('')}</tr>`).join('')}</tbody>`;
+      });
+    };
+    apply();window.setInterval(apply,350);
+  })();
+</script>
+<style>
+  /* Entry Report Edit uses the saved table headings; hide the old duplicate meta block. */
+  .summary-report-editor .summary-report-editor-meta{display:none!important}
+  .summary-report-editor th:first-child,.summary-report-editor td.report-editor-sl{width:38px!important;text-align:center!important;font-weight:800!important}
+</style>
+<script>
+  /* After deleting the first NT row, promote the next row and renumber from 1. */
+  (()=>{
+    const normalize=form=>{
+      const rows=[...form.querySelectorAll('.summary-merch-table-wrap tbody tr')];
+      rows.forEach((row,index)=>{const serial=row.querySelector('.merch-entry-sl,.summary-serial-cell');if(serial)serial.textContent=String(index+1);});
+      const first=rows[0];if(first){first.style.display='';first.dataset.entryRowVisible='yes';first.querySelectorAll('input,select').forEach(field=>{field.readOnly=false;field.disabled=false;field.tabIndex=0;delete field.dataset.autoCopied;});}
+    };
+    document.addEventListener('click',event=>{
+      if(!event.target?.closest?.('.merch-entry-row-delete button,.summary-merch-remove'))return;
+      const form=event.target.closest('.summary-merch-entry-form');if(form)window.setTimeout(()=>normalize(form),0);
+    },true);
+    const apply=()=>document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(normalize);
+    apply();window.setInterval(apply,400);
+  })();
+</script>
 </body>
 </html>
