@@ -2493,7 +2493,7 @@
       const columnCells=entryColumns.map(fieldMarkup).join('');
       const totalCells=entryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
        const entryPanel=(selectedSubDepartment==='Entry'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">Entry</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
-       const entryReportPanel=selectedSubDepartment==='Entry Report'?`<aside class="summary-entry-report-panel"><h3>Entry Report</h3><div class="summary-entry-report-content" aria-label="Entry Report"></div></aside>`:'';
+       const entryReportPanel=selectedSubDepartment==='Entry Report'?`<aside class="summary-entry-report-panel"><h3 data-report-title>Entry Report</h3><div class="summary-entry-report-toolbar"><button type="button" class="secondary summary-report-print">Print</button><button type="button" class="secondary summary-report-rename">Rename</button></div><div class="summary-entry-report-content" aria-label="Entry Report"></div></aside>`:'';
        grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 ${esc(merchandisingName)}</div></div>${children}</div></div>${entryPanel}${entryReportPanel}</div>`;
       const main=grid.querySelector('.summary-department-expand');
       const toggle=()=>{merchandisingExpanded=!merchandisingExpanded;renderMerchandising();};
@@ -2899,6 +2899,17 @@
   })();
 </script>
 <script>
+  /* Entry Report actions: print the saved report and rename its heading. */
+  (() => {
+    const reportNameKey='farnoorMerchandisingEntryReportNameV1';
+    const bind=()=>{const panel=document.querySelector('#summaryView .summary-entry-report-panel'); if(!panel)return; const title=panel.querySelector('[data-report-title]'); try{title.textContent=localStorage.getItem(reportNameKey)||'Entry Report';}catch{};
+      const print=panel.querySelector('.summary-report-print'); if(print&&!print.dataset.bound){print.dataset.bound='1'; print.onclick=()=>{document.body.classList.add('printing-entry-report');window.print();window.setTimeout(()=>document.body.classList.remove('printing-entry-report'),700);};}
+      const rename=panel.querySelector('.summary-report-rename'); if(rename&&!rename.dataset.bound){rename.dataset.bound='1'; rename.onclick=()=>{const next=window.prompt('রিপোর্টের নতুন নাম লিখুন',title.textContent||'Entry Report');if(!next?.trim())return;try{localStorage.setItem(reportNameKey,next.trim());}catch{} title.textContent=next.trim();};}
+    };
+    bind(); window.setInterval(bind,350);
+  })();
+</script>
+<script>
   /* Show the requested footer on the login screen as well as inside the app. */
   (() => { const page=document.getElementById('loginPage'); if(page && !page.querySelector('.login-footer')) { const footer=document.createElement('div'); footer.className='login-footer'; footer.textContent='LutforBabu | Email: lutfarbabu@gmail.com'; page.append(footer); } })();
 </script>
@@ -2908,6 +2919,12 @@
   .app-footer,.login-footer{padding:12px 16px;text-align:center;color:#55766a;font-size:12px;letter-spacing:.15px}
   .app-footer{border-top:1px solid #d5e6df;background:#f7fcfa}
   .login-footer{margin-top:14px;color:#d7f0e7}
+  #summaryView .summary-management-layout{grid-template-columns:minmax(240px,290px) minmax(0,1fr);gap:22px;max-width:1500px;margin:0 auto}
+  #summaryView .summary-department-side{min-height:430px;padding:14px 16px;border:1px solid #c6e2d5;border-radius:12px;background:linear-gradient(160deg,#fbfffd,#eef8f3);box-shadow:0 5px 14px #173b3010}
+  #summaryView .summary-entry-panel{min-height:430px;padding:20px 22px;border-left:3px solid #75b99f;border-radius:12px;background:#f8fcfa;box-shadow:0 5px 14px #173b3010}
+  .summary-entry-report-toolbar{display:flex;justify-content:flex-end;gap:8px;padding:9px 14px;border-bottom:1px solid #d7e5de;background:#f7fcfa}
+  .summary-entry-report-toolbar button{min-width:75px;padding:6px 10px;font-size:12px}
+  @media print{body.printing-entry-report *{visibility:hidden!important}body.printing-entry-report #summaryView,body.printing-entry-report #summaryView *{visibility:visible!important}body.printing-entry-report #summaryView{display:block!important;position:absolute;left:0;top:0;width:100%}body.printing-entry-report #summaryView .summary-department-side,body.printing-entry-report #summaryView .summary-entry-panel,body.printing-entry-report #summaryView .summary-entry-report-toolbar{display:none!important}body.printing-entry-report #summaryView .summary-entry-report-panel{display:block!important;max-width:none;border:0;box-shadow:none}body.printing-entry-report #summaryView .summary-entry-report-panel h3{border-bottom:2px solid #075b45}}
 </style>
 </body>
 </html>
