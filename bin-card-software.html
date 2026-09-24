@@ -2743,7 +2743,7 @@
     };
     const colors = ['Black','White','Red','Blue','Navy Blue','Sky Blue','Green','Yellow','Orange','Pink','Purple','Brown','Grey','Maroon','Beige','Cream','Other'];
     const normalizeColors = () => document.querySelectorAll('#storeView.merchandising-entry-mode .merch-simple-color').forEach(input => { if (input.tagName === 'SELECT') return; const select=document.createElement('select'); select.className=input.className; select.setAttribute('aria-label','Color'); select.innerHTML='<option value="">Color</option>'+colors.map(color=>`<option value="${esc(color)}">${esc(color)}</option>`).join(''); select.value=input.value || ''; input.replaceWith(select); });
-    const normalizeDates = () => { const input=document.getElementById('merchShippingDate'); if(input && input.type!=='date'){input.type='date';input.removeAttribute('min');} if(input){input.lang='en-GB';input.setAttribute('placeholder','DD/MM/YYYY');} if(input?.closest('.store-row')?.querySelector('label')) input.closest('.store-row').querySelector('label').textContent='Shipment Date'; document.querySelectorAll('.summary-saved-entry-head span').forEach(node=>{if(/^(Date|Shipment Date):/.test(node.textContent)){const parts=node.textContent.split(':');node.textContent=parts.shift()+': '+dmy(parts.join(':').trim());}}); };
+    const normalizeDates = () => { const input=document.getElementById('merchShippingDate'); if(input){input.lang='en-GB';input.setAttribute('placeholder','D/M/YY');} if(input?.closest('.store-row')?.querySelector('label')) input.closest('.store-row').querySelector('label').textContent='Shipment Date'; document.querySelectorAll('.summary-saved-entry-head span').forEach(node=>{if(/^(Date|Shipment Date):/.test(node.textContent)){const parts=node.textContent.split(':');node.textContent=parts.shift()+': '+dmy(parts.join(':').trim());}}); };
     window.setInterval(() => { normalizeDates(); normalizeColors(); render(); }, 300);
   })();
 </script>
@@ -2802,7 +2802,8 @@
       return {day,month,year,iso:`${year}-${pad(month)}-${pad(day)}`,display:`${pad(day)}/${pad(month)}/${year}`};
     };
     const bind=input=>{
-      if(!input||input.dataset.shortDateBound==='1')return;
+      if(!input)return;
+      if(input.dataset.shortDateBound==='1'){if(input.type!=='text')input.type='text';return;}
       input.dataset.shortDateBound='1';input.type='text';input.inputMode='numeric';input.autocomplete='off';input.placeholder='D/M/YY';input.title='দিন/মাস/বছর — যেমন 1/1/26';
       const old=input.value;const iso=old.match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso)input.value=`${iso[3]}/${iso[2]}/${iso[1]}`;
       input.addEventListener('input',()=>{input.value=input.value.replace(/[^0-9\/.-]/g,'').slice(0,10);});
