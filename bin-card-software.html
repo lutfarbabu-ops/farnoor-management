@@ -67,7 +67,7 @@
       </div></section>
       <section class="card"><div class="card-head"><div><button class="secondary back no-print" onclick="returnSummary()">← সামারিতে ফিরে যান</button> <h2 id="listHeading" style="display:inline">Management তালিকা</h2></div><div class="toolbar no-print"><button class="secondary" onclick="window.print()">প্রিন্ট</button><input id="search" placeholder="Order বা Style খুঁজুন" /></div></div><div class="body print-only"><h2>FARNOOR GARMENTS LTD. — Management</h2></div><div class="list"><table><thead><tr><th>Order / Style</th><th>Buyer</th><th id="summaryHeading">Materials summary</th><th class="no-print">Action</th></tr></thead><tbody id="rows"></tbody></table></div></section>
     </div>
-  </main></div>
+  </main><footer class="app-footer">LutforBabu &nbsp;|&nbsp; Email: lutfarbabu@gmail.com</footer></div>
   <script>
     // One-time reset requested by administrator: only management entries and Buyer data are removed.
     if(!localStorage.getItem('farnoorBinCardsResetSep2026v1')){localStorage.removeItem('farnoorBinCards');localStorage.removeItem('farnoorDepartments');localStorage.setItem('farnoorBinCardsResetSep2026v1','done');}
@@ -2862,5 +2862,52 @@
     render(); window.setInterval(render, 350);
   })();
 </script>
+<script>
+  /* Automatically place today's date in a new Entry; only Shipment Date remains manual. */
+  (() => {
+    const today = () => { const now = new Date(); return `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`; };
+    const apply = () => document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(form => {
+      const date = form.querySelector('input[name="entryDate"]'); if (!date) return;
+      if (!date.value.trim()) date.value = today();
+      form.querySelectorAll('input,select,textarea').forEach(field => { if (field.dataset.autoDateFocusBound === '1') return; field.dataset.autoDateFocusBound = '1'; field.addEventListener('focus', () => { if (!date.value.trim()) date.value = today(); }, { once: true }); });
+    });
+    apply(); window.setInterval(apply, 350);
+  })();
+</script>
+<script>
+  /* Keep all saves for the same Style Number together in one Entry Report box. */
+  (() => {
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const read = () => { try { return JSON.parse(localStorage.getItem('farnoorMerchandisingEntries') || '[]') || []; } catch { return []; } };
+    const val = (entry, names) => { for (const name of names) { const v = entry?.[name]; if (v !== undefined && v !== null && String(v).trim()) return v; } return ''; };
+    const cell = (row, names) => { for (const name of names) { if (row?.[name] !== undefined && row?.[name] !== null) return row[name]; } return ''; };
+    const dmy = value => { const raw=String(value??'').trim(); if(!raw)return ''; const iso=raw.match(/^(\d{4})-(\d{2})-(\d{2})/); if(iso)return `${iso[3]}/${iso[2]}/${iso[1]}`; return raw; };
+    const render = () => {
+      const content = document.querySelector('#summaryView .summary-entry-report-content'); if (!content) return;
+      const entries = read(); const signature = JSON.stringify(entries); if (content.dataset.groupSignature === signature) return; content.dataset.groupSignature = signature;
+      if (!entries.length) { content.innerHTML = '<p class="summary-entry-report-empty">No saved entries yet.</p>'; return; }
+      const groups = []; const index = new Map();
+      entries.forEach(entry => { const style = String(val(entry,['styleNumber','style']) || '—').trim(); const key = style.toLowerCase(); if (!index.has(key)) { index.set(key, groups.length); groups.push({style, entries:[]});} groups[index.get(key)].entries.push(entry); });
+      const headers = ['Style Number','Accessories Name','Color','Size','Quantity','Total Quantity'];
+      content.innerHTML = groups.map((group, groupIndex) => {
+        const first = group.entries[0]; const rows = group.entries.flatMap(entry => Array.isArray(entry.rows) ? entry.rows : []); const buyers = [...new Set(group.entries.map(entry => String(val(entry,['buyerName','buyer'])).trim()).filter(Boolean))]; const orders = [...new Set(group.entries.map(entry => String(val(entry,['orderQuantity','order'])).trim()).filter(Boolean))]; const dates = [...new Set(group.entries.map(entry => dmy(val(entry,['entryDate']))).filter(Boolean))]; const shipments = [...new Set(group.entries.map(entry => dmy(val(entry,['shippingQuantity','shippingDate']))).filter(Boolean))];
+        const table = rows.length ? `<table><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${headers.map(header => { const names = header==='Style Number'?['Style Number','Style No']:header==='Accessories Name'?['Accessories Name','Accessories']:header==='Quantity'?['Quantity','Qty/Quantity','QTY']:header==='Total Quantity'?['Total Quantity','Quantity','Qty/Quantity','QTY']:[header]; return `<td>${esc(cell(row,names))}</td>`; }).join('')}</tr>`).join('')}</tbody></table>` : '<p class="summary-entry-report-empty">No line items.</p>';
+        return `<section class="summary-entry-report-item"><div class="summary-entry-report-item-head"><strong>Style ${esc(group.style)}</strong><span>Buyer: ${esc(buyers.join(', '))}</span><span>Order Quantity: ${esc(orders.join(', '))}</span><span>Entry Date: ${esc(dates.join(', '))}</span><span>Shipment Date: ${esc(shipments.join(', '))}</span><span>${group.entries.length} save(s), ${rows.length} row(s)</span></div>${table}</section>`;
+      }).join('');
+    };
+    render(); window.setInterval(render, 350);
+  })();
+</script>
+<script>
+  /* Show the requested footer on the login screen as well as inside the app. */
+  (() => { const page=document.getElementById('loginPage'); if(page && !page.querySelector('.login-footer')) { const footer=document.createElement('div'); footer.className='login-footer'; footer.textContent='LutforBabu | Email: lutfarbabu@gmail.com'; page.append(footer); } })();
+</script>
+<style>
+  #appShell{min-height:100vh;display:flex;flex-direction:column}
+  #appShell>main{flex:1}
+  .app-footer,.login-footer{padding:12px 16px;text-align:center;color:#55766a;font-size:12px;letter-spacing:.15px}
+  .app-footer{border-top:1px solid #d5e6df;background:#f7fcfa}
+  .login-footer{margin-top:14px;color:#d7f0e7}
+</style>
 </body>
 </html>
