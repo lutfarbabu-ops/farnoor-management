@@ -2447,7 +2447,7 @@
     const defaultMerchandisingSubDepartments=['Entry','Booking'];
     let merchandisingName='Merchandising';
     let merchandisingSubDepartments=[...defaultMerchandisingSubDepartments];
-    try{const saved=JSON.parse(localStorage.getItem(summaryTreeKey)||'null');if(saved?.main)merchandisingName=String(saved.main);if(Array.isArray(saved?.subs)){const hidden=new Set(['merchandisingreport','entryreport','bookingreport','buyer/order','buyer','order','department','storedepartment']);merchandisingSubDepartments=saved.subs.map(name=>{const value=String(name);return ['Merchandising Entry','NT'].includes(value)?'Entry':value;}).filter(value=>value&& !hidden.has(value.trim().toLowerCase().replace(/[\s_-]+/g,'')));}if(!merchandisingSubDepartments.length)merchandisingSubDepartments=['Entry'];if(!merchandisingSubDepartments.some(value=>String(value).trim().toLowerCase()==='booking'))merchandisingSubDepartments.push('Booking');}catch{merchandisingSubDepartments=['Entry','Booking'];}
+    try{const saved=JSON.parse(localStorage.getItem(summaryTreeKey)||'null');if(saved?.main)merchandisingName=String(saved.main);if(Array.isArray(saved?.subs)){const hidden=new Set(['merchandisingreport','entryreport','bookingreport','entrycopyreport','mt','entrycopy','buyer/order','buyer','order','department','storedepartment']);merchandisingSubDepartments=saved.subs.map(name=>{const value=String(name);return ['Merchandising Entry','NT'].includes(value)?'Entry':value;}).filter(value=>value&& !hidden.has(value.trim().toLowerCase().replace(/[\s_-]+/g,'')));}if(!merchandisingSubDepartments.length)merchandisingSubDepartments=['Entry'];if(!merchandisingSubDepartments.some(value=>String(value).trim().toLowerCase()==='booking'))merchandisingSubDepartments.push('Booking');}catch{merchandisingSubDepartments=['Entry','Booking'];}
     const saveSummaryTree=()=>{try{localStorage.setItem(summaryTreeKey,JSON.stringify({main:merchandisingName,subs:merchandisingSubDepartments}));}catch{}};
     const entryLabelKey='farnoorMerchandisingEntryLabelsV1';
     const entryColumnsKey='farnoorMerchandisingEntryColumnsV1';
@@ -2479,9 +2479,9 @@
       if(grid.dataset.summaryState===stateKey && grid.querySelector('.summary-department-expand'))return;
       grid.dataset.summaryState=stateKey;
       const entryReportOpen=true;
-      const children=merchandisingExpanded?`<div class="summary-department-children summary-department-text-children">${merchandisingSubDepartments.map(name=>{const reportName=name==='Booking'?'Booking Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===name?'selected':''}" data-summary-subdepartment="${esc(name)}" role="button" tabindex="0">${esc(name)}</div>${(name==='Entry'||name==='Booking')&&entryReportOpen?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===reportName?'selected':''}" data-summary-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
+      const children=merchandisingExpanded?`<div class="summary-department-children summary-department-text-children">${merchandisingSubDepartments.map(name=>{const reportName=name==='Booking'?'Booking Report':name==='Entry Copy'?'Entry Copy Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===name?'selected':''}" data-summary-subdepartment="${esc(name)}" role="button" tabindex="0">${esc(name)}</div>${(name==='Entry'||name==='Entry Copy'||name==='Booking')&&entryReportOpen?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===reportName?'selected':''}" data-summary-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
       const storeChildren=storeExpanded?`<div class="summary-department-children summary-department-text-children"> <div class="summary-department-child summary-department-label summary-store-subdepartment-text ${selectedStoreSubDepartment==='Entry'?'selected':''}" data-store-subdepartment="Entry" role="button" tabindex="0">📄 Entry</div></div>`:'';
-      const productionChildren=productionExpanded?`<div class="summary-department-children summary-department-text-children summary-production-children">${merchandisingSubDepartments.map(name=>{const productionName=name==='Entry'?'New Schedule':name==='Booking'?'Swing':name;if(productionName==='Swing'){const lines=['Line 1','Line 2','Line 3','Line 4'];return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="Swing" role="button" tabindex="0">Swing</div>${swingExpanded?`<div class="summary-department-children summary-department-text-children summary-booking-lines">${lines.map(line=>`<div class="summary-department-child summary-department-label summary-production-subdepartment-text summary-booking-line ${selectedProductionSubDepartment===line?'selected':''}" data-production-subdepartment="${line}" role="button" tabindex="0">${line}</div>`).join('')}</div>`:''}`;}const reportName=productionName==='New Schedule'?'Schedule Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="${esc(productionName)}" role="button" tabindex="0">${esc(productionName)}</div>${productionName==='New Schedule'?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===reportName?'selected':''}" data-production-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
+      const productionChildren=productionExpanded?`<div class="summary-department-children summary-department-text-children summary-production-children">${merchandisingSubDepartments.map(name=>{const productionName=name==='Entry'?'New Schedule':name==='Booking'?'Sewing':name;if(productionName==='Sewing'){const lines=['Line 1','Line 2','Line 3','Line 4'];return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="Sewing" role="button" tabindex="0">Sewing</div>${swingExpanded?`<div class="summary-department-children summary-department-text-children summary-booking-lines">${lines.map(line=>`<div class="summary-department-child summary-department-label summary-production-subdepartment-text summary-booking-line ${selectedProductionSubDepartment===line?'selected':''}" data-production-subdepartment="${line}" role="button" tabindex="0">${line}</div>`).join('')}</div>`:''}`;}const reportName=productionName==='New Schedule'?'Schedule Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="${esc(productionName)}" role="button" tabindex="0">${esc(productionName)}</div>${productionName==='New Schedule'?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===reportName?'selected':''}" data-production-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
       const finishingChildren=finishingExpanded?`<div class="summary-department-children summary-department-text-children"> <div class="summary-department-child summary-department-label summary-finishing-subdepartment-text ${selectedFinishingSubDepartment==='Entry'?'selected':''}" data-finishing-subdepartment="Entry" role="button" tabindex="0">📄 Entry</div></div>`:'';
       const isNumericColumn=name=>/(qty|quantity|booking)/i.test(String(name));
       const isAccessoryColumn=name=>/accessor(y|ies)\s*name/i.test(String(name));
@@ -2494,8 +2494,8 @@
       const columnHeaders='<th class="summary-serial-column">SL</th>'+entryColumns.map((name,index)=>`<th class="summary-column-header" data-summary-column-index="${index}">${esc(name)}</th>`).join('');
       const columnCells='<td class="summary-serial-cell">1</td>'+entryColumns.map(fieldMarkup).join('');
       const totalCells=entryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total =</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
-       const entryPanel=(selectedSubDepartment==='Entry'||selectedSubDepartment==='New Schedule'||selectedSubDepartment==='Schedule'||selectedSubDepartment==='Booking'||selectedSubDepartment==='Swing'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedProductionSubDepartment==='New Schedule'||selectedProductionSubDepartment==='Schedule'||selectedProductionSubDepartment==='Booking'||selectedProductionSubDepartment==='Swing'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">${selectedSubDepartment==='Swing'?'Swing':selectedSubDepartment==='Booking'?'Booking':selectedSubDepartment==='New Schedule'?'New Schedule':selectedSubDepartment==='Schedule'?'Schedule':'Entry'}</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
-       const entryReportPanel=(selectedSubDepartment==='Entry Report'||selectedSubDepartment==='New Schedule Report'||selectedSubDepartment==='Schedule Report'||selectedSubDepartment==='Booking Report')?`<aside class="summary-entry-report-panel"><h3 data-report-title>${selectedSubDepartment==='Booking Report'?'Booking Report':selectedSubDepartment==='New Schedule Report'?'New Schedule Report':selectedSubDepartment==='Schedule Report'?'Schedule Report':'Entry Report'}</h3><div class="summary-entry-report-content" aria-label="${selectedSubDepartment}"></div></aside>`:'';
+       const entryPanel=(selectedSubDepartment==='Entry'||selectedSubDepartment==='Entry Copy'||selectedSubDepartment==='New Schedule'||selectedSubDepartment==='Schedule'||selectedSubDepartment==='Booking'||selectedSubDepartment==='Sewing'||selectedSubDepartment==='Swing'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedProductionSubDepartment==='New Schedule'||selectedProductionSubDepartment==='Schedule'||selectedProductionSubDepartment==='Booking'||selectedProductionSubDepartment==='Sewing'||selectedProductionSubDepartment==='Swing'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">${selectedSubDepartment==='Entry Copy'?'Entry Copy':selectedSubDepartment==='Sewing'?'Sewing':selectedSubDepartment==='Swing'?'Swing':selectedSubDepartment==='Booking'?'Booking':selectedSubDepartment==='New Schedule'?'New Schedule':selectedSubDepartment==='Schedule'?'Schedule':'Entry'}</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
+       const entryReportPanel=(selectedSubDepartment==='Entry Report'||selectedSubDepartment==='Entry Copy Report'||selectedSubDepartment==='New Schedule Report'||selectedSubDepartment==='Schedule Report'||selectedSubDepartment==='Booking Report')?`<aside class="summary-entry-report-panel"><h3 data-report-title>${selectedSubDepartment==='Entry Copy Report'?'Entry Copy Report':selectedSubDepartment==='Booking Report'?'Booking Report':selectedSubDepartment==='New Schedule Report'?'New Schedule Report':selectedSubDepartment==='Schedule Report'?'Schedule Report':'Entry Report'}</h3><div class="summary-entry-report-content" aria-label="${selectedSubDepartment}"></div></aside>`:'';
        const showMerchandisingHome=merchandisingExpanded&&!selectedSubDepartment&&!selectedStoreSubDepartment&&!selectedProductionSubDepartment&&!selectedFinishingSubDepartment;
        const merchHomePanel=showMerchandisingHome?`<aside class="summary-merch-home-panel"><h3>Merchandising Homepage</h3><div class="summary-merch-shortcuts"><button type="button" data-merch-shortcut="notifications">Notifications</button><button type="button" data-merch-shortcut="updates">Other Department Updates</button></div><div class="summary-merch-home-feed" aria-live="polite"><p class="small">উপরের একটি অপশন নির্বাচন করুন।</p></div></aside>`:'';
        const emptyRight=!entryPanel&&!entryReportPanel&&!merchHomePanel?'<div class="summary-home-blank" aria-label="Blank home area"></div>':'';
@@ -2505,7 +2505,7 @@
       const storeDepartment=grid.querySelector('.summary-store-department');
       const toggleStore=()=>{storeExpanded=!storeExpanded;selectedStoreSubDepartment='';selectedSubDepartment='';selectedProductionSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};
       storeDepartment?.addEventListener('click',toggleStore); storeDepartment?.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleStore();}});
-      grid.querySelectorAll('[data-production-subdepartment]').forEach(item=>{const open=()=>{const name=item.dataset.productionSubdepartment||'New Schedule';if(name==='Swing')swingExpanded=!swingExpanded;selectedProductionSubDepartment=name;selectedSubDepartment=/^Line [1234]$/.test(name)?'Swing':name;selectedStoreSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});item.oncontextmenu=event=>openSummaryContextMenu(event,'sub',item.dataset.productionSubdepartment||'New Schedule');});
+      grid.querySelectorAll('[data-production-subdepartment]').forEach(item=>{const open=()=>{const name=item.dataset.productionSubdepartment||'New Schedule';if(name==='Sewing')swingExpanded=!swingExpanded;selectedProductionSubDepartment=name;selectedSubDepartment=/^Line [1234]$/.test(name)?'Sewing':name;selectedStoreSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});item.oncontextmenu=event=>openSummaryContextMenu(event,'sub',item.dataset.productionSubdepartment||'New Schedule');});
       grid.querySelectorAll('[data-store-subdepartment]').forEach(item=>{const open=()=>{selectedStoreSubDepartment=item.dataset.storeSubdepartment||'Entry';selectedSubDepartment='';selectedProductionSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});});
       const finishingDepartment=grid.querySelector('.summary-finishing-department');
       const toggleFinishing=()=>{finishingExpanded=!finishingExpanded;selectedFinishingSubDepartment='';selectedSubDepartment='';selectedStoreSubDepartment='';selectedProductionSubDepartment='';renderMerchandising();};
@@ -3091,6 +3091,223 @@
   #summaryView .summary-department-main.summary-department-expand.summary-production-department{background:linear-gradient(135deg,#4338ca,#1e3a8a)!important;border-color:#818cf8!important;color:#fff!important;box-shadow:0 7px 16px #1e3a8a44!important}
   #summaryView .summary-department-main.summary-department-expand.summary-production-department:hover{filter:brightness(1.15)!important;transform:translateX(2px)!important}
   @media(max-width:700px){#summaryView .summary-merch-shortcuts{grid-template-columns:1fr}}
+</style>
+<style>
+  /* MT is a dedicated Merchandising-only entry form. */
+  #summaryView .mt-entry-panel{min-height:430px;padding:22px 24px;background:#fff;border:1px solid #b9d5ca;border-left:3px solid #2d8c94;border-radius:12px;box-shadow:0 5px 14px #173b3010;box-sizing:border-box}
+  #summaryView .mt-entry-panel h3{margin:0 0 18px;color:#075b45;font-size:22px;font-weight:800}
+  #summaryView .mt-entry-meta{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:13px 16px}
+  #summaryView .mt-entry-meta label{display:block;color:#164d3b;font-size:14px;font-weight:800}
+  #summaryView .mt-entry-meta input{display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:10px 11px;border:1px solid #b9d5ca;border-radius:7px;background:#fbfffd;color:#123c31;font:inherit;font-weight:500}
+  #summaryView .mt-entry-meta input:focus{outline:2px solid #81c9b2;outline-offset:1px;border-color:#2d8c94}
+  #summaryView .mt-entry-actions{display:flex;justify-content:flex-end;margin-top:18px}
+  #summaryView .mt-entry-actions button{min-width:105px;padding:10px 18px;border:0;border-radius:7px;background:#075b45;color:#fff;font-weight:800;cursor:pointer}
+  #summaryView .mt-entry-actions button:hover{background:#0b7b5d}
+  #summaryView .mt-entry-status{min-height:20px;margin:10px 0 0;color:#276b55;font-size:13px}
+  @media(max-width:700px){#summaryView .mt-entry-meta{grid-template-columns:1fr}#summaryView .mt-entry-panel{padding:18px}}
+</style>
+<script>
+  /* Render the MT form only while Merchandising > MT is selected. */
+  (()=>{
+    const mount=()=>{
+      const root=document.getElementById('departmentButtons');
+      if(!root)return;
+      const mtButton=[...root.querySelectorAll('[data-summary-subdepartment]')].find(item=>item.classList.contains('selected')&&String(item.dataset.summarySubdepartment||'').trim().toLowerCase()==='mt');
+      const layout=root.querySelector('.summary-management-layout');
+      if(!layout)return;
+      const current=layout.querySelector('.mt-entry-panel');
+      if(!mtButton){current?.remove();return;}
+      if(current)return;
+      layout.querySelector('.summary-home-blank')?.remove();
+      layout.querySelectorAll('.summary-entry-panel:not(.mt-entry-panel),.summary-entry-report-panel').forEach(item=>item.remove());
+      const panel=document.createElement('aside');
+      panel.className='summary-entry-panel mt-entry-panel';
+      panel.innerHTML=`<h3>MT Entry</h3><form class="mt-entry-form"><div class="mt-entry-meta"><label>Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name" autocomplete="off"></label><label>Style Number<input name="styleNumber" type="text" placeholder="Style Number" autocomplete="off"></label><label>Item<input name="item" type="text" placeholder="Item" autocomplete="off"></label><label>Order Date<input name="orderDate" type="date"></label><label>Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label>Date<input name="entryDate" type="date"></label><label>Shipment Date<input name="shipmentDate" type="date"></label></div><div class="mt-entry-actions"><button type="submit">Save</button></div><p class="mt-entry-status" role="status"></p></form>`;
+      layout.append(panel);
+      const form=panel.querySelector('form');
+      form.addEventListener('submit',event=>{
+        event.preventDefault();
+        const values=Object.fromEntries([...form.querySelectorAll('input')].map(input=>[input.name,input.value.trim()]));
+        try{const key='farnoorMerchandisingMtEntries';const saved=JSON.parse(localStorage.getItem(key)||'[]');const entries=Array.isArray(saved)?saved:[];entries.push({...values,savedAt:new Date().toISOString()});localStorage.setItem(key,JSON.stringify(entries));form.reset();form.querySelector('.mt-entry-status').textContent='MT Entry saved successfully.';}catch{form.querySelector('.mt-entry-status').textContent='MT Entry save করা যায়নি।';}
+      });
+    };
+    mount();
+    window.setInterval(mount,300);
+  })();
+</script>
+<script>
+  /* Add the requested metadata fields only to Merchandising > Entry. */
+  (()=>{
+    const mount=()=>{
+      const root=document.getElementById('departmentButtons');
+      if(!root)return;
+      const entryButton=[...root.querySelectorAll('[data-summary-subdepartment]')].find(item=>item.classList.contains('selected')&&String(item.dataset.summarySubdepartment||'').trim().toLowerCase()==='entry');
+      const form=root.querySelector('.summary-merch-entry-form');
+      if(!entryButton||!form||form.dataset.merchEntryFields==='v1')return;
+      const meta=form.querySelector('.summary-merch-meta');
+      if(!meta)return;
+      const styleLabel=meta.querySelector('[name="styleNumber"]')?.closest('label');
+      const orderLabel=meta.querySelector('[name="orderQuantity"]')?.closest('label');
+      if(!styleLabel||!orderLabel)return;
+      const makeLabel=(text,name,type='text',placeholder=text)=>{
+        const label=document.createElement('label');
+        label.textContent=text;label.dataset.fixedLabel=name;
+        const input=document.createElement('input');
+        input.name=name;input.type=type;input.placeholder=placeholder;input.autocomplete='off';
+        label.append(input);
+        return label;
+      };
+      styleLabel.after(makeLabel('Item Name','itemName'));
+      if(orderLabel.firstChild)orderLabel.firstChild.nodeValue='Order Quantity';
+      const orderInput=orderLabel.querySelector('input');
+      if(orderInput){orderInput.type='number';orderInput.min='0';orderInput.name='orderQuantity';orderInput.placeholder='Order Quantity';}
+      orderLabel.after(makeLabel('Order Date','orderDate','date','Order Date'));
+      form.dataset.merchEntryFields='v1';
+    };
+    mount();
+    window.setInterval(mount,300);
+  })();
+</script>
+<script>
+  /* Merchandising > Entry keeps only the Date field in its top metadata row. */
+  (()=>{
+    const mount=()=>{
+      const root=document.getElementById('departmentButtons');
+      if(!root)return;
+      const entryButton=[...root.querySelectorAll('[data-summary-subdepartment]')].find(item=>item.classList.contains('selected')&&String(item.dataset.summarySubdepartment||'').trim().toLowerCase()==='entry');
+      const form=root.querySelector('.summary-merch-entry-form');
+      if(!entryButton||!form)return;
+      const meta=form.querySelector('.summary-merch-meta');
+      if(!meta||meta.dataset.dateOnly==='yes')return;
+      meta.querySelectorAll('label').forEach(label=>{if(!label.querySelector('[name="entryDate"]'))label.remove();});
+      meta.dataset.dateOnly='yes';
+    };
+    mount();
+    window.setInterval(mount,300);
+  })();
+</script>
+<style>
+  /* Larger Date control and roomier rows for Merchandising > Entry only. */
+  #summaryView .summary-entry-panel.merch-entry-large{min-height:560px;padding:30px 30px}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta{min-height:94px;gap:16px}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label{font-size:18px;line-height:1.35}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta input{min-height:48px;padding:12px 14px;font-size:17px}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap th,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap td{min-height:48px;padding:12px 10px;font-size:15px}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap input,
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-table-wrap select{min-height:42px;padding:9px 10px;font-size:15px}
+  #summaryView .summary-entry-panel.merch-entry-large .summary-merch-actions{margin-top:22px}
+  @media(max-width:700px){#summaryView .summary-entry-panel.merch-entry-large{padding:22px 18px}#summaryView .summary-entry-panel.merch-entry-large .summary-merch-meta label{font-size:16px}}
+</style>
+<script>
+  /* Entry-only presentation: enlarge Date and show Quantity as QTY. */
+  (()=>{
+    const mount=()=>{
+      const root=document.getElementById('departmentButtons');
+      if(!root)return;
+      const entryButton=[...root.querySelectorAll('[data-summary-subdepartment]')].find(item=>item.classList.contains('selected')&&String(item.dataset.summarySubdepartment||'').trim().toLowerCase()==='entry');
+      const form=root.querySelector('.summary-merch-entry-form');
+      const panel=form?.closest('.summary-entry-panel');
+      if(!entryButton||!form||!panel)return;
+      panel.classList.add('merch-entry-large');
+      const dateLabel=form.querySelector('[name="entryDate"]')?.closest('label');
+      if(dateLabel){dateLabel.style.fontSize='18px';dateLabel.querySelector('input').style.fontSize='17px';}
+      form.querySelectorAll('.summary-column-header').forEach(header=>{if(String(header.dataset.columnIndex||header.textContent).trim().toLowerCase()==='quantity'||String(header.textContent).trim().toLowerCase()==='quantity')header.textContent='QTY';});
+      form.querySelectorAll('[data-column-field="Quantity"] input').forEach(input=>{input.placeholder='QTY';});
+    };
+    mount();
+    window.setInterval(mount,300);
+  })();
+</script>
+<style>
+  #summaryView .merch-entry-row-table{width:100%;border-collapse:collapse;table-layout:fixed}
+  #summaryView .merch-entry-row-table th,#summaryView .merch-entry-row-table td{border:1px solid #b9d5ca;padding:12px 10px;text-align:center;vertical-align:middle}
+  #summaryView .merch-entry-row-table th{background:#eaf6ef;color:#164d3b;font-weight:800;white-space:normal}
+  #summaryView .merch-entry-row-table td input{width:100%;box-sizing:border-box;min-height:44px;padding:9px 8px;border:1px solid #c3ddd1;border-radius:5px;font-size:15px}
+  #summaryView .merch-entry-row-table .merch-entry-sl{width:42px;font-weight:800}
+  #summaryView .merch-entry-row-table .merch-entry-row-delete{width:34px;padding:4px}
+  #summaryView .merch-entry-row-table .merch-entry-row-delete button{width:24px;height:24px;padding:0;border:1px solid #e0b2b2;border-radius:4px;background:#fff1f1;color:#a33;cursor:pointer}
+  @media(max-width:850px){#summaryView .merch-entry-row-table{min-width:900px}#summaryView .summary-merch-table-wrap{overflow-x:auto}}
+</style>
+<script>
+  /* Merchandising > Entry uses the requested row headings and fields. */
+  (()=>{
+    const defs=[
+      {key:'Buyer Name',name:'buyerName',type:'text'},
+      {key:'Style Number',name:'styleNumber',type:'text'},
+      {key:'Item Name',name:'itemName',type:'text'},
+      {key:'Order Quantity',name:'orderQuantity',type:'number'},
+      {key:'Order Date',name:'orderDate',type:'text',date:true},
+      {key:'Shipment Date',name:'shippingQuantity',type:'text',date:true}
+    ];
+    const esc=value=>String(value??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+    const rowMarkup=(serial)=>`<tr><td class="merch-entry-sl">${serial}</td>${defs.map(def=>`<td data-column-field="${esc(def.key)}"><input name="${def.name}" type="${def.type}"${def.type==='number'?' min="0"':''} placeholder="${def.date?'D/M/YY':esc(def.key)}" autocomplete="off"></td>`).join('')}<td class="merch-entry-row-delete"><button type="button" title="Delete row">−</button></td></tr>`;
+    const normalizeDate=value=>{const raw=String(value??'').trim();if(!raw)return '';const iso=raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);if(iso)return `${String(iso[3]).padStart(2,'0')}/${String(iso[2]).padStart(2,'0')}/${iso[1]}`;const parts=raw.split(/[\\/.-]+/).filter(Boolean);if(parts.length!==3)return raw;let [day,month,year]=parts;if(year.length===2)year=`20${year}`;if(year.length!==4)return raw;return `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`;};
+    const mount=()=>{
+      const root=document.getElementById('departmentButtons');
+      if(!root)return;
+      const entryButton=[...root.querySelectorAll('[data-summary-subdepartment]')].find(item=>item.classList.contains('selected')&&String(item.dataset.summarySubdepartment||'').trim().toLowerCase()==='entry');
+      const form=root.querySelector('.summary-merch-entry-form');
+      const wrap=form?.querySelector('.summary-merch-table-wrap');
+      if(!entryButton||!form||!wrap||form.dataset.entryRowLayout==='v2')return;
+      wrap.innerHTML=`<table class="merch-entry-row-table"><thead><tr><th class="merch-entry-sl">SL</th>${defs.map(def=>`<th>${def.key}</th>`).join('')}<th aria-hidden="true"></th></tr></thead><tbody>${rowMarkup(1)}</tbody></table>`;
+      const replaceButton=selector=>{const old=form.querySelector(selector);if(!old)return null;const fresh=old.cloneNode(true);old.replaceWith(fresh);return fresh;};
+      const addButton=replaceButton('[data-summary-row-add]');
+      const saveButton=replaceButton('[data-summary-save]');
+      const tbody=wrap.querySelector('tbody');
+      const refreshSerials=()=>tbody.querySelectorAll('tr').forEach((row,index)=>{const cell=row.querySelector('.merch-entry-sl');if(cell)cell.textContent=String(index+1);});
+      const bindDelete=()=>tbody.querySelectorAll('.merch-entry-row-delete button').forEach(button=>{if(button.dataset.bound)return;button.dataset.bound='1';button.addEventListener('click',()=>{const rows=tbody.querySelectorAll('tr');if(rows.length<=1){rows[0]?.querySelectorAll('input').forEach(input=>input.value='');return;}button.closest('tr')?.remove();refreshSerials();});});
+      const bindDateFields=()=>tbody.querySelectorAll('input[name="orderDate"],input[name="shippingQuantity"]').forEach(input=>{if(input.dataset.dateBound)return;input.dataset.dateBound='1';input.addEventListener('blur',()=>{input.value=normalizeDate(input.value);});});
+      bindDelete();bindDateFields();
+      addButton?.addEventListener('click',()=>{tbody.insertAdjacentHTML('beforeend',rowMarkup(tbody.querySelectorAll('tr').length+1));bindDelete();bindDateFields();});
+      saveButton?.addEventListener('click',()=>{
+        tbody.querySelectorAll('input[name="orderDate"],input[name="shippingQuantity"]').forEach(input=>{input.value=normalizeDate(input.value);});
+        const rows=[...tbody.querySelectorAll('tr')].map(row=>Object.fromEntries([...row.querySelectorAll('[data-column-field]')].map(cell=>[cell.dataset.columnField,cell.querySelector('input')?.value.trim()||''])));
+        const first=rows[0]||{};let saved=[];try{saved=JSON.parse(localStorage.getItem('farnoorMerchandisingEntries')||'[]')||[];}catch{}
+        saved.push({buyerName:first['Buyer Name']||'',styleNumber:first['Style Number']||'',itemName:first['Item Name']||'',orderQuantity:first['Order Quantity']||'',orderDate:first['Order Date']||'',entryDate:form.querySelector('[name="entryDate"]')?.value.trim()||'',shippingQuantity:first['Shipment Date']||'',rows,savedAt:new Date().toISOString()});
+        localStorage.setItem('farnoorMerchandisingEntries',JSON.stringify(saved));
+        const status=form.querySelector('.summary-merch-status');if(status)status.textContent='Entry saved successfully.';
+        tbody.innerHTML=rowMarkup(1);
+        bindDelete();bindDateFields();
+        window.setTimeout(()=>root.querySelector('[data-summary-subdepartment="Entry Report"]')?.click(),80);
+      });
+      form.dataset.entryRowLayout='v2';
+    };
+    mount();
+    window.setInterval(mount,300);
+  })();
+</script>
+<script>
+  /* Render saved Entry rows with the same requested headings. */
+  (()=>{
+    const headers=['SL','Buyer Name','Style Number','Item Name','Order Quantity','Order Date','Shipment Date'];
+    const esc=value=>String(value??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+    const mount=()=>{
+      const content=document.querySelector('#summaryView .summary-entry-report-content');
+      if(!content)return;
+      let entries=[];try{entries=JSON.parse(localStorage.getItem('farnoorMerchandisingEntries')||'[]')||[];}catch{}
+      content.querySelectorAll('.summary-entry-report-item').forEach(item=>{
+        if(item.dataset.entryRowV2==='yes')return;
+        const index=Number(item.dataset.entryIndex),entry=Number.isInteger(index)?entries[index]:null,rows=Array.isArray(entry?.rows)?entry.rows:[];
+        if(!rows.some(row=>row&&Object.prototype.hasOwnProperty.call(row,'Item Name')))return;
+        const table=item.querySelector('table');if(!table)return;
+        table.innerHTML=`<thead><tr>${headers.map(header=>`<th>${header}</th>`).join('')}</tr></thead><tbody>${rows.map((row,rowIndex)=>`<tr>${headers.map(header=>`<td>${esc(header==='SL'?rowIndex+1:row?.[header]||'')}</td>`).join('')}</tr>`).join('')}</tbody>`;
+        item.dataset.entryRowV2='yes';
+      });
+    };
+    mount();window.setInterval(mount,350);
+  })();
+</script>
+<style>
+  /* Keep the management department rail compact and close to the left edge. */
+  #summaryView .summary-management-layout{grid-template-columns:minmax(180px,220px) minmax(0,1fr)!important;gap:12px!important;margin-left:0!important;margin-right:0!important}
+  #summaryView .summary-department-side{padding-left:0!important;padding-right:8px!important}
+  #summaryView .summary-department-side .summary-department-main,
+  #summaryView .summary-department-side .summary-department-child{max-width:220px!important}
+  #summaryView .summary-entry-panel.merch-entry-large{margin-left:0!important}
+  #summaryView .merch-entry-row-table td input{min-height:52px!important;padding-top:12px!important;padding-bottom:12px!important}
+  #summaryView .merch-entry-row-table .merch-entry-row-delete{width:22px!important;padding:2px!important}
+  #summaryView .merch-entry-row-table .merch-entry-row-delete button{width:18px!important;height:18px!important;font-size:12px!important;line-height:14px!important}
 </style>
 </body>
 </html>
