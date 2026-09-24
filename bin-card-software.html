@@ -2461,8 +2461,8 @@
     let entryColumns=[...defaultEntryColumns];
     try{const savedColumns=JSON.parse(localStorage.getItem(entryColumnsKey)||'null');const saved=Array.isArray(savedColumns)?savedColumns.map(String).filter(Boolean):[];const hasColor=saved.some(name=>/^color$/i.test(name.trim()));const hasTotal=saved.some(name=>/total\s*(qty|quantity)/i.test(name));if(saved.length&&hasColor&&hasTotal)entryColumns=saved;else localStorage.setItem(entryColumnsKey,JSON.stringify(defaultEntryColumns));}catch{entryColumns=[...defaultEntryColumns];}
     const saveEntryColumns=()=>{try{localStorage.setItem(entryColumnsKey,JSON.stringify(entryColumns));}catch{}};
-    const entryLabelDefaults={entryTitle:'Entry',buyerName:'Buyer Name',styleNumber:'Style Number',orderQuantity:'Order Quantity',entryDate:'Date',shippingQuantity:'Shipment Date',styleNo:'Style No',color:'Color',size:'Size',qty:'QTY',pcs:'Pcs',remove:'',addRow:'+ Add Row',saveEntry:'Save Entry'};
-    const readEntryLabels=()=>{try{const labels={...entryLabelDefaults,...(JSON.parse(localStorage.getItem(entryLabelKey)||'{}')||{})};if(labels.shippingQuantity==='Shipment Quantity')labels.shippingQuantity='Shipment Date';return labels;}catch{return {...entryLabelDefaults};}};
+    const entryLabelDefaults={entryTitle:'Entry',buyerName:'Buyer Name',styleNumber:'Style Number',orderQuantity:'Order Quantity',entryDate:'Date',shippingQuantity:'Shipment Date',styleNo:'Style No',color:'Color',size:'Size',qty:'QTY',pcs:'Pcs',remove:'',addRow:'+ Add Row',saveEntry:'Save'};
+    const readEntryLabels=()=>{try{const labels={...entryLabelDefaults,...(JSON.parse(localStorage.getItem(entryLabelKey)||'{}')||{})};if(labels.shippingQuantity==='Shipment Quantity')labels.shippingQuantity='Shipment Date';if(labels.saveEntry==='Save Entry')labels.saveEntry='Save';return labels;}catch{return {...entryLabelDefaults};}};
     const saveEntryLabels=labels=>{try{localStorage.setItem(entryLabelKey,JSON.stringify(labels));}catch{}};
     const allSummaryDepartments=['Administration','MD','GM','Director','Account','Commercial','Merchandising','Knitting and Dyeing','Store','Production','Line-1','Line-2','Line-3','Line-4','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical','Driver','Auditing','admin1','admin2','admin3','admin4','admin5'];
     const isSummarySuperAdmin=()=>{try{const session=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null')||{};const role=String(session.department||'').trim().toLowerCase().replace(/[\s_-]+/g,'');return ['superadmin','owner','alldepartments'].includes(role)||['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(session.email||'').trim().toLowerCase());}catch{return false;}};
@@ -2492,8 +2492,8 @@
       const columnHeaders=entryColumns.map((name,index)=>`<th class="summary-column-header" data-summary-column-index="${index}">${esc(name)}</th>`).join('');
       const columnCells=entryColumns.map(fieldMarkup).join('');
       const totalCells=entryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
-       const entryPanel=(selectedSubDepartment==='Entry'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">Entry</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save Entry</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
-       const entryReportPanel=selectedSubDepartment==='Entry Report'?`<aside class="summary-entry-report-panel"><h3>Entry Report</h3><div class="summary-entry-report-blank" aria-label="Entry Report blank page"></div></aside>`:'';
+       const entryPanel=(selectedSubDepartment==='Entry'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">Entry</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
+       const entryReportPanel=selectedSubDepartment==='Entry Report'?`<aside class="summary-entry-report-panel"><h3>Entry Report</h3><div class="summary-entry-report-content" aria-label="Entry Report"></div></aside>`:'';
        grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 ${esc(merchandisingName)}</div></div>${children}</div></div>${entryPanel}${entryReportPanel}</div>`;
       const main=grid.querySelector('.summary-department-expand');
       const toggle=()=>{merchandisingExpanded=!merchandisingExpanded;renderMerchandising();};
@@ -2770,7 +2770,15 @@
   /* Entry Report is intentionally a clean blank page. */
   .summary-entry-report-panel{max-width:1180px;margin:18px auto 0;background:#fff;border:1px solid #c9ded4;border-radius:14px;box-shadow:0 8px 22px #173b3014;overflow:hidden}
   .summary-entry-report-panel h3{margin:0;padding:16px 20px;background:linear-gradient(100deg,#e4f4ed,#f9fcfa);color:var(--deep);font-size:22px;text-align:center;border-bottom:1px solid #c9ded4}
-  .summary-entry-report-blank{height:420px;background:#fff}
+  .summary-entry-report-content{padding:14px 16px;background:#fbfefd}
+  .summary-entry-report-item{margin:0 0 14px;padding:10px 12px;border:1px solid #c9ded4;border-radius:9px;background:#fff;box-shadow:0 2px 8px #173b3010}
+  .summary-entry-report-item:last-child{margin-bottom:0}
+  .summary-entry-report-item-head{display:flex;flex-wrap:wrap;align-items:center;gap:7px 14px;padding:0 0 8px;color:#164d3b;font-size:12px;border-bottom:1px solid #d7e5de}
+  .summary-entry-report-item-head strong{color:#075b45;font-size:14px;margin-right:auto}
+  .summary-entry-report-item table{width:100%;margin-top:9px;border-collapse:collapse;table-layout:fixed;font-size:12px}
+  .summary-entry-report-item th,.summary-entry-report-item td{border:1px solid #d7e5de;padding:6px 5px;text-align:center;vertical-align:middle;word-break:break-word}
+  .summary-entry-report-item th{background:#eaf6ef;color:#164d3b;font-weight:700}
+  .summary-entry-report-empty{margin:0;padding:24px;text-align:center;color:#6b8279;font-size:13px}
   .summary-entry-report-child{margin-left:22px!important;padding-left:12px!important;border-left:2px solid #b9dfe1!important}
   /* No report page is shown below the form after Save. Saved data stays in storage. */
   #summaryView .summary-saved-entries,
@@ -2811,6 +2819,47 @@
     };
     const apply=()=>{document.querySelectorAll('#summaryView .summary-merch-meta input[name="entryDate"],#summaryView .summary-merch-meta input[name="shippingQuantity"],#storeView #merchShippingDate').forEach(bind);};
     apply();window.setInterval(apply,300);
+  })();
+</script>
+<script>
+  /* Saved Entry data is shown inside Merchandising > Entry Report. */
+  (() => {
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const dmy = value => {
+      const raw = String(value ?? '').trim(); if (!raw) return '';
+      const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/); if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
+      const parts = raw.split(/[\/.\-]/).map(item => item.trim()).filter(Boolean);
+      if (parts.length === 3) {
+        let year = Number(parts[2]); if (String(parts[2]).length < 4) year = year < 70 ? 2000 + year : 1900 + year;
+        if (Number.isFinite(year)) return `${String(Number(parts[0])).padStart(2,'0')}/${String(Number(parts[1])).padStart(2,'0')}/${year}`;
+      }
+      return raw;
+    };
+    const read = () => { try { return JSON.parse(localStorage.getItem('farnoorMerchandisingEntries') || '[]') || []; } catch { return []; } };
+    const valueOf = (entry, names) => { for (const name of names) { const value = entry?.[name]; if (value !== undefined && value !== null && String(value).trim()) return value; } return ''; };
+    const rowValue = (row, names) => { for (const name of names) { const value = row?.[name]; if (value !== undefined && value !== null) return value; } return ''; };
+    const render = () => {
+      const content = document.querySelector('#summaryView .summary-entry-report-content'); if (!content) return;
+      const entries = read(); const signature = JSON.stringify(entries);
+      if (content.dataset.signature === signature) return;
+      content.dataset.signature = signature;
+      if (!entries.length) { content.innerHTML = '<p class="summary-entry-report-empty">No saved entries yet.</p>'; return; }
+      const headers = ['Style Number','Accessories Name','Color','Size','Quantity','Total Quantity'];
+      content.innerHTML = entries.map((entry, index) => {
+        const rows = Array.isArray(entry.rows) ? entry.rows : [];
+        const buyer = valueOf(entry, ['buyerName','buyer']);
+        const style = valueOf(entry, ['styleNumber','style']);
+        const order = valueOf(entry, ['orderQuantity','order']);
+        const date = dmy(valueOf(entry, ['entryDate']));
+        const shipment = dmy(valueOf(entry, ['shippingQuantity','shippingDate']));
+        const table = rows.length ? `<table><thead><tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${headers.map(header => {
+          const names = header === 'Style Number' ? ['Style Number','Style No'] : header === 'Accessories Name' ? ['Accessories Name','Accessories'] : header === 'Quantity' ? ['Quantity','Qty/Quantity','QTY'] : header === 'Total Quantity' ? ['Total Quantity','Quantity','Qty/Quantity','QTY'] : [header];
+          return `<td>${esc(rowValue(row, names))}</td>`;
+        }).join('')}</tr>`).join('')}</tbody></table>` : '<p class="summary-entry-report-empty">No line items.</p>';
+        return `<section class="summary-entry-report-item"><div class="summary-entry-report-item-head"><strong>Entry ${index + 1}</strong><span>Buyer: ${esc(buyer)}</span><span>Style Number: ${esc(style)}</span><span>Order Quantity: ${esc(order)}</span><span>Date: ${esc(date)}</span><span>Shipment Date: ${esc(shipment)}</span></div>${table}</section>`;
+      }).join('');
+    };
+    render(); window.setInterval(render, 350);
   })();
 </script>
 </body>
