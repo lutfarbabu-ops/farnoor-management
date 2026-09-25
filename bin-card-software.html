@@ -4096,6 +4096,7 @@
         if (node.textContent.trim() === 'Swing') node.textContent = 'Sewing';
       });
       root.querySelectorAll('[data-production-subdepartment^="Swing Line "]').forEach(node => {
+        if (node.classList.contains('summary-booking-report')) return;
         const line = node.dataset.productionSubdepartment.replace('Swing Line ', '');
         const label = `Sewing Line ${line}`;
         if (node.textContent.trim() !== label) node.textContent = label;
