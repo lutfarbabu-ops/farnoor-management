@@ -4087,7 +4087,10 @@
       root.querySelectorAll('.production-swing-line-panel').forEach(panel => {
         panel.classList.add('production-sewing-line-panel');
         const heading = panel.querySelector('h3');
-        if (heading) heading.textContent = heading.textContent.replace(/^Swing Line/i, 'Sewing Line');
+        if (heading) {
+          const nextHeading = heading.textContent.replace(/^Swing Line/i, 'Sewing Line');
+          if (heading.textContent !== nextHeading) heading.textContent = nextHeading;
+        }
         const summary = panel.querySelector('.production-swing-summary');
         if (summary && !summary.dataset.sewingMetaReady) {
           summary.dataset.sewingMetaReady = '1';
