@@ -4287,7 +4287,7 @@
       const selected = container.querySelector('[data-production-subdepartment].selected');
       const name = selected?.dataset.productionSubdepartment || '';
       container.querySelectorAll('.summary-booking-report').forEach(report => { const reportName = report.dataset.productionSubdepartment || ''; const lineName = reportName.replace(/ Report$/, ''); report.style.display = name === lineName || name === reportName ? '' : 'none'; });
-      container.querySelectorAll('[data-synthetic-swing-panel],[data-synthetic-swing-report]').forEach(node => { if ((node.dataset.syntheticSwingPanel && name !== `Swing Line ${node.dataset.syntheticSwingPanel}`) || (node.dataset.syntheticSwingReport && name !== `Swing Line ${node.dataset.syntheticSwingReport} Report`)) node.remove(); });
+      container.querySelectorAll('[data-synthetic-swing-panel],[data-synthetic-swing-report]').forEach(node => { if ((node.dataset.syntheticSwingPanel && name !== node.dataset.syntheticSwingPanel) || (node.dataset.syntheticSwingReport && name !== `${node.dataset.syntheticSwingReport} Report`)) node.remove(); });
       const lineMatch = /^(Swing Line [1-5]|Unit 2 Swing Line [12])$/.exec(name);
       if (lineMatch && !container.querySelector(`[data-synthetic-swing-panel="${lineMatch[1]}"]`) && !container.querySelector('.production-swing-line-panel')) { container.querySelector('.summary-home-blank')?.remove(); container.insertAdjacentHTML('beforeend', linePanel(lineMatch[1])); }
       const reportMatch = /^(Swing Line [1-5]|Unit 2 Swing Line [12]) Report$/.exec(name);
