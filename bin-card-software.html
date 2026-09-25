@@ -2548,7 +2548,7 @@
       const totalCells=entryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total =</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
        const entryPanel=(selectedSubDepartment==='Entry'||selectedSubDepartment==='Entry Copy'||selectedSubDepartment==='New Schedule'||selectedSubDepartment==='Schedule'||selectedSubDepartment==='Booking'||selectedSubDepartment==='Sewing'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedProductionSubDepartment==='New Schedule'||selectedProductionSubDepartment==='Schedule'||selectedProductionSubDepartment==='Booking'||selectedProductionSubDepartment==='Sewing'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">${selectedSubDepartment==='Entry Copy'?'Entry Copy':selectedSubDepartment==='Sewing'?'Sewing':selectedSubDepartment==='Booking'?'Booking':selectedSubDepartment==='New Schedule'?'New Schedule':selectedSubDepartment==='Schedule'?'Schedule':'Entry'}</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
        const swingLineHours=['8 - 9','9 - 10','10 - 11','11 - 12','12 - 1','1 - 2','2 - 3','3 - 4','4 - 5','5 - 6','6 - 7'];
-       const swingLinePanel=/^Swing Line [1-4]$/.test(selectedProductionSubDepartment)?`<aside class="production-swing-line-panel"><h3>Swing Line ${selectedProductionSubDepartment.replace('Swing Line ','')}</h3><div class="production-swing-summary"><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Target</b><em>0</em></div><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Complete</b><em>0</em></div><div><span>Today's Date</span><strong data-swing-date="today"></strong><b>Target</b><em>0</em></div></div><div class="production-swing-table-wrap"><table class="production-swing-table"><thead><tr><th>SL</th><th>HOUR</th><th>Input</th><th>Output</th><th>Quality Checks</th><th>Alter Qty</th><th>Final Output</th></tr></thead><tbody>${swingLineHours.map((hour,index)=>{const lunch=index===5?'<span class="swing-lunch">Lunch Time</span>':'';const cell=index===5?lunch:'<input type="number" min="0" placeholder="0">';return `<tr><td>${index+1}</td><td class="swing-hour-cell">${hour}${lunch}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td></tr>`;}).join('')}</tbody><tfoot><tr><th colspan="2">Total</th><td data-sewing-total="input">0</td><td data-sewing-total="output">0</td><td data-sewing-total="quality">0</td><td data-sewing-total="alter">0</td><td data-sewing-total="final">0</td></tr></tfoot></table></div><div class="production-swing-signatures"><span>Line In-charge Sign</span><span>Head of Production Sign</span></div></aside>`:'';
+       const swingLinePanel=/^Swing Line [1-4]$/.test(selectedProductionSubDepartment)?`<aside class="production-swing-line-panel"><h3>Swing Line ${selectedProductionSubDepartment.replace('Swing Line ','')}</h3><div class="production-swing-summary"><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Target</b><em>0</em></div><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Complete</b><em>0</em></div><div><span>Today's Date</span><strong data-swing-date="today"></strong><b>Target</b><em>0</em></div></div><div class="production-swing-table-wrap"><table class="production-swing-table"><thead><tr><th>SL</th><th>HOUR</th><th>Input</th><th>Output</th><th>Quality Checks</th><th>Alter Qty</th><th>Final Output</th></tr></thead><tbody>${swingLineHours.map((hour,index)=>{const lunch=index===5?'<span class="swing-lunch">Lunch Time</span>':'';const cell=index===5?lunch:'<input type="number" min="0" placeholder="0">';return `<tr><td>${index+1}</td><td class="swing-hour-cell">${hour}${lunch}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td></tr>`;}).join('')}</tbody><tfoot><tr><th colspan="2">Total</th><td data-sewing-total="input">0</td><td data-sewing-total="output">0</td><td data-sewing-total="quality">0</td><td data-sewing-total="alter">0</td><td data-sewing-total="final">0</td></tr></tfoot></table></div><div class="production-sewing-actions"><button type="button" class="primary production-sewing-save">Save</button><span class="production-sewing-save-status" role="status"></span></div><div class="production-swing-signatures"><span>Line In-charge Sign</span><span>Head of Production Sign</span></div></aside>`:'';
        const entryReportPanel=(selectedSubDepartment==='Entry Report'||selectedSubDepartment==='Entry Copy Report'||selectedSubDepartment==='New Schedule Report'||selectedSubDepartment==='Schedule Report'||selectedSubDepartment==='Booking Report')?`<aside class="summary-entry-report-panel"><h3 data-report-title>${selectedSubDepartment==='Entry Copy Report'?'Entry Copy Report':selectedSubDepartment==='Booking Report'?'Booking Report':selectedSubDepartment==='New Schedule Report'?'New Schedule Report':selectedSubDepartment==='Schedule Report'?'Schedule Report':'Entry Report'}</h3><div class="summary-entry-report-content" aria-label="${selectedSubDepartment}"></div></aside>`:'';
        const showMerchandisingHome=merchandisingExpanded&&!selectedSubDepartment&&!selectedStoreSubDepartment&&!selectedProductionSubDepartment&&!selectedFinishingSubDepartment;
        const swingHomeCard=line=>`<section class="department-yesterday-notification summary-swing-home-box" data-department-name="Merchandising"><div class="summary-swing-home-main-title">Sewing Line ${line}</div><div class="summary-swing-home-subline" data-date-kind="yesterday"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label">Yesterday's Date</p><p class="dy-date"></p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Target</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Complete</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div><div class="summary-swing-home-subline summary-swing-home-subline-2" data-date-kind="today"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label today-total-label">Today's Date</p><p class="dy-date"></p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Target</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Complete</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div><div class="summary-swing-home-subline summary-swing-home-subline-3" data-date-kind="tomorrow"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label">Schedule</p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Buyer</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Style</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div></section>`;
@@ -2890,7 +2890,7 @@
       input.addEventListener('input',()=>{input.value=input.value.replace(/[^0-9\/.-]/g,'').slice(0,10);});
       input.addEventListener('blur',()=>{const parsed=parse(input.value);if(parsed)input.value=parsed.display;});
     };
-    const apply=()=>{document.querySelectorAll('#summaryView .summary-merch-meta input[name="entryDate"],#summaryView .summary-merch-meta input[name="shippingQuantity"],#storeView #merchShippingDate').forEach(bind);};
+    const apply=()=>{document.querySelectorAll('#summaryView .summary-merch-meta input[name="entryDate"],#summaryView .summary-merch-meta input[name="shippingQuantity"],#summaryView .production-sewing-line-panel input[data-sewing-date],#storeView #merchShippingDate').forEach(bind);};
     apply();window.setInterval(apply,300);
   })();
 </script>
@@ -4037,6 +4037,8 @@
   .swing-lunch{display:block;margin-top:3px;font-size:10px;font-weight:900;color:#b45c20;white-space:nowrap}
   .production-swing-signatures{display:flex;justify-content:space-between;gap:80px;margin-top:38px;padding:0 34px;color:#164d3b;font-size:13px;font-weight:800}
   .production-swing-signatures span{min-width:180px;padding-top:8px;border-top:1px solid #164d3b;text-align:center}
+  .production-sewing-actions{display:flex;align-items:center;gap:12px;margin:14px 0 0}
+  .production-sewing-save-status{color:#075b45;font-size:13px;font-weight:800}
   @media(max-width:700px){.production-swing-line-panel{padding:15px}.production-swing-summary{grid-template-columns:1fr}.production-swing-signatures{gap:20px;padding:0 4px;font-size:11px}.production-swing-signatures span{min-width:0;flex:1}}
 </style>
 <style>
@@ -4079,7 +4081,7 @@
 <script>
   (() => {
     const formatDate = date => `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`;
-    const updateSwingDates = () => { const now=new Date(), yesterday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1), todayInput=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`; document.querySelectorAll('.production-swing-line-panel [data-swing-date]').forEach(node => { node.textContent=formatDate(node.dataset.swingDate==='today'?now:yesterday); }); document.querySelectorAll('.production-sewing-line-panel [data-sewing-date]').forEach(input => { if (input.value !== todayInput) input.value=todayInput; }); };
+    const updateSwingDates = () => { const now=new Date(), yesterday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1), todayInput=formatDate(now); document.querySelectorAll('.production-swing-line-panel [data-swing-date]').forEach(node => { node.textContent=formatDate(node.dataset.swingDate==='today'?now:yesterday); }); document.querySelectorAll('.production-sewing-line-panel [data-sewing-date]').forEach(input => { if (input.value !== todayInput) input.value=todayInput; }); };
     updateSwingDates(); window.setInterval(updateSwingDates, 60000);
     window.addEventListener('beforeprint', updateSwingDates);
   })();
@@ -4108,14 +4110,48 @@
         const summary = panel.querySelector('.production-swing-summary');
         if (summary && !summary.dataset.sewingMetaReady) {
           summary.dataset.sewingMetaReady = '1';
-          summary.innerHTML = '<label>Date<input type="date" data-sewing-date></label><label>Buyer Name<input type="text" placeholder="Buyer Name"></label><label>Style Number<input type="text" placeholder="Style Number"></label><label>Item<input type="text" placeholder="Item"></label>';
+          summary.innerHTML = '<label>Date<input type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY" data-sewing-date></label><label>Buyer Name<input type="text" placeholder="Buyer Name"></label><label>Style Number<input type="text" placeholder="Style Number"></label><label>Item<input type="text" placeholder="Item"></label>';
           const dateInput = summary.querySelector('[data-sewing-date]');
-          if (dateInput) { const now = new Date(); dateInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`; }
+          if (dateInput) { const now = new Date(); dateInput.value = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`; }
         }
         const dateInput = panel.querySelector('[data-sewing-date]');
         if (dateInput) {
           const now = new Date();
-          dateInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+          dateInput.value = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
+        }
+        const saveButton = panel.querySelector('.production-sewing-save');
+        const saveStatus = panel.querySelector('.production-sewing-save-status');
+        const lineKey = String(panel.querySelector('h3')?.textContent || '').trim() || 'Sewing Line';
+        const readSaved = () => { try { return JSON.parse(localStorage.getItem('farnoorSewingLineEntries') || '{}') || {}; } catch { return {}; } };
+        const writeSaved = value => { try { localStorage.setItem('farnoorSewingLineEntries', JSON.stringify(value)); } catch {} };
+        if (saveButton && saveButton.dataset.bound !== '1') {
+          saveButton.dataset.bound = '1';
+          saveButton.addEventListener('click', () => {
+            const fields = panel.querySelectorAll('.production-swing-summary input');
+            const tableRows = [...panel.querySelectorAll('.production-swing-table tbody tr')];
+            const saved = readSaved();
+            saved[lineKey] = {
+              date: fields[0]?.value || '', buyerName: fields[1]?.value || '', styleNumber: fields[2]?.value || '', item: fields[3]?.value || '',
+              rows: tableRows.map(row => ({ hour: row.querySelector('.swing-hour-cell')?.textContent?.trim() || '', values: [...row.querySelectorAll('input[type="number"]')].map(input => input.value || '') })),
+              savedAt: new Date().toISOString()
+            };
+            writeSaved(saved);
+            if (saveStatus) saveStatus.textContent = 'Saved';
+          });
+        }
+        if (!panel.dataset.sewingSavedLoaded) {
+          panel.dataset.sewingSavedLoaded = '1';
+          const saved = readSaved()[lineKey];
+          if (saved) {
+            const fields = panel.querySelectorAll('.production-swing-summary input');
+            if (fields[1] && saved.buyerName) fields[1].value = saved.buyerName;
+            if (fields[2] && saved.styleNumber) fields[2].value = saved.styleNumber;
+            if (fields[3] && saved.item) fields[3].value = saved.item;
+            [...panel.querySelectorAll('.production-swing-table tbody tr')].forEach((row, rowIndex) => {
+              const values = Array.isArray(saved.rows?.[rowIndex]?.values) ? saved.rows[rowIndex].values : [];
+              [...row.querySelectorAll('input[type="number"]')].forEach((input, colIndex) => { if (values[colIndex] !== undefined) input.value = values[colIndex]; });
+            });
+          }
         }
         const table = panel.querySelector('.production-swing-table');
         if (table) {
@@ -4142,8 +4178,11 @@
               if (position < 0) return;
               event.preventDefault();
               event.stopImmediatePropagation();
+              const save = panel.querySelector('.production-sewing-save');
+              if (event.shiftKey) { save?.focus(); return; }
               const next = fields[position + 1];
               if (next) { next.focus(); if (typeof next.select === 'function') next.select(); }
+              else save?.click();
             }, true);
           }
           updateTotals();
