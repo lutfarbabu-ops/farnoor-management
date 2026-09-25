@@ -4027,6 +4027,7 @@
   .production-swing-table th,.production-swing-table td{border:1px solid #c5dfd3;text-align:center;padding:7px}
   .production-swing-table th{background:#3347b8;color:#fff;font-size:12px;font-weight:900}
   .production-swing-table th:first-child,.production-swing-table td:first-child{width:34px!important;max-width:34px!important;padding:4px!important;font-weight:900;color:#164d3b;background:#f0f8f4}
+  .production-swing-table th:first-child{background:#3347b8!important;color:#fff!important}
   .production-swing-table td:nth-child(2){width:120px;position:relative;font-weight:800;color:#234c88;background:#f7fbff}
   .production-swing-table th,.production-swing-table td{text-align:center;vertical-align:middle}
   .production-swing-table th{font-size:14px!important}
@@ -4109,6 +4110,11 @@
           summary.innerHTML = '<label>Date<input type="date" data-sewing-date></label><label>Buyer Name<input type="text" placeholder="Buyer Name"></label><label>Style Number<input type="text" placeholder="Style Number"></label><label>Item<input type="text" placeholder="Item"></label>';
           const dateInput = summary.querySelector('[data-sewing-date]');
           if (dateInput) { const now = new Date(); dateInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`; }
+        }
+        const dateInput = panel.querySelector('[data-sewing-date]');
+        if (dateInput && !dateInput.value) {
+          const now = new Date();
+          dateInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
         }
         const table = panel.querySelector('.production-swing-table');
         if (table) {
