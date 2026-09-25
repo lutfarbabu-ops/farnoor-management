@@ -3936,14 +3936,22 @@
       bind(panel); updateCards(host); return panel;
     };
     const isVisible = element => { if (!element) return false; const style = getComputedStyle(element); return style.display !== 'none' && style.visibility !== 'hidden'; };
+    const removePanels = host => host?.querySelectorAll('[data-shared-home-panel]').forEach(panel => panel.remove());
     const apply = () => {
       const summary = document.getElementById('summaryView');
-      if (summary && isVisible(summary) && !summary.querySelector('.summary-merch-home-panel')) ensure(summary, 'Management Summary');
+      if (summary) removePanels(summary);
       const generic = document.getElementById('departmentPageView');
-      if (generic) { const panel = ensure(generic, generic.querySelector('.department-page-head h2')?.textContent?.trim() || 'Department'); const inside = generic.querySelector('.merchandising-inside-page'); panel.style.display = inside && isVisible(inside) ? 'none' : ''; }
+      if (generic) {
+        const name = generic.querySelector('.department-page-head h2')?.textContent?.trim() || '';
+        if (/^Merchandising$/i.test(name)) {
+          const panel = ensure(generic, 'Merchandising');
+          const inside = generic.querySelector('.merchandising-inside-page');
+          panel.style.display = inside && isVisible(inside) ? 'none' : '';
+        } else removePanels(generic);
+      }
       const store = document.getElementById('storeView');
-      if (store) { const panel = ensure(store, 'Store'); const cardView = store.querySelector('.store-card'), records = store.querySelector('.store-records'), search = store.querySelector('.store-search'), line = store.querySelector('.line1-panel'); panel.style.display = isVisible(cardView) || isVisible(records) || isVisible(search) || isVisible(line) ? 'none' : ''; }
-      ['productionView','administrationView','otherDepartmentView'].forEach(id => { const host = document.getElementById(id); if (host) ensure(host, host.querySelector('.summary-head h2')?.textContent?.trim() || id); });
+      if (store) removePanels(store);
+      ['productionView','administrationView','otherDepartmentView'].forEach(id => removePanels(document.getElementById(id)));
     };
     apply(); window.setInterval(apply, 500);
   })();
