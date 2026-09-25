@@ -4254,8 +4254,18 @@
     const hours = ['8 - 9','9 - 10','10 - 11','11 - 12','12 - 1','1 - 2','2 - 3','3 - 4','4 - 5','5 - 6','6 - 7'];
     const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     const linePanel = line => `<aside class="production-swing-line-panel" data-synthetic-swing-panel="${line}"><h3>Swing Line ${line}</h3><div class="production-swing-summary"><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Target</b><em>0</em></div><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Complete</b><em>0</em></div><div><span>Today's Date</span><strong data-swing-date="today"></strong><b>Target</b><em>0</em></div></div><div class="production-swing-table-wrap"><table class="production-swing-table"><thead><tr><th>SL</th><th>HOUR</th><th>Input</th><th>Output</th><th>Quality Checks</th><th>Alter Qty</th><th>Final Output</th></tr></thead><tbody>${hours.map((hour,index)=>{const lunch=index===5?'<span class="swing-lunch">Lunch Time</span>':'';const cell=index===5?lunch:'<input type="number" min="0" placeholder="0">';return `<tr><td>${index+1}</td><td class="swing-hour-cell">${hour}${lunch}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td></tr>`;}).join('')}</tbody><tfoot><tr><th colspan="2">Total</th><td data-sewing-total="input">0</td><td data-sewing-total="output">0</td><td data-sewing-total="quality">0</td><td data-sewing-total="alter">0</td><td data-sewing-total="final">0</td></tr></tfoot></table></div><div class="production-sewing-actions"><button type="button" class="primary production-sewing-save">Save</button><span class="production-sewing-save-status" role="status"></span></div><div class="production-swing-signatures"><span>Line In-charge Sign</span><span>Head of Production Sign</span></div></aside>`;
-    const reportPanel = line => `<aside class="summary-entry-report-panel" data-synthetic-swing-report="${line}"><h3>Report</h3><div class="swing-line-report-content"></div></aside>`;
+    const reportPanel = line => `<aside class="summary-entry-report-panel" data-synthetic-swing-report="${line}"><div class="swing-report-toolbar"><button type="button" data-swing-report-print>Print</button><button type="button" data-swing-report-pdf>PDF</button><button type="button" data-swing-report-edit>Edit</button><button type="button" data-swing-report-delete>Delete</button></div><h3>Report</h3><div class="swing-line-report-content"></div></aside>`;
     const readSaved = () => { try { return JSON.parse(localStorage.getItem('farnoorSewingLineEntries') || '{}') || {}; } catch { return {}; } };
+    const bindReportActions = panel => {
+      if (!panel || panel.dataset.actionsBound === '1') return;
+      panel.dataset.actionsBound = '1';
+      const line = panel.dataset.syntheticSwingReport;
+      const print = () => { const oldTitle = document.title; document.title = `Swing Line ${line} Report`; document.body.classList.add('printing-entry-report'); window.setTimeout(() => window.print(), 80); window.setTimeout(() => { document.body.classList.remove('printing-entry-report'); document.title = oldTitle; }, 900); };
+      panel.querySelector('[data-swing-report-print]')?.addEventListener('click', print);
+      panel.querySelector('[data-swing-report-pdf]')?.addEventListener('click', print);
+      panel.querySelector('[data-swing-report-edit]')?.addEventListener('click', () => document.querySelector(`[data-production-subdepartment="Swing Line ${line}"]`)?.click());
+      panel.querySelector('[data-swing-report-delete]')?.addEventListener('click', () => { const all = readSaved(); const key = `Sewing Line ${line}`; const altKey = `Swing Line ${line}`; if (!all[key] && !all[altKey]) return; if (!window.confirm(`Swing Line ${line} Report মুছে ফেলবেন?`)) return; delete all[key]; delete all[altKey]; localStorage.setItem('farnoorSewingLineEntries', JSON.stringify(all)); const body = panel.querySelector('.swing-line-report-content'); if (body) { body.dataset.rendered = ''; body.innerHTML = '<p class="small">No saved data for this Swing Line.</p>'; } });
+    };
     const renderReport = panel => {
       const line = panel.dataset.syntheticSwingReport, all = readSaved(), saved = all[`Sewing Line ${line}`] || all[`Swing Line ${line}`], body = panel.querySelector('.swing-line-report-content');
       if (!body || body.dataset.rendered === JSON.stringify(saved || null)) return;
@@ -4275,7 +4285,7 @@
       const lineMatch = /^Swing Line ([1-5])$/.exec(name);
       if (lineMatch && !container.querySelector(`[data-synthetic-swing-panel="${lineMatch[1]}"]`) && !container.querySelector('.production-swing-line-panel')) { container.querySelector('.summary-home-blank')?.remove(); container.insertAdjacentHTML('beforeend', linePanel(lineMatch[1])); }
       const reportMatch = /^Swing Line ([1-5]) Report$/.exec(name);
-      if (reportMatch) { container.querySelector('.summary-home-blank')?.remove(); let panel = container.querySelector(`[data-synthetic-swing-report="${reportMatch[1]}"]`); if (!panel) { container.insertAdjacentHTML('beforeend', reportPanel(reportMatch[1])); panel = container.querySelector(`[data-synthetic-swing-report="${reportMatch[1]}"]`); } if (panel) renderReport(panel); }
+      if (reportMatch) { container.querySelector('.summary-home-blank')?.remove(); let panel = container.querySelector(`[data-synthetic-swing-report="${reportMatch[1]}"]`); if (!panel) { container.insertAdjacentHTML('beforeend', reportPanel(reportMatch[1])); panel = container.querySelector(`[data-synthetic-swing-report="${reportMatch[1]}"]`); } if (panel) { bindReportActions(panel); renderReport(panel); } }
     };
     ensure(); window.setInterval(ensure, 250);
   })();
@@ -4286,6 +4296,10 @@
   #summaryView .summary-booking-report::after{content:none!important;display:none!important}
   #summaryView .summary-entry-report-panel[data-synthetic-swing-report]{grid-column:2!important;grid-row:1!important;align-self:start!important;width:100%!important;max-width:none!important;margin:0!important;box-sizing:border-box!important}
   @media(max-width:700px){#summaryView .summary-entry-report-panel[data-synthetic-swing-report]{grid-column:1!important;grid-row:auto!important}}
+  #summaryView .swing-report-toolbar{display:flex!important;justify-content:flex-end!important;gap:6px!important;padding:8px 10px!important;border-bottom:1px solid #d7e5de!important;background:#f7fcfa!important}
+  #summaryView .swing-report-toolbar button{min-width:58px!important;min-height:28px!important;padding:4px 9px!important;border:1px solid #a6d7c4!important;border-radius:6px!important;background:#fff!important;color:#164d3b!important;font-size:12px!important;font-weight:700!important;cursor:pointer!important}
+  #summaryView .swing-report-toolbar button:hover{background:#e4f4ed!important}
+  @media print{body.printing-entry-report #summaryView .swing-report-toolbar{display:none!important}}
 </style>
 </body>
 </html>
