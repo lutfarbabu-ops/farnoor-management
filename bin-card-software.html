@@ -4105,8 +4105,8 @@
       // renders could leave the generated line name beside the label, so
       // reset the visible text on every refresh.
       root.querySelectorAll('.summary-booking-report').forEach(node => {
-        node.textContent = 'Report';
-        node.style.fontWeight = '400';
+        if (node.textContent.trim() !== 'Report') node.textContent = 'Report';
+        if (node.style.fontWeight !== '400') node.style.fontWeight = '400';
       });
       root.querySelectorAll('.production-swing-line-panel').forEach(panel => {
         panel.classList.add('production-sewing-line-panel');
