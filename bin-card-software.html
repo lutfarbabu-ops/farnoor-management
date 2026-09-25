@@ -45,7 +45,7 @@
   <main>
     <div class="notice">প্রতিটি Management Entry একটি নির্দিষ্ট <b>Order No + Style No</b>-এর জন্য। Main Label, Size Label ও Care Label-সহ সব materials/accessories-এর quantity একই এন্ট্রিতে আলাদাভাবে রাখা যাবে।</div>
     <section class="summary-section" id="summaryView">
-      <div class="summary-head"><div><h2>Management Summary</h2><p>সব আইটেমের বর্তমান হিসাব এক জায়গায়। কোনো আইটেমে ক্লিক করে তার আলাদা কাজের অংশে যান।</p></div><button class="primary" onclick="openFunction()">+ New Input / নতুন ইনপুট</button></div>
+      <div class="summary-head"><div><h2>Management Summary</h2><p>সব আইটেমের বর্তমান হিসাব এক জায়গায়। কোনো আইটেমে ক্লিক করে তার আলাদা কাজের অংশে যান।</p></div></div>
       <section class="department-panel"><h3>Department Management</h3><p>নিচে Department-এর নাম লিখে যোগ করুন। যোগ করার সঙ্গে সঙ্গে আলাদা বাটন তৈরি হবে।</p><form class="department-form" id="departmentForm"><input id="departmentName" required placeholder="যেমন: Merchandising"><button class="primary" type="submit">+ Department যোগ করুন</button></form><div class="department-grid" id="departmentButtons"></div><div class="small" id="departmentStatus"></div></section>
     </section>
     <section class="store-view" id="storeView"><div class="summary-head"><div><h2>Store Page</h2><p>Buyer, Style, Order এবং Accessories-এর quantity এখানে দিন।</p></div><button class="secondary" type="button" onclick="openStorePageHome()">← Store Page</button></div><div class="card store-card"><div class="card-head"><div><h2>Accessories Entry</h2><div class="small">Receive Balance = Received − Booking; Balance = Received − Delivery। ফলাফলে + বা − চিহ্ন দেখা যাবে।</div></div></div><div class="body"><form id="storeForm"><datalist id="accessoryOptions"><option value="Main Label"><option value="Size Label"><option value="Care Label"><option value="Button"><option value="Zipper"><option value="Sewing Thread"><option value="Mobilon Tape"><option value="Elastic"><option value="Interlining"><option value="Neck/Shoulder Tape"><option value="Hanger Loop"></datalist><div class="store-fields"><div class="store-row"><label>Buyer Name</label><input id="storeBuyer" required placeholder="Buyer Name লিখুন"></div><div class="store-row"><label>Style Number</label><input id="storeStyle" required placeholder="Style Number লিখুন"></div><div class="store-row"><label>Order Quantity</label><input id="storeOrderQty" type="number" min="0" value="0" placeholder="0"></div></div><div style="height:16px"></div><div class="accessory-table"><div class="accessory-table-head"><span>−</span><span>Accessories নাম</span><span>Size</span><span>Size Quantity</span><span>Booking Quantity</span><span>Received Quantity</span><span>Receive Balance</span><span>Delivery Quantity</span><span>Balance</span></div><div id="storeAccessoryRows"></div><div class="accessory-total-row"><span></span><span>Total</span><span>—</span><span id="totalSizeQty">0</span><span id="totalBookingQty">0</span><span id="totalReceivedQty">0</span><span id="totalReceiveBalanceQty">0</span><span id="totalDeliveryQty">0</span><span id="totalBalanceQty">0</span></div></div><button class="add-accessory" type="button" onclick="addAccessoryRow()">+ Accessories যোগ করুন</button><div class="actions"><button class="primary" type="submit">সব তথ্য Save করুন</button></div><div class="store-saved" id="storeSaved">Accessories-এর তথ্য সংরক্ষণ করা হয়েছে।</div></form></div></div><section class="card store-records" id="storeRecords"><div class="card-head"><div><h2>Save করা Store তথ্য</h2><div class="small">একই Buyer ও Style-এর সব Accessories একটি ঘরে দেখানো হবে।</div></div><button class="secondary no-print" type="button" onclick="printStoreRecords()">A4 প্রিন্ট</button></div><div class="body" id="storeRecordsBody"></div></section></section>
@@ -83,7 +83,8 @@
     const savedLogin=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null');if(savedLogin)enterApp(savedLogin.name,savedLogin.department);
     const itemNames=['Main Label','Care Label','Sewing Thread','Mobilon Tape','Button','Zipper','Elastic','Interlining','Neck/Shoulder Tape','Hanger Loop'];
     const materialBox=document.querySelector('#materials'); let cards=JSON.parse(localStorage.getItem('farnoorBinCards')||'[]'), departments=JSON.parse(localStorage.getItem('farnoorDepartments')||'[]'), editId=null, activeItem=null, activeBuyer=null, activeDepartment=null;
-    const restoredDepartments=['Administration','MD','GM','Director','Account','Commercial','Merchandising','Knitting and Dyeing','Store','Production','Line-1','Line-2','Line-3','Line-4','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical','Driver'];if(!localStorage.getItem('farnoorDepartmentsRestoredSep2026v1')){restoredDepartments.forEach(name=>{if(!departments.some(item=>item.toLowerCase()===name.toLowerCase()))departments.push(name);});localStorage.setItem('farnoorDepartments',JSON.stringify(departments));localStorage.setItem('farnoorDepartmentsRestoredSep2026v1','done');}
+    const restoredDepartments=['Merchandising','Production'];if(!localStorage.getItem('farnoorDepartmentsRestoredSep2026v1')){restoredDepartments.forEach(name=>{if(!departments.some(item=>item.toLowerCase()===name.toLowerCase()))departments.push(name);});localStorage.setItem('farnoorDepartments',JSON.stringify(departments));localStorage.setItem('farnoorDepartmentsRestoredSep2026v1','done');}
+    departments=departments.filter(name=>['merchandising','production'].includes(String(name||'').trim().toLowerCase()));if(!departments.length)departments=['Merchandising','Production'];localStorage.setItem('farnoorDepartments',JSON.stringify(departments));
     materialBox.innerHTML=itemNames.map((n,i)=>`<div class="material"><input class="mat-name" data-n="${n}" value="${n}" readonly><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div>`).join('');
     const val=id=>document.getElementById(id).value.trim(); const set=(id,v='')=>document.getElementById(id).value=v;
     function getMaterials(){ return [...materialBox.querySelectorAll('.material')].map(r=>({name:r.querySelector('[data-n]').dataset.n,order:r.querySelector('[data-k=order]').value||0,booking:r.querySelector('[data-k=booking]').value||0,received:r.querySelector('[data-k=received]').value||0,delivery:r.querySelector('[data-k=delivery]').value||0})); }
@@ -132,7 +133,7 @@
     document.getElementById('storeForm').onsubmit=e=>{e.preventDefault();const accessories=[...document.querySelectorAll('#storeAccessoryRows .accessory-table-row')].map(row=>{const booking=row.querySelector('.accessory-booking').value||'0',received=row.querySelector('.accessory-received').value||'0',delivery=row.querySelector('.accessory-delivery').value||'0';return {name:row.querySelector('.accessory-type').value||'—',size:row.querySelector('.accessory-size').value||'—',sizeQuantity:row.querySelector('.accessory-size-qty').value||'0',bookingQuantity:booking,receivedQuantity:received,deliveryQuantity:delivery};}),entry={id:Date.now(),buyerName:val('storeBuyer'),styleNumber:val('storeStyle'),orderQuantity:val('storeOrderQty')||'0',accessories},storeEntries=normalizeStoreEntries(JSON.parse(localStorage.getItem('farnoorStoreEntries')||'[]')),existing=storeEntries.find(x=>x.buyerName.toLowerCase()===entry.buyerName.toLowerCase()&&x.styleNumber.toLowerCase()===entry.styleNumber.toLowerCase());if(existing){existing.orderQuantity=String((+existing.orderQuantity||0)+(+entry.orderQuantity||0));entry.accessories.forEach(a=>{const old=existing.accessories.find(x=>x.name.toLowerCase()===a.name.toLowerCase()&&x.size.toLowerCase()===a.size.toLowerCase());if(old){old.sizeQuantity=String((+old.sizeQuantity||0)+(+a.sizeQuantity||0));old.bookingQuantity=String((+old.bookingQuantity||0)+(+a.bookingQuantity||0));old.receivedQuantity=String((+old.receivedQuantity||0)+(+a.receivedQuantity||0));old.deliveryQuantity=String((+old.deliveryQuantity||0)+(+a.deliveryQuantity||0));}else existing.accessories.push(a);});}else storeEntries.unshift(entry);localStorage.setItem('farnoorStoreEntries',JSON.stringify(normalizeStoreEntries(storeEntries)));document.getElementById('storeSaved').style.display='block';document.getElementById('storeForm').reset();document.getElementById('storeAccessoryRows').innerHTML='';addAccessoryRow();renderStoreRecords();};
     const pageActions=document.querySelectorAll('#storeView .store-action'),receiveAction=pageActions[0],productionAction=pageActions[1],oldReceiveAction=receiveAction.onclick,oldProductionAction=productionAction.onclick;receiveAction.textContent='Accessories Receive';productionAction.textContent='Accessories Delivery';receiveAction.onclick=()=>{oldReceiveAction();if(!['line-1','line 1'].includes((activeDepartment||'').toLowerCase()))document.querySelector('#storeView .store-card .card-head h2').textContent='Accessories Receive';};productionAction.onclick=()=>{oldProductionAction();document.querySelector('#storeView .store-card .card-head h2').textContent='Accessories Delivery';};
     document.querySelector('#summaryView .summary-head button')?.remove();const departmentPanel=document.querySelector('.department-panel'),departmentForm=document.getElementById('departmentForm'),departmentGrid=document.getElementById('departmentButtons');departmentPanel.querySelector('h3')?.remove();departmentPanel.querySelector('p')?.remove();departmentGrid.after(departmentForm);
-    setupProductionPage();setupAdministrationPage();const standardDepartmentRender=renderDepartments;renderDepartments=function(){standardDepartmentRender();const grid=document.getElementById('departmentButtons'),addSpecial=(name,action)=>{let button=grid.querySelector(`[data-department="${name}"]`);if(!button){button=document.createElement('button');button.type='button';button.className='department-button';button.dataset.department=name;button.textContent=name;button.onclick=action;grid.append(button);}};addSpecial('Administration',()=>{activeDepartment='Administration';renderDepartments();renderSummary();openAdministrationPage();});addSpecial('Production',()=>{activeDepartment='Production';renderDepartments();renderSummary();openProductionPage();});document.querySelector('.department-button[data-department="Line-1"]')?.replaceChildren('Line-1');grid.querySelectorAll('.department-button').forEach(button=>{if(button.closest('.dept-control'))return;const wrap=document.createElement('span'),remove=document.createElement('button'),department=button.dataset.department;wrap.className='dept-control';button.before(wrap);wrap.append(button);if(['Administration','Production'].includes(department))return;remove.type='button';remove.className='delete-department';remove.textContent='×';remove.title='এই Department বাদ দিন';remove.onclick=e=>{e.stopPropagation();if(!confirm(`${department} Department মুছে দিতে চান?`))return;departments=departments.filter(item=>item!==department);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));if(activeDepartment===department)activeDepartment=null;renderDepartments();};wrap.append(remove);});};
+    setupProductionPage();setupAdministrationPage();const standardDepartmentRender=renderDepartments;renderDepartments=function(){standardDepartmentRender();const grid=document.getElementById('departmentButtons'),addSpecial=(name,action)=>{let button=grid.querySelector(`[data-department="${name}"]`);if(!button){button=document.createElement('button');button.type='button';button.className='department-button';button.dataset.department=name;button.textContent=name;button.onclick=action;grid.append(button);}};addSpecial('Production',()=>{activeDepartment='Production';renderDepartments();renderSummary();openProductionPage();});document.querySelector('.department-button[data-department="Line-1"]')?.replaceChildren('Line-1');grid.querySelectorAll('.department-button').forEach(button=>{if(button.closest('.dept-control'))return;const wrap=document.createElement('span'),remove=document.createElement('button'),department=button.dataset.department;wrap.className='dept-control';button.before(wrap);wrap.append(button);if(['Merchandising','Production'].includes(department))return;remove.type='button';remove.className='delete-department';remove.textContent='×';remove.title='এই Department বাদ দিন';remove.onclick=e=>{e.stopPropagation();if(!confirm(`${department} Department মুছে দিতে চান?`))return;departments=departments.filter(item=>item!==department);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));if(activeDepartment===department)activeDepartment=null;renderDepartments();};wrap.append(remove);});};
     document.getElementById('search').oninput=render; renderDepartments(); addAccessoryRow(); renderStoreRecords(); render(); renderSummary();
     function openServiceBenefitPage(){const page=document.getElementById('serviceBenefitView');document.getElementById('administrationView').classList.remove('visible');page.classList.add('visible');window.scrollTo({top:0,behavior:'smooth'});}function setupServiceBenefitPage(){const page=document.createElement('section');page.id='serviceBenefitView';page.className='service-benefit-view';page.innerHTML='<div class="summary-head"><div><h2>Service Benefit</h2></div><button class="secondary" type="button">← Administration Page</button></div><div class="service-benefit-actions"><button class="service-benefit-action" type="button">Service Benefit Entry</button><button class="service-benefit-action" type="button">Service Benefit List</button><button class="service-benefit-action" type="button">Service Benefit Report</button></div>';document.getElementById('administrationView').after(page);page.querySelector('.secondary').onclick=()=>{page.classList.remove('visible');document.getElementById('administrationView').classList.add('visible');};page.querySelectorAll('.service-benefit-action').forEach(button=>button.onclick=()=>page.querySelectorAll('.service-benefit-action').forEach(item=>item.classList.toggle('active',item===button)));document.querySelector('#administrationView .admin-action')?.addEventListener('click',openServiceBenefitPage);}setupServiceBenefitPage();
     function setupServiceBenefitReport(){const page=document.getElementById('serviceBenefitView'),actions=page.querySelector('.service-benefit-actions'),buttons=actions.querySelectorAll('.service-benefit-action');buttons[0].textContent='Entry';buttons[1].textContent='Payment';buttons[2]?.remove();const report=document.createElement('section');report.className='service-benefit-report';report.innerHTML='<div class="benefit-title"><h2>FARNOOR GARMENTS LTD.</h2><div>1028/1/2 Malibagh Bazar Road, Dhaka-1217</div><h3>Service Benefit</h3></div><div class="benefit-info"><label>Name <b>:</b><input placeholder="Name লিখুন"></label><label>Designation <b>:</b><input placeholder="Designation লিখুন"></label><label>Card/Staff No <b>:</b><input placeholder="Card/Staff No লিখুন"></label><label>Date Of Joining <b>:</b><input type="date"></label><label>Salary <b>:</b><input type="number" placeholder="0"></label><label>Basic <b>:</b><input type="number" placeholder="0"></label></div><table class="benefit-table"><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Basic</th></tr></thead><tbody><tr><td>01</td><td><input type="date"></td><td><input placeholder="Month"></td><td><input placeholder="Days"></td><td><input type="number" placeholder="0"></td></tr></tbody></table><div class="benefit-total">Total Payment = <span>0</span></div><div class="benefit-sign"><span>Received Sign</span><span>Authorised Sign</span></div>';page.append(report);buttons[0].onclick=()=>{buttons.forEach(item=>item.classList.remove('active'));buttons[0].classList.add('active');report.classList.add('visible');report.scrollIntoView({behavior:'smooth',block:'start'});};buttons[1].onclick=()=>{buttons.forEach(item=>item.classList.remove('active'));buttons[1].classList.add('active');report.classList.remove('visible');};}function setupDepartmentContextMenu(){const menu=document.createElement('div');menu.className='department-context-menu';menu.innerHTML='<button type="button">Delete Department</button>';document.body.append(menu);let selected='';const wire=()=>document.querySelectorAll('.department-button').forEach(button=>{if(button.dataset.contextReady)return;button.dataset.contextReady='yes';button.addEventListener('contextmenu',event=>{event.preventDefault();selected=button.dataset.department;menu.style.left=`${event.clientX}px`;menu.style.top=`${event.clientY}px`;menu.classList.add('visible');});});menu.querySelector('button').onclick=()=>{if(!selected)return;if(!confirm(`${selected} Department মুছে দিতে চান?`))return;departments=departments.filter(item=>item!==selected);localStorage.setItem('farnoorDepartments',JSON.stringify(departments));menu.classList.remove('visible');renderDepartments();};document.addEventListener('click',()=>menu.classList.remove('visible'));const originalRender=renderDepartments;renderDepartments=function(){originalRender();wire();};wire();}setupServiceBenefitReport();setupDepartmentContextMenu();
@@ -863,13 +864,13 @@
     (() => {
       const select = document.getElementById('regDepartment');
       if (!select) return;
-      const departments = ['Administration','MD','GM','Director','Account','Commercial','Merchandising','Knitting and Dyeing','Store','Production','Line-1','Line-2','Line-3','Line-4','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical','Driver','Auditing','admin1','admin2','admin3','admin4','admin5'];
+      const departments = ['Merchandising','Production'];
       select.innerHTML = '<option value="" selected disabled>বিভাগ নির্বাচন করুন</option>' + departments.map(name => `<option value="${name}">${name}</option>`).join('');
     })();
   </script>
   <script>
     (() => {
-      const extraDepartments = ['Auditing','admin1','admin2','admin3','admin4','admin5'];
+      const extraDepartments = [];
       let departmentsChanged = false;
       if (typeof departments !== 'undefined') {
         extraDepartments.forEach(name => {
@@ -889,7 +890,7 @@
           return ['superadmin','owner','alldepartments'].includes(normalize(session.department)) || ['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(session.email || '').trim().toLowerCase());
         } catch { return false; }
       };
-      const permissionFor = (department,target) => { try { const all = JSON.parse(localStorage.getItem('farnoorDepartmentPermissionsV1') || '{}') || {}; const key = Object.keys(all).find(item => normalize(item) === normalize(department)); const fallback=all[key] || {full:true,view:true,search:true,print:true,excel:true}; const matrix=JSON.parse(localStorage.getItem('farnoorDepartmentAccessMatrixV1') || '{}') || {}; const source=Object.keys(matrix).find(item=>normalize(item)===normalize(department)); if(target && source && matrix[source]) { const targetKey=Object.keys(matrix[source]).find(item=>normalize(item)===normalize(target)); if(targetKey) { const value=matrix[source][targetKey]; if(value && typeof value==='object') return {...fallback,full:value.full!==false,view:value.view!==false,search:value.search!==false,print:value.pdf!==false,excel:value.excel!==false}; return {...fallback,full:value!==false}; } } return fallback; } catch { return {full:true,view:true,search:true,print:true,excel:true}; } };
+      const permissionFor = (department,target) => { try { const all = JSON.parse(localStorage.getItem('farnoorDepartmentPermissionsV1') || '{}') || {}; const key = Object.keys(all).find(item => normalize(item) === normalize(department)); const fallback=all[key] || {full:true,view:true,search:true,print:true,excel:true,edit:true}; const matrix=JSON.parse(localStorage.getItem('farnoorDepartmentAccessMatrixV1') || '{}') || {}; const source=Object.keys(matrix).find(item=>normalize(item)===normalize(department)); if(target && source && matrix[source]) { const targetKey=Object.keys(matrix[source]).find(item=>normalize(item)===normalize(target)); if(targetKey) { const value=matrix[source][targetKey]; if(value && typeof value==='object') return {...fallback,full:value.all!==undefined?value.all===true:value.full!==false,view:value.view!==false,edit:value.edit===true,search:value.edit!==undefined?value.edit===true:value.search!==false,print:value.pdf!==false,excel:value.pdf!==undefined?value.pdf===true:value.excel!==false}; return {...fallback,full:value!==false}; } } return fallback; } catch { return {full:true,view:true,search:true,print:true,excel:true,edit:true}; } };
       /* Super Admin controls whether a Department may open other Departments. */
       const canAccess = department => { const role=getRole(); if (isSuperAdmin()) return true; if (!role) return false; if (normalize(department)===normalize(role)) return true; return permissionFor(role,department).full !== false; };
       const denied = () => alert('এই Department-এ আপনার প্রবেশাধিকার নেই।');
@@ -939,7 +940,7 @@
   <script>
     (() => {
       const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
-      const adminTargets = ['administration','account','commercial','merchandising','knittinganddyeing','store','production','line1','line2','line3','line4','cutting','finishing','packing','quality','sample','maintenance','electrical','driver','auditing'];
+      const adminTargets = ['merchandising','production'];
       const readGroups = {
         administration: adminTargets,
         md: adminTargets,
@@ -966,14 +967,15 @@
       const currentRole = () => { try { return clean(JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null')?.department); } catch { return ''; } };
       const isSuperAdmin = () => { try { const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; return ['superadmin','owner','alldepartments'].includes(clean(session.department)) || ['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(session.email || '').trim().toLowerCase()); } catch { return false; } };
       const isAdminUser = role => /^admin[1-5]$/.test(role);
-        const permissionFor = (department,target) => { try { const all=JSON.parse(localStorage.getItem('farnoorDepartmentPermissionsV1')||'{}')||{}; const key=Object.keys(all).find(item=>clean(item)===clean(department)); const fallback=all[key]||{full:true,view:true,search:true,print:true,excel:true}; const matrix=JSON.parse(localStorage.getItem('farnoorDepartmentAccessMatrixV1')||'{}')||{}; const source=Object.keys(matrix).find(item=>clean(item)===clean(department)); if(target && source && matrix[source]) { const targetKey=Object.keys(matrix[source]).find(item=>clean(item)===clean(target)); if(targetKey) { const value=matrix[source][targetKey]; if(value && typeof value==='object') return {...fallback,full:value.full!==false,view:value.view!==false,search:value.search!==false,print:value.pdf!==false,excel:value.excel!==false}; return {...fallback,full:value!==false}; } } return fallback; } catch { return {full:true,view:true,search:true,print:true,excel:true}; } };
+        const permissionFor = (department,target) => { try { const all=JSON.parse(localStorage.getItem('farnoorDepartmentPermissionsV1')||'{}')||{}; const key=Object.keys(all).find(item=>clean(item)===clean(department)); const fallback=all[key]||{full:true,view:true,search:true,print:true,excel:true,edit:true}; const matrix=JSON.parse(localStorage.getItem('farnoorDepartmentAccessMatrixV1')||'{}')||{}; const source=Object.keys(matrix).find(item=>clean(item)===clean(department)); if(target && source && matrix[source]) { const targetKey=Object.keys(matrix[source]).find(item=>clean(item)===clean(target)); if(targetKey) { const value=matrix[source][targetKey]; if(value && typeof value==='object') return {...fallback,full:value.all!==undefined?value.all===true:value.full!==false,view:value.view!==false,edit:value.edit===true,search:value.edit!==undefined?value.edit===true:value.search!==false,print:value.pdf!==false,excel:value.pdf!==undefined?value.pdf===true:value.excel!==false}; return {...fallback,full:value!==false}; } } return fallback; } catch { return {full:true,view:true,search:true,print:true,excel:true,edit:true}; } };
         const canRead = department => { const role=currentRole(), target=clean(department); if(isSuperAdmin()) return true; if(!role) return false; if(target===role) return true; const permission=permissionFor(role,department); return permission.full===true || permission.view===true || permission.search===true; };
       const canWrite = department => {
         const role = currentRole(), target = clean(department);
         if (isSuperAdmin()) return true;
         if (!role) return false;
         if (target === role) return true;
-          return permissionFor(role,department).full === true;
+          const right = permissionFor(role,department);
+          return right.full === true || right.edit === true;
       };
       const denied = () => alert('এই Department-এ শুধু দেখা ও সার্চ করা যাবে। লেখা বা পরিবর্তনের অনুমতি নেই।');
       const genericPage = document.getElementById('departmentPageView');
@@ -1412,6 +1414,23 @@
     document.head.append(style);
     applyMerchandisingLayout();
     setInterval(applyMerchandisingLayout, 400);
+  })();
+</script>
+<script>
+  /* Department Control-এর সাব-ডিপার্টমেন্ট অনুমতিগুলো বাস্তব UI-তে প্রয়োগ করি। */
+  (() => {
+    const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g,'');
+    const session = () => { try { return JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; } catch { return {}; } };
+    const superAdmin = () => { const user=session(); return ['superadmin','owner','alldepartments'].includes(clean(user.department)) || ['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(user.email || '').trim().toLowerCase()); };
+    const rightsFor = target => { const role=session().department; if(superAdmin() || !role) return {all:true,print:true,view:true,pdf:true,edit:true}; try { const matrix=JSON.parse(localStorage.getItem('farnoorDepartmentAccessMatrixV1')||'{}')||{}; const source=Object.keys(matrix).find(item=>clean(item)===clean(role)); const raw=source&&matrix[source]?matrix[source][target]:null; if(!raw || typeof raw!=='object') return {all:false,print:false,view:false,pdf:false,edit:false}; return {all:raw.all===true||raw.full===true,print:raw.print===true||raw.all===true,pdf:raw.pdf===true||raw.all===true,view:raw.view===true||raw.all===true,edit:raw.edit===true||raw.all===true}; } catch { return {all:false,print:false,view:false,pdf:false,edit:false}; } };
+    const apply = () => {
+      if (superAdmin()) return;
+      document.querySelectorAll('#summaryView [data-summary-subdepartment],#summaryView [data-production-subdepartment]').forEach(button => { const target=button.dataset.summarySubdepartment||button.dataset.productionSubdepartment||''; const right=rightsFor(target); button.style.display=right.view?'':'none'; button.dataset.departmentPermissionView=right.view?'yes':'no'; });
+      const panel=document.querySelector('#summaryView .summary-entry-panel');
+      if(panel && getComputedStyle(panel).display!=='none') { const title=panel.querySelector('h3')?.textContent?.trim()||'Entry'; const right=rightsFor(title); panel.querySelectorAll('input,select,textarea,button[data-summary-save],button[data-summary-row-add]').forEach(control=>{ control.disabled=!right.edit; }); }
+      document.querySelectorAll('#summaryView button').forEach(button=>{ const text=(button.textContent||'').trim().toLowerCase(); const target=button.closest('[data-summary-subdepartment]')?.dataset.summarySubdepartment||button.closest('[data-production-subdepartment]')?.dataset.productionSubdepartment||''; const right=target?rightsFor(target):null; if(right && /print|প্রিন্ট/.test(text)) button.style.display=right.print?'':'none'; if(right && /pdf|পিডিএফ/.test(text)) button.style.display=right.pdf?'':'none'; if(right && /edit|এডিট/.test(text)) button.style.display=right.edit?'':'none'; });
+    };
+    apply(); window.setInterval(apply, 700);
   })();
 </script>
 <style>
@@ -2251,9 +2270,9 @@
   })();
 </script>
 <script>
-  /* Access rules are disabled: restore the full Department list for all users. */
+  /* Keep the Department list limited to the two active departments. */
   (() => {
-    const all = ['Administration','MD','GM','Director','Account','Commercial','Merchandising','Knitting and Dyeing','Store','Production','Line-1','Line-2','Line-3','Line-4','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical','Driver','Auditing','admin1','admin2','admin3','admin4','admin5'];
+    const all = ['Merchandising','Production'];
     window.setTimeout(() => {
       try {
         const stored = JSON.parse(localStorage.getItem('farnoorDepartments') || '[]') || [];
@@ -2281,6 +2300,7 @@
   .department-selector button{border:1px solid #b7cfc4;background:#fff;color:#164d3b;border-radius:6px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;min-width:74px}
   .department-selector button.active{background:#0b6b50;color:#fff;border-color:#0b6b50;box-shadow:0 2px 6px rgba(11,107,80,.22)}
   .department-selector select{min-width:240px;border:1px solid #b7cfc4;background:#fff;color:#164d3b;border-radius:6px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer}
+  .department-selector input[data-department-search]{min-width:220px;border:1px solid #b7cfc4;background:#fff;color:#164d3b;border-radius:6px;padding:7px 10px;font-size:12px;font-weight:700;box-sizing:border-box}
   .department-selected{padding:8px 16px 0;font-size:12px;font-weight:800;color:#0b6b50}
   .department-control-table tr.selected-department{background:#fff8e8;outline:2px solid #e4b65b;outline-offset:-2px}
   .department-control-help{padding:12px 16px;color:var(--muted);font-size:12px}
@@ -2291,7 +2311,7 @@
   (() => {
     const permissionKey = 'farnoorDepartmentPermissionsV1';
     const matrixKey = 'farnoorDepartmentAccessMatrixV1';
-    const allDepartments = ['Administration','MD','GM','Director','Account','Commercial','Merchandising','Knitting and Dyeing','Store','Production','Line-1','Line-2','Line-3','Line-4','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical','Driver','Auditing','admin1','admin2','admin3','admin4','admin5'];
+    const allDepartments = ['Merchandising','Production'];
     const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
     const isSuperAdmin = () => { try { const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; return ['superadmin','owner','alldepartments'].includes(clean(session.department)) || ['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(session.email || '').trim().toLowerCase()); } catch { return false; } };
     const readPermissions = () => { try { return JSON.parse(localStorage.getItem(permissionKey) || '{}') || {}; } catch { return {}; } };
@@ -2303,18 +2323,25 @@
     const ensurePage = () => {
       if (document.getElementById('departmentControlView')) return document.getElementById('departmentControlView');
       const page = document.createElement('section'); page.id='departmentControlView';
-      page.innerHTML = '<div class="department-control-card"><div class="department-control-head"><h2>Department Control</h2><button class="secondary" type="button" id="closeDepartmentControl">← Management Summary</button></div><div class="department-control-help">উপরে একটি Department নির্বাচন করুন। নিচে প্রতিটি অন্য Department-এর জন্য Full Access, View, Search, PDF ও Excel টিক দিন। পরিবর্তনগুলো স্বয়ংক্রিয়ভাবে সেভ হবে এবং শুধু Super Admin এগুলো বদলাতে পারবে।</div><div class="department-selector" id="departmentSelector" aria-label="Department নির্বাচন"></div><div class="department-selected" id="selectedDepartmentLabel"></div><div style="overflow-x:auto"><table class="department-control-table"><thead><tr><th>Department</th><th>Full Access</th><th>View</th><th>Search</th><th>PDF</th><th>Excel</th></tr></thead><tbody></tbody></table></div></div>';
+      page.innerHTML = '<div class="department-control-card"><div class="department-control-head"><h2>Department Control</h2><button class="secondary" type="button" id="closeDepartmentControl">← Management Summary</button></div><div class="department-control-help">উপরে Department নির্বাচন করুন। নিচে সেই Department-এর সাব-ডিপার্টমেন্টের পাশে All, Print, View, PDF ও Edit টিক দিন। টিক দেওয়া অনুমতি সেই Department-এর ব্যবহারকারীরা ব্যবহার করতে পারবে। পরিবর্তনগুলো স্বয়ংক্রিয়ভাবে সেভ হবে এবং শুধু Super Admin এগুলো বদলাতে পারবে।</div><div class="department-selector" id="departmentSelector" aria-label="Department নির্বাচন"></div><div class="department-selected" id="selectedDepartmentLabel"></div><div style="overflow-x:auto"><table class="department-control-table"><thead><tr><th>Sub-department</th><th>All</th><th>Print</th><th>View</th><th>PDF</th><th>Edit</th></tr></thead><tbody></tbody></table></div></div>';
       document.getElementById('summaryView')?.after(page);
       page.querySelector('#closeDepartmentControl').onclick = () => { page.classList.remove('visible'); document.getElementById('summaryView').style.display='block'; document.querySelector('.notice')?.style.removeProperty('display'); window.renderDepartments?.(); window.scrollTo({top:0,behavior:'smooth'}); };
       return page;
     };
     let selectedDepartment = '';
+    const subDepartments = {
+      Merchandising: ['Entry','Entry Report','Booking','Booking Report'],
+      Production: ['Schedule','Schedule Report','Sewing','Sewing Line 1','Sewing Line 2','Sewing Line 3','Sewing Line 4']
+    };
+    const getSubDepartments = department => subDepartments[department] || ['Entry','Entry Report'];
     const renderSelector = departments => {
       const page=document.getElementById('departmentControlView'); if(!page) return;
       if(!selectedDepartment || !departments.some(item=>clean(item)===clean(selectedDepartment))) selectedDepartment=departments[0]||'';
       const selector=page.querySelector('#departmentSelector');
-      selector.innerHTML='<select aria-label="Department নির্বাচন">'+departments.map(department=>`<option value="${String(department).replace(/"/g,'&quot;')}" ${clean(department)===clean(selectedDepartment)?'selected':''}>${department}</option>`).join('')+'</select>';
-      selector.querySelector('select').onchange=event=>{selectedDepartment=event.target.value; render();};
+      selector.innerHTML='<input type="search" data-department-search aria-label="Department Search" placeholder="Department Search">'+ '<select aria-label="Department নির্বাচন">'+departments.map(department=>`<option value="${String(department).replace(/"/g,'&quot;')}" ${clean(department)===clean(selectedDepartment)?'selected':''}>${department}</option>`).join('')+'</select>';
+      const search=selector.querySelector('[data-department-search]'); const select=selector.querySelector('select');
+      search.oninput=()=>{const query=clean(search.value); [...select.options].forEach(option=>option.hidden=!!query&&!clean(option.textContent).includes(query));};
+      select.onchange=event=>{selectedDepartment=event.target.value; render();};
       page.querySelector('#selectedDepartmentLabel').textContent=selectedDepartment ? `নির্বাচিত Department: ${selectedDepartment}` : '';
     };
     const render = () => {
@@ -2323,9 +2350,9 @@
       renderSelector(departments);
       const matrix=readMatrix(), sourceKey=selectedDepartment;
       if(!matrix[sourceKey]) matrix[sourceKey]={};
-      tbody.innerHTML = departments.map(department => { const raw=matrix[sourceKey][department], saved=typeof raw==='object'&&raw!==null?{full:true,view:true,search:true,pdf:true,excel:true,...raw}:{full:raw!==false,view:raw!==false,search:raw!==false,pdf:raw!==false,excel:raw!==false}; return `<tr data-department="${String(department).replace(/"/g,'&quot;')}"><td>${department}</td><td><input class="permission-box full" type="checkbox" data-permission="full" ${saved.full?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="view" ${saved.view?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="search" ${saved.search?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="pdf" ${saved.pdf?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="excel" ${saved.excel?'checked':''}></td></tr>`; }).join('');
+      tbody.innerHTML = getSubDepartments(sourceKey).map(department => { const raw=matrix[sourceKey][department]; const saved=typeof raw==='object'&&raw!==null?{all:false,print:false,view:false,pdf:false,edit:false,...raw}:{all:raw===true,print:raw===true,view:raw===true,pdf:raw===true,edit:raw===true}; const all=saved.all===true||saved.full===true; return `<tr data-department="${String(department).replace(/"/g,'&quot;')}"><td>${department}</td><td><input class="permission-box full" type="checkbox" data-permission="all" ${all?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="print" ${saved.print===true?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="view" ${saved.view===true?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="pdf" ${saved.pdf===true?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="edit" ${saved.edit===true?'checked':''}></td></tr>`; }).join('');
       saveMatrix(matrix);
-      tbody.querySelectorAll('tr').forEach(row => { const target=row.dataset.department; row.querySelector('[data-permission="full"]').onchange = event => { const current=readMatrix(); if(!current[sourceKey]) current[sourceKey]={}; const value=event.target.checked; current[sourceKey][target]={full:value,view:value,search:value,pdf:value,excel:value}; saveMatrix(current); row.querySelectorAll('.permission-box').forEach(box=>box.checked=value); }; row.querySelectorAll('.permission-box:not(.full)').forEach(box=>box.onchange=()=>{const current=readMatrix(); if(!current[sourceKey]) current[sourceKey]={}; const existing=current[sourceKey][target]; const item=typeof existing==='object'&&existing!==null?{full:true,view:true,search:true,pdf:true,excel:true,...existing}:{full:existing!==false,view:existing!==false,search:existing!==false,pdf:existing!==false,excel:existing!==false}; item[box.dataset.permission]=box.checked; item.full=['view','search','pdf','excel'].every(key=>item[key]); current[sourceKey][target]=item; saveMatrix(current); row.querySelector('[data-permission="full"]').checked=item.full;}); });
+      tbody.querySelectorAll('tr').forEach(row => { const target=row.dataset.department; row.querySelector('[data-permission="all"]').onchange = event => { const current=readMatrix(); if(!current[sourceKey]) current[sourceKey]={}; const value=event.target.checked; current[sourceKey][target]={all:value,full:value,print:value,view:value,pdf:value,edit:value,search:value,excel:value}; saveMatrix(current); row.querySelectorAll('.permission-box').forEach(box=>box.checked=value); }; row.querySelectorAll('.permission-box:not(.full)').forEach(box=>box.onchange=()=>{const current=readMatrix(); if(!current[sourceKey]) current[sourceKey]={}; const existing=current[sourceKey][target]; const item=typeof existing==='object'&&existing!==null?{all:false,full:false,print:false,view:false,pdf:false,edit:false,search:false,excel:false,...existing}:{all:false,full:false,print:false,view:false,pdf:false,edit:false,search:false,excel:false}; item[box.dataset.permission]=box.checked; item.search=item.edit; item.excel=item.pdf; item.full=item.all; current[sourceKey][target]=item; saveMatrix(current); row.querySelector('[data-permission="all"]').checked=item.all===true;}); });
     };
     const open = () => { if (!isSuperAdmin()) return; const page=ensurePage(); closeOtherViews(); page.classList.add('visible'); render(); window.scrollTo({top:0,behavior:'smooth'}); };
     const addButton = () => { if (!isSuperAdmin() || document.getElementById('departmentControlButton')) return; const head=document.querySelector('#summaryView .summary-head'); if (!head) return; const button=document.createElement('button'); button.id='departmentControlButton'; button.className='secondary'; button.type='button'; button.textContent='Department Control'; button.onclick=open; head.append(button); };
@@ -2439,17 +2466,17 @@
   })();
 </script>
 <script>
-  /* Management Summary is intentionally limited to Merchandising as requested. */
+  /* Management Summary is limited to Merchandising and Production. */
   (() => {
-    const onlyKey='farnoorManagementMerchandisingOnlySep2026v1';
+    const onlyKey='farnoorManagementMerchandisingProductionOnlySep2026v1';
     try {
       if(!localStorage.getItem(onlyKey)){
-    departments.splice(0,departments.length,'Merchandising','Store','Production');
+    departments.splice(0,departments.length,'Merchandising','Production');
         localStorage.setItem('farnoorDepartments',JSON.stringify(departments));
         localStorage.setItem(onlyKey,'done');
       } else {
         const saved=JSON.parse(localStorage.getItem('farnoorDepartments')||'[]')||[];
-        departments.splice(0,departments.length,...(saved.length?saved:['Merchandising','Store','Production']));
+        departments.splice(0,departments.length,...(saved.length?saved.filter(item=>['Merchandising','Production'].includes(String(item).trim())):['Merchandising','Production']));
       }
       window.renderDepartments?.();
       window.renderSummary?.();
@@ -2457,7 +2484,7 @@
   })();
 </script>
 <script>
-  /* Keep Management Summary limited to the single Merchandising department. */
+  /* Keep Management Summary limited to Merchandising and Production. */
   (() => {
     let merchandisingExpanded=false;
     let storeExpanded=false;
@@ -2491,7 +2518,7 @@
     const entryLabelDefaults={entryTitle:'Entry',buyerName:'Buyer Name',styleNumber:'Style Number',orderQuantity:'Order Quantity',entryDate:'Date',shippingQuantity:'Shipment Date',styleNo:'Style No',color:'Color',size:'Size',qty:'QTY',pcs:'Pcs',remove:'',addRow:'+ Add Row',saveEntry:'Save'};
     const readEntryLabels=()=>{try{const labels={...entryLabelDefaults,...(JSON.parse(localStorage.getItem(entryLabelKey)||'{}')||{})};if(labels.shippingQuantity==='Shipment Quantity')labels.shippingQuantity='Shipment Date';if(labels.saveEntry==='Save Entry')labels.saveEntry='Save';return labels;}catch{return {...entryLabelDefaults};}};
     const saveEntryLabels=labels=>{try{localStorage.setItem(entryLabelKey,JSON.stringify(labels));}catch{}};
-    const allSummaryDepartments=['Administration','MD','GM','Director','Account','Commercial','Merchandising','Knitting and Dyeing','Store','Production','Line-1','Line-2','Line-3','Line-4','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical','Driver','Auditing','admin1','admin2','admin3','admin4','admin5'];
+    const allSummaryDepartments=['Merchandising','Production'];
     const isSummarySuperAdmin=()=>{try{const session=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null')||{};const role=String(session.department||'').trim().toLowerCase().replace(/[\s_-]+/g,'');return ['superadmin','owner','alldepartments'].includes(role)||['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(session.email||'').trim().toLowerCase());}catch{return false;}};
     let summaryContextMenu=null;
     const ensureSummaryContextMenu=()=>{if(summaryContextMenu)return summaryContextMenu;summaryContextMenu=document.createElement('div');summaryContextMenu.className='summary-department-context-menu';document.body.append(summaryContextMenu);document.addEventListener('click',()=>summaryContextMenu?.classList.remove('visible'));return summaryContextMenu;};
@@ -2519,12 +2546,22 @@
       const columnHeaders='<th class="summary-serial-column">SL</th>'+entryColumns.map((name,index)=>`<th class="summary-column-header" data-summary-column-index="${index}">${esc(name)}</th>`).join('');
       const columnCells='<td class="summary-serial-cell">1</td>'+entryColumns.map(fieldMarkup).join('');
       const totalCells=entryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total =</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
-       const entryPanel=(selectedSubDepartment==='Entry'||selectedSubDepartment==='Entry Copy'||selectedSubDepartment==='New Schedule'||selectedSubDepartment==='Schedule'||selectedSubDepartment==='Booking'||selectedSubDepartment==='Sewing'||selectedSubDepartment==='Swing'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedProductionSubDepartment==='New Schedule'||selectedProductionSubDepartment==='Schedule'||selectedProductionSubDepartment==='Booking'||selectedProductionSubDepartment==='Sewing'||selectedProductionSubDepartment==='Swing'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">${selectedSubDepartment==='Entry Copy'?'Entry Copy':selectedSubDepartment==='Sewing'?'Sewing':selectedSubDepartment==='Swing'?'Swing':selectedSubDepartment==='Booking'?'Booking':selectedSubDepartment==='New Schedule'?'New Schedule':selectedSubDepartment==='Schedule'?'Schedule':'Entry'}</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
+       const entryPanel=(selectedSubDepartment==='Entry'||selectedSubDepartment==='Entry Copy'||selectedSubDepartment==='New Schedule'||selectedSubDepartment==='Schedule'||selectedSubDepartment==='Booking'||selectedSubDepartment==='Sewing'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedProductionSubDepartment==='New Schedule'||selectedProductionSubDepartment==='Schedule'||selectedProductionSubDepartment==='Booking'||selectedProductionSubDepartment==='Sewing'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">${selectedSubDepartment==='Entry Copy'?'Entry Copy':selectedSubDepartment==='Sewing'?'Sewing':selectedSubDepartment==='Booking'?'Booking':selectedSubDepartment==='New Schedule'?'New Schedule':selectedSubDepartment==='Schedule'?'Schedule':'Entry'}</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
+       const swingLineHours=['8 - 9','9 - 10','10 - 11','11 - 12','12 - 1','1 - 2','2 - 3','3 - 4','4 - 5','5 - 6','6 - 7'];
+       const swingLinePanel=/^Swing Line [1-4]$/.test(selectedProductionSubDepartment)?`<aside class="production-swing-line-panel"><h3>Swing Line ${selectedProductionSubDepartment.replace('Swing Line ','')}</h3><div class="production-swing-summary"><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Target</b><em>0</em></div><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Complete</b><em>0</em></div><div><span>Today's Date</span><strong data-swing-date="today"></strong><b>Target</b><em>0</em></div></div><div class="production-swing-table-wrap"><table class="production-swing-table"><thead><tr><th>SL</th><th>HOUR</th><th>Input</th><th>Output</th><th>Quality Check</th><th>Final Output</th></tr></thead><tbody>${swingLineHours.map((hour,index)=>`<tr><td>${index+1}</td><td class="swing-hour-cell">${hour}${index===5?'<span class="swing-lunch">Lunch Time</span>':''}</td><td><input type="number" min="0" placeholder="0"></td><td><input type="number" min="0" placeholder="0"></td><td><input type="number" min="0" placeholder="0"></td><td><input type="number" min="0" placeholder="0"></td></tr>`).join('')}</tbody></table></div><div class="production-swing-signatures"><span>লাইন ইনচার্জ সাইন</span><span>কোয়ালিটি ইনচার্জ সাইন</span></div></aside>`:'';
        const entryReportPanel=(selectedSubDepartment==='Entry Report'||selectedSubDepartment==='Entry Copy Report'||selectedSubDepartment==='New Schedule Report'||selectedSubDepartment==='Schedule Report'||selectedSubDepartment==='Booking Report')?`<aside class="summary-entry-report-panel"><h3 data-report-title>${selectedSubDepartment==='Entry Copy Report'?'Entry Copy Report':selectedSubDepartment==='Booking Report'?'Booking Report':selectedSubDepartment==='New Schedule Report'?'New Schedule Report':selectedSubDepartment==='Schedule Report'?'Schedule Report':'Entry Report'}</h3><div class="summary-entry-report-content" aria-label="${selectedSubDepartment}"></div></aside>`:'';
        const showMerchandisingHome=merchandisingExpanded&&!selectedSubDepartment&&!selectedStoreSubDepartment&&!selectedProductionSubDepartment&&!selectedFinishingSubDepartment;
-       const merchHomePanel=showMerchandisingHome?`<aside class="summary-merch-home-panel"><h3>Showing Line 1</h3><div class="summary-swing-home-box"><div class="summary-swing-home-label">Swing Lines</div><div class="summary-swing-home-lines"><div class="summary-swing-home-line">Swing Line 1</div><div class="summary-swing-home-line">Swing Line 2</div></div></div><div class="summary-merch-shortcuts" hidden></div><div class="summary-merch-home-feed" aria-live="polite"></div></aside>`:'';
+       const swingHomeCard=line=>`<section class="department-yesterday-notification summary-swing-home-box" data-department-name="Merchandising"><div class="summary-swing-home-main-title">Sewing Line ${line}</div><div class="summary-swing-home-subline" data-date-kind="yesterday"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label">Yesterday's Date</p><p class="dy-date"></p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Target</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Complete</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div><div class="summary-swing-home-subline summary-swing-home-subline-2" data-date-kind="today"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label today-total-label">Today's Date</p><p class="dy-date"></p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Target</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Complete</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div><div class="summary-swing-home-subline summary-swing-home-subline-3" data-date-kind="tomorrow"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label">Schedule</p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Buyer</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Style</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div></section>`;
+       const summaryFilterDepartments=['Merchandising','Production'];
+       const summaryFilterDepartmentOptions=summaryFilterDepartments.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join('');
+       const summaryFilterDayOptions=Array.from({length:31},(_,index)=>`<option value="${index+1}">${index+1}</option>`).join('');
+       const summaryFilterMonthOptions=Array.from({length:12},(_,index)=>`<option value="${index+1}">${index+1}</option>`).join('');
+       const summaryFilterYearOptions=[2025,2026,2027,2028,2029,2030].map(year=>`<option value="${year}">${year}</option>`).join('');
+       const merchHomePanel=showMerchandisingHome?`<aside class="summary-merch-home-panel"><div class="summary-swing-home-empty-box"><div class="summary-home-filter"><select data-summary-department-filter aria-label="Department"><option value="">Department</option>${summaryFilterDepartmentOptions}</select><div class="summary-home-date-filters"><select data-summary-day aria-label="Day"><option value="">Day</option>${summaryFilterDayOptions}</select><select data-summary-month aria-label="Month"><option value="">Month</option>${summaryFilterMonthOptions}</select><select data-summary-year aria-label="Year"><option value="">Year</option>${summaryFilterYearOptions}</select></div><div class="summary-home-date-filters summary-home-date-filters-2"><select data-summary-day-secondary aria-label="Day 2"><option value="">Day</option>${summaryFilterDayOptions}</select><select data-summary-month-secondary aria-label="Month 2"><option value="">Month</option>${summaryFilterMonthOptions}</select><select data-summary-year-secondary aria-label="Year 2"><option value="">Year</option>${summaryFilterYearOptions}</select></div><button type="button" class="summary-home-filter-search" data-summary-filter-search>Search</button><span class="summary-home-filter-status" data-summary-filter-status></span></div></div><div class="summary-swing-home-grid">${[1,2,3,4].map(swingHomeCard).join('')}</div><div class="summary-merch-shortcuts" hidden></div><div class="summary-merch-home-feed" aria-live="polite"></div></aside>`:'';
        const emptyRight=!entryPanel&&!entryReportPanel&&!merchHomePanel?'<div class="summary-home-blank" aria-label="Blank home area"></div>':'';
-       grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" data-summary-main="Merchandising" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 Merchandising</div></div>${children}</div><div class="summary-department-group summary-production-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand summary-production-department" data-summary-main="Production" role="button" tabindex="0" aria-expanded="${productionExpanded}">🏭 Production</div></div>${productionChildren}</div></div>${emptyRight}${merchHomePanel}${entryPanel}${entryReportPanel}</div>`;
+      grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" data-summary-main="Merchandising" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 Merchandising</div></div>${children}</div><div class="summary-department-group summary-production-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand summary-production-department" data-summary-main="Production" role="button" tabindex="0" aria-expanded="${productionExpanded}">🏭 Production</div></div>${productionChildren}</div></div>${emptyRight}${merchHomePanel}${swingLinePanel}${entryPanel}${entryReportPanel}</div>`;
+      const filterSearch=grid.querySelector('[data-summary-filter-search]');
+      filterSearch?.addEventListener('click',()=>{const box=grid.querySelector('.summary-home-filter');if(!box)return;const department=box.querySelector('[data-summary-department-filter]')?.value||'All Departments',day=box.querySelector('[data-summary-day]')?.value||'',month=box.querySelector('[data-summary-month]')?.value||'',year=box.querySelector('[data-summary-year]')?.value||'',status=box.querySelector('[data-summary-filter-status]');if(status)status.textContent=`${department}${day&&month&&year?` • ${day}/${month}/${year}`:''}`;});
       const mainDepartments=grid.querySelectorAll('.summary-department-expand');
       mainDepartments.forEach(main=>{const department=main.dataset.summaryMain;const toggle=()=>{if(department==='Production'){productionExpanded=!productionExpanded;if(!productionExpanded)swingExpanded=false;}else merchandisingExpanded=!merchandisingExpanded;selectedSubDepartment='';selectedProductionSubDepartment='';renderMerchandising();};main.addEventListener('click',toggle);main.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}});main.oncontextmenu=event=>openSummaryContextMenu(event,'main',department==='Production'?'Production':merchandisingName);});
       const storeDepartment=grid.querySelector('.summary-store-department');
@@ -3111,10 +3148,32 @@
   #summaryView .summary-merch-home-panel{min-height:430px;padding:24px;border:1px solid #b9dfe1;border-radius:12px;background:linear-gradient(160deg,#fbfffd,#eef8f3);box-shadow:0 5px 14px #173b3010;box-sizing:border-box}
   #summaryView .summary-merch-shortcuts{display:none!important}
   #summaryView .summary-merch-home-panel h3{margin:0 0 18px;color:#075b45;font-size:24px;text-align:left}
-  #summaryView .summary-swing-home-box{width:100%;max-width:360px;margin:0 0 14px;padding:10px;border:1px solid #a9d5cf;border-radius:10px;background:linear-gradient(135deg,#f4fffb,#eaf4ff);box-sizing:border-box;box-shadow:0 3px 10px #1b5c4b16}
-  #summaryView .summary-swing-home-label{margin:0 0 7px;color:#075b45;font-size:13px;font-weight:900;text-align:left}
-  #summaryView .summary-swing-home-lines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;justify-content:start}
-  #summaryView .summary-swing-home-line{min-height:34px;padding:7px 9px;border:1px solid #8cc9bb;border-radius:7px;background:#fff;color:#155f55;font-size:12px;font-weight:800;line-height:1.2;text-align:center;display:flex;align-items:center;justify-content:center;box-sizing:border-box;white-space:nowrap}
+  #summaryView .summary-merch-home-panel{position:relative}
+  #summaryView .summary-swing-home-empty-box{position:absolute;left:24px;top:24px;width:312px;height:180px;padding:10px;border:1px solid #a9d5cf;border-radius:8px;background:linear-gradient(135deg,#f4fffb,#edf2ff);box-shadow:0 4px 10px #1b5c4b14;box-sizing:border-box}
+  #summaryView .summary-home-filter{display:grid;gap:6px;width:100%}
+  #summaryView .summary-home-filter select{width:100%;min-width:0;height:29px;padding:3px 6px;border:1px solid #a9d5cf;border-radius:5px;background:#fff;color:#164d3b;font-size:11px;font-weight:700;box-sizing:border-box}
+  #summaryView .summary-home-date-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  #summaryView .summary-home-filter-search{width:100%;height:28px;padding:3px 8px;border:1px solid #0a8065;border-radius:5px;background:linear-gradient(135deg,#0a8065,#347bb0);color:#fff;font-size:11px;font-weight:900;cursor:pointer}
+  #summaryView .summary-home-filter-status{min-height:12px;color:#075b45;font-size:10px;font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #summaryView .summary-swing-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,340px));gap:10px;align-items:start;justify-content:end;margin-left:auto}
+  #summaryView .summary-swing-home-box{width:100%;max-width:340px;margin:0;padding:5px 7px 7px;border:1px solid #a9d5cf;border-radius:8px;background:linear-gradient(135deg,#e7fff4 0%,#e4efff 52%,#f2e8ff 100%);box-sizing:border-box;box-shadow:0 4px 10px #1b5c4b20}
+  #summaryView .summary-swing-home-main-title{margin:1px auto 5px;color:#075b45;font-size:17px;font-weight:900;line-height:1.05;text-align:center}
+  #summaryView .summary-swing-home-main-title::after{content:"";display:block;width:42%;height:2px;margin:2px auto 0;border-radius:99px;background:linear-gradient(90deg,#0a8065,#347bb0,#0a8065)}
+  #summaryView .summary-swing-home-subline{min-height:58px;padding:4px 0;box-sizing:border-box;display:flex;align-items:center}
+  #summaryView .summary-swing-home-subline-2,#summaryView .summary-swing-home-subline-3{margin:0 -7px;padding:7px 7px 4px;border-top:1px solid #a9d5cf}
+  #summaryView .summary-swing-home-subline-3 .dy-date-label{font-size:20px;text-align:center;width:100%}
+  #summaryView .summary-swing-home-subline-3 .dy-meta{display:flex;align-items:center;justify-content:center}
+  #summaryView .summary-swing-home-box .dy-notification-layout{grid-template-columns:110px max-content;gap:8px;justify-content:start}
+  #summaryView .summary-swing-home-box .dy-date-label{font-size:13px;font-weight:900;letter-spacing:.1px;color:#426b63;white-space:normal;text-align:center;line-height:1.15}
+  #summaryView .summary-swing-home-subline-2 .dy-date-label,#summaryView .summary-swing-home-subline-3 .dy-date-label{font-size:14px;font-weight:900}
+  #summaryView .summary-swing-home-box .dy-date{font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:900;letter-spacing:.2px;color:#075b45}
+  #summaryView .summary-swing-home-box .dy-cards{grid-template-columns:repeat(2,100px);gap:5px;align-items:end;justify-self:end}
+  #summaryView .summary-swing-home-box .dy-metric{display:flex;min-width:0;flex-direction:column;gap:4px}
+  #summaryView .summary-swing-home-box .dy-metric-label{color:#075b45;font-size:12px;font-weight:900;line-height:1.1;text-align:center}
+  #summaryView .summary-swing-home-box .dy-card{min-height:42px;padding:5px 7px;flex-direction:column;justify-content:center;text-align:center;gap:2px}
+  #summaryView .summary-swing-home-box .dy-card span{font-size:11px;font-weight:900;text-align:center}
+  #summaryView .summary-swing-home-box .dy-card strong{font-size:17px;font-weight:900;text-align:center}
+  @media(max-width:860px){#summaryView .summary-swing-home-empty-box{position:static;width:100%;height:auto;min-height:180px;margin-bottom:8px}#summaryView .summary-swing-home-grid{grid-template-columns:1fr}}
   #summaryView .summary-merch-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}
   #summaryView .summary-merch-shortcuts button{min-height:54px;padding:10px 14px;border:1px solid #8cc9bb;border-radius:9px;background:linear-gradient(135deg,#eaf8f2,#dceff6);color:#075b45;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 8px #173b3012}
   #summaryView .summary-merch-shortcuts button:hover,#summaryView .summary-merch-shortcuts button.active{background:linear-gradient(135deg,#0c9a70,#2d6796);color:#fff}
@@ -3788,6 +3847,7 @@
     const getDepartmentName = host => host.dataset.departmentName || (host.classList.contains('summary-merch-home-panel') ? 'Merchandising' : host.querySelector('.summary-head h2')?.textContent?.trim()) || 'Department';
     const ensure = host => {
       if (!host || host.dataset.yesterdayNotificationReady === '1') return;
+      if (host.classList.contains('summary-merch-home-panel') && host.querySelector('.summary-swing-home-box.department-yesterday-notification')) { host.dataset.yesterdayNotificationReady = '1'; return; }
       const panel = document.createElement('section');
       panel.className = 'department-yesterday-notification';
       panel.dataset.departmentName = getDepartmentName(host);
@@ -3797,16 +3857,306 @@
       host.dataset.yesterdayNotificationReady = '1';
     };
     const update = host => {
-      ensure(host); const panel = host.querySelector('.department-yesterday-notification'); if (!panel) return;
-      const date = yesterday(), values = collect(getDepartmentName(host), date);
-      panel.querySelector('.dy-date').textContent = displayDate(date);
-      const cards = panel.querySelectorAll('.dy-card strong'); if (cards[0]) cards[0].textContent = String(values.target); if (cards[1]) cards[1].textContent = String(values.complete);
+      ensure(host); const panels = host.querySelectorAll('.department-yesterday-notification, .summary-swing-home-subline'); if (!panels.length) return;
+      const date = yesterday(), today = new Date(), tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1), values = collect(getDepartmentName(host), date);
+      panels.forEach(panel => {
+        const panelDate = panel.dataset.dateKind === 'today' ? today : panel.dataset.dateKind === 'tomorrow' ? tomorrow : date;
+        const panelValues = panel.dataset.dateKind === 'today' ? collect(getDepartmentName(host), today) : panel.dataset.dateKind === 'tomorrow' ? collect(getDepartmentName(host), tomorrow) : values;
+        const dateNode = panel.querySelector('.dy-date'); if (dateNode) dateNode.textContent = displayDate(panelDate);
+        const cards = panel.querySelectorAll('.dy-card strong'); if (cards[0]) cards[0].textContent = String(panelValues.target); if (cards[1]) cards[1].textContent = String(panelValues.complete);
+      });
     };
     const apply = () => {
       ['departmentPageView','storeView','productionView','administrationView','otherDepartmentView'].forEach(id => { const host = document.getElementById(id); if (host) update(host); });
       document.querySelectorAll('#summaryView .summary-merch-home-panel').forEach(update);
     };
     apply(); window.setInterval(apply, 700);
+  })();
+</script>
+<style>
+  /* Merchandising homepage-এর একই ফিল্টার ও চারটি Sewing Line card সব homepage-এ ব্যবহার করা হয়। */
+  .department-shared-home-panel{position:relative;display:grid;grid-template-columns:312px minmax(0,1fr);gap:18px;min-height:430px;margin:18px 0;padding:24px;border:1px solid #b9dfe1;border-radius:12px;background:linear-gradient(160deg,#fbfffd,#eef8f3);box-shadow:0 5px 14px #173b3010;box-sizing:border-box}
+  .department-shared-home-panel .shared-home-empty-box{width:312px;height:180px;padding:10px;border:1px solid #a9d5cf;border-radius:8px;background:linear-gradient(135deg,#f4fffb,#edf2ff);box-shadow:0 4px 10px #1b5c4b14;box-sizing:border-box}
+  .department-shared-home-panel .shared-home-filter{display:grid;gap:6px;width:100%}
+  .department-shared-home-panel .shared-home-filter select{width:100%;min-width:0;height:29px;padding:3px 6px;border:1px solid #a9d5cf;border-radius:5px;background:#fff;color:#164d3b;font-size:11px;font-weight:700;box-sizing:border-box}
+  .department-shared-home-panel .shared-home-date-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .department-shared-home-panel .shared-home-filter-search{width:100%;height:28px;padding:3px 8px;border:1px solid #0a8065;border-radius:5px;background:linear-gradient(135deg,#0a8065,#347bb0);color:#fff;font-size:11px;font-weight:900;cursor:pointer}
+  .department-shared-home-panel .shared-home-filter-status{min-height:12px;color:#075b45;font-size:10px;font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .department-shared-home-panel .shared-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,340px));gap:10px;align-items:start;justify-content:end;margin-left:auto;width:100%}
+  .department-shared-home-panel .shared-home-card{width:100%;max-width:340px;margin:0;padding:5px 7px 7px;border:1px solid #a9d5cf;border-radius:8px;background:linear-gradient(135deg,#e7fff4 0%,#e4efff 52%,#f2e8ff 100%);box-sizing:border-box;box-shadow:0 4px 10px #1b5c4b20}
+  .department-shared-home-panel .shared-home-card-title{margin:1px auto 5px;color:#075b45;font-size:17px;font-weight:900;line-height:1.05;text-align:center}
+  .department-shared-home-panel .shared-home-card-title::after{content:"";display:block;width:42%;height:2px;margin:2px auto 0;border-radius:99px;background:linear-gradient(90deg,#0a8065,#347bb0,#0a8065)}
+  .department-shared-home-panel .shared-home-subline{min-height:58px;padding:4px 0;box-sizing:border-box;display:flex;align-items:center}
+  .department-shared-home-panel .shared-home-subline + .shared-home-subline{margin:0 -7px;padding:7px 7px 4px;border-top:1px solid #a9d5cf}
+  .department-shared-home-panel .shared-home-subline .shared-home-layout{display:grid;grid-template-columns:110px max-content;gap:8px;align-items:center;justify-content:start;width:100%}
+  .department-shared-home-panel .shared-home-date-label{font-size:13px;font-weight:900;letter-spacing:.1px;color:#426b63;white-space:normal;text-align:center;line-height:1.15}
+  .department-shared-home-panel .shared-home-date{font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:900;letter-spacing:.2px;color:#075b45;text-align:center}
+  .department-shared-home-panel .shared-home-subline:last-child .shared-home-date-label{font-size:14px}
+  .department-shared-home-panel .shared-home-metrics{display:grid;grid-template-columns:repeat(2,100px);gap:5px;align-items:end;justify-self:end}
+  .department-shared-home-panel .shared-home-metric{display:flex;min-width:0;flex-direction:column;gap:4px}
+  .department-shared-home-panel .shared-home-metric-label{color:#075b45;font-size:12px;font-weight:900;line-height:1.1;text-align:center}
+  .department-shared-home-panel .shared-home-metric-value{min-height:42px;padding:5px 7px;border-radius:7px;color:#fff;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a8065,#075342);font-size:17px;font-weight:900;box-shadow:0 4px 10px #164d4230}
+  .department-shared-home-panel .shared-home-metric:nth-child(2) .shared-home-metric-value{background:linear-gradient(135deg,#347bb0,#234c88)}
+  @media(max-width:980px){.department-shared-home-panel{grid-template-columns:1fr}.department-shared-home-panel .shared-home-empty-box{width:100%;height:auto;min-height:180px}.department-shared-home-panel .shared-home-grid{grid-template-columns:repeat(2,minmax(0,340px));justify-content:center}}
+  @media(max-width:650px){.department-shared-home-panel{padding:14px}.department-shared-home-panel .shared-home-grid{grid-template-columns:1fr}.department-shared-home-panel .shared-home-card{max-width:none}}
+</style>
+<script>
+  /* Merchandising homepage-এর চারটি card ও ফিল্টার অন্য সব department homepage-এ কপি করি। */
+  (() => {
+    const departmentNames = ['Merchandising','Production'];
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const selectOptions = (items, placeholder) => `<option value="">${placeholder}</option>${items.map(item => `<option value="${esc(item)}">${esc(item)}</option>`).join('')}`;
+    const dayOptions = selectOptions(Array.from({length:31}, (_,i) => i + 1), 'Day');
+    const monthOptions = selectOptions(Array.from({length:12}, (_,i) => i + 1), 'Month');
+    const yearOptions = selectOptions([2025,2026,2027,2028,2029,2030], 'Year');
+    const card = line => `<section class="shared-home-card"><div class="shared-home-card-title">Sewing Line ${line}</div><div class="shared-home-subline" data-shared-date-kind="yesterday"><div class="shared-home-layout"><div><div class="shared-home-date-label">Yesterday's Date</div><div class="shared-home-date" data-shared-date></div></div><div class="shared-home-metrics"><div class="shared-home-metric"><div class="shared-home-metric-label">Target</div><div class="shared-home-metric-value" data-shared-target>0</div></div><div class="shared-home-metric"><div class="shared-home-metric-label">Complete</div><div class="shared-home-metric-value" data-shared-complete>0</div></div></div></div></div><div class="shared-home-subline" data-shared-date-kind="today"><div class="shared-home-layout"><div><div class="shared-home-date-label">Today's Date</div><div class="shared-home-date" data-shared-date></div></div><div class="shared-home-metrics"><div class="shared-home-metric"><div class="shared-home-metric-label">Target</div><div class="shared-home-metric-value" data-shared-target>0</div></div><div class="shared-home-metric"><div class="shared-home-metric-label">Complete</div><div class="shared-home-metric-value" data-shared-complete>0</div></div></div></div></div><div class="shared-home-subline" data-shared-date-kind="tomorrow"><div class="shared-home-layout"><div class="shared-home-date-label">Schedule</div><div class="shared-home-metrics"><div class="shared-home-metric"><div class="shared-home-metric-label">Buyer</div><div class="shared-home-metric-value">0</div></div><div class="shared-home-metric"><div class="shared-home-metric-label">Style</div><div class="shared-home-metric-value">0</div></div></div></div></div></section>`;
+    const panelMarkup = () => `<section class="department-shared-home-panel" data-shared-home-panel><div class="shared-home-empty-box"><div class="shared-home-filter"><select data-shared-department-filter aria-label="Department">${selectOptions(departmentNames, 'Department')}</select><div class="shared-home-date-filters"><select data-shared-day aria-label="Day">${dayOptions}</select><select data-shared-month aria-label="Month">${monthOptions}</select><select data-shared-year aria-label="Year">${yearOptions}</select></div><div class="shared-home-date-filters"><select data-shared-day-secondary aria-label="Day 2">${dayOptions}</select><select data-shared-month-secondary aria-label="Month 2">${monthOptions}</select><select data-shared-year-secondary aria-label="Year 2">${yearOptions}</select></div><button type="button" class="shared-home-filter-search" data-shared-filter-search>Search</button><span class="shared-home-filter-status" data-shared-filter-status></span></div></div><div class="shared-home-grid">${[1,2,3,4].map(card).join('')}</div></section>`;
+    const dateText = date => `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`;
+    const updateCards = host => {
+      const panel = host?.querySelector('[data-shared-home-panel]'); if (!panel) return;
+      const now = new Date(); const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      panel.querySelectorAll('[data-shared-date-kind]').forEach(row => { const kind = row.dataset.sharedDateKind; const date = kind === 'today' ? now : kind === 'tomorrow' ? tomorrow : yesterday; row.querySelector('[data-shared-date]')?.replaceChildren(document.createTextNode(dateText(date))); });
+    };
+    const bind = panel => {
+      if (panel.dataset.sharedBound === '1') return;
+      panel.dataset.sharedBound = '1';
+      const filter = panel.querySelector('[data-shared-filter-search]');
+      filter?.addEventListener('click', () => { const department = panel.querySelector('[data-shared-department-filter]')?.value || 'All Departments'; const day = panel.querySelector('[data-shared-day]')?.value; const month = panel.querySelector('[data-shared-month]')?.value; const year = panel.querySelector('[data-shared-year]')?.value; const status = panel.querySelector('[data-shared-filter-status]'); if (status) status.textContent = `${department}${day && month && year ? ` • ${day}/${month}/${year}` : ''}`; });
+      updateCards(panel);
+    };
+    const ensure = (host, departmentName) => {
+      if (!host) return;
+      let panel = host.querySelector(':scope > [data-shared-home-panel]');
+      if (!panel) {
+        const holder = document.createElement('div'); holder.innerHTML = panelMarkup(); panel = holder.firstElementChild;
+        panel.dataset.departmentName = departmentName || host.querySelector('.summary-head h2')?.textContent?.trim() || 'Department';
+        const anchor = host.querySelector('.department-page-actions,.store-actions,.production-actions,.admin-actions,.other-department-actions');
+        if (anchor) anchor.after(panel); else host.append(panel);
+      }
+      bind(panel); updateCards(host); return panel;
+    };
+    const isVisible = element => { if (!element) return false; const style = getComputedStyle(element); return style.display !== 'none' && style.visibility !== 'hidden'; };
+    const apply = () => {
+      const summary = document.getElementById('summaryView');
+      if (summary && isVisible(summary) && !summary.querySelector('.summary-merch-home-panel')) ensure(summary, 'Management Summary');
+      const generic = document.getElementById('departmentPageView');
+      if (generic) { const panel = ensure(generic, generic.querySelector('.department-page-head h2')?.textContent?.trim() || 'Department'); const inside = generic.querySelector('.merchandising-inside-page'); panel.style.display = inside && isVisible(inside) ? 'none' : ''; }
+      const store = document.getElementById('storeView');
+      if (store) { const panel = ensure(store, 'Store'); const cardView = store.querySelector('.store-card'), records = store.querySelector('.store-records'), search = store.querySelector('.store-search'), line = store.querySelector('.line1-panel'); panel.style.display = isVisible(cardView) || isVisible(records) || isVisible(search) || isVisible(line) ? 'none' : ''; }
+      ['productionView','administrationView','otherDepartmentView'].forEach(id => { const host = document.getElementById(id); if (host) ensure(host, host.querySelector('.summary-head h2')?.textContent?.trim() || id); });
+    };
+    apply(); window.setInterval(apply, 500);
+  })();
+</script>
+<style>
+  /* Merchandising-এর homepage action buttons সব department homepage-এ একইভাবে থাকে। */
+  .shared-merchandising-buttons{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px;margin:0 0 16px}
+  .shared-merchandising-buttons button{min-height:54px;padding:10px 14px;border:1px solid #8cc9bb;border-radius:9px;background:linear-gradient(135deg,#eaf8f2,#dceff6);color:#075b45;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 8px #173b3012}
+  .shared-merchandising-buttons button:first-child{background:linear-gradient(135deg,#0c8065,#075342);color:#fff;border-color:#0a8065}
+  .shared-merchandising-buttons button:hover,.shared-merchandising-buttons button.active{background:linear-gradient(135deg,#0c9a70,#2d6796);color:#fff;transform:translateY(-1px)}
+  @media(max-width:760px){.shared-merchandising-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:430px){.shared-merchandising-buttons{grid-template-columns:1fr}}
+</style>
+<script>
+  /* Entry/Report/Search/Home buttons-এর একই কপি প্রতিটি homepage-এ বসানো ও চালু করা। */
+  (() => {
+    const buttonMarkup = '<div class="shared-merchandising-buttons" data-shared-merch-buttons><button type="button" data-shared-action="entry">Merchandising Entry</button><button type="button" data-shared-action="new">New Input</button><button type="button" data-shared-action="report">Report</button><button type="button" data-shared-action="search">Search</button><button type="button" data-shared-action="home">Department Home</button></div>';
+    const visible = element => { if (!element) return false; const style = getComputedStyle(element); return style.display !== 'none' && style.visibility !== 'hidden'; };
+    const make = host => {
+      if (!host || host.querySelector(':scope > [data-shared-merch-buttons]')) return host?.querySelector(':scope > [data-shared-merch-buttons]');
+      const holder = document.createElement('div'); holder.innerHTML = buttonMarkup; const bar = holder.firstElementChild;
+      const anchor = host.querySelector('.department-page-actions,.store-actions,.production-actions,.admin-actions,.other-department-actions');
+      if (anchor) anchor.after(bar); else host.prepend(bar);
+      const setActive = button => bar.querySelectorAll('button').forEach(item => item.classList.toggle('active', item === button));
+      bar.querySelectorAll('button').forEach(button => button.addEventListener('click', () => {
+        const action = button.dataset.sharedAction; setActive(button);
+        if (action === 'entry' || action === 'new') { window.openFunction?.(); return; }
+        if (action === 'report') { const summary = document.getElementById('summaryView'); if (summary) { document.querySelectorAll('#storeView,#productionView,#administrationView,#otherDepartmentView').forEach(view => view.classList.remove('visible')); document.getElementById('departmentPageView')?.style.setProperty('display','none'); summary.style.display = 'block'; window.renderSummary?.(); } return; }
+        if (action === 'search') { const field = host.querySelector('[data-shared-department-filter],.store-search input,[data-summary-department-filter]'); field?.focus?.(); return; }
+        if (action === 'home') { if (host.id === 'summaryView') return; const summary = document.getElementById('summaryView'); if (summary) { host.classList.remove('visible'); host.style.display = 'none'; summary.style.display = 'block'; window.renderSummary?.(); } }
+      }));
+      return bar;
+    };
+    const apply = () => {
+      const summary = document.getElementById('summaryView');
+      if (summary) {
+        // Management Summary-তে Merchandising-এর homepage action list থাকবে না।
+        summary.querySelectorAll('[data-shared-merch-buttons]').forEach(bar => bar.remove());
+      }
+      const generic = document.getElementById('departmentPageView');
+      if (generic) { const bar = make(generic); const inside = generic.querySelector('.merchandising-inside-page'); if (bar) bar.style.display = inside && visible(inside) ? 'none' : ''; }
+      const store = document.getElementById('storeView');
+      if (store) { const bar = make(store); if (bar) { const card = store.querySelector('.store-card'), records = store.querySelector('.store-records'), search = store.querySelector('.store-search'), line = store.querySelector('.line1-panel'); bar.style.display = visible(card) || visible(records) || visible(search) || visible(line) ? 'none' : ''; } }
+      ['productionView','administrationView','otherDepartmentView'].forEach(id => { const host = document.getElementById(id); if (host) make(host); });
+    };
+    apply(); window.setInterval(apply, 500);
+  })();
+</script>
+<style>
+  /* Merchandising homepage-এর Department box ও চারটি Swing Line box আলাদা রঙে দেখাই। */
+  #summaryView .summary-merch-home-panel .summary-swing-home-empty-box,
+  .department-shared-home-panel .shared-home-empty-box{background:linear-gradient(135deg,#fff7df 0%,#ffe8b8 100%);border-color:#e0b45c}
+  #summaryView .summary-merch-home-panel .summary-swing-home-grid .summary-swing-home-box:nth-child(1),
+  .department-shared-home-panel .shared-home-grid .shared-home-card:nth-child(1){background:linear-gradient(135deg,#e2fff2 0%,#bdebd8 100%);border-color:#79c9a7}
+  #summaryView .summary-merch-home-panel .summary-swing-home-grid .summary-swing-home-box:nth-child(2),
+  .department-shared-home-panel .shared-home-grid .shared-home-card:nth-child(2){background:linear-gradient(135deg,#e4f1ff 0%,#bfd9ff 100%);border-color:#7fa8df}
+  #summaryView .summary-merch-home-panel .summary-swing-home-grid .summary-swing-home-box:nth-child(3),
+  .department-shared-home-panel .shared-home-grid .shared-home-card:nth-child(3){background:linear-gradient(135deg,#fff0e9 0%,#ffd0bf 100%);border-color:#df9f86}
+  #summaryView .summary-merch-home-panel .summary-swing-home-grid .summary-swing-home-box:nth-child(4),
+  .department-shared-home-panel .shared-home-grid .shared-home-card:nth-child(4){background:linear-gradient(135deg,#f1e8ff 0%,#d9c5ff 100%);border-color:#ae8bdc}
+</style>
+<style>
+  .production-swing-line-panel{width:100%;min-width:0;margin:0;padding:20px 22px;background:#fff;border:1px solid #b9d5ca;border-left:4px solid #3347b8;border-radius:12px;box-shadow:0 6px 16px #173b3012;box-sizing:border-box}
+  .production-swing-line-panel h3{margin:0 0 15px;text-align:center;color:#24368f;font-size:28px;font-weight:900;letter-spacing:.6px}
+  .production-swing-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+  .production-swing-summary>div{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 8px;padding:10px 12px;border:1px solid #b9d5ca;border-radius:8px;background:linear-gradient(135deg,#f6fffb,#eef3ff);color:#164d3b}
+  .production-swing-summary span{grid-column:1/-1;font-size:12px;font-weight:800;color:#55766a}
+  .production-swing-summary strong{font-family:Georgia,'Times New Roman',serif;font-size:17px;color:#075b45}
+  .production-swing-summary b{font-size:12px;color:#234c88;text-align:right}
+  .production-swing-summary em{font-style:normal;font-size:20px;font-weight:900;color:#075b45;text-align:right}
+  .production-swing-table-wrap{overflow-x:auto;border:1px solid #b9d5ca;border-radius:8px}
+  .production-swing-table{width:100%;min-width:720px;border-collapse:collapse;table-layout:fixed}
+  .production-swing-table th,.production-swing-table td{border:1px solid #c5dfd3;text-align:center;padding:7px}
+  .production-swing-table th{background:#3347b8;color:#fff;font-size:12px;font-weight:900}
+  .production-swing-table td:first-child{width:46px;font-weight:900;color:#164d3b;background:#f0f8f4}
+  .production-swing-table td:nth-child(2){width:120px;position:relative;font-weight:800;color:#234c88;background:#f7fbff}
+  .production-swing-table input{width:100%;min-width:0;box-sizing:border-box;padding:8px;border:1px solid #b9d5ca;border-radius:5px;text-align:center;font-size:14px}
+  .swing-lunch{display:block;margin-top:3px;font-size:10px;font-weight:900;color:#b45c20;white-space:nowrap}
+  .production-swing-signatures{display:flex;justify-content:space-between;gap:80px;margin-top:38px;padding:0 34px;color:#164d3b;font-size:13px;font-weight:800}
+  .production-swing-signatures span{min-width:180px;padding-top:8px;border-top:1px solid #164d3b;text-align:center}
+  @media(max-width:700px){.production-swing-line-panel{padding:15px}.production-swing-summary{grid-template-columns:1fr}.production-swing-signatures{gap:20px;padding:0 4px;font-size:11px}.production-swing-signatures span{min-width:0;flex:1}}
+</style>
+<style>
+  /* Production → Swing: show Swing Line 1–4 in one vertical list. */
+  #summaryView .summary-booking-lines{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    width:100%!important;
+    max-width:none!important;
+    gap:4px!important;
+    margin:4px 0!important;
+    padding:0!important;
+  }
+  #summaryView .summary-booking-line{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    box-sizing:border-box!important;
+  }
+  /* The selected Swing Line form is placed at the top of the right pane. */
+  #summaryView .production-swing-line-panel{
+    grid-column:2!important;
+    grid-row:1!important;
+    align-self:start!important;
+    margin-top:0!important;
+  }
+  @media(max-width:700px){
+    #summaryView .production-swing-line-panel{grid-column:1!important;grid-row:auto!important}
+  }
+  #summaryView .production-sewing-line-panel .production-swing-summary{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important;margin-bottom:16px!important}
+  #summaryView .production-sewing-line-panel .production-swing-summary label{display:flex;flex-direction:column;gap:5px;padding:8px 10px;border:1px solid #b9d5ca;border-radius:8px;background:linear-gradient(135deg,#f6fffb,#eef3ff);color:#164d3b;font-size:12px;font-weight:800}
+  #summaryView .production-sewing-line-panel .production-swing-summary input{width:100%;min-width:0;box-sizing:border-box;padding:8px;border:1px solid #b9d5ca;border-radius:5px;background:#fff;color:#123c31;font:inherit;font-weight:600}
+  #summaryView .production-sewing-line-panel .production-sewing-total{display:flex;justify-content:flex-end;align-items:center;gap:18px;margin-top:10px;padding:10px 14px;border:1px solid #b9d5ca;border-radius:8px;background:#f0f8f4;color:#164d3b;font-size:15px;font-weight:900}
+  #summaryView .production-sewing-line-panel .production-sewing-total strong{min-width:80px;text-align:right;color:#075b45;font-size:18px}
+  @media(max-width:900px){#summaryView .production-sewing-line-panel .production-swing-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+  @media(max-width:520px){#summaryView .production-sewing-line-panel .production-swing-summary{grid-template-columns:1fr!important}}
+</style>
+<script>
+  (() => {
+    const formatDate = date => `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`;
+    const updateSwingDates = () => { const now=new Date(), yesterday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1); document.querySelectorAll('.production-swing-line-panel [data-swing-date]').forEach(node => { node.textContent=formatDate(node.dataset.swingDate==='today'?now:yesterday); }); };
+    updateSwingDates(); window.setInterval(updateSwingDates, 60000);
+  })();
+</script>
+<script>
+  /* Production Sewing: normalize the four line names and give every line the same entry layout. */
+  (() => {
+    const normalizeSewingLinePages = () => {
+      const root = document.getElementById('departmentButtons');
+      if (!root) return;
+      root.querySelectorAll('[data-production-subdepartment="Swing"]').forEach(node => {
+        if (node.textContent.trim() === 'Swing') node.textContent = 'Sewing';
+      });
+      root.querySelectorAll('[data-production-subdepartment^="Swing Line "]').forEach(node => {
+        const line = node.dataset.productionSubdepartment.replace('Swing Line ', '');
+        const label = `Sewing Line ${line}`;
+        if (node.textContent.trim() !== label) node.textContent = label;
+      });
+      root.querySelectorAll('.production-swing-line-panel').forEach(panel => {
+        panel.classList.add('production-sewing-line-panel');
+        const heading = panel.querySelector('h3');
+        if (heading) heading.textContent = heading.textContent.replace(/^Swing Line/i, 'Sewing Line');
+        const summary = panel.querySelector('.production-swing-summary');
+        if (summary && !summary.dataset.sewingMetaReady) {
+          summary.dataset.sewingMetaReady = '1';
+          summary.innerHTML = '<label>Date<input type="date" data-sewing-date></label><label>Buyer Name<input type="text" placeholder="Buyer Name"></label><label>Style Number<input type="text" placeholder="Style Number"></label><label>Item<input type="text" placeholder="Item"></label>';
+          const dateInput = summary.querySelector('[data-sewing-date]');
+          if (dateInput) { const now = new Date(); dateInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`; }
+        }
+        const tableWrap = panel.querySelector('.production-swing-table-wrap');
+        if (tableWrap && !panel.querySelector('.production-sewing-total')) {
+          const total = document.createElement('div');
+          total.className = 'production-sewing-total';
+          total.innerHTML = '<span>Total</span><strong>0</strong>';
+          tableWrap.after(total);
+          const updateTotal = () => {
+            const value = [...panel.querySelectorAll('.production-swing-table input[type="number"]')].reduce((sum, input) => sum + (Number(input.value) || 0), 0);
+            total.querySelector('strong').textContent = value;
+          };
+          panel.querySelectorAll('.production-swing-table input[type="number"]').forEach(input => input.addEventListener('input', updateTotal));
+        }
+        const signatures = panel.querySelectorAll('.production-swing-signatures span');
+        if (signatures.length > 1) signatures[1].textContent = 'Head of Production Sign';
+      });
+    };
+    const root = document.getElementById('departmentButtons');
+    if (root) {
+      new MutationObserver(normalizeSewingLinePages).observe(root, {childList:true, subtree:true});
+      normalizeSewingLinePages();
+    }
+  })();
+</script>
+<script>
+  /* Final department lock: সফটওয়্যারে শুধু Merchandising ও Production থাকবে। */
+  (() => {
+    const allowed = ['Merchandising','Production'];
+    const key = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g,'');
+    const isAllowed = value => ['merchandising','production'].includes(key(value));
+    const cleanDepartmentList = () => {
+      try {
+        if (typeof departments !== 'undefined') {
+          departments = departments.filter(item => isAllowed(item));
+          if (!departments.length) departments = [...allowed];
+          localStorage.setItem('farnoorDepartments', JSON.stringify(departments));
+        }
+      } catch {}
+    };
+    const cleanDepartmentControls = () => {
+      document.querySelectorAll('#departmentButtons [data-department], .department-grid [data-department]').forEach(button => {
+        const name = button.dataset.department || button.textContent || '';
+        if (!isAllowed(name)) button.closest('.dept-control')?.remove() || button.remove();
+      });
+      document.querySelectorAll('#regDepartment, #entryDepartment').forEach(select => {
+        const current = select.value;
+        select.innerHTML = '<option value="" selected disabled>বিভাগ নির্বাচন করুন</option>' + allowed.map(name => `<option value="${name}">${name}</option>`).join('');
+        if (allowed.includes(current)) select.value = current;
+      });
+      document.querySelectorAll('#summaryView [data-summary-main]').forEach(item => { if (!isAllowed(item.dataset.summaryMain)) item.remove(); });
+      document.getElementById('administrationView')?.remove();
+      document.getElementById('otherDepartmentView')?.remove();
+      document.getElementById('serviceBenefitView')?.remove();
+    };
+    const guardDepartmentSelection = () => {
+      if (window.__twoDepartmentSelectionGuard) return;
+      const original = window.selectDepartment;
+      if (typeof original !== 'function') return;
+      window.selectDepartment = department => { if (isAllowed(department)) return original(department); };
+      window.__twoDepartmentSelectionGuard = true;
+    };
+    const apply = () => { cleanDepartmentList(); cleanDepartmentControls(); guardDepartmentSelection(); };
+    apply(); window.setInterval(apply, 500);
   })();
 </script>
 </body>
