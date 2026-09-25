@@ -4108,7 +4108,7 @@
           panel.querySelectorAll('.production-swing-table input[type="number"]').forEach(input => input.addEventListener('input', updateTotal));
         }
         const signatures = panel.querySelectorAll('.production-swing-signatures span');
-        if (signatures.length > 1) signatures[1].textContent = 'Head of Production Sign';
+        if (signatures.length > 1 && signatures[1].textContent.trim() !== 'Head of Production Sign') signatures[1].textContent = 'Head of Production Sign';
       });
     };
     const root = document.getElementById('departmentButtons');
