@@ -4140,11 +4140,9 @@
             const tableRows = [...panel.querySelectorAll('.production-swing-table tbody tr')];
             const saved = readSaved();
             const todayKey = `${String(new Date().getDate()).padStart(2,'0')}/${String(new Date().getMonth()+1).padStart(2,'0')}/${new Date().getFullYear()}`;
-            const previous = saved[lineKey];
-            const previousRows = previous && previous.date === todayKey && Array.isArray(previous.rows) ? previous.rows : [];
             saved[lineKey] = {
               date: fields[0]?.value || '', buyerName: fields[1]?.value || '', styleNumber: fields[2]?.value || '', item: fields[3]?.value || '',
-              rows: previousRows.concat(tableRows.map(row => ({ hour: row.querySelector('.swing-hour-cell')?.textContent?.trim() || '', values: [...row.querySelectorAll('input[type="number"]')].map(input => input.value || '') })).filter(row => row.values.some(value => String(value || '').trim()))),
+              rows: tableRows.map(row => ({ hour: row.querySelector('.swing-hour-cell')?.textContent?.trim() || '', values: [...row.querySelectorAll('input[type="number"]')].map(input => input.value || '') })).filter(row => row.values.some(value => String(value || '').trim())),
               savedAt: new Date().toISOString()
             };
             writeSaved(saved);
