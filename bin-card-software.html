@@ -4109,7 +4109,8 @@
             columns.forEach((column, index) => {
               const total = [...table.querySelectorAll(`tbody tr td:nth-child(${index + 3}) input[type="number"]`)].reduce((sum, input) => sum + (Number(input.value) || 0), 0);
               const cell = table.querySelector(`[data-sewing-total="${column}"]`);
-              if (cell) cell.textContent = String(total);
+              const nextValue = String(total);
+              if (cell && cell.textContent !== nextValue) cell.textContent = nextValue;
             });
           };
           table.querySelectorAll('tbody input[type="number"]').forEach(input => {
