@@ -83,8 +83,8 @@
     const savedLogin=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null');if(savedLogin)enterApp(savedLogin.name,savedLogin.department);
     const itemNames=['Main Label','Care Label','Sewing Thread','Mobilon Tape','Button','Zipper','Elastic','Interlining','Neck/Shoulder Tape','Hanger Loop'];
     const materialBox=document.querySelector('#materials'); let cards=JSON.parse(localStorage.getItem('farnoorBinCards')||'[]'), departments=JSON.parse(localStorage.getItem('farnoorDepartments')||'[]'), editId=null, activeItem=null, activeBuyer=null, activeDepartment=null;
-    const restoredDepartments=['Merchandising','Production'];if(!localStorage.getItem('farnoorDepartmentsRestoredSep2026v1')){restoredDepartments.forEach(name=>{if(!departments.some(item=>item.toLowerCase()===name.toLowerCase()))departments.push(name);});localStorage.setItem('farnoorDepartments',JSON.stringify(departments));localStorage.setItem('farnoorDepartmentsRestoredSep2026v1','done');}
-    departments=departments.filter(name=>['merchandising','production'].includes(String(name||'').trim().toLowerCase()));if(!departments.length)departments=['Merchandising','Production'];localStorage.setItem('farnoorDepartments',JSON.stringify(departments));
+    const restoredDepartments=['Merchandising','Store','Production'];if(!localStorage.getItem('farnoorDepartmentsRestoredSep2026v1')){restoredDepartments.forEach(name=>{if(!departments.some(item=>item.toLowerCase()===name.toLowerCase()))departments.push(name);});localStorage.setItem('farnoorDepartments',JSON.stringify(departments));localStorage.setItem('farnoorDepartmentsRestoredSep2026v1','done');}
+    departments=departments.filter(name=>['merchandising','store','production'].includes(String(name||'').trim().toLowerCase()));if(!departments.length)departments=['Merchandising','Store','Production'];localStorage.setItem('farnoorDepartments',JSON.stringify(departments));
     materialBox.innerHTML=itemNames.map((n,i)=>`<div class="material"><input class="mat-name" data-n="${n}" value="${n}" readonly><input type="number" min="0" data-k="order" placeholder="0"><input type="number" min="0" data-k="booking" placeholder="0"><input type="number" min="0" data-k="received" placeholder="0"><input type="number" min="0" data-k="delivery" placeholder="0"></div>`).join('');
     const val=id=>document.getElementById(id).value.trim(); const set=(id,v='')=>document.getElementById(id).value=v;
     function getMaterials(){ return [...materialBox.querySelectorAll('.material')].map(r=>({name:r.querySelector('[data-n]').dataset.n,order:r.querySelector('[data-k=order]').value||0,booking:r.querySelector('[data-k=booking]').value||0,received:r.querySelector('[data-k=received]').value||0,delivery:r.querySelector('[data-k=delivery]').value||0})); }
@@ -864,7 +864,7 @@
     (() => {
       const select = document.getElementById('regDepartment');
       if (!select) return;
-      const departments = ['Merchandising','Production'];
+      const departments = ['Merchandising','Store','Production'];
       select.innerHTML = '<option value="" selected disabled>বিভাগ নির্বাচন করুন</option>' + departments.map(name => `<option value="${name}">${name}</option>`).join('');
     })();
   </script>
@@ -2272,7 +2272,7 @@
 <script>
   /* Keep the Department list limited to the two active departments. */
   (() => {
-    const all = ['Merchandising','Production'];
+    const all = ['Merchandising','Store','Production'];
     window.setTimeout(() => {
       try {
         const stored = JSON.parse(localStorage.getItem('farnoorDepartments') || '[]') || [];
@@ -2311,7 +2311,7 @@
   (() => {
     const permissionKey = 'farnoorDepartmentPermissionsV1';
     const matrixKey = 'farnoorDepartmentAccessMatrixV1';
-    const allDepartments = ['Merchandising','Production'];
+    const allDepartments = ['Merchandising','Store','Production'];
     const clean = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
     const isSuperAdmin = () => { try { const session = JSON.parse(sessionStorage.getItem('farnoorLogin') || 'null') || {}; return ['superadmin','owner','alldepartments'].includes(clean(session.department)) || ['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(session.email || '').trim().toLowerCase()); } catch { return false; } };
     const readPermissions = () => { try { return JSON.parse(localStorage.getItem(permissionKey) || '{}') || {}; } catch { return {}; } };
@@ -2331,6 +2331,7 @@
     let selectedDepartment = '';
     const subDepartments = {
       Merchandising: ['Entry','Entry Report','Booking','Booking Report'],
+      Store: ['Entry','Entry Report','Booking','Booking Report'],
       Production: ['Schedule','Schedule Report','Sewing','Sewing Line 1','Sewing Line 1 Report','Sewing Line 2','Sewing Line 2 Report','Sewing Line 3','Sewing Line 3 Report','Sewing Line 4','Sewing Line 4 Report','Sewing Line 5','Sewing Line 5 Report']
     };
     const getSubDepartments = department => subDepartments[department] || ['Entry','Entry Report'];
@@ -2469,17 +2470,18 @@
   })();
 </script>
 <script>
-  /* Management Summary is limited to Merchandising and Production. */
+  /* Management Summary keeps the Merchandising copy as Store between Merchandising and Production. */
   (() => {
-    const onlyKey='farnoorManagementMerchandisingProductionOnlySep2026v1';
+    const onlyKey='farnoorManagementMerchandisingStoreProductionSep2026v1';
     try {
       if(!localStorage.getItem(onlyKey)){
-    departments.splice(0,departments.length,'Merchandising','Production');
+    departments.splice(0,departments.length,'Merchandising','Store','Production');
         localStorage.setItem('farnoorDepartments',JSON.stringify(departments));
         localStorage.setItem(onlyKey,'done');
       } else {
         const saved=JSON.parse(localStorage.getItem('farnoorDepartments')||'[]')||[];
-        departments.splice(0,departments.length,...(saved.length?saved.filter(item=>['Merchandising','Production'].includes(String(item).trim())):['Merchandising','Production']));
+        departments.splice(0,departments.length,...(saved.length?['Merchandising','Store','Production'].filter(name=>saved.some(item=>String(item).trim().toLowerCase()===name.toLowerCase())):['Merchandising','Store','Production']));
+        if(departments.length<3)departments.splice(0,departments.length,'Merchandising','Store','Production');
       }
       window.renderDepartments?.();
       window.renderSummary?.();
@@ -2487,7 +2489,7 @@
   })();
 </script>
 <script>
-  /* Keep Management Summary limited to Merchandising and Production. */
+  /* Keep Management Summary ordered as Merchandising, Store, Production. */
   (() => {
     let merchandisingExpanded=false;
     let storeExpanded=false;
@@ -2521,7 +2523,7 @@
     const entryLabelDefaults={entryTitle:'Entry',section:'Section',buyerName:'Buyer Name',styleNumber:'Style Number',orderQuantity:'Order Quantity',entryDate:'Date',shippingQuantity:'Shipment Date',styleNo:'Style No',color:'Color',size:'Size',qty:'QTY',pcs:'Pcs',remove:'',addRow:'+ Add Row',saveEntry:'Save'};
     const readEntryLabels=()=>{try{const labels={...entryLabelDefaults,...(JSON.parse(localStorage.getItem(entryLabelKey)||'{}')||{})};if(labels.shippingQuantity==='Shipment Quantity')labels.shippingQuantity='Shipment Date';if(labels.saveEntry==='Save Entry')labels.saveEntry='Save';return labels;}catch{return {...entryLabelDefaults};}};
     const saveEntryLabels=labels=>{try{localStorage.setItem(entryLabelKey,JSON.stringify(labels));}catch{}};
-    const allSummaryDepartments=['Merchandising','Production'];
+    const allSummaryDepartments=['Merchandising','Store','Production'];
     const isSummarySuperAdmin=()=>{try{const session=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null')||{};const role=String(session.department||'').trim().toLowerCase().replace(/[\s_-]+/g,'');return ['superadmin','owner','alldepartments'].includes(role)||['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(session.email||'').trim().toLowerCase());}catch{return false;}};
     let summaryContextMenu=null;
     const ensureSummaryContextMenu=()=>{if(summaryContextMenu)return summaryContextMenu;summaryContextMenu=document.createElement('div');summaryContextMenu.className='summary-department-context-menu';document.body.append(summaryContextMenu);document.addEventListener('click',()=>summaryContextMenu?.classList.remove('visible'));return summaryContextMenu;};
@@ -2535,7 +2537,7 @@
       grid.dataset.summaryState=stateKey;
       const entryReportOpen=true;
       const children=merchandisingExpanded?`<div class="summary-department-children summary-department-text-children">${merchandisingSubDepartments.map(name=>{const reportName=name==='Booking'?'Booking Report':name==='Entry Copy'?'Entry Copy Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===name?'selected':''}" data-summary-subdepartment="${esc(name)}" role="button" tabindex="0">${esc(name)}</div>${(name==='Entry'||name==='Entry Copy'||name==='Booking')&&entryReportOpen?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===reportName?'selected':''}" data-summary-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
-      const storeChildren=storeExpanded?`<div class="summary-department-children summary-department-text-children"> <div class="summary-department-child summary-department-label summary-store-subdepartment-text ${selectedStoreSubDepartment==='Entry'?'selected':''}" data-store-subdepartment="Entry" role="button" tabindex="0">📄 Entry</div></div>`:'';
+      const storeChildren=storeExpanded?`<div class="summary-department-children summary-department-text-children">${merchandisingSubDepartments.map(name=>{const reportName=name==='Booking'?'Booking Report':name==='Entry Copy'?'Entry Copy Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-store-subdepartment-text ${selectedStoreSubDepartment===name?'selected':''}" data-store-subdepartment="${esc(name)}" role="button" tabindex="0">${esc(name)}</div>${(name==='Entry'||name==='Entry Copy'||name==='Booking')?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-store-subdepartment-text ${selectedStoreSubDepartment===reportName?'selected':''}" data-store-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
       const productionChildren=productionExpanded?`<div class="summary-department-children summary-department-text-children summary-production-children">${merchandisingSubDepartments.map(name=>{const productionName=name==='Entry'?'New Schedule':name==='Booking'?'Swing':name;if(productionName==='Swing'){const lines=['Swing Line 1','Swing Line 2','Swing Line 3','Swing Line 4','Swing Line 5','Unit 2 Swing Line 1','Unit 2 Swing Line 2'];return `<div class="summary-swing-panel"><div class="summary-department-child summary-department-label summary-production-subdepartment-text summary-swing-title ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="Swing" role="button" tabindex="0">Swing</div>${swingExpanded?`<div class="summary-department-children summary-department-text-children summary-booking-lines">${lines.map(line=>`<div class="summary-department-child summary-department-label summary-production-subdepartment-text summary-booking-line ${selectedProductionSubDepartment===line?'selected':''}" data-production-subdepartment="${line}" role="button" tabindex="0">${line}</div><div class="summary-department-child summary-department-label summary-production-subdepartment-text summary-booking-report ${selectedProductionSubDepartment===`${line} Report`?'selected':''}" data-production-subdepartment="${line} Report" role="button" tabindex="0">Report</div>`).join('')}</div>`:''}</div>`;}const reportName=productionName==='New Schedule'?'Schedule Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="${esc(productionName)}" role="button" tabindex="0">${esc(productionName)}</div>${productionName==='New Schedule'?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===reportName?'selected':''}" data-production-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
       const finishingChildren=finishingExpanded?`<div class="summary-department-children summary-department-text-children"> <div class="summary-department-child summary-department-label summary-finishing-subdepartment-text ${selectedFinishingSubDepartment==='Entry'?'selected':''}" data-finishing-subdepartment="Entry" role="button" tabindex="0">📄 Entry</div></div>`:'';
       const isNumericColumn=name=>/(qty|quantity|booking|output|hours|target|terget|achievement|acevement|8am)/i.test(String(name))&&!/^date$/i.test(String(name).trim());
@@ -2554,13 +2556,15 @@
        const scheduleTableMarkup=`<div class="schedule-table-block summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div>`;
        const upperScheduleActions='<div class="summary-merch-actions schedule-upper-actions"><button type="button" class="secondary" data-summary-row-add data-schedule-table="upper" data-fixed-label="addRow">+ Add Row</button></div>';
        const entryTableMarkup=selectedProductionSubDepartment==='New Schedule'?`${scheduleTableMarkup}${upperScheduleActions}<div class="schedule-table-divider" aria-label="TIME ALLOWED">TIME ALLOWED</div><div class="schedule-table-block summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div>`:scheduleTableMarkup;
-       const entryPanel=(selectedSubDepartment==='Entry'||selectedSubDepartment==='Entry Copy'||selectedSubDepartment==='New Schedule'||selectedSubDepartment==='Schedule'||selectedSubDepartment==='Booking'||selectedSubDepartment==='Sewing'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedProductionSubDepartment==='New Schedule'||selectedProductionSubDepartment==='Schedule'||selectedProductionSubDepartment==='Booking'||selectedProductionSubDepartment==='Sewing'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">${selectedSubDepartment==='Entry Copy'?'Entry Copy':selectedSubDepartment==='Sewing'?'Sewing':selectedSubDepartment==='Booking'?'Booking':selectedSubDepartment==='New Schedule'?'Production Plan':selectedSubDepartment==='Schedule'?'Schedule':'Entry'}</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta">${productionNewScheduleMeta}</div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist>${entryTableMarkup}<div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-schedule-table="lower" data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
+       const storeEntryActive=['Entry','Entry Copy','Booking'].includes(selectedStoreSubDepartment);
+       const entryPanel=(selectedSubDepartment==='Entry'||selectedSubDepartment==='Entry Copy'||selectedSubDepartment==='New Schedule'||selectedSubDepartment==='Schedule'||selectedSubDepartment==='Booking'||selectedSubDepartment==='Sewing'||storeEntryActive||selectedProductionSubDepartment==='Entry'||selectedProductionSubDepartment==='New Schedule'||selectedProductionSubDepartment==='Schedule'||selectedProductionSubDepartment==='Booking'||selectedProductionSubDepartment==='Sewing'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">${selectedStoreSubDepartment==='Entry Copy'?'Entry Copy':selectedStoreSubDepartment==='Booking'?'Booking':selectedSubDepartment==='Entry Copy'?'Entry Copy':selectedSubDepartment==='Sewing'?'Sewing':selectedSubDepartment==='Booking'?'Booking':selectedSubDepartment==='New Schedule'?'Production Plan':selectedSubDepartment==='Schedule'?'Schedule':'Entry'}</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta">${productionNewScheduleMeta}</div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist>${entryTableMarkup}<div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-schedule-table="lower" data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
        const swingLineHours=['8 - 9','9 - 10','10 - 11','11 - 12','12 - 1','1 - 2','2 - 3','3 - 4','4 - 5','5 - 6','6 - 7'];
        const swingLinePanel=/^Swing Line [1-4]$/.test(selectedProductionSubDepartment)?`<aside class="production-swing-line-panel"><h3>Swing Line ${selectedProductionSubDepartment.replace('Swing Line ','')}</h3><div class="production-swing-summary"><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Target</b><em>0</em></div><div><span>Yesterday's Date</span><strong data-swing-date="yesterday"></strong><b>Complete</b><em>0</em></div><div><span>Today's Date</span><strong data-swing-date="today"></strong><b>Target</b><em>0</em></div></div><div class="production-swing-table-wrap"><table class="production-swing-table"><thead><tr><th>SL</th><th>HOUR</th><th>Input</th><th>Output</th><th>Quality Checks</th><th>Alter Qty</th><th>Final Output</th></tr></thead><tbody>${swingLineHours.map((hour,index)=>{const lunch=index===5?'<span class="swing-lunch">Lunch Time</span>':'';const cell=index===5?lunch:'<input type="number" min="0" placeholder="0">';return `<tr><td>${index+1}</td><td class="swing-hour-cell">${hour}${lunch}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td><td>${cell}</td></tr>`;}).join('')}</tbody><tfoot><tr><th colspan="2">Total</th><td data-sewing-total="input">0</td><td data-sewing-total="output">0</td><td data-sewing-total="quality">0</td><td data-sewing-total="alter">0</td><td data-sewing-total="final">0</td></tr></tfoot></table></div><div class="production-sewing-actions"><button type="button" class="primary production-sewing-save">Save</button><span class="production-sewing-save-status" role="status"></span></div><div class="production-swing-signatures"><span>Line In-charge Sign</span><span>Head of Production Sign</span></div></aside>`:'';
-       const entryReportPanel=(selectedSubDepartment==='Entry Report'||selectedSubDepartment==='Entry Copy Report'||selectedSubDepartment==='New Schedule Report'||selectedSubDepartment==='Schedule Report'||selectedSubDepartment==='Booking Report')?`<aside class="summary-entry-report-panel"><h3 data-report-title>${selectedSubDepartment==='Entry Copy Report'?'Entry Copy Report':selectedSubDepartment==='Booking Report'?'Booking Report':selectedSubDepartment==='New Schedule Report'?'New Schedule Report':selectedSubDepartment==='Schedule Report'?'Schedule Report':'Entry Report'}</h3><div class="summary-entry-report-content" aria-label="${selectedSubDepartment}"></div></aside>`:'';
-       const showMerchandisingHome=merchandisingExpanded&&!selectedSubDepartment&&!selectedStoreSubDepartment&&!selectedProductionSubDepartment&&!selectedFinishingSubDepartment;
+       const storeReportActive=['Entry Report','Entry Copy Report','Booking Report'].includes(selectedStoreSubDepartment);
+       const entryReportPanel=(selectedSubDepartment==='Entry Report'||selectedSubDepartment==='Entry Copy Report'||selectedSubDepartment==='New Schedule Report'||selectedSubDepartment==='Schedule Report'||selectedSubDepartment==='Booking Report'||storeReportActive)?`<aside class="summary-entry-report-panel"><h3 data-report-title>${selectedStoreSubDepartment||selectedSubDepartment}</h3><div class="summary-entry-report-content" aria-label="${selectedStoreSubDepartment||selectedSubDepartment}"></div></aside>`:'';
+       const showMerchandisingHome=(merchandisingExpanded||storeExpanded)&&!selectedSubDepartment&&!selectedStoreSubDepartment&&!selectedProductionSubDepartment&&!selectedFinishingSubDepartment;
        const swingHomeCard=line=>`<section class="department-yesterday-notification summary-swing-home-box" data-department-name="Merchandising"><div class="summary-swing-home-main-title">Sewing Line ${line}</div><div class="summary-swing-home-subline" data-date-kind="yesterday"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label">Yesterday's Date</p><p class="dy-date"></p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Target</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Complete</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div><div class="summary-swing-home-subline summary-swing-home-subline-2" data-date-kind="today"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label today-total-label">Today's Date</p><p class="dy-date"></p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Target</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Complete</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div><div class="summary-swing-home-subline summary-swing-home-subline-3" data-date-kind="tomorrow"><div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label">Schedule</p></div><div class="dy-cards"><div class="dy-metric"><span class="dy-metric-label">Buyer</span><div class="dy-card target"><strong>0</strong></div></div><div class="dy-metric"><span class="dy-metric-label">Style</span><div class="dy-card complete"><strong>0</strong></div></div></div></div></div></section>`;
-       const summaryFilterDepartments=['Merchandising','Production'];
+       const summaryFilterDepartments=['Merchandising','Store','Production'];
        const summaryFilterDepartmentOptions=summaryFilterDepartments.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join('');
        const summaryFilterDayOptions=Array.from({length:31},(_,index)=>`<option value="${index+1}">${index+1}</option>`).join('');
        const summaryFilterMonthOptions=Array.from({length:12},(_,index)=>`<option value="${index+1}">${index+1}</option>`).join('');
@@ -2568,14 +2572,11 @@
        const merchHomePanel=showMerchandisingHome?`<aside class="summary-merch-home-panel"><div class="summary-swing-home-empty-box"><div class="summary-home-filter"><select data-summary-department-filter aria-label="Department"><option value="">Department</option>${summaryFilterDepartmentOptions}</select><div class="summary-home-date-filters"><select data-summary-day aria-label="Day"><option value="">Day</option>${summaryFilterDayOptions}</select><select data-summary-month aria-label="Month"><option value="">Month</option>${summaryFilterMonthOptions}</select><select data-summary-year aria-label="Year"><option value="">Year</option>${summaryFilterYearOptions}</select></div><div class="summary-home-date-filters summary-home-date-filters-2"><select data-summary-day-secondary aria-label="Day 2"><option value="">Day</option>${summaryFilterDayOptions}</select><select data-summary-month-secondary aria-label="Month 2"><option value="">Month</option>${summaryFilterMonthOptions}</select><select data-summary-year-secondary aria-label="Year 2"><option value="">Year</option>${summaryFilterYearOptions}</select></div><button type="button" class="summary-home-filter-search" data-summary-filter-search>Search</button><span class="summary-home-filter-status" data-summary-filter-status></span></div></div><div class="summary-swing-home-grid">${[1,2,3,4].map(swingHomeCard).join('')}</div><div class="summary-merch-shortcuts" hidden></div><div class="summary-merch-home-feed" aria-live="polite"></div></aside>`:'';
        const syntheticSwingReportSelected=/^(?:Swing Line [1-5]|Unit 2 Swing Line [12]) Report$/.test(selectedProductionSubDepartment);
        const emptyRight=!entryPanel&&!entryReportPanel&&!merchHomePanel&&!swingLinePanel&&!syntheticSwingReportSelected?'<div class="summary-home-blank" aria-label="Blank home area"></div>':'';
-      grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" data-summary-main="Merchandising" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 Merchandising</div></div>${children}</div><div class="summary-department-group summary-production-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand summary-production-department" data-summary-main="Production" role="button" tabindex="0" aria-expanded="${productionExpanded}">🏭 Production</div></div>${productionChildren}</div></div>${emptyRight}${merchHomePanel}${swingLinePanel}${entryPanel}${entryReportPanel}</div>`;
+      grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" data-summary-main="Merchandising" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 Merchandising</div></div>${children}</div><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand summary-store-department" data-summary-main="Store" role="button" tabindex="0" aria-expanded="${storeExpanded}">🗄️ Store</div></div>${storeChildren}</div><div class="summary-department-group summary-production-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand summary-production-department" data-summary-main="Production" role="button" tabindex="0" aria-expanded="${productionExpanded}">🏭 Production</div></div>${productionChildren}</div></div>${emptyRight}${merchHomePanel}${swingLinePanel}${entryPanel}${entryReportPanel}</div>`;
       const filterSearch=grid.querySelector('[data-summary-filter-search]');
       filterSearch?.addEventListener('click',()=>{const box=grid.querySelector('.summary-home-filter');if(!box)return;const department=box.querySelector('[data-summary-department-filter]')?.value||'All Departments',day=box.querySelector('[data-summary-day]')?.value||'',month=box.querySelector('[data-summary-month]')?.value||'',year=box.querySelector('[data-summary-year]')?.value||'',status=box.querySelector('[data-summary-filter-status]');if(status)status.textContent=`${department}${day&&month&&year?` • ${day}/${month}/${year}`:''}`;});
       const mainDepartments=grid.querySelectorAll('.summary-department-expand');
-      mainDepartments.forEach(main=>{const department=main.dataset.summaryMain;const toggle=()=>{if(department==='Production'){productionExpanded=!productionExpanded;if(!productionExpanded)swingExpanded=false;}else merchandisingExpanded=!merchandisingExpanded;selectedSubDepartment='';selectedProductionSubDepartment='';renderMerchandising();};main.addEventListener('click',toggle);main.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}});main.oncontextmenu=event=>openSummaryContextMenu(event,'main',department==='Production'?'Production':merchandisingName);});
-      const storeDepartment=grid.querySelector('.summary-store-department');
-      const toggleStore=()=>{storeExpanded=!storeExpanded;selectedStoreSubDepartment='';selectedSubDepartment='';selectedProductionSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};
-      storeDepartment?.addEventListener('click',toggleStore); storeDepartment?.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleStore();}});
+      mainDepartments.forEach(main=>{const department=main.dataset.summaryMain;const toggle=()=>{if(department==='Production'){productionExpanded=!productionExpanded;if(!productionExpanded)swingExpanded=false;}else if(department==='Store'){storeExpanded=!storeExpanded;}else merchandisingExpanded=!merchandisingExpanded;selectedSubDepartment='';selectedStoreSubDepartment='';selectedProductionSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};main.addEventListener('click',toggle);main.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}});main.oncontextmenu=event=>openSummaryContextMenu(event,'main',department==='Production'||department==='Store'?department:merchandisingName);});
       grid.querySelectorAll('[data-production-subdepartment]').forEach(item=>{const open=()=>{const name=item.dataset.productionSubdepartment||'New Schedule';if(name==='Swing')swingExpanded=!swingExpanded;selectedProductionSubDepartment=name;selectedSubDepartment=/^(?:Swing Line [1-5]|Unit 2 Swing Line [12])$/.test(name)?'Swing':name;selectedStoreSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});item.oncontextmenu=event=>openSummaryContextMenu(event,'sub',item.dataset.productionSubdepartment||'New Schedule');});
       grid.querySelectorAll('[data-store-subdepartment]').forEach(item=>{const open=()=>{selectedStoreSubDepartment=item.dataset.storeSubdepartment||'Entry';selectedSubDepartment='';selectedProductionSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});});
       const finishingDepartment=grid.querySelector('.summary-finishing-department');
@@ -2616,14 +2617,14 @@
     };
     const watchSummaryGrid=()=>{const grid=document.getElementById('departmentButtons');if(!grid||grid.dataset.summaryObserver)return;new MutationObserver(()=>{if(!grid.querySelector('.summary-department-expand'))renderMerchandising();}).observe(grid,{childList:true,subtree:true});grid.dataset.summaryObserver='yes';};
     const enforceMerchandisingOnly=()=>{
-      try { localStorage.setItem('farnoorDepartments',JSON.stringify(['Merchandising','Production'])); } catch {}
+      try { localStorage.setItem('farnoorDepartments',JSON.stringify(['Merchandising','Store','Production'])); } catch {}
       renderMerchandising();
       const select=document.getElementById('entryDepartment');
-      if(select){select.innerHTML='<option value="" disabled>Department নির্বাচন করুন</option><option value="Merchandising">Merchandising</option><option value="Production">Production</option>';select.value=activeDepartment||'Merchandising';}
+      if(select){select.innerHTML='<option value="" disabled>Department নির্বাচন করুন</option><option value="Merchandising">Merchandising</option><option value="Store">Store</option><option value="Production">Production</option>';select.value=activeDepartment||'Merchandising';}
       const form=document.getElementById('departmentForm');
       if(form)form.style.display='none';
       const status=document.getElementById('departmentStatus');
-      if(status)status.textContent='Merchandising ও Production Department রাখা হয়েছে।';
+      if(status)status.textContent='Merchandising, Store ও Production Department রাখা হয়েছে।';
     };
     watchSummaryGrid();
     enforceMerchandisingOnly();
@@ -3919,7 +3920,7 @@
 <script>
   /* Merchandising homepage-এর চারটি card ও ফিল্টার অন্য সব department homepage-এ কপি করি। */
   (() => {
-    const departmentNames = ['Merchandising','Production'];
+    const departmentNames = ['Merchandising','Store','Production'];
     const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     const selectOptions = (items, placeholder) => `<option value="">${placeholder}</option>${items.map(item => `<option value="${esc(item)}">${esc(item)}</option>`).join('')}`;
     const dayOptions = selectOptions(Array.from({length:31}, (_,i) => i + 1), 'Day');
@@ -4225,11 +4226,11 @@
   })();
 </script>
 <script>
-  /* Final department lock: সফটওয়্যারে শুধু Merchandising ও Production থাকবে। */
+  /* Final department lock: সফটওয়্যারে শুধু Merchandising, Store ও Production থাকবে। */
   (() => {
-    const allowed = ['Merchandising','Production'];
+    const allowed = ['Merchandising','Store','Production'];
     const key = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g,'');
-    const isAllowed = value => ['merchandising','production'].includes(key(value));
+    const isAllowed = value => ['merchandising','store','production'].includes(key(value));
     const cleanDepartmentList = () => {
       try {
         if (typeof departments !== 'undefined') {
