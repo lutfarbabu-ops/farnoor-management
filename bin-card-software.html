@@ -4101,6 +4101,13 @@
         const label = `Sewing Line ${line}`;
         if (node.textContent.trim() !== label) node.textContent = label;
       });
+      // Report subdepartments must show one plain label only.  Older cached
+      // renders could leave the generated line name beside the label, so
+      // reset the visible text on every refresh.
+      root.querySelectorAll('.summary-booking-report').forEach(node => {
+        node.textContent = 'Report';
+        node.style.fontWeight = '400';
+      });
       root.querySelectorAll('.production-swing-line-panel').forEach(panel => {
         panel.classList.add('production-sewing-line-panel');
         const heading = panel.querySelector('h3');
@@ -4274,7 +4281,7 @@
 </script>
 <style>
   #summaryView .summary-swing-title{font-size:22px!important;font-weight:900!important;letter-spacing:.2px!important}
-  #summaryView .summary-booking-report{font-size:15px!important;font-weight:800!important;color:#1c6470!important;text-shadow:none!important}
+  #summaryView .summary-booking-report{font-size:15px!important;font-weight:400!important;color:#1c6470!important;text-shadow:none!important}
   #summaryView .summary-booking-report::after{content:none!important;display:none!important}
 </style>
 </body>
