@@ -2543,7 +2543,7 @@
       const dropdownMarkup=(name,items)=>`<input aria-label="${esc(name)}" list="${isSizeColumn(name)?'summarySizeOptions':'summaryAccessoryOptions'}" placeholder="${isSizeColumn(name)?'Size':'Accessories Name'}">`;
       const colorMarkup=`<select aria-label="Color"><option value="">Color</option>${optionsMarkup(colorNames)}</select>`;
       const fieldMarkup=name=>isColorColumn(name)?`<td data-column-field="${esc(name)}">${colorMarkup}</td>`:isAccessoryColumn(name)||isSizeColumn(name)?`<td data-column-field="${esc(name)}">${dropdownMarkup(name,isAccessoryColumn(name)?entryLists.accessory:entryLists.size)}</td>`:`<td data-column-field="${esc(name)}"><input aria-label="${esc(name)}" placeholder="${esc(name)}"${isNumericColumn(name)?' type="number" min="0"':''}></td>`;
-      const activeEntryColumns=selectedProductionSubDepartment==='New Schedule'?['Buyer','Style','Item','Order Quantity','Total Quantity','Daily Target','Start Date']:entryColumns;
+      const activeEntryColumns=selectedProductionSubDepartment==='New Schedule'?['Buyer','Style','Item','Order Quantity','Excess','Total Quantity','Daily Target','Start Date','Remarks']:entryColumns;
       const columnHeaders='<th class="summary-serial-column">SL</th>'+activeEntryColumns.map((name,index)=>`<th class="summary-column-header" data-summary-column-index="${index}">${esc(name)}</th>`).join('');
       const columnCells='<td class="summary-serial-cell">1</td>'+activeEntryColumns.map(fieldMarkup).join('');
       const totalCells=activeEntryColumns.map((name,index)=>index===0?'<th class="summary-total-label">Total =</th>':`<td class="summary-total-cell" data-total-column="${esc(name)}">${isNumericColumn(name)?'0':''}</td>`).join('');
