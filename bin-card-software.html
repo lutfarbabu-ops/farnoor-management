@@ -3041,14 +3041,19 @@
       const clone = item.cloneNode(true);
       const reportPanel = item.closest('.summary-entry-report-panel');
       const titleText = String(reportPanel?.querySelector('[data-report-title]')?.textContent || 'Merchandising Report').trim().replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const isScheduleReport = reportPanel?.querySelector('.summary-entry-report-content')?.getAttribute('aria-label') === 'Schedule Report' || titleText === 'Schedule Report';
       clone.querySelectorAll('.summary-report-item-actions,.summary-report-row-action,.summary-report-row-delete').forEach(node => node.remove());
       const originalHead = clone.querySelector('.summary-entry-report-item-head');
       if (originalHead) {
-        const meta = document.createElement('div'); meta.className = 'print-report-meta';
-        [...originalHead.querySelectorAll('span,strong')].forEach(node => {
+        const meta = document.createElement('div'); meta.className = `print-report-meta${isScheduleReport ? ' schedule-print-meta' : ''}`;
+        const metaNodes = [...originalHead.querySelectorAll('span,strong')];
+        const nodesToPrint = isScheduleReport
+          ? metaNodes.filter(node => /^(Entry Date|Date):/i.test(String(node.textContent || '').trim())).slice(0, 1)
+          : metaNodes;
+        nodesToPrint.forEach(node => {
           const text = String(node.textContent || '').trim(); const split = text.indexOf(':');
           const row = document.createElement('div'); row.className = 'print-report-meta-row';
-          const label = document.createElement('span'); label.className = 'print-meta-label'; label.textContent = split >= 0 ? text.slice(0, split + 1) : text;
+          const label = document.createElement('span'); label.className = 'print-meta-label'; label.textContent = isScheduleReport ? 'Date:' : (split >= 0 ? text.slice(0, split + 1) : text);
           const value = document.createElement('span'); value.className = 'print-meta-value'; value.textContent = split >= 0 ? text.slice(split + 1).trim() : '';
           row.append(label, value); meta.append(row);
         });
@@ -3069,7 +3074,7 @@
       document.body.append(iframe);
       const doc = iframe.contentDocument;
       doc.open();
-      doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>${titleText}.pdf</title><style>@page{size:A4 portrait;margin:10mm}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#164d3b;font-family:Arial,sans-serif;width:190mm;overflow:hidden}.print-report-title{margin:0 0 5mm;text-align:center;font-size:24px;font-weight:400;color:#164d3b}.summary-entry-report-item{width:190mm;margin:0;padding:4mm;border:0!important;border-radius:0;box-shadow:none;break-inside:avoid;page-break-inside:avoid}.print-report-meta{display:grid;grid-template-columns:44mm 1fr;row-gap:3mm;padding:0 0 8px;border-bottom:1px solid #d7e5de;font-size:15px;text-align:left}.print-report-meta-row{display:contents}.print-meta-label{font-size:15px;font-weight:600;text-align:left;white-space:nowrap}.print-meta-value{font-size:15px;font-weight:400;text-align:left;padding-left:5mm}.summary-entry-report-item table{width:100%;margin-top:10px;border-collapse:collapse;table-layout:fixed;font-size:9pt}.summary-entry-report-item th,.summary-entry-report-item td{border:1px solid #d7e5de;padding:5px;text-align:center;vertical-align:middle;word-break:break-word;line-height:1.35}.summary-entry-report-item th{background:#eaf6ef}.summary-entry-report-item thead th:first-child,.summary-entry-report-item tbody td:first-child{width:24px;font-size:8pt}.summary-entry-report-item tfoot th:first-child{text-align:left}.summary-report-signatures{display:flex;justify-content:space-between;gap:70px;margin:12mm 12% 0;font-size:12px;font-weight:800}.summary-report-signatures span{position:relative;width:max-content;padding-top:5px;white-space:nowrap}.summary-report-signatures span:before{content:"";position:absolute;left:0;right:0;top:0;border-top:1px solid #164d3b}</style></head><body><h1 class="print-report-title">${titleText}</h1>${clone.outerHTML}</body></html>`);
+      doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>${titleText}.pdf</title><style>@page{size:A4 portrait;margin:10mm}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#164d3b;font-family:Arial,sans-serif;width:190mm;overflow:hidden}.print-report-title{margin:0 0 5mm;text-align:center;font-size:24px;font-weight:400;color:#164d3b}.summary-entry-report-item{width:190mm;margin:0;padding:4mm;border:0!important;border-radius:0;box-shadow:none;break-inside:avoid;page-break-inside:avoid}.print-report-meta{display:grid;grid-template-columns:44mm 1fr;row-gap:3mm;padding:0 0 8px;border-bottom:1px solid #d7e5de;font-size:15px;text-align:left}.print-report-meta.schedule-print-meta{grid-template-columns:25mm 1fr;justify-content:start;text-align:left}.print-report-meta-row{display:contents}.print-meta-label{font-size:15px;font-weight:600;text-align:left;white-space:nowrap}.print-meta-value{font-size:15px;font-weight:400;text-align:left;padding-left:5mm}.summary-entry-report-item table{width:100%;margin-top:10px;border-collapse:collapse;table-layout:fixed;font-size:9pt}.summary-entry-report-item th,.summary-entry-report-item td{border:1px solid #d7e5de;padding:5px;text-align:center;vertical-align:middle;word-break:break-word;line-height:1.35}.summary-entry-report-item th{background:#eaf6ef}.summary-entry-report-item thead th:first-child,.summary-entry-report-item tbody td:first-child{width:24px;font-size:8pt}.summary-entry-report-item tfoot th:first-child{text-align:left}.summary-report-signatures{display:flex;justify-content:space-between;gap:70px;margin:12mm 12% 0;font-size:12px;font-weight:800}.summary-report-signatures span{position:relative;width:max-content;padding-top:5px;white-space:nowrap}.summary-report-signatures span:before{content:"";position:absolute;left:0;right:0;top:0;border-top:1px solid #164d3b}</style></head><body><h1 class="print-report-title">${titleText}</h1>${clone.outerHTML}</body></html>`);
       doc.close();
     };
     const bind = () => document.querySelectorAll('#summaryView .summary-report-print-item,#summaryView .summary-report-pdf-item').forEach(button => {
@@ -4308,3 +4313,4 @@
 </style>
 </body>
 </html>
+<!-- Pages refresh -->
