@@ -459,6 +459,31 @@
   })();
 </script>
 <script>
+  /* Merchandising Entry: শুরুতে শুধু একটি ডাটা রো থাকবে। */
+  (() => {
+    let wasActive = false;
+    const keepSingleInitialRow = () => {
+      const store = document.getElementById('storeView');
+      const active = !!store?.classList.contains('merchandising-entry-mode');
+      if (!active) {
+        wasActive = false;
+        store?.removeAttribute('data-single-merch-row-cleaned');
+        return;
+      }
+      if (wasActive || !store) return;
+      const tableRows = store.querySelector('#storeAccessoryRows');
+      const simpleBox = store.querySelector('.merch-simple-fields');
+      const hasRows = !!tableRows?.querySelector('.accessory-table-row') || !!simpleBox?.querySelector('.merch-simple-row');
+      if (!hasRows) return;
+      tableRows?.querySelectorAll('.accessory-table-row:nth-child(n+2)').forEach(row => row.remove());
+      simpleBox?.querySelectorAll('.merch-simple-row:nth-child(n+2)').forEach(row => row.remove());
+      wasActive = true;
+      store.dataset.singleMerchRowCleaned = '1';
+    };
+    window.setInterval(keepSingleInitialRow, 250);
+  })();
+</script>
+<script>
   /* Three-step registration: request code -> verify code -> choose password. */
   (() => {
     const functionBase = 'https://jbrqvgoptdsekxmisach.supabase.co/functions/v1';
@@ -2481,7 +2506,7 @@
       const entryReportOpen=true;
       const children=merchandisingExpanded?`<div class="summary-department-children summary-department-text-children">${merchandisingSubDepartments.map(name=>{const reportName=name==='Booking'?'Booking Report':name==='Entry Copy'?'Entry Copy Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===name?'selected':''}" data-summary-subdepartment="${esc(name)}" role="button" tabindex="0">${esc(name)}</div>${(name==='Entry'||name==='Entry Copy'||name==='Booking')&&entryReportOpen?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-subdepartment-text ${selectedSubDepartment===reportName?'selected':''}" data-summary-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
       const storeChildren=storeExpanded?`<div class="summary-department-children summary-department-text-children"> <div class="summary-department-child summary-department-label summary-store-subdepartment-text ${selectedStoreSubDepartment==='Entry'?'selected':''}" data-store-subdepartment="Entry" role="button" tabindex="0">📄 Entry</div></div>`:'';
-      const productionChildren=productionExpanded?`<div class="summary-department-children summary-department-text-children summary-production-children">${merchandisingSubDepartments.map(name=>{const productionName=name==='Entry'?'New Schedule':name==='Booking'?'Sewing':name;if(productionName==='Sewing'){const lines=['Line 1','Line 2','Line 3','Line 4'];return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="Sewing" role="button" tabindex="0">Sewing</div>${swingExpanded?`<div class="summary-department-children summary-department-text-children summary-booking-lines">${lines.map(line=>`<div class="summary-department-child summary-department-label summary-production-subdepartment-text summary-booking-line ${selectedProductionSubDepartment===line?'selected':''}" data-production-subdepartment="${line}" role="button" tabindex="0">${line}</div>`).join('')}</div>`:''}`;}const reportName=productionName==='New Schedule'?'Schedule Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="${esc(productionName)}" role="button" tabindex="0">${esc(productionName)}</div>${productionName==='New Schedule'?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===reportName?'selected':''}" data-production-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
+      const productionChildren=productionExpanded?`<div class="summary-department-children summary-department-text-children summary-production-children">${merchandisingSubDepartments.map(name=>{const productionName=name==='Entry'?'New Schedule':name==='Booking'?'Swing':name;if(productionName==='Swing'){const lines=['Swing Line 1','Swing Line 2','Swing Line 3','Swing Line 4'];return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="Swing" role="button" tabindex="0">Swing</div>${swingExpanded?`<div class="summary-department-children summary-department-text-children summary-booking-lines">${lines.map(line=>`<div class="summary-department-child summary-department-label summary-production-subdepartment-text summary-booking-line ${selectedProductionSubDepartment===line?'selected':''}" data-production-subdepartment="${line}" role="button" tabindex="0">${line}</div>`).join('')}</div>`:''}`;}const reportName=productionName==='New Schedule'?'Schedule Report':'Entry Report';return `<div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===productionName?'selected':''}" data-production-subdepartment="${esc(productionName)}" role="button" tabindex="0">${esc(productionName)}</div>${productionName==='New Schedule'?`<div class="summary-department-children summary-department-text-children summary-entry-report-child"><div class="summary-department-child summary-department-label summary-production-subdepartment-text ${selectedProductionSubDepartment===reportName?'selected':''}" data-production-subdepartment="${esc(reportName)}" role="button" tabindex="0">${esc(reportName)}</div></div>`:''}`;}).join('')}</div>`:'';
       const finishingChildren=finishingExpanded?`<div class="summary-department-children summary-department-text-children"> <div class="summary-department-child summary-department-label summary-finishing-subdepartment-text ${selectedFinishingSubDepartment==='Entry'?'selected':''}" data-finishing-subdepartment="Entry" role="button" tabindex="0">📄 Entry</div></div>`:'';
       const isNumericColumn=name=>/(qty|quantity|booking)/i.test(String(name));
       const isAccessoryColumn=name=>/accessor(y|ies)\s*name/i.test(String(name));
@@ -2497,7 +2522,7 @@
        const entryPanel=(selectedSubDepartment==='Entry'||selectedSubDepartment==='Entry Copy'||selectedSubDepartment==='New Schedule'||selectedSubDepartment==='Schedule'||selectedSubDepartment==='Booking'||selectedSubDepartment==='Sewing'||selectedSubDepartment==='Swing'||selectedStoreSubDepartment==='Entry'||selectedProductionSubDepartment==='Entry'||selectedProductionSubDepartment==='New Schedule'||selectedProductionSubDepartment==='Schedule'||selectedProductionSubDepartment==='Booking'||selectedProductionSubDepartment==='Sewing'||selectedProductionSubDepartment==='Swing'||selectedFinishingSubDepartment==='Entry')?`<aside class="summary-entry-panel"><h3 data-fixed-label="entryTitle">${selectedSubDepartment==='Entry Copy'?'Entry Copy':selectedSubDepartment==='Sewing'?'Sewing':selectedSubDepartment==='Swing'?'Swing':selectedSubDepartment==='Booking'?'Booking':selectedSubDepartment==='New Schedule'?'New Schedule':selectedSubDepartment==='Schedule'?'Schedule':'Entry'}</h3><form class="summary-merch-entry-form"><div class="summary-merch-meta"><label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label></div><datalist id="summaryAccessoryOptions">${optionsMarkup(entryLists.accessory)}</datalist><datalist id="summarySizeOptions">${optionsMarkup(entryLists.size)}</datalist><div class="summary-merch-table-wrap"><table><thead><tr>${columnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody><tr>${columnCells}<td><button type="button" class="summary-merch-remove" title="এই রো মুছুন">−</button></td></tr></tbody><tfoot><tr class="summary-total-row">${totalCells}<th></th></tr></tfoot></table></div><div class="summary-merch-actions"><button type="button" class="secondary" data-summary-row-add data-fixed-label="addRow">+ Add Row</button><button type="button" class="primary" data-summary-save data-fixed-label="saveEntry">Save</button></div><p class="summary-merch-status" role="status"></p></form></aside>`:'';
        const entryReportPanel=(selectedSubDepartment==='Entry Report'||selectedSubDepartment==='Entry Copy Report'||selectedSubDepartment==='New Schedule Report'||selectedSubDepartment==='Schedule Report'||selectedSubDepartment==='Booking Report')?`<aside class="summary-entry-report-panel"><h3 data-report-title>${selectedSubDepartment==='Entry Copy Report'?'Entry Copy Report':selectedSubDepartment==='Booking Report'?'Booking Report':selectedSubDepartment==='New Schedule Report'?'New Schedule Report':selectedSubDepartment==='Schedule Report'?'Schedule Report':'Entry Report'}</h3><div class="summary-entry-report-content" aria-label="${selectedSubDepartment}"></div></aside>`:'';
        const showMerchandisingHome=merchandisingExpanded&&!selectedSubDepartment&&!selectedStoreSubDepartment&&!selectedProductionSubDepartment&&!selectedFinishingSubDepartment;
-       const merchHomePanel=showMerchandisingHome?`<aside class="summary-merch-home-panel"><h3>Merchandising Homepage</h3><div class="summary-merch-shortcuts"><button type="button" data-merch-shortcut="notifications">Notifications</button><button type="button" data-merch-shortcut="updates">Other Department Updates</button></div><div class="summary-merch-home-feed" aria-live="polite"><p class="small">উপরের একটি অপশন নির্বাচন করুন।</p></div></aside>`:'';
+       const merchHomePanel=showMerchandisingHome?`<aside class="summary-merch-home-panel"><h3>Showing Line 1</h3><div class="summary-merch-shortcuts" hidden></div><div class="summary-merch-home-feed" aria-live="polite"></div></aside>`:'';
        const emptyRight=!entryPanel&&!entryReportPanel&&!merchHomePanel?'<div class="summary-home-blank" aria-label="Blank home area"></div>':'';
        grid.innerHTML=`<div class="summary-management-layout"><div class="summary-department-side"><div class="summary-department-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand" data-summary-main="Merchandising" role="button" tabindex="0" aria-expanded="${merchandisingExpanded}">🏢 Merchandising</div></div>${children}</div><div class="summary-department-group summary-production-group"><div class="summary-department-row"><div class="summary-department-main summary-department-label summary-department-expand summary-production-department" data-summary-main="Production" role="button" tabindex="0" aria-expanded="${productionExpanded}">🏭 Production</div></div>${productionChildren}</div></div>${emptyRight}${merchHomePanel}${entryPanel}${entryReportPanel}</div>`;
       const mainDepartments=grid.querySelectorAll('.summary-department-expand');
@@ -2505,7 +2530,7 @@
       const storeDepartment=grid.querySelector('.summary-store-department');
       const toggleStore=()=>{storeExpanded=!storeExpanded;selectedStoreSubDepartment='';selectedSubDepartment='';selectedProductionSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};
       storeDepartment?.addEventListener('click',toggleStore); storeDepartment?.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleStore();}});
-      grid.querySelectorAll('[data-production-subdepartment]').forEach(item=>{const open=()=>{const name=item.dataset.productionSubdepartment||'New Schedule';if(name==='Sewing')swingExpanded=!swingExpanded;selectedProductionSubDepartment=name;selectedSubDepartment=/^Line [1234]$/.test(name)?'Sewing':name;selectedStoreSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});item.oncontextmenu=event=>openSummaryContextMenu(event,'sub',item.dataset.productionSubdepartment||'New Schedule');});
+      grid.querySelectorAll('[data-production-subdepartment]').forEach(item=>{const open=()=>{const name=item.dataset.productionSubdepartment||'New Schedule';if(name==='Swing')swingExpanded=!swingExpanded;selectedProductionSubDepartment=name;selectedSubDepartment=/^Swing Line [1234]$/.test(name)?'Swing':name;selectedStoreSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});item.oncontextmenu=event=>openSummaryContextMenu(event,'sub',item.dataset.productionSubdepartment||'New Schedule');});
       grid.querySelectorAll('[data-store-subdepartment]').forEach(item=>{const open=()=>{selectedStoreSubDepartment=item.dataset.storeSubdepartment||'Entry';selectedSubDepartment='';selectedProductionSubDepartment='';selectedFinishingSubDepartment='';renderMerchandising();};item.addEventListener('click',open);item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});});
       const finishingDepartment=grid.querySelector('.summary-finishing-department');
       const toggleFinishing=()=>{finishingExpanded=!finishingExpanded;selectedFinishingSubDepartment='';selectedSubDepartment='';selectedStoreSubDepartment='';selectedProductionSubDepartment='';renderMerchandising();};
@@ -2681,6 +2706,8 @@
       form.dataset.keyboardFlowBound='1';
       const focusables = () => [...form.querySelectorAll('input,select,textarea,button')].filter(element => !element.disabled && element.tabIndex!==-1 && !element.matches('.summary-merch-remove,[data-summary-row-add]'));
       form.addEventListener('keydown', event => {
+        /* Keyboard navigation is handled by the final delegated handler below. */
+        return;
         if (event.key!=='Enter') return;
         const target=event.target;
         if (target.matches('.summary-merch-remove,[data-summary-row-add]')) { event.preventDefault(); event.stopImmediatePropagation(); return; }
@@ -3082,6 +3109,7 @@
   #summaryView .summary-department-text-children .summary-production-subdepartment-text:hover,
   #summaryView .summary-department-text-children .summary-production-subdepartment-text.selected{background:#d9f0e5!important;color:#075b45!important}
   #summaryView .summary-merch-home-panel{min-height:430px;padding:24px;border:1px solid #b9dfe1;border-radius:12px;background:linear-gradient(160deg,#fbfffd,#eef8f3);box-shadow:0 5px 14px #173b3010;box-sizing:border-box}
+  #summaryView .summary-merch-shortcuts{display:none!important}
   #summaryView .summary-merch-home-panel h3{margin:0 0 18px;color:#075b45;font-size:24px;text-align:left}
   #summaryView .summary-merch-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}
   #summaryView .summary-merch-shortcuts button{min-height:54px;padding:10px 14px;border:1px solid #8cc9bb;border-radius:9px;background:linear-gradient(135deg,#eaf8f2,#dceff6);color:#075b45;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 8px #173b3012}
@@ -3091,8 +3119,9 @@
   #summaryView .summary-merch-notice strong{font-size:14px;color:#075b45}
   #summaryView .summary-merch-notice span{font-size:13px}
   #summaryView .summary-merch-notice small{font-size:11px;color:#55766a}
-  #summaryView .summary-booking-lines{margin-left:20px!important;padding-left:12px!important;border-left:2px solid #b9dfe1!important}
-  #summaryView .summary-booking-line{font-size:13px!important;padding:6px 10px!important}
+  #summaryView .summary-booking-lines{display:grid!important;grid-template-columns:repeat(2,125px);justify-content:start!important;gap:6px!important;width:max-content!important;max-width:100%!important;margin:4px 0 4px 0!important;padding:0!important;border-left:0!important}
+  #summaryView .summary-booking-line{width:125px!important;min-width:125px!important;max-width:125px!important;margin:0!important;font-size:12px!important;padding:6px 8px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  #summaryView .summary-production-children > .summary-production-subdepartment-text{display:inline-flex!important;width:max-content!important;min-width:120px!important;max-width:150px!important;padding:6px 10px!important;white-space:nowrap!important}
   #summaryView .summary-department-main.summary-department-expand.summary-production-department{background:linear-gradient(135deg,#4338ca,#1e3a8a)!important;border-color:#818cf8!important;color:#fff!important;box-shadow:0 7px 16px #1e3a8a44!important}
   #summaryView .summary-department-main.summary-department-expand.summary-production-department:hover{filter:brightness(1.15)!important;transform:translateX(2px)!important}
   @media(max-width:700px){#summaryView .summary-merch-shortcuts{grid-template-columns:1fr}}
@@ -3461,6 +3490,8 @@
       if(form.dataset.verticalEnterBound==='yes')return;
       form.dataset.verticalEnterBound='yes';
       form.addEventListener('keydown',event=>{
+        /* Final keyboard handler below owns Entry navigation. */
+        return;
         if(event.key!=='Enter'||event.target?.matches?.('button,textarea'))return;
         const field=event.target.closest?.('[data-column-field] input,[data-column-field] select');
         if(!field)return;
@@ -3525,6 +3556,8 @@
   /* Final row navigation: Enter moves across, then starts the next row. */
   (()=>{
     document.addEventListener('keydown',event=>{
+      /* Disabled: this legacy handler used to add a row on plain Enter. */
+      return;
       if(event.key!=='Enter')return;
       const field=event.target?.closest?.('#summaryView .summary-merch-entry-form .summary-merch-table-wrap tbody tr input,#summaryView .summary-merch-entry-form .summary-merch-table-wrap tbody tr select');
       if(!field)return;
@@ -3579,6 +3612,195 @@
     },true);
     const apply=()=>document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(normalize);
     apply();window.setInterval(apply,400);
+  })();
+</script>
+<script>
+  /* Merchandising Entry keyboard flow: Enter moves across/down; Shift+Enter adds a row. */
+  (() => {
+    const editableFields = row => [...row.querySelectorAll('input,select,textarea')]
+      .filter(field => !field.disabled && !field.readOnly && field.offsetParent !== null);
+    const focusFirst = row => editableFields(row)[0]?.focus();
+    const bindGrid = (root, rowSelector, addSelector, saveSelector) => {
+      if (!root || root.dataset.merchKeyboardBound === '1') return;
+      root.dataset.merchKeyboardBound = '1';
+      root.addEventListener('keydown', event => {
+        if (event.key !== 'Enter') return;
+        const field = event.target;
+        if (!(field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement)) return;
+        const row = field.closest(rowSelector);
+        if (!row) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const rows = [...root.querySelectorAll(rowSelector)];
+        if (event.shiftKey) {
+          const add = root.querySelector(addSelector)
+            || root.parentElement?.querySelector(addSelector)
+            || root.closest('.body')?.querySelector(addSelector);
+          const before = rows.length;
+          add?.click();
+          window.requestAnimationFrame(() => {
+            const nextRows = [...root.querySelectorAll(rowSelector)];
+            if (nextRows.length > before) focusFirst(nextRows[nextRows.length - 1]);
+          });
+          return;
+        }
+        const fields = editableFields(row);
+        const position = fields.indexOf(field);
+        if (position < fields.length - 1) {
+          fields[position + 1].focus();
+          return;
+        }
+        const rowPosition = rows.indexOf(row);
+        if (rowPosition < rows.length - 1) {
+          focusFirst(rows[rowPosition + 1]);
+          return;
+        }
+        const save = root.closest('#storeForm')?.querySelector(saveSelector)
+          || document.querySelector('#storeView.merchandising-entry-mode .merch-simple-save');
+        save?.focus();
+      }, true);
+    };
+    const apply = () => {
+      const store = document.getElementById('storeView');
+      if (!store?.classList.contains('merchandising-entry-mode')) return;
+      bindGrid(store.querySelector('.merch-simple-fields'), '.merch-simple-row', '.merch-simple-row-add', '.merch-simple-save');
+      bindGrid(store.querySelector('.merch-final-table'), '.accessory-table-row', '.merch-add-row-button', '.merch-simple-save');
+    };
+    window.setInterval(apply, 300);
+  })();
+</script>
+<script>
+  /* Final Entry keyboard flow: plain Enter never creates a row. */
+  (() => {
+    const visibleEditable = row => [...row.querySelectorAll('input,select,textarea')]
+      .filter(field => !field.disabled && !field.readOnly && field.tabIndex !== -1 && field.offsetParent !== null);
+    const rowsOf = form => [...form.querySelectorAll('.summary-merch-table-wrap tbody tr')];
+    const focusFirst = row => visibleEditable(row)[0]?.focus();
+    const bind = form => {
+      if (!form || form.dataset.finalEntryKeyboard === 'yes') return;
+      form.dataset.finalEntryKeyboard = 'yes';
+      form.addEventListener('keydown', event => {
+        if (event.key !== 'Enter') return;
+        const target = event.target;
+        const save = form.querySelector('[data-summary-save]');
+        if (target === save) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          save.click();
+          return;
+        }
+        if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement)) return;
+        const row = target.closest('.summary-merch-table-wrap tbody tr');
+        if (!row) return;
+        const controls = visibleEditable(row);
+        const position = controls.indexOf(target);
+        if (position < 0) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (event.shiftKey) {
+          const add = form.querySelector('[data-summary-row-add]');
+          const before = rowsOf(form).length;
+          add?.click();
+          window.requestAnimationFrame(() => {
+            const rows = rowsOf(form);
+            if (rows.length > before) focusFirst(rows[rows.length - 1]);
+          });
+          return;
+        }
+        if (position < controls.length - 1) {
+          controls[position + 1].focus();
+          return;
+        }
+        const rows = rowsOf(form);
+        const rowPosition = rows.indexOf(row);
+        const nextRow = rows[rowPosition + 1];
+        if (nextRow) {
+          focusFirst(nextRow);
+        } else {
+          save?.focus();
+        }
+      }, true);
+    };
+    const apply = () => document.querySelectorAll('#summaryView .summary-merch-entry-form').forEach(bind);
+    apply();
+    window.setInterval(apply, 250);
+  })();
+</script>
+<style>
+  /* Department home: yesterday's Line 1 notification cards. */
+  .department-yesterday-notification{margin:14px 0;padding:11px 14px;border:1px solid #b9ded2;border-radius:12px;background:linear-gradient(135deg,#f7fffb,#e8f5ff 62%,#f8f1ff);box-shadow:0 6px 16px #1b5c4b16}
+  .department-yesterday-notification .dy-notification-layout{display:grid;grid-template-columns:125px max-content;justify-content:start;align-items:center;gap:10px}
+  .department-yesterday-notification .dy-meta{min-width:0}
+  .department-yesterday-notification .dy-date-label{margin:0;color:#54756d;font-size:11px;font-weight:800;white-space:nowrap}
+  .department-yesterday-notification .dy-date{margin:2px 0 0;color:#54756d;font-size:12px;font-weight:700;white-space:nowrap}
+  .department-yesterday-notification .dy-line{margin:0;color:#225f77;font-weight:900;font-size:22px;letter-spacing:.5px}
+  .department-yesterday-notification .dy-cards{display:grid;grid-template-columns:repeat(2,100px);gap:6px}
+  .department-yesterday-notification .dy-card{min-height:45px;padding:6px 8px;border-radius:7px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:6px;box-shadow:0 4px 10px #164d4230}
+  .department-yesterday-notification .dy-card span{font-size:11px;font-weight:900;letter-spacing:.1px}
+  .department-yesterday-notification .dy-card strong{font-size:18px;line-height:1;font-weight:900}
+  .department-yesterday-notification .dy-card.target{background:linear-gradient(135deg,#0a8065,#075342)}
+  .department-yesterday-notification .dy-card.complete{background:linear-gradient(135deg,#347bb0,#234c88)}
+  @media(max-width:620px){.department-yesterday-notification{padding:11px}.department-yesterday-notification .dy-notification-layout{grid-template-columns:1fr;gap:8px}.department-yesterday-notification .dy-cards{grid-template-columns:repeat(2,100px)}}
+</style>
+<script>
+  /* Show yesterday's Line 1 Target and Complete on every Department home page. */
+  (() => {
+    const clean = value => String(value ?? '').trim().toLowerCase().replace(/[\s_-]+/g, '');
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const read = key => { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; } };
+    const yesterday = () => { const date = new Date(); date.setHours(0,0,0,0); date.setDate(date.getDate() - 1); return date; };
+    const isoDate = date => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+    const displayDate = date => `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`;
+    const number = value => { const n = Number(String(value ?? '').replace(/,/g,'')); return Number.isFinite(n) ? n : 0; };
+    const firstNumber = (item, keys) => { for (const key of keys) { if (item && item[key] !== undefined && item[key] !== '') return number(item[key]); } return 0; };
+    const dateMatches = (value, wanted) => { if (!value) return false; const text = String(value); if (text.slice(0,10) === wanted) return true; const parsed = new Date(text); return !Number.isNaN(parsed.getTime()) && isoDate(parsed) === wanted; };
+    const rowsOf = item => Array.isArray(item?.rows) ? item.rows : [];
+    const sumRows = (items, keys) => items.reduce((sum, row) => sum + firstNumber(row, keys), 0);
+    const collect = (department, date) => {
+      const wanted = isoDate(date);
+      const sources = [];
+      ['farnoorDepartmentNotifications','farnoorLine1Notifications','farnoorLine1Entries','farnoorMerchandisingEntries','farnoorMerchandisingSimpleEntries'].forEach(key => {
+        const value = read(key);
+        if (Array.isArray(value)) sources.push(...value);
+        else if (value && typeof value === 'object') {
+          Object.entries(value).forEach(([entryDate, entry]) => {
+            if (entry && typeof entry === 'object' && !Array.isArray(entry)) sources.push({...entry, date: entry.date || entryDate});
+          });
+          if (!Object.keys(value).some(keyName => value[keyName] && typeof value[keyName] === 'object')) sources.push(value);
+        }
+      });
+      const matching = sources.filter(item => {
+        const itemDate = item?.date || item?.entryDate || item?.createdAt || item?.savedAt || item?.day;
+        return dateMatches(itemDate, wanted);
+      });
+      const items = matching.length ? matching : [];
+      let target = items.reduce((sum, item) => sum + firstNumber(item, ['target','targetQuantity','targetQty','orderQuantity','order','sizeOrder']), 0);
+      let complete = items.reduce((sum, item) => sum + firstNumber(item, ['complete','completed','completeQuantity','completeQty','lineReceive','quantity','qty']), 0);
+      items.forEach(item => { const rows = rowsOf(item); target += sumRows(rows, ['target','targetQuantity','targetQty','orderQuantity','order','sizeOrder']); complete += sumRows(rows, ['complete','completed','completeQuantity','completeQty','lineReceive','quantity','qty']); });
+      return {target, complete};
+    };
+    const getDepartmentName = host => host.dataset.departmentName || (host.classList.contains('summary-merch-home-panel') ? 'Merchandising' : host.querySelector('.summary-head h2')?.textContent?.trim()) || 'Department';
+    const ensure = host => {
+      if (!host || host.dataset.yesterdayNotificationReady === '1') return;
+      const panel = document.createElement('section');
+      panel.className = 'department-yesterday-notification';
+      panel.dataset.departmentName = getDepartmentName(host);
+      panel.innerHTML = '<div class="dy-notification-layout"><div class="dy-meta"><p class="dy-date-label">গতকালের তারিখ</p><p class="dy-date"></p></div><div class="dy-cards"><div class="dy-card target"><span>Target</span><strong>0</strong></div><div class="dy-card complete"><span>Complete</span><strong>0</strong></div></div></div>';
+      const anchor = host.querySelector('.summary-merch-shortcuts,.department-page-actions,.store-actions,.production-actions,.admin-actions,.other-department-blank');
+      if (anchor) anchor.after(panel); else host.append(panel);
+      host.dataset.yesterdayNotificationReady = '1';
+    };
+    const update = host => {
+      ensure(host); const panel = host.querySelector('.department-yesterday-notification'); if (!panel) return;
+      const date = yesterday(), values = collect(getDepartmentName(host), date);
+      panel.querySelector('.dy-date').textContent = displayDate(date);
+      const cards = panel.querySelectorAll('.dy-card strong'); if (cards[0]) cards[0].textContent = String(values.target); if (cards[1]) cards[1].textContent = String(values.complete);
+    };
+    const apply = () => {
+      ['departmentPageView','storeView','productionView','administrationView','otherDepartmentView'].forEach(id => { const host = document.getElementById(id); if (host) update(host); });
+      document.querySelectorAll('#summaryView .summary-merch-home-panel').forEach(update);
+    };
+    apply(); window.setInterval(apply, 700);
   })();
 </script>
 </body>
