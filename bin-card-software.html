@@ -2610,7 +2610,7 @@
        const scheduleTableMarkup=`<div class="schedule-table-block summary-merch-table-wrap"><table><thead><tr>${upperColumnHeaders}<th class="summary-column-remove" aria-hidden="true"></th></tr></thead><tbody>${initialRows}</tbody><tfoot><tr class="summary-total-row"><th class="summary-total-label">Total =</th>${upperTotalCells}<th></th></tr></tfoot></table></div>`;
        const upperScheduleActions='<div class="summary-merch-actions schedule-upper-actions"><button type="button" class="secondary" data-summary-row-add data-schedule-table="upper" data-fixed-label="addRow">+ Add Row</button></div>';
        const scheduleSideControls=selectedProductionSubDepartment==='New Schedule'?`<div class="schedule-side-controls"><div class="schedule-side-box schedule-side-date-box"><label>Holiday<select name="holidayDates" aria-label="Holiday"><option value="">Weekday</option><option>Saturday</option><option>Sunday</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></label></div><div class="schedule-side-box"><label>Extra Holiday<input name="extraHolidayDates" type="text" inputmode="numeric" autocomplete="off" placeholder="1, 20"></label></div></div>`:'';
-       const entryTableMarkup=selectedProductionSubDepartment==='New Schedule'?`${scheduleTableMarkup}${upperScheduleActions}${scheduleSideControls}<div class="schedule-table-divider" aria-label="TIME ALLOWED"><label class="time-allowed-date">Date<input name="timeAllowedDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><span>TIME ALLOWED</span></div><div class="schedule-table-block summary-merch-table-wrap"><table><thead><tr>${columnHeaders}</tr></thead><tbody>${lowerScheduleRows}</tbody><tfoot><tr class="summary-total-row"><th class="summary-total-label">Total =</th>${totalCells}</tr></tfoot></table></div>`:scheduleTableMarkup;
+       const entryTableMarkup=selectedProductionSubDepartment==='New Schedule'?`${scheduleTableMarkup}${upperScheduleActions}${scheduleSideControls}<div class="schedule-table-divider" aria-label="TIME ALLOWED"><input name="timeAllowedDate" type="hidden"><span>TIME ALLOWED</span></div><div class="schedule-table-block summary-merch-table-wrap"><table><thead><tr>${columnHeaders}</tr></thead><tbody>${lowerScheduleRows}</tbody><tfoot><tr class="summary-total-row"><th class="summary-total-label">Total =</th>${totalCells}</tr></tfoot></table></div>`:scheduleTableMarkup;
        const storeAccessoryParts=selectedStoreSubDepartment.startsWith('Accessories:')?selectedStoreSubDepartment.split(':'):[];
        const storeEntryActive=['Entry','Entry Copy','Booking'].includes(selectedStoreSubDepartment)||(storeAccessoryParts.length===3&&storeAccessoryParts[2]==='Entry');
        const storeAccessoryTitle=storeAccessoryParts.length===3?`${storeAccessoryParts[1]} ${storeAccessoryParts[2]}`:'';
@@ -2675,6 +2675,10 @@
         timeAllowedDate?.addEventListener('input',()=>{syncTimeAllowedRows();syncScheduleDailyTargets();});
         timeAllowedDate?.addEventListener('blur',()=>{syncTimeAllowedRows();syncScheduleDailyTargets();});
         timeAllowedDate?.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();syncTimeAllowedRows();syncScheduleDailyTargets();}});
+        const scheduleOfMonth=form.querySelector('input[name="scheduleOfMonth"]');
+        const syncScheduleOfMonth=()=>{if(!scheduleOfMonth||selectedProductionSubDepartment!=='New Schedule')return;const value=String(scheduleOfMonth.value||'').trim();const match=/^(\d{4})-(\d{2})$/.exec(value);if(match)timeAllowedDate.value=`01/${match[2]}/${match[1]}`;else if(!value)timeAllowedDate.value='';syncTimeAllowedRows();syncScheduleDailyTargets();};
+        scheduleOfMonth?.addEventListener('input',syncScheduleOfMonth);
+        scheduleOfMonth?.addEventListener('change',syncScheduleOfMonth);
         const scheduleEntryDate=form.querySelector('input[name="entryDate"]');
         scheduleEntryDate?.addEventListener('input',()=>{syncTimeAllowedRows();syncScheduleDailyTargets();});
         scheduleEntryDate?.addEventListener('blur',()=>{syncTimeAllowedRows();syncScheduleDailyTargets();});
@@ -4471,6 +4475,9 @@
   #summaryView .production-new-schedule-panel .summary-merch-meta label input,
   #summaryView .production-new-schedule-panel .summary-merch-meta label select{width:185px!important;max-width:185px!important;min-height:36px!important;height:36px!important;padding:6px 7px!important;font-size:13px!important}
   #summaryView .production-new-schedule-panel .summary-merch-meta label input{width:110px!important;max-width:110px!important;min-height:36px!important;height:36px!important;padding:6px 7px!important;font-size:13px!important}
+  #summaryView .production-new-schedule-panel .summary-merch-meta label:has(input[name="scheduleOfMonth"]){margin-left:auto;grid-template-columns:auto 180px!important}
+  #summaryView .production-new-schedule-panel .summary-merch-meta input[name="scheduleOfMonth"]{width:180px!important;max-width:180px!important;min-height:42px!important;height:42px!important;padding:7px 10px!important;border:2px solid #6bb69a!important;border-radius:8px!important;background:linear-gradient(135deg,#f7fffb,#e8f6ef)!important;color:#164d3b!important;font-size:15px!important;font-weight:800!important;letter-spacing:.02em!important;box-shadow:0 3px 10px rgba(22,77,59,.12)!important;accent-color:#16825b!important}
+  #summaryView .production-new-schedule-panel .schedule-table-divider input[name="timeAllowedDate"]{display:none!important}
   #summaryView .production-new-schedule-panel .summary-merch-entry-form > .summary-merch-actions{justify-content:flex-start!important;margin-left:-8px!important}
 </style>
 <style>
