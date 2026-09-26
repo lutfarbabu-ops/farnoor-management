@@ -4650,6 +4650,80 @@
     window.setInterval(bind, 350);
   })();
 </script>
+<style>
+  /* Production > New Schedule only: day-number Start Date inputs and blank hints. */
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap:first-of-type input::placeholder,
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap:first-of-type select::placeholder{color:transparent!important;opacity:0!important}
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap:first-of-type input,
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap:first-of-type select{text-align:center!important}
+  #summaryView .production-new-schedule-panel [data-production-plan-print]{background:#2563a6!important;color:#fff!important;border-color:#2563a6!important}
+  @media print{
+    body.printing-production-plan #summaryView .production-new-schedule-panel .summary-merch-actions,
+    body.printing-production-plan #summaryView .production-new-schedule-panel .summary-merch-status,
+    body.printing-production-plan #summaryView .production-new-schedule-panel [data-summary-row-add],
+    body.printing-production-plan #summaryView .production-new-schedule-panel .summary-merch-remove{display:none!important}
+    body.printing-production-plan #summaryView .production-new-schedule-panel{box-shadow:none!important;border:0!important}
+  }
+</style>
+<script>
+  /* Production > New Schedule only: keep Start Date as the entered day number and add Print. */
+  (() => {
+    const panelSelector = '#summaryView .production-new-schedule-panel';
+    const dayOnly = field => {
+      if (!field) return;
+      const raw = String(field.value || '').trim();
+      if (!raw) return;
+      const parts = raw.split(/[\/.-]+/).filter(Boolean);
+      if (parts.length === 3 && /^\d+$/.test(parts[0])) field.value = String(Number(parts[0]));
+    };
+    const addPrintButton = panel => {
+      const actions = panel.querySelector('.summary-merch-actions');
+      if (!actions || actions.querySelector('[data-production-plan-print]')) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'primary';
+      button.dataset.productionPlanPrint = 'yes';
+      button.textContent = 'Print';
+      button.addEventListener('click', () => {
+        document.body.classList.add('printing-production-plan');
+        const restore = () => document.body.classList.remove('printing-production-plan');
+        window.addEventListener('afterprint', restore, { once: true });
+        window.setTimeout(() => { window.print(); window.setTimeout(restore, 1500); }, 50);
+      });
+      actions.insertBefore(button, actions.firstChild);
+    };
+    const bind = () => {
+      const panel = document.querySelector(panelSelector);
+      if (!panel) return;
+      const upper = panel.querySelector('.summary-merch-table-wrap');
+      if (!upper) return;
+      upper.querySelectorAll('input,select').forEach(field => {
+        if (field.dataset.newScheduleHintHidden !== 'yes') {
+          field.dataset.newScheduleHintHidden = 'yes';
+          field.placeholder = '';
+        }
+      });
+      upper.querySelectorAll('[data-column-field="START DATE"] input').forEach(field => {
+        if (field.dataset.startDateDayBound !== 'yes') {
+          field.dataset.startDateDayBound = 'yes';
+          field.addEventListener('input', () => {
+            field.dataset.userEditedStartDate = 'yes';
+            dayOnly(field);
+          });
+          field.addEventListener('change', () => {
+            field.dataset.userEditedStartDate = 'yes';
+            dayOnly(field);
+          });
+        }
+        if (field.dataset.userEditedStartDate === 'yes') dayOnly(field);
+        else if (String(field.value || '').includes('/')) field.value = '';
+      });
+      addPrintButton(panel);
+    };
+    bind();
+    window.setInterval(bind, 350);
+  })();
+</script>
 </body>
 </html>
 <!-- Pages refresh -->
