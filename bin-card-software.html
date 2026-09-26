@@ -2593,7 +2593,7 @@
       const storeReceiveColumns=['Buyer Name','Style Number','Accessories Name','Color','Size','Order Quantity','Receive Quantity','Receive Date','Short / Extra'];
       const storeDeliveryColumns=['Buyer Name','Style Number','Accessories Name','Color','Size','Order Quantity','Receive Quantity','Delivery Quantity','Section'];
       const storeStockColumns=['Buyer Name','Style Number','Accessories Name','Color','Size','Order Quantity','Receive Quantity','Delivery Quantity','Balance Stock'];
-      const scheduleUpperColumns=['BUYER','ITEM','STYLE','ORDER QTY','EXCESS','TOTAL QTY','DAILY TARGET','START DATE','REMARKS'];
+      const scheduleUpperColumns=['BUYER','ITEM','STYLE','ORDER QTY','EXCESS','TOTAL QTY','DAILY TARGET','FIRST DAY TARGET','START DATE','REMARKS'];
       const scheduleLowerColumns=['Date','8am - 7pm = 10 Hours','Daily Terget','Daily Out Put','Acevement%','Total Hours','Hourly Put Terget','Remarks'];
       const activeEntryColumns=storeReceiveEntry?storeReceiveColumns:storeDeliveryEntry?storeDeliveryColumns:storeStockEntry?storeStockColumns:selectedProductionSubDepartment==='New Schedule'?scheduleLowerColumns:entryColumns;
       const upperEntryColumns=selectedProductionSubDepartment==='New Schedule'?scheduleUpperColumns:activeEntryColumns;
@@ -2601,7 +2601,7 @@
       const upperColumnHeaders='<th class="summary-serial-column">SL</th>'+upperEntryColumns.map((name,index)=>`<th class="summary-column-header" data-summary-column-index="${index}">${esc(name)}</th>`).join('');
       const columnCells='<td class="summary-serial-cell">1</td>'+activeEntryColumns.map(fieldMarkup).join('');
       const isInventoryTotalColumn=name=>/^(order|receive|delivery|total)\s*quantity$/i.test(String(name).trim());
-      const isScheduleTotalColumn=name=>/order\s*(?:qty|quantity)|total\s*(?:qty|quantity)|daily\s*(?:terget|target|out\s*put|output)|acevement|achievement/i.test(String(name).trim());
+      const isScheduleTotalColumn=name=>/order\s*(?:qty|quantity)|total\s*(?:qty|quantity)|daily\s*(?:terget|target|out\s*put|output)|first\s*day\s*target|acevement|achievement/i.test(String(name).trim());
       const totalCells=activeEntryColumns.map(name=>`<td class="summary-total-cell" data-total-column="${esc(name)}">${storeInventoryEntry?(isInventoryTotalColumn(name)?'0':''):selectedProductionSubDepartment==='New Schedule'?(isScheduleTotalColumn(name)?'0':''):(isNumericColumn(name)?'0':'')}</td>`).join('');
       const upperTotalCells=upperEntryColumns.map(name=>`<td class="summary-total-cell" data-total-column="${esc(name)}">${selectedProductionSubDepartment==='New Schedule'?(isScheduleTotalColumn(name)?'0':''):''}</td>`).join('');
        const productionNewScheduleMeta=selectedProductionSubDepartment==='New Schedule'?'<label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="section">Section<select name="section" aria-label="Section"><option value="">Section</option><option>Sewing Line-1</option><option>Sewing Line-2</option><option>Sewing Line-3</option><option>Sewing Line-4</option><option>Unit-2 Sewing Line-1</option><option>Unit-2 Sewing Line-2</option><option>Cutting</option><option>Finishing</option><option>Packing</option><option>Quality</option></select></label><label data-fixed-label="scheduleOfMonth">Schedule of Month<input name="scheduleOfMonth" type="month" aria-label="Schedule of Month"></label>':'<label data-fixed-label="buyerName">Buyer Name<input name="buyerName" type="text" placeholder="Buyer Name"></label><label data-fixed-label="styleNumber">Style Number<input name="styleNumber" type="text" placeholder="Style Number"></label><label data-fixed-label="orderQuantity">Order Quantity<input name="orderQuantity" type="number" min="0" placeholder="Order Quantity"></label><label data-fixed-label="entryDate">Date<input name="entryDate" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label><label data-fixed-label="shippingQuantity">Shipment Date<input name="shippingQuantity" type="text" inputmode="numeric" autocomplete="off" placeholder="D/M/YY"></label>';
@@ -4525,7 +4525,7 @@
 <script>
   /* Production > Schedule Report mirrors New Schedule with an upper and lower table. */
   (()=>{
-    const upperColumns=['BUYER','ITEM','STYLE','ORDER QTY','EXCESS','TOTAL QTY','DAILY TARGET','START DATE','REMARKS'];
+    const upperColumns=['BUYER','ITEM','STYLE','ORDER QTY','EXCESS','TOTAL QTY','DAILY TARGET','FIRST DAY TARGET','START DATE','REMARKS'];
     const lowerColumns=['Date','8am - 7pm = 10 Hours','Daily Terget','Daily Out Put','Acevement%','Total Hours','Hourly Put Terget','Remarks'];
     const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     const read=()=>{try{const value=JSON.parse(localStorage.getItem('farnoorMerchandisingEntries')||'[]');return Array.isArray(value)?value:[];}catch{return[];}};
