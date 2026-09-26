@@ -69,10 +69,18 @@
     </div>
   </main><footer class="app-footer">LutforBabu &nbsp;|&nbsp; Email: lutfarbabu@gmail.com</footer></div>
   <script>
-    // One-time reset requested by administrator: only management entries and Buyer data are removed.
-    if(!localStorage.getItem('farnoorBinCardsResetSep2026v1')){localStorage.removeItem('farnoorBinCards');localStorage.removeItem('farnoorDepartments');localStorage.setItem('farnoorBinCardsResetSep2026v1','done');}
-    // One-time user-account reset requested by administrator. Store and Department data are preserved.
-    if(!localStorage.getItem('farnoorAccountsResetSep2026v4')){localStorage.removeItem('farnoorAccounts');sessionStorage.removeItem('farnoorLogin');localStorage.setItem('farnoorAccountsResetSep2026v4','done');}
+    /* Persistent data safety: this static app keeps its business data in the
+       browser.  Never clear those records automatically on startup.  A small
+       rolling archive is kept in localStorage and refreshed after every
+       business-data write, so a refresh or a new deployment cannot erase an
+       existing entry.  Account credentials are intentionally excluded. */
+    const FARNOOR_DATA_BACKUP_KEY='farnoorDataBackupV1';
+    const FARNOOR_BACKUP_EXCLUDED=new Set(['farnoorAccounts','farnoorDataBackupV1','farnoorBinCardsResetSep2026v1','farnoorAccountsResetSep2026v4']);
+    const FARNOOR_NATIVE_SET_ITEM=Storage.prototype.setItem;
+    let farnoorBackupTimer=0;
+    const writeFarnoorDataBackup=()=>{try{const data={};for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(!key||FARNOOR_BACKUP_EXCLUDED.has(key))continue;data[key]=localStorage.getItem(key);}FARNOOR_NATIVE_SET_ITEM.call(localStorage,FARNOOR_DATA_BACKUP_KEY,JSON.stringify({version:1,savedAt:new Date().toISOString(),data}));}catch{}};
+    Storage.prototype.setItem=function(key,value){FARNOOR_NATIVE_SET_ITEM.call(this,key,value);if(this===localStorage&&!FARNOOR_BACKUP_EXCLUDED.has(String(key))){clearTimeout(farnoorBackupTimer);farnoorBackupTimer=setTimeout(writeFarnoorDataBackup,0);}};
+    setTimeout(writeFarnoorDataBackup,0);
     function enterApp(name,department=''){document.body.className='logged-in';document.getElementById('welcome').textContent=`স্বাগতম, ${name}`;if(String(department).trim().toLowerCase()==='store'){openStoreForm();}else{document.getElementById('storeView').classList.remove('visible');document.getElementById('summaryView').style.display='block';document.querySelector('.notice').style.display='block';}}
     function showRegister(){document.getElementById('loginPanel').classList.add('hidden');document.getElementById('registerPanel').classList.remove('hidden');document.getElementById('loginError').textContent='';}
     function showLogin(){document.getElementById('registerPanel').classList.add('hidden');document.getElementById('loginPanel').classList.remove('hidden');document.getElementById('registerError').textContent='';}
@@ -154,7 +162,9 @@
   (() => {
     const supabaseUrl = 'https://jbrqvgoptdsekxmisach.supabase.co';
     const supabaseKey = 'sb_publishable_rkaW0e6QdHKkpxGU3LpXrQ_fqVz_17T';
-    const cloudKeys = ['farnoorDepartments', 'farnoorBinCards', 'farnoorStoreEntries', 'farnoorLine1Entries', 'farnoorServiceBenefitEntries'];
+    const cloudKeyExcluded = new Set(['farnoorAccounts', 'farnoorAccountsResetSep2026v4', 'farnoorLogin']);
+    const cloudKeys = ['farnoorDepartments', 'farnoorBinCards', 'farnoorStoreEntries', 'farnoorLine1Entries', 'farnoorServiceBenefitEntries', 'farnoorSewingLineEntries', 'farnoorMerchandisingEntries', 'farnoorMerchandisingEntriesV2', 'farnoorMerchandisingSimpleEntries', 'farnoorMerchandisingMtEntries', 'farnoorMerchandisingMeta', 'farnoorMerchandisingAccessoryRows', 'farnoorMerchandisingEntryLabelsV1', 'farnoorMerchandisingEntryColumnsV1', 'farnoorMerchandisingEntryListsV1', 'farnoorDepartmentAccessMatrixV1', 'farnoorDepartmentPermissionsV1', 'farnoorSummaryDepartmentTreeV1', 'farnoorAdminDepartmentExpandedV1', 'farnoorDataBackupV1'];
+    const isCloudKey = key => { const name=String(key||''); return name.startsWith('farnoor') && !cloudKeyExcluded.has(name) && !/Reset/i.test(name); };
     let client, pulling = false, timer;
     const nativeSetItem = Storage.prototype.setItem;
 
@@ -191,7 +201,7 @@
     }
 
     async function pushKey(key) {
-      if (!client || pulling || !cloudKeys.includes(key)) return;
+      if (!client || pulling || !isCloudKey(key)) return;
       const { data: { user } } = await client.auth.getUser();
       if (!user) return;
       const { error } = await client.from('farnoor_app_state').upsert({
@@ -205,7 +215,9 @@
     }
 
     async function pushAll() {
-      for (const key of cloudKeys) await pushKey(key);
+      const keys = new Set(cloudKeys);
+      for (let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(isCloudKey(key))keys.add(key);}
+      for (const key of keys) await pushKey(key);
     }
 
     async function pullCloudData() {
@@ -215,7 +227,7 @@
       if (error) { showCloudStatus('অনলাইন তথ্য পড়া যায়নি: ' + error.message, true); return 0; }
       pulling = true;
       (data || []).forEach(row => {
-        if (cloudKeys.includes(row.state_key)) nativeSetItem.call(localStorage, row.state_key, JSON.stringify(row.state_data));
+        if (isCloudKey(row.state_key)) nativeSetItem.call(localStorage, row.state_key, JSON.stringify(row.state_data));
       });
       pulling = false;
       return (data || []).length;
@@ -245,7 +257,7 @@
       window.farnoorCloudStorageSync = true;
       Storage.prototype.setItem = function(key, value) {
         nativeSetItem.call(this, key, value);
-        if (this === localStorage && cloudKeys.includes(key) && !pulling) {
+        if (this === localStorage && isCloudKey(key) && !pulling) {
           clearTimeout(timer);
           timer = setTimeout(() => pushKey(key), 250);
         }
