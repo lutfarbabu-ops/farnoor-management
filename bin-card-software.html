@@ -4632,8 +4632,9 @@
         const dailyField = row.querySelector('[data-column-field="Daily Terget"] input');
         if (!dateField || !dailyField) return;
         const amount = allocations.get(dateKey(parseDate(dateField.value, anchor)));
+        if (dailyField.dataset.manualDailyTarget === 'yes') return;
         dailyField.value = amount ? String(amount) : '';
-        dailyField.readOnly = Boolean(amount);
+        dailyField.readOnly = false;
       });
     };
     const bind = () => {
@@ -4641,8 +4642,19 @@
       if (!panel) return;
       if (panel.dataset.firstTargetSyncBound !== 'yes') {
         panel.dataset.firstTargetSyncBound = 'yes';
-        panel.addEventListener('input', () => window.setTimeout(() => run(panel), 0));
-        panel.addEventListener('change', () => window.setTimeout(() => run(panel), 0));
+        const upper = panel.querySelector('.summary-merch-table-wrap');
+        upper?.querySelectorAll('input,select').forEach(field => {
+          if (field.dataset.firstTargetAllocationFieldBound === 'yes') return;
+          field.dataset.firstTargetAllocationFieldBound = 'yes';
+          field.addEventListener('input', () => window.setTimeout(() => run(panel), 0));
+          field.addEventListener('change', () => window.setTimeout(() => run(panel), 0));
+        });
+        panel.querySelectorAll('input[name="timeAllowedDate"],input[name="scheduleOfMonth"]').forEach(field => {
+          if (field.dataset.firstTargetAllocationMetaBound === 'yes') return;
+          field.dataset.firstTargetAllocationMetaBound = 'yes';
+          field.addEventListener('input', () => window.setTimeout(() => run(panel), 0));
+          field.addEventListener('change', () => window.setTimeout(() => run(panel), 0));
+        });
       }
       run(panel);
     };
@@ -4719,6 +4731,62 @@
         else if (String(field.value || '').includes('/')) field.value = '';
       });
       addPrintButton(panel);
+    };
+    bind();
+    window.setInterval(bind, 350);
+  })();
+</script>
+<style>
+  /* Production New Schedule only: remove the Print control and hide report controls/title. */
+  #summaryView .production-new-schedule-panel [data-production-plan-print]{display:none!important}
+  #summaryView .production-schedule-report-panel .production-schedule-report-toolbar,
+  #summaryView .production-schedule-report-panel .production-schedule-report-item-head{display:none!important}
+  #summaryView .production-schedule-report-panel .summary-entry-report-content,
+  #summaryView .production-schedule-report-panel .production-schedule-report-item,
+  #summaryView .production-schedule-report-panel .production-schedule-report-table{text-align:center!important}
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap input::placeholder,
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap select::placeholder{color:transparent!important;opacity:0!important}
+</style>
+<script>
+  /* Production > New Schedule only: fill 10 hours except Holiday / Weekly Holiday and allow Daily Target edits. */
+  (() => {
+    const isHoliday = value => /^(holiday|weekly\s+holiday)$/i.test(String(value || '').trim());
+    const syncHours = panel => {
+      const wraps = panel.querySelectorAll('.summary-merch-table-wrap');
+      const lower = wraps[wraps.length - 1];
+      if (!lower) return;
+      lower.querySelectorAll('tr').forEach(row => {
+        const dateField = row.querySelector('[data-column-field="Date"] input');
+        const hoursField = row.querySelector('[data-column-field="8am - 7pm = 10 Hours"] input');
+        const dailyField = row.querySelector('[data-column-field="Daily Terget"] input');
+        if (dateField && hoursField) {
+          hoursField.placeholder = '';
+          const holiday = isHoliday(dateField.value);
+          hoursField.value = holiday ? '' : '10';
+          hoursField.readOnly = true;
+        }
+        if (dailyField) {
+          dailyField.placeholder = '';
+          if (dailyField.dataset.manualDailyTargetBound !== 'yes') {
+            dailyField.dataset.manualDailyTargetBound = 'yes';
+            dailyField.addEventListener('input', () => {
+              dailyField.dataset.manualDailyTarget = 'yes';
+              dailyField.readOnly = false;
+            });
+            dailyField.addEventListener('change', () => {
+              dailyField.dataset.manualDailyTarget = 'yes';
+              dailyField.readOnly = false;
+            });
+          }
+        }
+        row.querySelectorAll('input,select').forEach(field => { field.placeholder = ''; });
+      });
+    };
+    const bind = () => {
+      const panel = document.querySelector('#summaryView .production-new-schedule-panel');
+      if (!panel) return;
+      panel.querySelector('[data-production-plan-print]')?.remove();
+      syncHours(panel);
     };
     bind();
     window.setInterval(bind, 350);
