@@ -2473,7 +2473,7 @@
       const grid=document.getElementById('departmentButtons'); if(!grid || typeof departments==='undefined') return;
       const select=document.getElementById('entryDepartment'),previous=select?.value;
       if(select){select.innerHTML=departments.length?'<option value="" disabled>Department নির্বাচন করুন</option>'+departments.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join(''):'<option value="" selected disabled>আগে Department যোগ করুন</option>';select.value=departments.includes(previous)?previous:(activeDepartment||'');}
-      const displayDepartments=['Merchandising','Production'];
+      const displayDepartments=['Admin','Merchandising','Store','Production'];
       const childNames=new Set(Object.values(childGroups).flat());
       const topDepartments=displayDepartments.filter(d=>!childNames.has(d));
       grid.innerHTML=topDepartments.map(department=>{const children=(childGroups[department]||[]).filter(child=>departments.some(item=>clean(item)===clean(child)));const hasChildren=children.length>0;const open=expanded.has(department);return `<div class="summary-department-group"><div class="summary-department-row"><button type="button" class="summary-department-toggle" data-tree-toggle="${escapeHtml(department)}" aria-label="${open?'বন্ধ করুন':'খুলুন'}">${hasChildren?(open?'▾':'▸'):'•'}</button><button type="button" class="department-button summary-department-main ${clean(activeDepartment)===clean(department)?'active':''}" data-department="${escapeHtml(department)}">🏢 ${escapeHtml(department)}</button></div>${hasChildren&&open?`<div class="summary-department-children">${children.map(child=>`<button type="button" class="department-button summary-department-child ${clean(activeDepartment)===clean(child)?'active':''}" data-department="${escapeHtml(child)}">📁 ${escapeHtml(child)}</button>`).join('')}</div>`:''}</div>`;}).join('');
@@ -2491,13 +2491,13 @@
     const onlyKey='farnoorManagementMerchandisingStoreProductionSep2026v1';
     try {
       if(!localStorage.getItem(onlyKey)){
-    departments.splice(0,departments.length,'Merchandising','Store','Production');
+        departments.splice(0,departments.length,'Admin','Merchandising','Store','Production');
         localStorage.setItem('farnoorDepartments',JSON.stringify(departments));
         localStorage.setItem(onlyKey,'done');
       } else {
         const saved=JSON.parse(localStorage.getItem('farnoorDepartments')||'[]')||[];
-        departments.splice(0,departments.length,...(saved.length?['Merchandising','Store','Production'].filter(name=>saved.some(item=>String(item).trim().toLowerCase()===name.toLowerCase())):['Merchandising','Store','Production']));
-        if(departments.length<3)departments.splice(0,departments.length,'Merchandising','Store','Production');
+        departments.splice(0,departments.length,...(saved.length?['Admin','Merchandising','Store','Production'].filter(name=>saved.some(item=>String(item).trim().toLowerCase()===name.toLowerCase())):['Admin','Merchandising','Store','Production']));
+        if(departments.length<4)departments.splice(0,departments.length,'Admin','Merchandising','Store','Production');
       }
       window.renderDepartments?.();
       window.renderSummary?.();
@@ -2544,7 +2544,7 @@
     const entryLabelDefaults={entryTitle:'Entry',section:'Section',buyerName:'Buyer Name',styleNumber:'Style Number',orderQuantity:'Order Quantity',entryDate:'Date',shippingQuantity:'Shipment Date',styleNo:'Style No',color:'Color',size:'Size',qty:'QTY',pcs:'Pcs',remove:'',addRow:'+ Add Row',saveEntry:'Save'};
     const readEntryLabels=()=>{try{const labels={...entryLabelDefaults,...(JSON.parse(localStorage.getItem(entryLabelKey)||'{}')||{})};if(labels.shippingQuantity==='Shipment Quantity')labels.shippingQuantity='Shipment Date';if(labels.saveEntry==='Save Entry')labels.saveEntry='Save';return labels;}catch{return {...entryLabelDefaults};}};
     const saveEntryLabels=labels=>{try{localStorage.setItem(entryLabelKey,JSON.stringify(labels));}catch{}};
-    const allSummaryDepartments=['Merchandising','Store','Production'];
+    const allSummaryDepartments=['Admin','Merchandising','Store','Production'];
     const isSummarySuperAdmin=()=>{try{const session=JSON.parse(sessionStorage.getItem('farnoorLogin')||'null')||{};const role=String(session.department||'').trim().toLowerCase().replace(/[\s_-]+/g,'');return ['superadmin','owner','alldepartments'].includes(role)||['lutfarbabu@gmail.com','farnoorsoftware@gmail.com'].includes(String(session.email||'').trim().toLowerCase());}catch{return false;}};
     let summaryContextMenu=null;
     const ensureSummaryContextMenu=()=>{if(summaryContextMenu)return summaryContextMenu;summaryContextMenu=document.createElement('div');summaryContextMenu.className='summary-department-context-menu';document.body.append(summaryContextMenu);document.addEventListener('click',()=>summaryContextMenu?.classList.remove('visible'));return summaryContextMenu;};
@@ -2690,10 +2690,10 @@
     };
     const watchSummaryGrid=()=>{const grid=document.getElementById('departmentButtons');if(!grid||grid.dataset.summaryObserver)return;new MutationObserver(()=>{if(grid.querySelector('.summary-entry-panel .summary-merch-entry-form'))return;if(!grid.querySelector('.summary-admin-department')&&!grid.querySelector('.summary-department-expand')){grid.dataset.summaryState='';renderMerchandising();}}).observe(grid,{childList:true,subtree:true});grid.dataset.summaryObserver='yes';};
     const enforceMerchandisingOnly=()=>{
-      try { localStorage.setItem('farnoorDepartments',JSON.stringify(['Merchandising','Store','Production'])); } catch {}
+      try { localStorage.setItem('farnoorDepartments',JSON.stringify(['Admin','Merchandising','Store','Production'])); } catch {}
       renderMerchandising();
       const select=document.getElementById('entryDepartment');
-      if(select){select.innerHTML='<option value="" disabled>Department নির্বাচন করুন</option><option value="Merchandising">Merchandising</option><option value="Store">Store</option><option value="Production">Production</option>';select.value=activeDepartment||'Merchandising';}
+      if(select){select.innerHTML='<option value="" disabled>Department নির্বাচন করুন</option><option value="Admin">Admin</option><option value="Merchandising">Merchandising</option><option value="Store">Store</option><option value="Production">Production</option>';select.value=activeDepartment||'Merchandising';}
       const form=document.getElementById('departmentForm');
       if(form)form.style.display='none';
       const status=document.getElementById('departmentStatus');
@@ -4368,9 +4368,9 @@
 <script>
   /* Final department lock: সফটওয়্যারে শুধু Merchandising, Store ও Production থাকবে। */
   (() => {
-    const allowed = ['Merchandising','Store','Production'];
+    const allowed = ['Admin','Merchandising','Store','Production'];
     const key = value => String(value || '').trim().toLowerCase().replace(/[\s_-]+/g,'');
-    const isAllowed = value => ['merchandising','store','production'].includes(key(value));
+    const isAllowed = value => ['admin','merchandising','store','production'].includes(key(value));
     const cleanDepartmentList = () => {
       try {
         if (typeof departments !== 'undefined') {
