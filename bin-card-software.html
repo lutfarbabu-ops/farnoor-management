@@ -2593,7 +2593,7 @@
       const storeReceiveColumns=['Buyer Name','Style Number','Accessories Name','Color','Size','Order Quantity','Receive Quantity','Receive Date','Short / Extra'];
       const storeDeliveryColumns=['Buyer Name','Style Number','Accessories Name','Color','Size','Order Quantity','Receive Quantity','Delivery Quantity','Section'];
       const storeStockColumns=['Buyer Name','Style Number','Accessories Name','Color','Size','Order Quantity','Receive Quantity','Delivery Quantity','Balance Stock'];
-      const scheduleUpperColumns=['BUYER','ITEM','STYLE','ORDER QTY','EXCESS','TOTAL QTY','DAILY TARGET','FIRST DAY TARGET','START DATE','REMARKS'];
+      const scheduleUpperColumns=['BUYER','ITEM','STYLE','ORDER QTY','EXCESS','TOTAL QTY','FIRST DAY TARGET','DAILY TARGET','START DATE','REMARKS'];
       const scheduleLowerColumns=['Date','8am - 7pm = 10 Hours','Daily Terget','Daily Out Put','Acevement%','Total Hours','Hourly Put Terget','Remarks'];
       const activeEntryColumns=storeReceiveEntry?storeReceiveColumns:storeDeliveryEntry?storeDeliveryColumns:storeStockEntry?storeStockColumns:selectedProductionSubDepartment==='New Schedule'?scheduleLowerColumns:entryColumns;
       const upperEntryColumns=selectedProductionSubDepartment==='New Schedule'?scheduleUpperColumns:activeEntryColumns;
@@ -4555,6 +4555,20 @@
   #summaryView .summary-store-receive-only td[data-column-field="Style Number"] input{text-align:left!important}
   #summaryView .summary-short-extra{font-weight:800;color:#164d3b}
   #summaryView .production-new-schedule-panel .schedule-excess-field{font-weight:800;color:#164d3b;text-align:center;background:#f3faf6}
+  /* Production > New Schedule only: keep every heading, value and input centered. */
+  #summaryView .production-new-schedule-panel,
+  #summaryView .production-new-schedule-panel h3,
+  #summaryView .production-new-schedule-panel .summary-merch-meta,
+  #summaryView .production-new-schedule-panel .summary-merch-meta label,
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap th,
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap td,
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap input,
+  #summaryView .production-new-schedule-panel .summary-merch-table-wrap select,
+  #summaryView .production-new-schedule-panel .summary-merch-actions,
+  #summaryView .production-new-schedule-panel .summary-merch-status{text-align:center!important}
+  #summaryView .production-new-schedule-panel .summary-merch-meta label{justify-items:center!important}
+  #summaryView .production-new-schedule-panel .summary-merch-meta label input,
+  #summaryView .production-new-schedule-panel .summary-merch-meta label select{ text-align:center!important }
 </style>
 <script>
   /* Production New Schedule only: allocate First Day Target, then Daily Target, until Total Qty is consumed. */
