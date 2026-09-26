@@ -4556,6 +4556,86 @@
   #summaryView .summary-short-extra{font-weight:800;color:#164d3b}
   #summaryView .production-new-schedule-panel .schedule-excess-field{font-weight:800;color:#164d3b;text-align:center;background:#f3faf6}
 </style>
+<script>
+  /* Production New Schedule only: allocate First Day Target, then Daily Target, until Total Qty is consumed. */
+  (() => {
+    const numberValue = value => {
+      const number = Number(String(value ?? '').replace(/,/g, '').trim());
+      return Number.isFinite(number) && number > 0 ? number : 0;
+    };
+    const parseDate = (value, anchor) => {
+      const raw = String(value ?? '').trim();
+      const parts = raw.split(/[\/.-]+/).filter(Boolean);
+      if (parts.length === 1) {
+        const day = Number(parts[0]);
+        if (!anchor || !Number.isFinite(day) || day < 1 || day > 31) return null;
+        const date = new Date(anchor.getFullYear(), anchor.getMonth(), day);
+        return date.getFullYear() === anchor.getFullYear() && date.getMonth() === anchor.getMonth() && date.getDate() === day ? date : null;
+      }
+      if (parts.length !== 3) return null;
+      let day = Number(parts[0]);
+      let month = Number(parts[1]);
+      let year = Number(parts[2]);
+      if (String(parts[2]).length === 2) year = year < 70 ? 2000 + year : 1900 + year;
+      if (!Number.isFinite(day) || !Number.isFinite(month) || !Number.isFinite(year)) return null;
+      const date = new Date(year, month - 1, day);
+      return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+    };
+    const dateKey = date => date ? `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` : '';
+    const run = panel => {
+      const tables = panel.querySelectorAll('.summary-merch-table-wrap table');
+      if (tables.length < 2) return;
+      const upperBody = tables[0].querySelector('tbody');
+      const lowerBody = tables[tables.length - 1].querySelector('tbody');
+      if (!upperBody || !lowerBody) return;
+      let anchor = parseDate(panel.querySelector('input[name="timeAllowedDate"]')?.value || '');
+      if (!anchor) anchor = parseDate(lowerBody.querySelector('[data-column-field="Date"] input')?.value || '');
+      const allocations = new Map();
+      upperBody.querySelectorAll('tr').forEach(row => {
+        const start = parseDate(row.querySelector('[data-column-field="START DATE"] input')?.value || '', anchor);
+        const firstTarget = numberValue(row.querySelector('[data-column-field="FIRST DAY TARGET"] input')?.value || '');
+        const dailyTarget = numberValue(row.querySelector('[data-column-field="DAILY TARGET"] input')?.value || '');
+        const totalQty = numberValue(row.querySelector('[data-column-field="TOTAL QTY"] input')?.value || '');
+        if (!start || (!firstTarget && !dailyTarget)) return;
+        let remaining = totalQty;
+        const hasTotal = remaining > 0;
+        for (let offset = 0; offset < 366 && (hasTotal ? remaining > 0 : true); offset += 1) {
+          const planned = offset === 0 && firstTarget > 0 ? firstTarget : dailyTarget;
+          if (planned <= 0) break;
+          const date = new Date(start);
+          date.setDate(start.getDate() + offset);
+          const amount = hasTotal ? Math.min(planned, remaining) : planned;
+          const current = allocations.get(dateKey(date)) || 0;
+          allocations.set(dateKey(date), current + amount);
+          if (hasTotal) {
+            remaining -= amount;
+            if (remaining <= 0) break;
+          }
+        }
+      });
+      lowerBody.querySelectorAll('tr').forEach(row => {
+        const dateField = row.querySelector('[data-column-field="Date"] input');
+        const dailyField = row.querySelector('[data-column-field="Daily Terget"] input');
+        if (!dateField || !dailyField) return;
+        const amount = allocations.get(dateKey(parseDate(dateField.value, anchor)));
+        dailyField.value = amount ? String(amount) : '';
+        dailyField.readOnly = Boolean(amount);
+      });
+    };
+    const bind = () => {
+      const panel = document.querySelector('#summaryView .production-new-schedule-panel');
+      if (!panel) return;
+      if (panel.dataset.firstTargetSyncBound !== 'yes') {
+        panel.dataset.firstTargetSyncBound = 'yes';
+        panel.addEventListener('input', () => window.setTimeout(() => run(panel), 0));
+        panel.addEventListener('change', () => window.setTimeout(() => run(panel), 0));
+      }
+      run(panel);
+    };
+    bind();
+    window.setInterval(bind, 350);
+  })();
+</script>
 </body>
 </html>
 <!-- Pages refresh -->
