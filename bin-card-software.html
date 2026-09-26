@@ -242,8 +242,11 @@
       }));
       const loadedKey = 'farnoorCloudLoaded-' + user.id;
       if (!sessionStorage.getItem(loadedKey)) {
-        const count = await pullCloudData();
-        if (!count) await pushAll();
+        /* Pull the cloud copy first, then publish every local business key.
+           This also backfills older accounts whose first version synced only
+           a small subset of the department data. */
+        await pullCloudData();
+        await pushAll();
         sessionStorage.setItem(loadedKey, 'yes');
         location.reload();
         return;
