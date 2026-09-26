@@ -4902,6 +4902,57 @@
     body.printing-production-schedule-item .production-plan-print-address{margin-top:4px!important;font-size:14px!important;font-weight:700!important;color:#164d3b!important}
   }
 </style>
+<style id="production-current-print-style">
+  @media print{
+    html,body.printing-production-current{height:auto!important;min-height:0!important;margin:0!important;overflow:visible!important;background:#fff!important}
+    body.printing-production-current>*{display:none!important}
+    body.printing-production-current>#production-current-print-root{display:block!important;visibility:visible!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
+    body.printing-production-current #production-current-print-root .production-schedule-report-item{display:block!important;visibility:visible!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:#fff!important}
+    body.printing-production-current #production-current-print-root .production-schedule-report-item-head{display:flex!important;visibility:visible!important;align-items:center!important;justify-content:center!important;flex-wrap:wrap!important;padding:0 0 10px!important;margin:0 0 12px!important;border-bottom:2px solid #075b45!important}
+    body.printing-production-current #production-current-print-root .production-schedule-report-item-head button{display:none!important}
+    body.printing-production-current #production-current-print-root .production-schedule-report-table{display:table!important;visibility:visible!important;width:100%!important;max-width:none!important;border-collapse:collapse!important;font-size:9pt!important;table-layout:fixed!important}
+    body.printing-production-current #production-current-print-root .production-schedule-report-table th,
+    body.printing-production-current #production-current-print-root .production-schedule-report-table td{border:1px solid #777!important;padding:4px!important;color:#111!important;background:#fff!important}
+    body.printing-production-current #production-current-print-root .production-plan-time-allowed{display:block!important;visibility:visible!important;margin:8px 0 4px!important;text-align:center!important;font-weight:800!important;color:#164d3b!important}
+    body.printing-production-current #production-current-print-root .production-plan-print-header{display:flex!important;visibility:visible!important;align-items:center!important;gap:14px!important;padding:0 0 10px!important;margin:0 0 12px!important;border-bottom:2px solid #075b45!important}
+    body.printing-production-current #production-current-print-root .production-plan-print-header img{width:72px!important;height:72px!important;object-fit:contain!important}
+    body.printing-production-current #production-current-print-root .production-plan-print-company{font-size:24px!important;font-weight:900!important;color:#075b45!important}
+    body.printing-production-current #production-current-print-root .production-plan-print-address{margin-top:4px!important;font-size:14px!important;font-weight:700!important;color:#164d3b!important}
+  }
+</style>
+<script>
+  /* Production Schedule: print exactly the report whose Print button was clicked. */
+  (()=>{
+    const rootId='production-current-print-root';
+    const cleanup=()=>{
+      document.body.classList.remove('printing-production-current');
+      document.getElementById(rootId)?.remove();
+    };
+    const printCurrent=source=>{
+      cleanup();
+      const item=source?.closest?.('.production-schedule-report-item')||document.querySelector('#summaryView .production-schedule-report-item');
+      if(!item)return;
+      const root=document.createElement('div');root.id=rootId;
+      const clone=item.cloneNode(true);
+      clone.querySelectorAll('button').forEach(button=>button.remove());
+      if(!clone.querySelector('.production-plan-print-header')){
+        const header=document.createElement('div');header.className='production-plan-print-header';
+        header.innerHTML='<img src="assets/Farnoor_New_Logo.jpg-removebg-preview.png" alt="Farnoor logo"><div><div class="production-plan-print-company">FARNOOR GARMENTS LTD.</div><div class="production-plan-print-address">1028/1/2, Malibagh Bazar Road, Dhaka-1217</div></div>';
+        const logo=header.querySelector('img');logo.onerror=()=>{logo.onerror=null;logo.src='../assets/Farnoor_New_Logo.jpg-removebg-preview.png';};
+        clone.prepend(header);
+      }
+      root.append(clone);document.body.append(root);document.body.classList.add('printing-production-current');
+      const restore=()=>cleanup();window.addEventListener('afterprint',restore,{once:true});window.setTimeout(()=>window.print(),80);window.setTimeout(restore,1800);
+    };
+    const bind=()=>{
+      document.querySelectorAll('[data-production-plan-print-final],[data-production-schedule-print]').forEach(button=>{
+        if(button.dataset.currentPrintBound==='yes')return;
+        button.dataset.currentPrintBound='yes';button.onclick=event=>{event.preventDefault();event.stopImmediatePropagation();printCurrent(button);};
+      });
+    };
+    bind();window.setInterval(bind,350);
+  })();
+</script>
 </body>
 </html>
 <!-- Pages refresh -->
