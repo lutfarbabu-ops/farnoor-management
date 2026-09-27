@@ -5079,3 +5079,65 @@
   setup(); window.addEventListener('load',setup,{once:true});
 })();
 </script>
+
+<script>
+(() => {
+  const pad = value => String(value).padStart(2, '0');
+  const parse = value => {
+    const raw = String(value || '').trim().replace(/\s+/g, '');
+    let match = /^(0?[1-9]|1[0-2])[-\/.](\d{2}|\d{4})$/.exec(raw);
+    if (match) {
+      let year = Number(match[2]);
+      if (match[2].length === 2) year += 2000;
+      return { display: pad(match[1]) + '/' + String(year).slice(-2), iso: year + '-' + pad(match[1]) };
+    }
+    match = /^(\d{4})[-\/.](0?[1-9]|1[0-2])$/.exec(raw);
+    if (match) return { display: pad(match[2]) + '/' + match[1].slice(-2), iso: match[1] + '-' + pad(match[2]) };
+    return null;
+  };
+  let remembered = '';
+  const bind = panel => {
+    const month = panel && panel.querySelector('input[name="scheduleOfMonth"]');
+    if (!month) return;
+    month.type = 'text';
+    month.inputMode = 'numeric';
+    month.readOnly = false;
+    month.disabled = false;
+    month.removeAttribute('readonly');
+    month.placeholder = 'MM/YY (e.g. 01/25)';
+    month.title = 'Double-click to type month and year';
+    const date = panel.querySelector('input[name="timeAllowedDate"]');
+    const sync = () => {
+      const parsed = parse(month.value);
+      if (!parsed) return;
+      month.value = parsed.display;
+      month.dataset.scheduleMonthIso = parsed.iso;
+      remembered = parsed.display;
+      if (date) {
+        const bits = parsed.iso.split('-');
+        date.value = '01/' + bits[1] + '/' + bits[0];
+        date.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
+    const current = parse(month.value);
+    if (current) { month.value = current.display; month.dataset.scheduleMonthIso = current.iso; remembered = current.display; }
+    else if (!month.value && remembered) month.value = remembered;
+    else if (!month.value) {
+      const now = new Date();
+      remembered = pad(now.getMonth() + 1) + '/' + String(now.getFullYear()).slice(-2);
+      month.value = remembered;
+      month.dataset.scheduleMonthIso = now.getFullYear() + '-' + pad(now.getMonth() + 1);
+    }
+    if (month.dataset.manualMonthBound === 'yes') return;
+    month.dataset.manualMonthBound = 'yes';
+    month.addEventListener('dblclick', () => { month.focus(); month.select(); });
+    month.addEventListener('input', () => { const parsed = parse(month.value); if (parsed) { month.dataset.scheduleMonthIso = parsed.iso; remembered = parsed.display; } });
+    month.addEventListener('blur', sync);
+    month.addEventListener('change', sync);
+  };
+  const run = () => bind(document.querySelector('#summaryView .production-new-schedule-panel'));
+  run();
+  new MutationObserver(run).observe(document.body, { childList: true, subtree: true });
+  window.setInterval(run, 350);
+})();
+</script>
