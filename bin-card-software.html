@@ -5175,3 +5175,25 @@
   run(); new MutationObserver(run).observe(document.body, { childList: true, subtree: true }); window.setInterval(run, 350);
 })();
 </script>
+
+<script>
+(() => {
+  const applySeptember2026 = panel => {
+    const month = panel && panel.querySelector('input[name="scheduleOfMonth"]');
+    if (!month) return;
+    month.type = 'text'; month.inputMode = 'numeric'; month.readOnly = false; month.disabled = false;
+    month.removeAttribute('readonly'); month.placeholder = '09/26'; month.title = 'September 2026';
+    if (month.value !== '09/26') month.value = '09/26';
+    month.dataset.scheduleMonthIso = '2026-09';
+    const date = panel.querySelector('input[name="timeAllowedDate"]');
+    if (date && date.value !== '01/09/2026') {
+      date.value = '01/09/2026';
+      date.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  };
+  const run = () => applySeptember2026(document.querySelector('#summaryView .production-new-schedule-panel'));
+  run();
+  new MutationObserver(run).observe(document.body, { childList: true, subtree: true });
+  window.setInterval(run, 350);
+})();
+</script>
