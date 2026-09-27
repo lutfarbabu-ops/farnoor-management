@@ -2334,13 +2334,16 @@
   .department-control-table td:first-child{background:#f1faf5;color:var(--deep)}
   .permission-box{width:20px;height:20px;accent-color:#087c5b;cursor:pointer}
   .permission-box.full{accent-color:#b77a25}
-  .department-selector{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px 4px;border-bottom:1px solid #e7eee9;background:#fbfdfc}
+  .department-selector{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px 4px;border-bottom:1px solid #e7eee9;background:#fbfdfc}
   .department-selector button{border:1px solid #b7cfc4;background:#fff;color:#164d3b;border-radius:6px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;min-width:74px}
   .department-selector button.active{background:#0b6b50;color:#fff;border-color:#0b6b50;box-shadow:0 2px 6px rgba(11,107,80,.22)}
   .department-selector select{min-width:240px;border:1px solid #b7cfc4;background:#fff;color:#164d3b;border-radius:6px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer}
+  .department-selector select[data-user-select]{min-width:280px}
   .department-selector input[data-department-search]{min-width:220px;border:1px solid #b7cfc4;background:#fff;color:#164d3b;border-radius:6px;padding:7px 10px;font-size:12px;font-weight:700;box-sizing:border-box}
   .department-selected{padding:8px 16px 0;font-size:12px;font-weight:800;color:#0b6b50}
   .department-control-table tr.selected-department{background:#fff8e8;outline:2px solid #e4b65b;outline-offset:-2px}
+  .department-control-table tr.department-group-heading td{background:#e2f3eb;color:#075b45;font-size:14px;text-align:left;border-top:2px solid #8abfa9;padding:10px 12px}
+  .department-control-table tr.department-sub-row td:first-child{padding-left:30px;font-weight:700}
   .department-control-help{padding:12px 16px;color:var(--muted);font-size:12px}
   @media(max-width:700px){.department-control-head{display:block}.department-control-head .secondary{margin-top:10px}.department-control-table{min-width:760px}.department-control-card{overflow-x:auto}}
 </style>
@@ -4989,6 +4992,44 @@
       });
     };
     bind();window.setInterval(bind,350);
+  })();
+</script>
+<script>
+  /* Department Control only: one department selector and grouped main/sub-department permissions. */
+  (() => {
+    const matrixKey='farnoorDepartmentAccessMatrixV1';
+    const defaults=['Merchandising','Store','Production','Account','Commercial','Knitting and Dyeing','Sewing Line-1','Sewing Line-2','Sewing Line-3','Sewing Line-4','Unit-2 Sewing Line-1','Unit-2 Sewing Line-2','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical'];
+    const sub={Merchandising:['Entry','Entry Report','Booking','Booking Report','Swing Line 1','Swing Line 2','Swing Line 3','Swing Line 4','Unit 2, Swing Line 1'],Store:['Accessories','Accessories Receive','Accessories Delivery','Accessories Stock','Receive','Delivery','Stock'],Production:['New Schedule','Schedule','Schedule Report','Sewing','Sewing Line 1','Sewing Line 1 Report','Sewing Line 2','Sewing Line 2 Report','Sewing Line 3','Sewing Line 3 Report','Sewing Line 4','Sewing Line 4 Report','Sewing Line 5','Sewing Line 5 Report']};
+    const clean=v=>String(v||'').trim().toLowerCase();
+    const esc=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const departments=()=>{let list=defaults.slice();try{const saved=JSON.parse(localStorage.getItem('farnoorDepartments')||'[]')||[];saved.forEach(name=>{if(name&&!list.some(item=>clean(item)===clean(name)))list.push(name);});}catch{}return list;};
+    const rowsFor=main=>sub[main]||['Entry','Entry Report'];
+    const read=()=>{try{return JSON.parse(localStorage.getItem(matrixKey)||'{}')||{};}catch{return {};}};
+    const write=value=>localStorage.setItem(matrixKey,JSON.stringify(value));
+    const state=(matrix,main,child)=>{const item=matrix?.[main]?.[child];return typeof item==='object'&&item?item:{};};
+    const mount=()=>{
+      const page=document.getElementById('departmentControlView');if(!page||!page.classList.contains('visible'))return;
+      const selector=page.querySelector('#departmentSelector');const table=page.querySelector('.department-control-table');const body=table?.querySelector('tbody');if(!selector||!table||!body)return;
+      const search=selector.querySelector('[data-department-search]');if(search)search.remove();
+      const select=selector.querySelector('select');if(!select)return;
+      select.setAttribute('aria-label','Main Department নির্বাচন');
+      const selected=select.value||departments()[0];
+      if(select.dataset.groupedBound!=='yes'){select.dataset.groupedBound='yes';select.onchange=()=>mount();}
+      const list=departments();if(!list.some(item=>clean(item)===clean(selected))){select.value=list[0]||'';}
+      const matrix=read();let html='';
+      list.forEach(main=>{
+        html+=`<tr class="department-group-heading"><td colspan="6">${esc(main)} — Main Department</td></tr>`;
+        rowsFor(main).forEach(child=>{const saved=state(matrix,main,child),all=saved.all===true||saved.full===true;html+=`<tr class="department-sub-row" data-main-department="${esc(main)}" data-sub-department="${esc(child)}"><td>${esc(child)}</td><td><input class="permission-box full" type="checkbox" data-permission="all" ${all?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="print" ${saved.print===true?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="view" ${saved.view===true?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="pdf" ${saved.pdf===true?'checked':''}></td><td><input class="permission-box" type="checkbox" data-permission="edit" ${saved.edit===true?'checked':''}></td></tr>`;});
+      });
+      body.innerHTML=html;
+      body.querySelectorAll('.department-sub-row').forEach(row=>{
+        const main=row.dataset.mainDepartment,child=row.dataset.subDepartment;
+        const saveRow=()=>{const current=read();current[main]??={};const item={};row.querySelectorAll('.permission-box').forEach(box=>item[box.dataset.permission]=box.checked);item.full=item.all;item.search=item.edit;item.excel=item.pdf;current[main][child]=item;write(current);};
+        row.querySelectorAll('.permission-box').forEach(box=>box.onchange=()=>{if(box.dataset.permission==='all')row.querySelectorAll('.permission-box').forEach(other=>other.checked=box.checked);saveRow();});
+      });
+      page.querySelector('#selectedDepartmentLabel').textContent=`Main Department: ${select.value||list[0]||''} — নিচে সব Main Department ও Sub-department-এর Control Access`;
+    };
+    window.setInterval(mount,350);
   })();
 </script>
 </body>
