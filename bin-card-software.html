@@ -5250,3 +5250,19 @@
   run(); new MutationObserver(run).observe(document.body, { childList: true, subtree: true }); window.setInterval(run, 40);
 })();
 </script>
+
+<script>
+(() => {
+  const run = () => {
+    const panel = document.querySelector('#summaryView .production-new-schedule-panel');
+    if (!panel) return;
+    const label = panel.querySelector('label[data-fixed-label="scheduleOfMonth"]');
+    if (label) label.style.display = 'none';
+    const internal = panel.querySelector('input[name="scheduleOfMonth"]');
+    if (internal) { internal.value = '2026-09'; internal.dataset.scheduleMonthIso = '2026-09'; }
+    const date = panel.querySelector('input[name="timeAllowedDate"]');
+    if (date && date.value !== '01/09/2026') { date.value = '01/09/2026'; date.dispatchEvent(new Event('input', { bubbles: true })); }
+  };
+  run(); new MutationObserver(run).observe(document.body, { childList: true, subtree: true }); window.setInterval(run, 350);
+})();
+</script>
