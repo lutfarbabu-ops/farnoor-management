@@ -5197,3 +5197,56 @@
   window.setInterval(run, 350);
 })();
 </script>
+
+<script>
+(() => {
+  const wire = () => {
+    document.querySelectorAll('[data-summary-main]').forEach(button => {
+      if (button.dataset.productionNavigationFixed === 'yes') return;
+      button.dataset.productionNavigationFixed = 'yes';
+      button.addEventListener('click', () => {
+        const name = button.dataset.summaryMain;
+        window.setTimeout(() => {
+          if (name === 'Production') {
+            const store = document.querySelector('[data-summary-main="Store"][aria-expanded="true"]');
+            if (store) store.click();
+          } else if (name === 'Store') {
+            const production = document.querySelector('[data-summary-main="Production"][aria-expanded="true"]');
+            if (production) production.click();
+          }
+        }, 0);
+      });
+    });
+  };
+  wire();
+  new MutationObserver(wire).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+<script>
+(() => {
+  let typedMonth = '';
+  const bind = panel => {
+    const month = panel && panel.querySelector('input[name="scheduleOfMonth"]');
+    if (!month) return;
+    month.type = 'text'; month.inputMode = 'numeric'; month.readOnly = false; month.disabled = false;
+    month.removeAttribute('readonly'); month.placeholder = 'MM/YY'; month.title = 'মাস/সাল লিখুন';
+    if (typedMonth && month.value !== typedMonth) month.value = typedMonth;
+    if (month.dataset.manualBlankBound === 'yes') return;
+    month.dataset.manualBlankBound = 'yes';
+    month.addEventListener('focus', () => { if (!typedMonth) month.value = ''; });
+    month.addEventListener('input', () => { typedMonth = month.value; });
+    month.addEventListener('change', () => { typedMonth = month.value; });
+    month.addEventListener('blur', () => { typedMonth = month.value; });
+  };
+  const run = () => {
+    const panel = document.querySelector('#summaryView .production-new-schedule-panel');
+    bind(panel);
+    const month = panel && panel.querySelector('input[name="scheduleOfMonth"]');
+    if (!month) return;
+    if (typedMonth && month.value !== typedMonth) month.value = typedMonth;
+    if (!typedMonth && document.activeElement !== month) month.value = '';
+  };
+  run(); new MutationObserver(run).observe(document.body, { childList: true, subtree: true }); window.setInterval(run, 40);
+})();
+</script>
