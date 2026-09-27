@@ -5037,3 +5037,45 @@
 <!-- Pages refresh -->
 <script>(()=>{const list=['Account','Commercial','Knitting and Dyeing','Sewing Line-1','Sewing Line-2','Sewing Line-3','Sewing Line-4','Unit-2 Sewing Line-1','Unit-2 Sewing Line-2','Cutting','Finishing','Packing','Quality','Sample','Maintenance','Electrical'];const run=()=>{const side=document.querySelector('#summaryView .summary-department-side');if(!side)return;const seen=new Set([...side.querySelectorAll('[data-summary-main],[data-summary-generic]')].map(e=>String(e.dataset.summaryMain||e.dataset.summaryGeneric||'').trim().toLowerCase()));list.forEach(name=>{const key=name.toLowerCase();if(seen.has(key))return;const group=document.createElement('div');group.className='summary-department-group summary-generic-department-group';group.innerHTML='<div class="summary-department-row"><div class="summary-department-main summary-department-label summary-generic-department" data-summary-generic="'+name+'" role="button" tabindex="0">'+name+'</div></div>';const item=group.querySelector('[data-summary-generic]');const open=()=>window.selectDepartment&&window.selectDepartment(name);item.onclick=open;item.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}};side.appendChild(group);seen.add(key)})};run();new MutationObserver(run).observe(document.body,{childList:true,subtree:true});setInterval(run,800)})();</script>
 <style>#summaryView .summary-generic-department-button{width:100%;border:0;border-radius:10px;padding:9px 12px;color:#fff;background:var(--summary-generic-color);background:linear-gradient(135deg,var(--summary-generic-color),color-mix(in srgb,var(--summary-generic-color),#111 28%));font:inherit;font-weight:800;text-align:left;cursor:pointer;box-shadow:0 4px 10px #173b3024;transition:transform .15s ease,filter .15s ease}#summaryView .summary-generic-department-button:hover,#summaryView .summary-generic-department-button:focus-visible{filter:brightness(1.08);transform:translateX(2px);outline:2px solid #f0c85a;outline-offset:1px}</style><script>(()=>{const colors=['#2563eb','#7c3aed','#0f766e','#0284c7','#0891b2','#0d9488','#16a34a','#65a30d','#ca8a04','#ea580c','#dc2626','#db2777','#9333ea','#4f46e5','#475569','#b45309'];const apply=()=>document.querySelectorAll('#summaryView [data-summary-generic]').forEach((item,index)=>{item.classList.add('summary-generic-department-button');item.style.setProperty('--summary-generic-color',colors[index%colors.length]);});apply();new MutationObserver(apply).observe(document.body,{childList:true,subtree:true});setInterval(apply,800)})();</script><style>#summaryView .summary-generic-department-button{width:100%;border:0;border-radius:10px;padding:9px 12px;color:#fff;background:var(--summary-generic-color);background:linear-gradient(135deg,var(--summary-generic-color),color-mix(in srgb,var(--summary-generic-color),#111 28%));font:inherit;font-weight:800;text-align:left;cursor:pointer;box-shadow:0 4px 10px #173b3024;transition:transform .15s ease,filter .15s ease}#summaryView .summary-generic-department-button:hover,#summaryView .summary-generic-department-button:focus-visible{filter:brightness(1.08);transform:translateX(2px);outline:2px solid #f0c85a;outline-offset:1px}</style><script>(()=>{const colors=['#2563eb','#7c3aed','#0f766e','#0284c7','#0891b2','#0d9488','#16a34a','#65a30d','#ca8a04','#ea580c','#dc2626','#db2777','#9333ea','#4f46e5','#475569','#b45309'];const apply=()=>document.querySelectorAll('#summaryView [data-summary-generic]').forEach((item,index)=>{item.classList.add('summary-generic-department-button');item.style.setProperty('--summary-generic-color',colors[index%colors.length]);});apply();new MutationObserver(apply).observe(document.body,{childList:true,subtree:true});setInterval(apply,800)})();</script>
+
+<script>
+(()=>{
+  const applyEmailLogin=()=>{
+    const input=document.getElementById('loginName'),form=document.getElementById('loginForm'),label=form?.querySelector('label');
+    if(!input||!form)return;
+    if(label)label.textContent='ইমেইল';
+    input.type='email'; input.autocomplete='email'; input.placeholder='ইমেইল লিখুন'; input.removeAttribute('list');
+    document.getElementById('farnoorUsernameSuggestions')?.remove();
+    window.resolveFarnoorLoginEmail=value=>String(value||'').trim();
+    const text=document.querySelector('#loginPanel p'); if(text)text.textContent='আপনার ইমেইল ও পাসওয়ার্ড দিন। আপনার তথ্য অনলাইনে সেভ হচ্ছে।';
+  };
+  applyEmailLogin(); window.addEventListener('load',applyEmailLogin,{once:true});
+  document.addEventListener('submit',event=>{if(event.target?.id!=='registerForm')return;setTimeout(()=>{const email=document.getElementById('regEmail')?.value?.trim(),login=document.getElementById('loginName');if(email&&login){login.value=email;applyEmailLogin();}},0);},true);
+})();
+</script>
+
+<script>
+(()=>{
+  const applyVerificationText=()=>{
+    const email=document.getElementById('regEmail')?.value?.trim();
+    const label=document.getElementById('regCodeLabel'),note=document.getElementById('regCodeNote');
+    const destination='lutfarbabu@gmail.com';
+    if(label)label.textContent='ভেরিফিকেশন কোড ('+destination+')';
+    if(note)note.textContent='কোডটি '+destination+'-এ পাঠানো হবে। নাম, বিভাগ ও ইমেইল মিলিয়ে যাচাই হবে।';
+    const error=document.getElementById('registerError');
+    if(error&&/Name, department|valid login email|required/i.test(error.textContent||''))error.textContent='নাম, বিভাগ এবং সঠিক ইমেইল দিন।';
+  };
+  const wrapFetch=()=>{
+    if(window.__farnoorVerificationFetchWrapped||typeof window.fetch!=='function')return;
+    const original=window.fetch.bind(window);
+    window.fetch=(input,init)=>{
+      const url=typeof input==='string'?input:(input?.url||'');
+      if(/send-registration-code/.test(url)&&init?.body){try{const body=JSON.parse(init.body);body.email=body.email||body.loginEmail;body.loginEmail=body.loginEmail||body.email;init={...init,body:JSON.stringify(body)};}catch{}}
+      return original(input,init);
+    };
+    window.__farnoorVerificationFetchWrapped=true;
+  };
+  const setup=()=>{wrapFetch();applyVerificationText();document.getElementById('regEmail')?.addEventListener('input',applyVerificationText);const error=document.getElementById('registerError');if(error&&!error.dataset.verificationObserver){new MutationObserver(applyVerificationText).observe(error,{childList:true,characterData:true,subtree:true});error.dataset.verificationObserver='yes';}};
+  setup(); window.addEventListener('load',setup,{once:true});
+})();
+</script>
