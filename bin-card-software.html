@@ -5268,3 +5268,5 @@
 </script>
 
 <style id="hide-schedule-month-control">label[data-fixed-label="scheduleOfMonth"]{display:none !important;}</style>
+
+<script>/* Prevent Production card navigation from rebuilding the summary first. */(()=>{const open=()=>{window.activeDepartment="Production";document.getElementById("summaryView")?.style.setProperty("display","none");document.querySelector(".notice")?.style.setProperty("display","none");document.getElementById("storeView")?.classList.remove("visible");document.getElementById("productionView")?.classList.add("visible");window.scrollTo({top:0,behavior:"auto"});};document.addEventListener("click",e=>{const b=e.target?.closest?.("[data-department=\"Production\"]");if(!b)return;e.preventDefault();e.stopImmediatePropagation();open();},true);})();</script>
