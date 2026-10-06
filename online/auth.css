@@ -44,3 +44,15 @@ body>footer a{color:inherit;text-decoration:none}
 .auth-brand p{white-space:nowrap;font-size:clamp(7px,3.2cqi,16px);color:#183d35}
 .auth-content{width:100%;max-width:360px;margin-inline:auto}
 @media(max-width:480px){.auth-brand{gap:12px}.auth-brand img{width:43px;height:60px}.auth-brand>div{min-width:0}.auth-brand h1{font-size:clamp(12px,6.4cqi,32px)}.auth-brand p{font-size:clamp(7px,3.2cqi,16px)}}
+/* Compact login card, larger address and registered-user chooser. */
+.auth-card{width:min(560px,100%);padding-inline:24px}
+.auth-brand p{font-size:clamp(7px,4.1cqi,18px)}
+.username-suggestions{margin-top:5px;border:1px solid #b4d5c8;border-radius:8px;overflow:hidden;background:white;max-height:190px;overflow-y:auto}
+.username-suggestions button{display:block;width:100%;padding:10px 12px;text-align:left;background:#f5fbf7;color:#174e40;border:0;border-radius:0;font-size:14px}
+.username-suggestions button:hover,.username-suggestions button[aria-selected=true]{background:#d8f0e5}
+.search-status{font-size:12px;color:#456b5d;margin:6px 0 0}
+.registration-details{margin:16px 0;padding:12px 14px;border:1px solid #c6ded4;border-radius:8px;background:#e3f0e9}
+.registration-details dl{margin:0;font-size:13px;line-height:1.6}
+.registration-details dl>div{display:grid;grid-template-columns:85px minmax(0,1fr);gap:10px;margin:3px 0}
+.registration-details dt{font-weight:700}.registration-details dd{margin:0;overflow-wrap:anywhere}
+@media(max-width:480px){.auth-brand p{font-size:clamp(7px,4.1cqi,18px)}}
