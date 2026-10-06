@@ -9,7 +9,7 @@ window.FarnoorAPI = (() => {
   const write = (key, value) => value ? sessionStorage.setItem(key, JSON.stringify(value)) : sessionStorage.removeItem(key);
   const configured = () => /^https:\/\/[a-z0-9]+\.supabase\.co$/.test(config.url || '') && !!config.key;
   const go = name => location.assign(new URL(name, base));
-  async function raw(route, method, payload, session) {
+  async function raw(route, method, payload, session, keepalive=false) {
     if (!configured()) throw Error('Online connection is being configured. Please contact the administrator.');
     const headers = {'Content-Type':'application/json', apikey:config.key};
     // The legacy Edge gateway checks the public project JWT. The service verifies
@@ -19,7 +19,7 @@ window.FarnoorAPI = (() => {
     const registration = read(registrationKey);
     if (registration) headers['X-Registration-Token'] = registration;
     return fetch(config.url + '/functions/v1/' + config.functionName, {
-      method:'POST', mode:'cors', credentials:'omit', cache:'no-store', headers,
+      method:'POST', keepalive, mode:'cors', credentials:'omit', cache:'no-store', headers,
       body:JSON.stringify({route, method, payload:payload || {}}), signal:AbortSignal.timeout(30000)
     });
   }
@@ -38,7 +38,7 @@ window.FarnoorAPI = (() => {
     const payload = options.body ? JSON.parse(options.body) : {};
     let session = read(storageKey);
     if (session && session.expires_at * 1000 <= Date.now() + 60000) session = await refresh(session);
-    let response = await raw(route,method,payload,session);
+    let response = await raw(route,method,payload,session,!!options.keepalive);
     if (response.status === 401 && session && !route.startsWith('/api/auth/')) {
       session = await refresh(session);
       if (session) response = await raw(route,method,payload,session);
