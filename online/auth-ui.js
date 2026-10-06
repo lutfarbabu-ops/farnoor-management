@@ -18,18 +18,21 @@ el('passwordForm').onsubmit=e=>{e.preventDefault();if(el('newPassword').value!==
 document.querySelectorAll('[data-password]').forEach(button=>button.onclick=()=>{const input=el(button.dataset.password),visible=input.type==='password';input.type=visible?'text':'password';button.textContent=visible?'Hide':'Show';button.setAttribute('aria-pressed',String(visible));});
 FarnoorAPI.request('/api/auth/status',{credentials:'same-origin'}).then(r=>r.json()).then(data=>{el('emailSetupNotice').hidden=data.emailConfigured;if(data.authenticated)FarnoorAPI.go('index.html');}).catch(()=>message('Could not connect to the server. Please try again.'));
 
-// Start each visit with empty fields; use the app's registered-user chooser.
-let usernameTimer,searchVersion=0,chosenIndex=-1,loginEdited=false;
-function hideUsers(){el('usernameSuggestions').hidden=true;el('loginUsername').setAttribute('aria-expanded','false');chosenIndex=-1;}
-function clearLogin(){el('loginForm').reset();el('loginUsername').value='';el('loginPassword').value='';el('loginPassword').type='password';hideUsers();el('usernameSearchStatus').hidden=true;clearTimeout(usernameTimer);searchVersion++;}
-function chooseUser(name){el('loginUsername').value=name;searchVersion++;hideUsers();el('usernameSearchStatus').hidden=true;el('loginPassword').value='';el('loginPassword').focus();}
-el('loginUsername').addEventListener('input',()=>{
- loginEdited=true;clearTimeout(usernameTimer);hideUsers();const prefix=el('loginUsername').value.normalize('NFKC').trim(),version=++searchVersion;el('usernameSearchStatus').hidden=true;
- if(Array.from(prefix).length<2)return;
- usernameTimer=setTimeout(async()=>{try{const data=await request('usernames',{prefix});if(version!==searchVersion)return;const list=el('usernameSuggestions');list.replaceChildren();for(const name of data.usernames){const option=document.createElement('button');option.type='button';option.setAttribute('role','option');option.setAttribute('aria-selected','false');option.textContent=name;option.onclick=()=>chooseUser(name);list.append(option);}list.hidden=!data.usernames.length;el('loginUsername').setAttribute('aria-expanded',String(!!data.usernames.length));el('usernameSearchStatus').textContent=data.usernames.length?'Select your registered username.':'No registered users found.';el('usernameSearchStatus').hidden=false;}catch{if(version===searchVersion){el('usernameSearchStatus').textContent='Could not load registered users. You can still type your username.';el('usernameSearchStatus').hidden=false;}}},250);
+// Complete a registered username inside the field; every visit starts empty.
+let usernameTimer,searchVersion=0,loginEdited=false;
+function clearLogin(){el('loginForm').reset();el('loginUsername').value='';el('loginPassword').value='';el('loginPassword').type='password';clearTimeout(usernameTimer);searchVersion++;}
+el('loginUsername').addEventListener('input',event=>{
+ loginEdited=true;clearTimeout(usernameTimer);const input=el('loginUsername'),prefix=input.value.normalize('NFKC').trim(),version=++searchVersion;
+ if(Array.from(prefix).length<2||event.inputType?.startsWith('delete'))return;
+ usernameTimer=setTimeout(async()=>{try{
+  const data=await request('usernames',{prefix});
+  if(version!==searchVersion||document.activeElement!==input||input.value.normalize('NFKC').trim()!==prefix||input.selectionStart!==input.value.length||input.selectionEnd!==input.value.length)return;
+  const name=data.usernames.find(name=>name.toLowerCase()===prefix.toLowerCase())||data.usernames[0];
+  if(!name||!name.toLowerCase().startsWith(prefix.toLowerCase()))return;
+  input.value=name;input.setSelectionRange(prefix.length,name.length);
+ }catch{/* Leave the entered username usable if search is unavailable. */}},250);
 });
 el('loginPassword').addEventListener('input',()=>{loginEdited=true;});
-el('loginUsername').addEventListener('keydown',event=>{const options=Array.from(el('usernameSuggestions').querySelectorAll('button'));if(event.key==='Escape'){searchVersion++;hideUsers();return;}if(el('usernameSuggestions').hidden||!options.length)return;if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();chosenIndex=(chosenIndex+(event.key==='ArrowDown'?1:-1)+options.length)%options.length;options.forEach((option,i)=>{option.id='username-option-'+i;option.setAttribute('aria-selected',String(i===chosenIndex));});el('loginUsername').setAttribute('aria-activedescendant',options[chosenIndex].id);}else if(event.key==='Enter'&&chosenIndex>=0){event.preventDefault();chooseUser(options[chosenIndex].textContent);}});
-document.addEventListener('click',event=>{if(!event.target.closest('#usernameSuggestions')&&event.target!==el('loginUsername'))hideUsers();});
+el('loginUsername').addEventListener('keydown',event=>{if(event.key==='Escape'){clearTimeout(usernameTimer);searchVersion++;const input=el('loginUsername');if(input.selectionStart<input.selectionEnd)input.value=input.value.slice(0,input.selectionStart);}});
 window.addEventListener('pageshow',()=>{loginEdited=false;clearLogin();for(const delay of [100,500])setTimeout(()=>{if(!loginEdited)clearLogin();},delay);});
 clearLogin();
