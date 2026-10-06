@@ -2,3 +2,36 @@
 .setup-instructions{padding-left:22px;font-size:15px;line-height:1.8}.setup-instructions li{margin-bottom:12px;overflow-wrap:anywhere}.setup-instructions a,.hint a{color:#176c42;font-weight:600}
 
 select{font:inherit;width:100%;padding:13px 14px;color:#183d2d;border:1px solid #b5cfbd;border-radius:5px;background:#fff;min-height:48px}select:focus{outline:3px solid #389d6260;border-color:#2c8551}
+
+/* Login layout based on the supplied reference. */
+:root{color:#123d46;background:#084f41}
+body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:24px;padding:23px 20px;min-height:100svh;background:radial-gradient(ellipse at 85% 82%,#efbb4b 0,transparent 36%),radial-gradient(ellipse at 13% 7%,#3fa789 0,transparent 46%),#084f41;background-attachment:fixed}
+.auth-card{width:min(430px,100%);padding:34px 35px 30px;background:#eff5f2;border:0;border-radius:18px;box-shadow:0 20px 65px #003d2d35;overflow:visible}
+.auth-brand{padding:0;margin-bottom:27px;background:transparent;border:0;gap:18px;align-items:center;flex-wrap:wrap}
+.auth-brand img{width:60px;height:74px;object-fit:contain;flex:none}
+.auth-brand>div{flex:1;min-width:200px}
+.auth-brand h1{font-family:"Segoe UI",Arial,sans-serif;color:#00564e;font-size:26px;font-weight:800;letter-spacing:2px;line-height:1.15;margin:0 0 8px}
+.auth-brand h1 span{display:block;font-size:14px;letter-spacing:.6px;margin-top:3px}
+.auth-brand p{font-size:12px;font-weight:500;line-height:1.5;color:#365957}
+.auth-content{padding:0;max-width:none;margin:0}
+h2{color:#123d46;font-size:24px;margin:0 0 13px}
+label{color:#214d56;font-size:14px;font-weight:500;margin:14px 0 6px}
+input,select{min-height:44px;padding:10px 12px;border-color:#c7d9d6;border-radius:7px;color:#183f47;font-size:15px}
+input::placeholder{color:#7b8b91}
+input:focus,select:focus{outline:3px solid #00845e25;border-color:#078361}
+.primary{min-height:46px;margin-top:22px;padding:11px 18px;border-radius:7px;background:#098462;font-size:16px;color:white}
+.primary:hover{background:#066d51}
+.show-password{top:6px;right:6px;background:#edf4f1;color:#37685c;padding:7px;font-size:12px}
+.registration-link{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:38px;color:#67828a;font-size:13px}
+.registration-link .text-button{display:inline-block;margin:0;padding:4px 0;font-size:13px;color:#008361;text-decoration:underline;text-underline-offset:3px}
+.text-button{color:#06785a}
+body>footer{background:transparent;border:0;padding:0;color:#f0fffb;font-size:12px;line-height:1.7;text-align:center}
+body>footer a{color:inherit;text-decoration:none}
+.steps{gap:7px;font-size:12px;margin:22px 0}
+.steps span{width:26px;height:26px}
+.steps li[aria-current]{color:#078361}
+.steps li[aria-current] span{background:#078361}
+.section-title h2{font-size:22px}
+.section-title .text-button{font-size:12px}
+.hint,.setup-note{font-size:13px}
+@media(max-width:480px){body{padding:20px 14px;gap:20px}.auth-card{padding:28px 24px}.auth-brand{gap:14px;margin-bottom:25px}.auth-brand img{width:51px;height:68px}.auth-brand>div{min-width:160px}.auth-brand h1{font-size:24px}.auth-brand h1 span{font-size:13px}.auth-brand p{font-size:11px}.auth-content{padding:0}.registration-link{margin-top:32px}}
