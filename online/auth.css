@@ -35,3 +35,12 @@ body>footer a{color:inherit;text-decoration:none}
 .section-title .text-button{font-size:12px}
 .hint,.setup-note{font-size:13px}
 @media(max-width:480px){body{padding:20px 14px;gap:20px}.auth-card{padding:28px 24px}.auth-brand{gap:14px;margin-bottom:25px}.auth-brand img{width:51px;height:68px}.auth-brand>div{min-width:160px}.auth-brand h1{font-size:24px}.auth-brand h1 span{font-size:13px}.auth-brand p{font-size:11px}.auth-content{padding:0}.registration-link{margin-top:32px}}
+
+/* Keep the logo at the left and both brand lines unbroken. */
+.auth-card{width:min(640px,100%)}
+.auth-brand{flex-wrap:nowrap}
+.auth-brand>div{min-width:0;container-type:inline-size}
+.auth-brand h1{white-space:nowrap;font-size:clamp(12px,6.4cqi,32px);letter-spacing:.2px}
+.auth-brand p{white-space:nowrap;font-size:clamp(7px,3.2cqi,16px);color:#183d35}
+.auth-content{width:100%;max-width:360px;margin-inline:auto}
+@media(max-width:480px){.auth-brand{gap:12px}.auth-brand img{width:43px;height:60px}.auth-brand>div{min-width:0}.auth-brand h1{font-size:clamp(12px,6.4cqi,32px)}.auth-brand p{font-size:clamp(7px,3.2cqi,16px)}}
