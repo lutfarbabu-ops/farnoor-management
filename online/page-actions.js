@@ -2,6 +2,7 @@
 function pagePermission(action){return !!activePage&&FarnoorAccess.canAction(activePage,action);}
 function requiredButtonAction(button){
  if(button.dataset.pageAction)return button.dataset.pageAction;
+ if(button.dataset.pageActionRequired)return button.dataset.pageActionRequired;
  const action=button.dataset.accountAction||button.dataset.orderAction||button.dataset.productionAction;
  if(action==='print')return 'print';
  if(action==='pdf')return 'pdf';
@@ -30,8 +31,8 @@ function exportPagePDF(){
   const page=pageInfo(activePage).page,lines=[];
   const visible=element=>element.getClientRects().length>0;
   const value=cell=>{const inputs=[...cell.querySelectorAll('input:not([type=checkbox]),select,textarea')];return inputs.length?inputs.map(input=>input.value).join(' '):cell.textContent.trim().replace(/\s+/g,' ');};
-  $('#main').querySelectorAll('.file-caption,.production-report-meta,.production-entry-meta').forEach(el=>{if(visible(el))lines.push(el.textContent.trim());});
-  $('#main').querySelectorAll('table').forEach(table=>{if(!visible(table))return;table.querySelectorAll('tr').forEach(row=>{if(!visible(row))return;const cells=[...row.querySelectorAll('th,td')].filter(cell=>!cell.classList.contains('no-print')&&!cell.querySelector('.row-actions'));lines.push(cells.map(value).join('  |  '));});lines.push('');});
+  $('#main').querySelectorAll('.file-caption,.production-report-meta,.production-entry-meta,.payroll-report-meta').forEach(el=>{if(visible(el))lines.push(el.textContent.trim());});
+  $('#main').querySelectorAll(activePage==='payroll'?($('#main').querySelector('.payroll-result')?'.payroll-result table':'.payroll-form-table'):'table').forEach(table=>{if(!visible(table))return;table.querySelectorAll('tr').forEach(row=>{if(!visible(row))return;const cells=[...row.querySelectorAll('th,td')].filter(cell=>!cell.classList.contains('no-print')&&!cell.querySelector('.row-actions'));lines.push(cells.map(value).join('  |  '));});lines.push('');});
   if(!lines.length)lines.push('No displayed records.');
   const canvas=document.createElement('canvas');canvas.width=1240;canvas.height=1754;const ctx=canvas.getContext('2d'),images=[];let y=0;
   function sheet(){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#174c3b';ctx.font='bold 30px "Segoe UI", "Nirmala UI", sans-serif';ctx.fillText('FARNOOR GARMENTS LTD.',65,70);ctx.font='18px "Segoe UI", "Nirmala UI", sans-serif';ctx.fillText('1028/1/2 MALIBAGH BAZAR ROAD, DHAKA-1217',65,102);ctx.font='bold 24px "Segoe UI", "Nirmala UI", sans-serif';ctx.fillText(page.name,65,145);ctx.font='18px "Segoe UI", "Nirmala UI", sans-serif';ctx.fillText(new Date().toLocaleDateString('en-GB'),65,177);ctx.fillStyle='#17271f';ctx.font='20px "Segoe UI", "Nirmala UI", sans-serif';y=220;}
