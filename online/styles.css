@@ -69,3 +69,12 @@
 #navigation .page-button:focus-visible{outline:3px solid #287fac;outline-offset:3px}
 @media(max-width:700px){#navigation .page-button{font-size:11px;padding-inline:6px;gap:5px}#navigation .nested-pages{padding-left:7px}}
 
+/* Compact department buttons: less space on all four sides. */
+@media(min-width:701px){.layout{grid-template-columns:245px minmax(0,1fr)}aside{padding:20px 12px}}
+#navigation .department{margin-bottom:6px}
+#navigation .department-button{width:calc(100% - 8px);margin-inline:4px;min-height:35px;padding:5px 7px;gap:6px}
+#navigation .department-button .icon{flex-basis:23px;width:23px;height:23px;font-size:17px}
+#navigation .department-button>span:nth-child(2){font-size:12px;line-height:1.25;overflow-wrap:anywhere}
+#navigation .department-button .chevron{flex:0 0 17px;width:17px;height:17px;font-size:14px}
+@media(max-width:700px){#navigation{gap:6px}#navigation .department{margin-bottom:0}#navigation .department-button{min-height:35px;padding:5px 6px;gap:5px}}
+
