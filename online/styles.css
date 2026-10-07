@@ -88,3 +88,5 @@
 
 /* Narrow department buttons equally on both sides. */
 #navigation .department-button{width:84%;margin-left:auto;margin-right:auto}@media(max-width:700px){#navigation .department-button{width:90%}}
+
+.order-document .file-controls{justify-content:flex-end}.order-document .order-table{border-collapse:collapse}.order-document .order-table th,.order-document .order-table td{border:1px solid #476957}.order-search-results .order-table th,.order-search-results .order-table td{border:1px solid #476957}@media print{.order-document .order-table th,.order-document .order-table td{border-width:.35pt}.order-document .signatures span{font-size:11px}}
