@@ -1631,12 +1631,95 @@ window.DEPARTMENTS = [
     "pages": [
       {
         "id": "schedule-line-1",
-        "name": "Line-1",
+        "name": "Schedule",
         "section": "Line-1",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Line-1"
+          "Schedule"
+        ],
+        "groupEntry": true,
+        "icon": "▦",
+        "shade": "#e3edfc"
+      },
+      {
+        "id": "schedule-line-2",
+        "name": "Schedule",
+        "section": "Line-2",
+        "navPath": [
+          "Sewing",
+          "Schedule"
+        ],
+        "groupEntry": true,
+        "icon": "▦",
+        "shade": "#e3edfc"
+      },
+      {
+        "id": "schedule-line-3",
+        "name": "Schedule",
+        "section": "Line-3",
+        "navPath": [
+          "Sewing",
+          "Schedule"
+        ],
+        "groupEntry": true,
+        "icon": "▦",
+        "shade": "#e3edfc"
+      },
+      {
+        "id": "schedule-line-4",
+        "name": "Schedule",
+        "section": "Line-4",
+        "navPath": [
+          "Sewing",
+          "Schedule"
+        ],
+        "groupEntry": true,
+        "icon": "▦",
+        "shade": "#e3edfc"
+      },
+      {
+        "id": "schedule-line-5",
+        "name": "Schedule",
+        "section": "Unit-2 Line-1",
+        "navPath": [
+          "Sewing",
+          "Schedule"
+        ],
+        "groupEntry": true,
+        "icon": "▦",
+        "shade": "#e3edfc"
+      },
+      {
+        "id": "schedule-line-6",
+        "name": "Schedule",
+        "section": "Unit-2 Line-2",
+        "navPath": [
+          "Sewing",
+          "Schedule"
+        ],
+        "groupEntry": true,
+        "icon": "▦",
+        "shade": "#e3edfc"
+      },
+      {
+        "id": "schedule-line-7",
+        "name": "Schedule",
+        "section": "Unit-2 Line-3",
+        "navPath": [
+          "Sewing",
+          "Schedule"
+        ],
+        "groupEntry": true,
+        "icon": "▦",
+        "shade": "#e3edfc"
+      },
+      {
+        "id": "schedule-line-8",
+        "name": "Schedule",
+        "section": "Unit-2 Line-4",
+        "navPath": [
+          "Sewing",
+          "Schedule"
         ],
         "groupEntry": true,
         "icon": "▦",
@@ -1647,212 +1730,115 @@ window.DEPARTMENTS = [
         "name": "Schedule Report",
         "section": "Line-1",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Line-1"
+          "Schedule Report"
         ],
         "icon": "▤",
-        "shade": "#fff0d4"
-      },
-      {
-        "id": "schedule-line-2",
-        "name": "Line-2",
-        "section": "Line-2",
-        "navPath": [
-          "Schedule",
-          "Sewing",
-          "Line-2"
-        ],
-        "groupEntry": true,
-        "icon": "▦",
-        "shade": "#e3edfc"
+        "shade": "#fff0d4",
+        "groupEntry": true
       },
       {
         "id": "schedule-report-2",
         "name": "Schedule Report",
         "section": "Line-2",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Line-2"
+          "Schedule Report"
         ],
         "icon": "▤",
-        "shade": "#fff0d4"
-      },
-      {
-        "id": "schedule-line-3",
-        "name": "Line-3",
-        "section": "Line-3",
-        "navPath": [
-          "Schedule",
-          "Sewing",
-          "Line-3"
-        ],
-        "groupEntry": true,
-        "icon": "▦",
-        "shade": "#e3edfc"
+        "shade": "#fff0d4",
+        "groupEntry": true
       },
       {
         "id": "schedule-report-3",
         "name": "Schedule Report",
         "section": "Line-3",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Line-3"
+          "Schedule Report"
         ],
         "icon": "▤",
-        "shade": "#fff0d4"
-      },
-      {
-        "id": "schedule-line-4",
-        "name": "Line-4",
-        "section": "Line-4",
-        "navPath": [
-          "Schedule",
-          "Sewing",
-          "Line-4"
-        ],
-        "groupEntry": true,
-        "icon": "▦",
-        "shade": "#e3edfc"
+        "shade": "#fff0d4",
+        "groupEntry": true
       },
       {
         "id": "schedule-report-4",
         "name": "Schedule Report",
         "section": "Line-4",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Line-4"
+          "Schedule Report"
         ],
         "icon": "▤",
-        "shade": "#fff0d4"
-      },
-      {
-        "id": "schedule-line-5",
-        "name": "Unit-2 Line-1",
-        "section": "Unit-2 Line-1",
-        "navPath": [
-          "Schedule",
-          "Sewing",
-          "Unit-2 Line-1"
-        ],
-        "groupEntry": true,
-        "icon": "▦",
-        "shade": "#e3edfc"
+        "shade": "#fff0d4",
+        "groupEntry": true
       },
       {
         "id": "schedule-report-5",
         "name": "Schedule Report",
         "section": "Unit-2 Line-1",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Unit-2 Line-1"
+          "Schedule Report"
         ],
         "icon": "▤",
-        "shade": "#fff0d4"
-      },
-      {
-        "id": "schedule-line-6",
-        "name": "Unit-2 Line-2",
-        "section": "Unit-2 Line-2",
-        "navPath": [
-          "Schedule",
-          "Sewing",
-          "Unit-2 Line-2"
-        ],
-        "groupEntry": true,
-        "icon": "▦",
-        "shade": "#e3edfc"
+        "shade": "#fff0d4",
+        "groupEntry": true
       },
       {
         "id": "schedule-report-6",
         "name": "Schedule Report",
         "section": "Unit-2 Line-2",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Unit-2 Line-2"
+          "Schedule Report"
         ],
         "icon": "▤",
-        "shade": "#fff0d4"
-      },
-      {
-        "id": "schedule-line-7",
-        "name": "Unit-2 Line-3",
-        "section": "Unit-2 Line-3",
-        "navPath": [
-          "Schedule",
-          "Sewing",
-          "Unit-2 Line-3"
-        ],
-        "groupEntry": true,
-        "icon": "▦",
-        "shade": "#e3edfc"
+        "shade": "#fff0d4",
+        "groupEntry": true
       },
       {
         "id": "schedule-report-7",
         "name": "Schedule Report",
         "section": "Unit-2 Line-3",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Unit-2 Line-3"
+          "Schedule Report"
         ],
         "icon": "▤",
-        "shade": "#fff0d4"
-      },
-      {
-        "id": "schedule-line-8",
-        "name": "Unit-2 Line-4",
-        "section": "Unit-2 Line-4",
-        "navPath": [
-          "Schedule",
-          "Sewing",
-          "Unit-2 Line-4"
-        ],
-        "groupEntry": true,
-        "icon": "▦",
-        "shade": "#e3edfc"
+        "shade": "#fff0d4",
+        "groupEntry": true
       },
       {
         "id": "schedule-report-8",
         "name": "Schedule Report",
         "section": "Unit-2 Line-4",
         "navPath": [
-          "Schedule",
           "Sewing",
-          "Unit-2 Line-4"
+          "Schedule Report"
         ],
         "icon": "▤",
-        "shade": "#fff0d4"
+        "shade": "#fff0d4",
+        "groupEntry": true
       },
       {
         "id": "schedule-cutting",
         "name": "Cutting",
-        "navPath": [
-          "Schedule"
-        ],
+        "navPath": [],
         "icon": "✂",
         "shade": "#fce4dd"
       },
       {
         "id": "schedule-finishing",
         "name": "Finishing",
-        "navPath": [
-          "Schedule"
-        ],
+        "navPath": [],
         "icon": "✧",
         "shade": "#eee4fa"
       },
       {
         "id": "schedule-quality",
         "name": "Quality",
-        "navPath": [
-          "Schedule"
-        ],
+        "navPath": [],
         "icon": "◎",
         "shade": "#e1effb"
       },
@@ -1860,13 +1846,19 @@ window.DEPARTMENTS = [
         "id": "planning",
         "name": "Production planning",
         "icon": "▦",
-        "shade": "#f5e5ef"
+        "shade": "#f5e5ef",
+        "navPath": [
+          "Production Records"
+        ]
       },
       {
         "id": "output",
         "name": "Daily output",
         "icon": "▥",
-        "shade": "#f9eecf"
+        "shade": "#f9eecf",
+        "navPath": [
+          "Production Records"
+        ]
       }
     ]
   },
@@ -2020,5 +2012,5 @@ window.DEPARTMENTS = [
   }
 ];
 window.FARNOOR_DEPARTMENT_GROUPS = [{"name":"Admin","departments":["Admin","AdminA","AdminB"]},{"name":"HR","departments":["HR","HRA","HRB"]},{"name":"Account","departments":["Account","AccountA","AccountB"]},{"name":"Commercial","departments":["Commercial","CommercialA","CommercialB","CommercialC"]},{"name":"Merchandising","departments":["Merchandising","MerchandisingA","MerchandisingB","MerchandisingC"]},{"name":"Knitting and Dyeing","departments":["Knitting and Dyeing"]},{"name":"Store","departments":["Store","StoreA","StoreB","StoreC"]},{"name":"Production","departments":["Production"]},{"name":"Cutting","departments":["Cutting","CuttingA","CuttingB"]},{"name":"Finishing","departments":["Finishing","FinishingA","FinishingB"]},{"name":"Packing","departments":["Packing","PackingA","PackingB"]},{"name":"Quality","departments":["Quality","QualityA","QualityB","QualityC","QualityD","QualityE"]},{"name":"Sample","departments":["Sample","SampleA","SampleB","SampleC"]},{"name":"Maintenance","departments":["Maintenance","MaintenanceA","MaintenanceB","MaintenanceC","MaintenanceD"]},{"name":"Electrical","departments":["Electrical","ElectricalA","ElectricalB"]},{"name":"Sewing","departments":["Sewing","SewingA"]},{"name":"Line-1","departments":["Line-1","Line-1A","Line-1B"]},{"name":"Line-2","departments":["Line-2","Line-2A","Line-2B"]},{"name":"Line-3","departments":["Line-3","Line-3A","Line-3B"]},{"name":"Line-4","departments":["Line-4","Line-4A","Line-4B"]},{"name":"Unit-2 Line-1","departments":["Unit-2 Line-1","Unit-2 Line-1A","Unit-2 Line-1B"]},{"name":"Unit-2 Line-2","departments":["Unit-2 Line-2","Unit-2 Line-2A","Unit-2 Line-2B"]},{"name":"Unit-2 Line-3","departments":["Unit-2 Line-3","Unit-2 Line-3A","Unit-2 Line-3B"]},{"name":"Unit-2 Line-4","departments":["Unit-2 Line-4","Unit-2 Line-4A","Unit-2 Line-4B"]}];
-window.FARNOOR_PAGE_CATALOG = [{"id":"admin-notices","name":"Notices","module":"Admin","moduleId":"admin","parent":"","hidden":false,"resources":["record:admin-notices"]},{"id":"admin-documents","name":"Documents","module":"Admin","moduleId":"admin","parent":"","hidden":false,"resources":["record:admin-documents"]},{"id":"hr-home","name":"Home","module":"HR","moduleId":"hr","parent":"Admin","hidden":false,"resources":["record:hr-home"]},{"id":"hr-menu-setup","name":"Menu Setup","module":"HR","moduleId":"hr","parent":"Admin","hidden":false,"resources":["record:hr-menu-setup"]},{"id":"hr-form-builder","name":"Form Builder","module":"HR","moduleId":"hr","parent":"Admin","hidden":false,"resources":["record:hr-form-builder"]},{"id":"hr-user-login","name":"User Login","module":"HR","moduleId":"hr","parent":"Admin","hidden":false,"resources":["record:hr-user-login"]},{"id":"hr-letter-archive","name":"Letter Archive","module":"HR","moduleId":"hr","parent":"Utilities","hidden":false,"resources":["record:hr-letter-archive"]},{"id":"hr-company-info","name":"Company Info","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-company-info"]},{"id":"hr-branch-setup","name":"Branch Setup","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-branch-setup"]},{"id":"hr-emp-group-list","name":"Emp Group List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-emp-group-list"]},{"id":"hr-department-list","name":"Department List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-department-list"]},{"id":"hr-section-list","name":"Section List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-section-list"]},{"id":"hr-section-group","name":"Section Group","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-section-group"]},{"id":"hr-designation-list","name":"Designation List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-designation-list"]},{"id":"hr-emp-type-list","name":"Emp Type List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-emp-type-list"]},{"id":"hr-work-group-list","name":"Work Group List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-work-group-list"]},{"id":"hr-work-shift-policy","name":"Work Shift Policy","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-work-shift-policy"]},{"id":"hr-attendance-policy","name":"Attendance Policy","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-attendance-policy"]},{"id":"hr-leave-policy","name":"Leave Policy","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-leave-policy"]},{"id":"hr-payroll-policy","name":"Payroll Policy","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-payroll-policy"]},{"id":"hr-profile-search","name":"Profile Search","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-profile-search"]},{"id":"employees","name":"Emp Profile","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:employees"]},{"id":"hr-emp-profile-create","name":"Emp Profile Create","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-emp-profile-create"]},{"id":"hr-card-print","name":"Card Print","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-card-print"]},{"id":"hr-card-print-profile","name":"Card Print Profile","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-card-print-profile"]},{"id":"hr-job-circular","name":"Job Circular","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-job-circular"]},{"id":"hr-interview-info","name":"Interview Info","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-interview-info"]},{"id":"hr-confirmation-letter","name":"Confirmation Letter","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-confirmation-letter"]},{"id":"hr-resignation-info","name":"Resignation Info","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-resignation-info"]},{"id":"hr-promotion-letter","name":"Promotion Letter","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-promotion-letter"]},{"id":"attendance","name":"Attendance Status","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:attendance"]},{"id":"hr-leave-report-emp","name":"Leave Report Emp","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-leave-report-emp"]},{"id":"hr-leave-reports","name":"Leave Reports","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-leave-reports"]},{"id":"hr-manual-punch","name":"Manual Punch","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-manual-punch"]},{"id":"hr-leave-entry","name":"Leave Entry","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-leave-entry"]},{"id":"hr-outdoor-slip","name":"Outdoor Slip","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-outdoor-slip"]},{"id":"hr-profile-leave","name":"Profile Leave","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-profile-leave"]},{"id":"hr-holiday-schedule","name":"Holiday Schedule","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-holiday-schedule"]},{"id":"hr-duty-roster","name":"Duty Roster","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-duty-roster"]},{"id":"payroll","name":"Payroll","module":"HR","moduleId":"hr","parent":"","hidden":false,"resources":["record:payroll"]},{"id":"increment","name":"Increment","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:increment"]},{"id":"maternity-benefits","name":"Maternity Benefits","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:maternity-benefits"]},{"id":"service-benefits","name":"Service Benefits","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:service-benefits"]},{"id":"credit-entry","name":"CREDIT ENTRY","module":"Account","moduleId":"accounts","parent":"CREDIT","hidden":false,"resources":["record:credit-entry","ledger:credit"]},{"id":"cash-report","name":"CASH REPORT","module":"Account","moduleId":"accounts","parent":"CREDIT","hidden":false,"resources":["record:cash-report","ledger:credit"]},{"id":"debit-entry","name":"DEBIT ENTRY","module":"Account","moduleId":"accounts","parent":"DEBIT","hidden":false,"resources":["record:debit-entry","ledger:debit"]},{"id":"debit-report","name":"DEBIT REPORT","module":"Account","moduleId":"accounts","parent":"DEBIT","hidden":false,"resources":["record:debit-report","ledger:debit"]},{"id":"balance-report","name":"BALANCE REPORT","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:balance-report","ledger:credit","ledger:debit"]},{"id":"tax","name":"TAX","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:tax"]},{"id":"vat","name":"VAT","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:vat"]},{"id":"budget","name":"BUDGET","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:budget"]},{"id":"payments","name":"Payment register","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:payments"]},{"id":"expenses","name":"Expense register","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:expenses"]},{"id":"exports","name":"Export register","module":"Commercial","moduleId":"commercial","parent":"","hidden":false,"resources":["record:exports"]},{"id":"imports","name":"Import register","module":"Commercial","moduleId":"commercial","parent":"","hidden":false,"resources":["record:imports"]},{"id":"order-entry","name":"ORDER ENTRY","module":"Merchandising","moduleId":"merch","parent":"NEW ORDER","hidden":false,"resources":["record:order-entry","orders"]},{"id":"order-report","name":"ORDER REPORT","module":"Merchandising","moduleId":"merch","parent":"NEW ORDER","hidden":false,"resources":["record:order-report","orders"]},{"id":"booking","name":"BOOKING","module":"Merchandising","moduleId":"merch","parent":"","hidden":false,"resources":["record:booking"]},{"id":"merch-sample","name":"Sample","module":"Merchandising","moduleId":"merch","parent":"","hidden":false,"resources":["record:merch-sample"]},{"id":"orders","name":"Buyer orders (legacy)","module":"Merchandising","moduleId":"merch","parent":"","hidden":true,"resources":["record:orders","orders"]},{"id":"styles","name":"Style register","module":"Merchandising","moduleId":"merch","parent":"","hidden":true,"resources":["record:styles"]},{"id":"knitting-jobs","name":"Knitting jobs","module":"Knitting and Dyeing","moduleId":"knitting","parent":"","hidden":false,"resources":["record:knitting-jobs"]},{"id":"dyeing-batches","name":"Dyeing batches","module":"Knitting and Dyeing","moduleId":"knitting","parent":"","hidden":false,"resources":["record:dyeing-batches"]},{"id":"stock","name":"Fabric & trims","module":"Store","moduleId":"inventory","parent":"","hidden":false,"resources":["record:stock"]},{"id":"movement","name":"Stock movement","module":"Store","moduleId":"inventory","parent":"","hidden":false,"resources":["record:movement"]},{"id":"schedule-line-1","name":"Line-1","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Line-1","hidden":false,"resources":["record:schedule-line-1","schedule:Line-1"]},{"id":"schedule-report-1","name":"Schedule Report","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Line-1","hidden":false,"resources":["record:schedule-report-1","schedule:Line-1"]},{"id":"schedule-line-2","name":"Line-2","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Line-2","hidden":false,"resources":["record:schedule-line-2","schedule:Line-2"]},{"id":"schedule-report-2","name":"Schedule Report","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Line-2","hidden":false,"resources":["record:schedule-report-2","schedule:Line-2"]},{"id":"schedule-line-3","name":"Line-3","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Line-3","hidden":false,"resources":["record:schedule-line-3","schedule:Line-3"]},{"id":"schedule-report-3","name":"Schedule Report","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Line-3","hidden":false,"resources":["record:schedule-report-3","schedule:Line-3"]},{"id":"schedule-line-4","name":"Line-4","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Line-4","hidden":false,"resources":["record:schedule-line-4","schedule:Line-4"]},{"id":"schedule-report-4","name":"Schedule Report","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Line-4","hidden":false,"resources":["record:schedule-report-4","schedule:Line-4"]},{"id":"schedule-line-5","name":"Unit-2 Line-1","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Unit-2 Line-1","hidden":false,"resources":["record:schedule-line-5","schedule:Unit-2 Line-1"]},{"id":"schedule-report-5","name":"Schedule Report","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Unit-2 Line-1","hidden":false,"resources":["record:schedule-report-5","schedule:Unit-2 Line-1"]},{"id":"schedule-line-6","name":"Unit-2 Line-2","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Unit-2 Line-2","hidden":false,"resources":["record:schedule-line-6","schedule:Unit-2 Line-2"]},{"id":"schedule-report-6","name":"Schedule Report","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Unit-2 Line-2","hidden":false,"resources":["record:schedule-report-6","schedule:Unit-2 Line-2"]},{"id":"schedule-line-7","name":"Unit-2 Line-3","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Unit-2 Line-3","hidden":false,"resources":["record:schedule-line-7","schedule:Unit-2 Line-3"]},{"id":"schedule-report-7","name":"Schedule Report","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Unit-2 Line-3","hidden":false,"resources":["record:schedule-report-7","schedule:Unit-2 Line-3"]},{"id":"schedule-line-8","name":"Unit-2 Line-4","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Unit-2 Line-4","hidden":false,"resources":["record:schedule-line-8","schedule:Unit-2 Line-4"]},{"id":"schedule-report-8","name":"Schedule Report","module":"Production","moduleId":"production","parent":"Schedule / Sewing / Unit-2 Line-4","hidden":false,"resources":["record:schedule-report-8","schedule:Unit-2 Line-4"]},{"id":"schedule-cutting","name":"Cutting","module":"Production","moduleId":"production","parent":"Schedule","hidden":false,"resources":["record:schedule-cutting"]},{"id":"schedule-finishing","name":"Finishing","module":"Production","moduleId":"production","parent":"Schedule","hidden":false,"resources":["record:schedule-finishing"]},{"id":"schedule-quality","name":"Quality","module":"Production","moduleId":"production","parent":"Schedule","hidden":false,"resources":["record:schedule-quality"]},{"id":"planning","name":"Production planning","module":"Production","moduleId":"production","parent":"","hidden":false,"resources":["record:planning"]},{"id":"output","name":"Daily output","module":"Production","moduleId":"production","parent":"","hidden":false,"resources":["record:output"]},{"id":"cutting-plan","name":"Cutting plan","module":"Cutting","moduleId":"cutting","parent":"","hidden":false,"resources":["record:cutting-plan"]},{"id":"cutting-output","name":"Cutting output","module":"Cutting","moduleId":"cutting","parent":"","hidden":false,"resources":["record:cutting-output"]},{"id":"finishing-output","name":"Finishing output","module":"Finishing","moduleId":"finishing","parent":"","hidden":false,"resources":["record:finishing-output"]},{"id":"packing","name":"Packing register","module":"Packing","moduleId":"packing","parent":"","hidden":false,"resources":["record:packing"]},{"id":"inspection","name":"Inspection log","module":"Quality","moduleId":"quality","parent":"","hidden":false,"resources":["record:inspection"]},{"id":"issues","name":"Issue tracker","module":"Quality","moduleId":"quality","parent":"","hidden":false,"resources":["record:issues"]},{"id":"samples","name":"Sample tracker","module":"Sample","moduleId":"sample","parent":"","hidden":false,"resources":["record:samples"]},{"id":"sample-approvals","name":"Sample approvals","module":"Sample","moduleId":"sample","parent":"","hidden":false,"resources":["record:sample-approvals"]},{"id":"maintenance-jobs","name":"Maintenance jobs","module":"Maintenance","moduleId":"maintenance","parent":"","hidden":false,"resources":["record:maintenance-jobs"]},{"id":"machines","name":"Machine register","module":"Maintenance","moduleId":"maintenance","parent":"","hidden":false,"resources":["record:machines"]},{"id":"electrical-jobs","name":"Electrical jobs","module":"Electrical","moduleId":"electrical","parent":"","hidden":false,"resources":["record:electrical-jobs"]},{"id":"power-log","name":"Power log","module":"Electrical","moduleId":"electrical","parent":"","hidden":false,"resources":["record:power-log"]},{"id":"sewing-plan","name":"Sewing Plan","module":"Sewing","moduleId":"sewing","parent":"","hidden":false,"resources":["record:sewing-plan"]},{"id":"sewing-output","name":"Sewing Output","module":"Sewing","moduleId":"sewing","parent":"","hidden":false,"resources":["record:sewing-output"]}];
+window.FARNOOR_PAGE_CATALOG = [{"id":"admin-notices","name":"Notices","module":"Admin","moduleId":"admin","parent":"","hidden":false,"resources":["record:admin-notices"]},{"id":"admin-documents","name":"Documents","module":"Admin","moduleId":"admin","parent":"","hidden":false,"resources":["record:admin-documents"]},{"id":"hr-home","name":"Home","module":"HR","moduleId":"hr","parent":"Admin","hidden":false,"resources":["record:hr-home"]},{"id":"hr-menu-setup","name":"Menu Setup","module":"HR","moduleId":"hr","parent":"Admin","hidden":false,"resources":["record:hr-menu-setup"]},{"id":"hr-form-builder","name":"Form Builder","module":"HR","moduleId":"hr","parent":"Admin","hidden":false,"resources":["record:hr-form-builder"]},{"id":"hr-user-login","name":"User Login","module":"HR","moduleId":"hr","parent":"Admin","hidden":false,"resources":["record:hr-user-login"]},{"id":"hr-letter-archive","name":"Letter Archive","module":"HR","moduleId":"hr","parent":"Utilities","hidden":false,"resources":["record:hr-letter-archive"]},{"id":"hr-company-info","name":"Company Info","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-company-info"]},{"id":"hr-branch-setup","name":"Branch Setup","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-branch-setup"]},{"id":"hr-emp-group-list","name":"Emp Group List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-emp-group-list"]},{"id":"hr-department-list","name":"Department List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-department-list"]},{"id":"hr-section-list","name":"Section List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-section-list"]},{"id":"hr-section-group","name":"Section Group","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-section-group"]},{"id":"hr-designation-list","name":"Designation List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-designation-list"]},{"id":"hr-emp-type-list","name":"Emp Type List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-emp-type-list"]},{"id":"hr-work-group-list","name":"Work Group List","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-work-group-list"]},{"id":"hr-work-shift-policy","name":"Work Shift Policy","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-work-shift-policy"]},{"id":"hr-attendance-policy","name":"Attendance Policy","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-attendance-policy"]},{"id":"hr-leave-policy","name":"Leave Policy","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-leave-policy"]},{"id":"hr-payroll-policy","name":"Payroll Policy","module":"HR","moduleId":"hr","parent":"Management","hidden":false,"resources":["record:hr-payroll-policy"]},{"id":"hr-profile-search","name":"Profile Search","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-profile-search"]},{"id":"employees","name":"Emp Profile","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:employees"]},{"id":"hr-emp-profile-create","name":"Emp Profile Create","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-emp-profile-create"]},{"id":"hr-card-print","name":"Card Print","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-card-print"]},{"id":"hr-card-print-profile","name":"Card Print Profile","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-card-print-profile"]},{"id":"hr-job-circular","name":"Job Circular","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-job-circular"]},{"id":"hr-interview-info","name":"Interview Info","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-interview-info"]},{"id":"hr-confirmation-letter","name":"Confirmation Letter","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-confirmation-letter"]},{"id":"hr-resignation-info","name":"Resignation Info","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-resignation-info"]},{"id":"hr-promotion-letter","name":"Promotion Letter","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:hr-promotion-letter"]},{"id":"attendance","name":"Attendance Status","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:attendance"]},{"id":"hr-leave-report-emp","name":"Leave Report Emp","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-leave-report-emp"]},{"id":"hr-leave-reports","name":"Leave Reports","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-leave-reports"]},{"id":"hr-manual-punch","name":"Manual Punch","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-manual-punch"]},{"id":"hr-leave-entry","name":"Leave Entry","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-leave-entry"]},{"id":"hr-outdoor-slip","name":"Outdoor Slip","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-outdoor-slip"]},{"id":"hr-profile-leave","name":"Profile Leave","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-profile-leave"]},{"id":"hr-holiday-schedule","name":"Holiday Schedule","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-holiday-schedule"]},{"id":"hr-duty-roster","name":"Duty Roster","module":"HR","moduleId":"hr","parent":"Attendance","hidden":false,"resources":["record:hr-duty-roster"]},{"id":"payroll","name":"Payroll","module":"HR","moduleId":"hr","parent":"","hidden":false,"resources":["record:payroll"]},{"id":"increment","name":"Increment","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:increment"]},{"id":"maternity-benefits","name":"Maternity Benefits","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:maternity-benefits"]},{"id":"service-benefits","name":"Service Benefits","module":"HR","moduleId":"hr","parent":"HR Info","hidden":false,"resources":["record:service-benefits"]},{"id":"credit-entry","name":"CREDIT ENTRY","module":"Account","moduleId":"accounts","parent":"CREDIT","hidden":false,"resources":["record:credit-entry","ledger:credit"]},{"id":"cash-report","name":"CASH REPORT","module":"Account","moduleId":"accounts","parent":"CREDIT","hidden":false,"resources":["record:cash-report","ledger:credit"]},{"id":"debit-entry","name":"DEBIT ENTRY","module":"Account","moduleId":"accounts","parent":"DEBIT","hidden":false,"resources":["record:debit-entry","ledger:debit"]},{"id":"debit-report","name":"DEBIT REPORT","module":"Account","moduleId":"accounts","parent":"DEBIT","hidden":false,"resources":["record:debit-report","ledger:debit"]},{"id":"balance-report","name":"BALANCE REPORT","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:balance-report","ledger:credit","ledger:debit"]},{"id":"tax","name":"TAX","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:tax"]},{"id":"vat","name":"VAT","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:vat"]},{"id":"budget","name":"BUDGET","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:budget"]},{"id":"payments","name":"Payment register","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:payments"]},{"id":"expenses","name":"Expense register","module":"Account","moduleId":"accounts","parent":"","hidden":false,"resources":["record:expenses"]},{"id":"exports","name":"Export register","module":"Commercial","moduleId":"commercial","parent":"","hidden":false,"resources":["record:exports"]},{"id":"imports","name":"Import register","module":"Commercial","moduleId":"commercial","parent":"","hidden":false,"resources":["record:imports"]},{"id":"order-entry","name":"ORDER ENTRY","module":"Merchandising","moduleId":"merch","parent":"NEW ORDER","hidden":false,"resources":["record:order-entry","orders"]},{"id":"order-report","name":"ORDER REPORT","module":"Merchandising","moduleId":"merch","parent":"NEW ORDER","hidden":false,"resources":["record:order-report","orders"]},{"id":"booking","name":"BOOKING","module":"Merchandising","moduleId":"merch","parent":"","hidden":false,"resources":["record:booking"]},{"id":"merch-sample","name":"Sample","module":"Merchandising","moduleId":"merch","parent":"","hidden":false,"resources":["record:merch-sample"]},{"id":"orders","name":"Buyer orders (legacy)","module":"Merchandising","moduleId":"merch","parent":"","hidden":true,"resources":["record:orders","orders"]},{"id":"styles","name":"Style register","module":"Merchandising","moduleId":"merch","parent":"","hidden":true,"resources":["record:styles"]},{"id":"knitting-jobs","name":"Knitting jobs","module":"Knitting and Dyeing","moduleId":"knitting","parent":"","hidden":false,"resources":["record:knitting-jobs"]},{"id":"dyeing-batches","name":"Dyeing batches","module":"Knitting and Dyeing","moduleId":"knitting","parent":"","hidden":false,"resources":["record:dyeing-batches"]},{"id":"stock","name":"Fabric & trims","module":"Store","moduleId":"inventory","parent":"","hidden":false,"resources":["record:stock"]},{"id":"movement","name":"Stock movement","module":"Store","moduleId":"inventory","parent":"","hidden":false,"resources":["record:movement"]},{"id":"schedule-line-1","name":"Schedule · Line-1","module":"Production","moduleId":"production","parent":"Sewing / Schedule","hidden":false,"resources":["record:schedule-line-1","schedule:Line-1"]},{"id":"schedule-line-2","name":"Schedule · Line-2","module":"Production","moduleId":"production","parent":"Sewing / Schedule","hidden":false,"resources":["record:schedule-line-2","schedule:Line-2"]},{"id":"schedule-line-3","name":"Schedule · Line-3","module":"Production","moduleId":"production","parent":"Sewing / Schedule","hidden":false,"resources":["record:schedule-line-3","schedule:Line-3"]},{"id":"schedule-line-4","name":"Schedule · Line-4","module":"Production","moduleId":"production","parent":"Sewing / Schedule","hidden":false,"resources":["record:schedule-line-4","schedule:Line-4"]},{"id":"schedule-line-5","name":"Schedule · Unit-2 Line-1","module":"Production","moduleId":"production","parent":"Sewing / Schedule","hidden":false,"resources":["record:schedule-line-5","schedule:Unit-2 Line-1"]},{"id":"schedule-line-6","name":"Schedule · Unit-2 Line-2","module":"Production","moduleId":"production","parent":"Sewing / Schedule","hidden":false,"resources":["record:schedule-line-6","schedule:Unit-2 Line-2"]},{"id":"schedule-line-7","name":"Schedule · Unit-2 Line-3","module":"Production","moduleId":"production","parent":"Sewing / Schedule","hidden":false,"resources":["record:schedule-line-7","schedule:Unit-2 Line-3"]},{"id":"schedule-line-8","name":"Schedule · Unit-2 Line-4","module":"Production","moduleId":"production","parent":"Sewing / Schedule","hidden":false,"resources":["record:schedule-line-8","schedule:Unit-2 Line-4"]},{"id":"schedule-report-1","name":"Schedule Report · Line-1","module":"Production","moduleId":"production","parent":"Sewing / Schedule Report","hidden":false,"resources":["record:schedule-report-1","schedule:Line-1"]},{"id":"schedule-report-2","name":"Schedule Report · Line-2","module":"Production","moduleId":"production","parent":"Sewing / Schedule Report","hidden":false,"resources":["record:schedule-report-2","schedule:Line-2"]},{"id":"schedule-report-3","name":"Schedule Report · Line-3","module":"Production","moduleId":"production","parent":"Sewing / Schedule Report","hidden":false,"resources":["record:schedule-report-3","schedule:Line-3"]},{"id":"schedule-report-4","name":"Schedule Report · Line-4","module":"Production","moduleId":"production","parent":"Sewing / Schedule Report","hidden":false,"resources":["record:schedule-report-4","schedule:Line-4"]},{"id":"schedule-report-5","name":"Schedule Report · Unit-2 Line-1","module":"Production","moduleId":"production","parent":"Sewing / Schedule Report","hidden":false,"resources":["record:schedule-report-5","schedule:Unit-2 Line-1"]},{"id":"schedule-report-6","name":"Schedule Report · Unit-2 Line-2","module":"Production","moduleId":"production","parent":"Sewing / Schedule Report","hidden":false,"resources":["record:schedule-report-6","schedule:Unit-2 Line-2"]},{"id":"schedule-report-7","name":"Schedule Report · Unit-2 Line-3","module":"Production","moduleId":"production","parent":"Sewing / Schedule Report","hidden":false,"resources":["record:schedule-report-7","schedule:Unit-2 Line-3"]},{"id":"schedule-report-8","name":"Schedule Report · Unit-2 Line-4","module":"Production","moduleId":"production","parent":"Sewing / Schedule Report","hidden":false,"resources":["record:schedule-report-8","schedule:Unit-2 Line-4"]},{"id":"schedule-cutting","name":"Cutting","module":"Production","moduleId":"production","parent":"","hidden":false,"resources":["record:schedule-cutting"]},{"id":"schedule-finishing","name":"Finishing","module":"Production","moduleId":"production","parent":"","hidden":false,"resources":["record:schedule-finishing"]},{"id":"schedule-quality","name":"Quality","module":"Production","moduleId":"production","parent":"","hidden":false,"resources":["record:schedule-quality"]},{"id":"planning","name":"Production planning","module":"Production","moduleId":"production","parent":"Production Records","hidden":false,"resources":["record:planning"]},{"id":"output","name":"Daily output","module":"Production","moduleId":"production","parent":"Production Records","hidden":false,"resources":["record:output"]},{"id":"cutting-plan","name":"Cutting plan","module":"Cutting","moduleId":"cutting","parent":"","hidden":false,"resources":["record:cutting-plan"]},{"id":"cutting-output","name":"Cutting output","module":"Cutting","moduleId":"cutting","parent":"","hidden":false,"resources":["record:cutting-output"]},{"id":"finishing-output","name":"Finishing output","module":"Finishing","moduleId":"finishing","parent":"","hidden":false,"resources":["record:finishing-output"]},{"id":"packing","name":"Packing register","module":"Packing","moduleId":"packing","parent":"","hidden":false,"resources":["record:packing"]},{"id":"inspection","name":"Inspection log","module":"Quality","moduleId":"quality","parent":"","hidden":false,"resources":["record:inspection"]},{"id":"issues","name":"Issue tracker","module":"Quality","moduleId":"quality","parent":"","hidden":false,"resources":["record:issues"]},{"id":"samples","name":"Sample tracker","module":"Sample","moduleId":"sample","parent":"","hidden":false,"resources":["record:samples"]},{"id":"sample-approvals","name":"Sample approvals","module":"Sample","moduleId":"sample","parent":"","hidden":false,"resources":["record:sample-approvals"]},{"id":"maintenance-jobs","name":"Maintenance jobs","module":"Maintenance","moduleId":"maintenance","parent":"","hidden":false,"resources":["record:maintenance-jobs"]},{"id":"machines","name":"Machine register","module":"Maintenance","moduleId":"maintenance","parent":"","hidden":false,"resources":["record:machines"]},{"id":"electrical-jobs","name":"Electrical jobs","module":"Electrical","moduleId":"electrical","parent":"","hidden":false,"resources":["record:electrical-jobs"]},{"id":"power-log","name":"Power log","module":"Electrical","moduleId":"electrical","parent":"","hidden":false,"resources":["record:power-log"]},{"id":"sewing-plan","name":"Sewing Plan","module":"Sewing","moduleId":"sewing","parent":"","hidden":false,"resources":["record:sewing-plan"]},{"id":"sewing-output","name":"Sewing Output","module":"Sewing","moduleId":"sewing","parent":"","hidden":false,"resources":["record:sewing-output"]}];
 window.DEFAULT_FIELDS = [["reference","Reference"],["name","Description / name"],["quantity","Quantity / amount","number"],["date","Date","date"],["status","Status","status"]];
