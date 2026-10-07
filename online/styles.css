@@ -78,3 +78,5 @@
 #navigation .department-button .chevron{flex:0 0 17px;width:17px;height:17px;font-size:14px}
 @media(max-width:700px){#navigation{gap:6px}#navigation .department{margin-bottom:0}#navigation .department-button{min-height:35px;padding:5px 6px;gap:5px}}
 
+
+.order-saved-clock{text-align:right;font-size:14px;margin:15px 0}.order-document .file-caption{text-align:left;font-size:14px;font-weight:700}

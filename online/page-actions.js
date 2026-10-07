@@ -14,8 +14,8 @@ function applyActionControls(){
  const main=$('#main');document.body.dataset.printDenied=String(!pagePermission('print'));
  if(adminView||!activePage)return;
  let toolbar=main.querySelector('.page-action-toolbar');
- if(activePage.startsWith('schedule-report-')){toolbar?.remove();toolbar=null;}
- if(!toolbar&&!activePage.startsWith('schedule-report-')){toolbar=document.createElement('div');toolbar.className='page-action-toolbar no-print';toolbar.innerHTML='<button type="button" data-page-action="pdf">Pdf</button><button type="button" data-page-action="print">Print</button>';main.prepend(toolbar);}
+ if((activePage.startsWith('schedule-report-')||activePage==='order-report')){toolbar?.remove();toolbar=null;}
+ if(!toolbar&&!(activePage.startsWith('schedule-report-')||activePage==='order-report')){toolbar=document.createElement('div');toolbar.className='page-action-toolbar no-print';toolbar.innerHTML='<button type="button" data-page-action="pdf">Pdf</button><button type="button" data-page-action="print">Print</button>';main.prepend(toolbar);}
  main.querySelectorAll('button').forEach(button=>{const action=requiredButtonAction(button);if(action){button.disabled=!pagePermission(action,buttonPermissionPage(button));button.title=button.disabled?action.toUpperCase()+' permission is required':'';}});
  main.querySelectorAll('.account-paper input,.account-paper select,.account-paper textarea,.order-paper input,.order-paper select,.order-paper textarea').forEach(input=>{if(input.classList.contains('balance-select')||input.classList.contains('production-section-select'))return;input.disabled=!pagePermission('edit',buttonPermissionPage(input));});
 }
@@ -33,7 +33,7 @@ function exportPagePDF(root=$('#main')){
   const page=pageInfo(activePage).page,lines=[];
   const visible=element=>element.getClientRects().length>0;
   const value=cell=>{const inputs=[...cell.querySelectorAll('input:not([type=checkbox]),select,textarea')];return inputs.length?inputs.map(input=>input.value).join(' '):cell.textContent.trim().replace(/\s+/g,' ');};
-  root.querySelectorAll('.file-caption,.production-saved-clock,.production-report-meta,.production-entry-meta,.payroll-report-meta').forEach(el=>{if(visible(el))lines.push(el.textContent.trim());});
+  root.querySelectorAll('.file-caption,.order-saved-clock,.production-saved-clock,.production-report-meta,.production-entry-meta,.payroll-report-meta').forEach(el=>{if(visible(el))lines.push(el.textContent.trim());});
   root.querySelectorAll(activePage==='payroll'?($('#main').querySelector('.payroll-result')?'.payroll-result table':'.payroll-form-table'):'table').forEach(table=>{if(!visible(table))return;table.querySelectorAll('tr').forEach(row=>{if(!visible(row))return;const cells=[...row.querySelectorAll('th,td')].filter(cell=>!cell.classList.contains('no-print')&&!cell.querySelector('.row-actions'));lines.push(cells.map(value).join('  |  '));});lines.push('');});
   const signatures=root.querySelector('.signatures');if(signatures&&visible(signatures))lines.push([...signatures.querySelectorAll('span')].map(node=>node.textContent.trim()).join('   '));if(!lines.length)lines.push('No displayed records.');
   const canvas=document.createElement('canvas');canvas.width=1240;canvas.height=1754;const ctx=canvas.getContext('2d'),images=[];let y=0;
