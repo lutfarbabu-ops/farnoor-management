@@ -13,7 +13,8 @@ function applyActionControls(){
  const main=$('#main');document.body.dataset.printDenied=String(!pagePermission('print'));
  if(adminView||!activePage)return;
  let toolbar=main.querySelector('.page-action-toolbar');
- if(!toolbar){toolbar=document.createElement('div');toolbar.className='page-action-toolbar no-print';toolbar.innerHTML='<button type="button" data-page-action="pdf">Pdf</button><button type="button" data-page-action="print">Print</button>';main.prepend(toolbar);}
+ if(activePage.startsWith('schedule-report-')){toolbar?.remove();toolbar=null;}
+ if(!toolbar&&!activePage.startsWith('schedule-report-')){toolbar=document.createElement('div');toolbar.className='page-action-toolbar no-print';toolbar.innerHTML='<button type="button" data-page-action="pdf">Pdf</button><button type="button" data-page-action="print">Print</button>';main.prepend(toolbar);}
  main.querySelectorAll('button').forEach(button=>{const action=requiredButtonAction(button);if(action){button.disabled=!pagePermission(action);button.title=button.disabled?action.toUpperCase()+' permission is required':'';}});
  main.querySelectorAll('.account-paper input,.account-paper select,.account-paper textarea,.order-paper input,.order-paper select,.order-paper textarea').forEach(input=>{if(input.classList.contains('balance-select')||input.classList.contains('production-section-select'))return;input.disabled=!pagePermission('edit');});
 }
@@ -25,14 +26,14 @@ window.print=()=>{if(!pagePermission('print')){toast('PRINT permission is requir
 new MutationObserver(applyActionControls).observe($('#main'),{childList:true,subtree:true});
 
 // A downloadable PDF, separate from the Print dialog. Canvas text retains Unicode names.
-function exportPagePDF(){
+function exportPagePDF(root=$('#main')){
  if(!pagePermission('pdf')){toast('PDF permission is required.');return;}
  try{
   const page=pageInfo(activePage).page,lines=[];
   const visible=element=>element.getClientRects().length>0;
   const value=cell=>{const inputs=[...cell.querySelectorAll('input:not([type=checkbox]),select,textarea')];return inputs.length?inputs.map(input=>input.value).join(' '):cell.textContent.trim().replace(/\s+/g,' ');};
-  $('#main').querySelectorAll('.file-caption,.production-report-meta,.production-entry-meta,.payroll-report-meta').forEach(el=>{if(visible(el))lines.push(el.textContent.trim());});
-  $('#main').querySelectorAll(activePage==='payroll'?($('#main').querySelector('.payroll-result')?'.payroll-result table':'.payroll-form-table'):'table').forEach(table=>{if(!visible(table))return;table.querySelectorAll('tr').forEach(row=>{if(!visible(row))return;const cells=[...row.querySelectorAll('th,td')].filter(cell=>!cell.classList.contains('no-print')&&!cell.querySelector('.row-actions'));lines.push(cells.map(value).join('  |  '));});lines.push('');});
+  root.querySelectorAll('.file-caption,.production-report-meta,.production-entry-meta,.payroll-report-meta').forEach(el=>{if(visible(el))lines.push(el.textContent.trim());});
+  root.querySelectorAll(activePage==='payroll'?($('#main').querySelector('.payroll-result')?'.payroll-result table':'.payroll-form-table'):'table').forEach(table=>{if(!visible(table))return;table.querySelectorAll('tr').forEach(row=>{if(!visible(row))return;const cells=[...row.querySelectorAll('th,td')].filter(cell=>!cell.classList.contains('no-print')&&!cell.querySelector('.row-actions'));lines.push(cells.map(value).join('  |  '));});lines.push('');});
   if(!lines.length)lines.push('No displayed records.');
   const canvas=document.createElement('canvas');canvas.width=1240;canvas.height=1754;const ctx=canvas.getContext('2d'),images=[];let y=0;
   function sheet(){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#174c3b';ctx.font='bold 30px "Segoe UI", "Nirmala UI", sans-serif';ctx.fillText('FARNOOR GARMENTS LTD.',65,70);ctx.font='18px "Segoe UI", "Nirmala UI", sans-serif';ctx.fillText('1028/1/2 MALIBAGH BAZAR ROAD, DHAKA-1217',65,102);ctx.font='bold 24px "Segoe UI", "Nirmala UI", sans-serif';ctx.fillText(page.name,65,145);ctx.font='18px "Segoe UI", "Nirmala UI", sans-serif';ctx.fillText(new Date().toLocaleDateString('en-GB'),65,177);ctx.fillStyle='#17271f';ctx.font='20px "Segoe UI", "Nirmala UI", sans-serif';y=220;}
