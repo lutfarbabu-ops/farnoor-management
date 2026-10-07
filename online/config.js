@@ -2016,3 +2016,5 @@ window.FARNOOR_PAGE_CATALOG = [{"id":"admin-notices","name":"Notices","module":"
 window.DEFAULT_FIELDS = [["reference","Reference"],["name","Description / name"],["quantity","Quantity / amount","number"],["date","Date","date"],["status","Status","status"]];
 
 window.DEPARTMENTS.splice(window.DEPARTMENTS.findIndex(department=>department.id==='production')+1,0,{id:'sewing-line',name:'Sewing Line',icon:'▤',color:'#586ab5',pages:[],navigationOnly:true});
+
+window.DEPARTMENTS.find(department=>department.id==='sewing-line').pages=['Line-1','Line-2','Line-3','Line-4','Unit-2 Line-1','Unit-2 Line-2','Unit-2 Line-3','Unit-2 Line-4'].map((name,index)=>({id:'sewing-line-page-'+(index+1),name,icon:['①','②','③','④','❶','❷','❸','❹'][index],shade:['#e6f0ff','#fce7ed','#e7f6e9','#fff1d9','#e5f5f7','#f2e8fc','#fdebdc','#eaf2db'][index],permissionPage:'schedule-line-'+(index+1),navigationOnly:true}));
