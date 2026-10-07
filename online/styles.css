@@ -85,3 +85,6 @@
 
 /* Compact Order Report filters above its actions. */
 #orderSearchForm{margin-bottom:12px;justify-content:flex-start;gap:8px}#orderSearchForm label{flex:0 1 340px;min-width:0;max-width:340px}#orderSearchInput{width:100%;padding:7px 9px;font-size:12px}#orderSearchForm button,.order-file-picker button{padding:7px 10px;font-size:12px}.order-file-picker{justify-content:flex-start;gap:8px;margin-bottom:12px}.order-file-picker label{flex:0 1 340px;min-width:0;max-width:340px}.order-file-picker select{margin-top:0;padding:7px 9px;font-size:12px}@media(max-width:480px){#orderSearchForm,.order-file-picker{flex-wrap:wrap}#orderSearchForm label,.order-file-picker label{flex-basis:100%;max-width:100%}}
+
+/* Narrow department buttons equally on both sides. */
+#navigation .department-button{width:84%;margin-left:auto;margin-right:auto}@media(max-width:700px){#navigation .department-button{width:90%}}
