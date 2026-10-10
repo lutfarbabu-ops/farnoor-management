@@ -88,7 +88,7 @@ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>document.getE
 $('#dashboardButton').onclick=renderOverview;
 $('#backup').onclick=()=>download('farnoor-backup.json',JSON.stringify(state,null,2),'application/json');
 $('#restoreButton').onclick=()=>$('#restore').click();
-$('#restore').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>12*1024*1024)throw Error('Backup is too large.');const next=validateState(JSON.parse(await file.text()));if(confirm('Replace this workspace with the backup? Current records will be replaced.')){if(await commit(next)){renderProfile();renderOverview();toast('Backup restored');}}}catch(error){toast(error.message||'Could not restore backup.');}finally{e.target.value='';}};
+$('#restore').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>12*1024*1024)throw Error('Backup is too large.');const next=validateState(JSON.parse(await file.text()));if(await confirmBackupRestore()){if(await commit(next)){renderProfile();renderOverview();toast('Backup restored');}}}catch(error){toast(error.message||'Could not restore backup.');}finally{e.target.value='';}};
 renderProfile();renderOverview();if(storageWarning)toast(storageWarning);
 // Optional browser-agent navigation. Unsupported browsers keep the ordinary UI.
 if(document.modelContext?.registerTool){
@@ -102,3 +102,5 @@ if(document.modelContext?.registerTool){
 
 
 
+
+function confirmBackupRestore(){return new Promise(resolve=>{const dialog=document.createElement('dialog');dialog.style.cssText='max-width:440px;padding:24px;border:1px solid #ccd7d0;border-radius:12px;color:#173d2f';dialog.innerHTML='<h3>Restore backup?</h3><p>This replaces the current workspace with the selected backup. Keep a download of your current data before continuing.</p><div style="display:flex;gap:12px;justify-content:flex-end"><button type="button" data-restore-cancel>Cancel</button><button type="button" data-restore-confirm>Restore selected backup</button></div>';const finish=value=>{dialog.close();dialog.remove();resolve(value);};dialog.querySelector('[data-restore-cancel]').onclick=()=>finish(false);dialog.querySelector('[data-restore-confirm]').onclick=()=>finish(true);dialog.oncancel=e=>{e.preventDefault();finish(false);};document.body.append(dialog);dialog.showModal();});}
