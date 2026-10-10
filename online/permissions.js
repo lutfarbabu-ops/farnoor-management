@@ -4,7 +4,7 @@ let adminUserPanel='';
 const adminUserLists={users:null,running:null},adminUserLoading={users:false,running:false},adminUserErrors={users:'',running:''};
 const permissionDrafts=new Map();
 const PAGE_ACTIONS=['edit','view','pdf','print'];
-function canAction(id,action){return accessInfo.role==='super_admin'||(accessInfo.actions?accessInfo.actions[id]?.includes(action):accessInfo.pages.includes(id))||false;}
+function canAction(id,action){id=pageInfo(id)?.page.permissionPage||id;return accessInfo.role==='super_admin'||(accessInfo.actions?accessInfo.actions[id]?.includes(action):accessInfo.pages.includes(id))||false;}
 function canPage(id){return canAction(id,'view');}
 function applyPageLinks(){document.querySelectorAll('[data-open-page]').forEach(node=>{node.hidden=!canPage(node.dataset.openPage);});}
 function applyAccess(access){const changed=JSON.stringify(accessInfo)!==JSON.stringify(access);accessInfo=access||{role:'member',department:'',pages:[],revision:0};$('#superAdminButton').hidden=accessInfo.role!=='super_admin';$('#profileRole').textContent=accessInfo.role==='super_admin'?'Super Admin':accessInfo.department||'Member';$('#restoreButton').hidden=accessInfo.role!=='super_admin';if(activePage&&!canPage(activePage)){activePage=null;document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());toast('Your page permissions changed.');}if(accessInfo.role!=='super_admin')adminView=false;renderNavigation();applyPageLinks();return changed;}
