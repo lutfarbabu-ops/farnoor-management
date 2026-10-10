@@ -2025,5 +2025,3 @@ window.FARNOOR_PAGE_CATALOG.push(...[{"id":"store-fabric-receive","name":"Recive
 window.DEPARTMENTS.find(department=>department.id==='inventory').pages=window.DEPARTMENTS.find(department=>department.id==='inventory').pages.filter(page=>!['stock','movement'].includes(page.id));
 window.FARNOOR_PAGE_CATALOG=window.FARNOOR_PAGE_CATALOG.filter(page=>!['stock','movement'].includes(page.id));
 
-window.DEPARTMENTS.find(department=>department.id==='hr').pages=window.DEPARTMENTS.find(department=>department.id==='hr').pages.filter(page=>page.id!=='payroll'&&page.navPath?.[0]!=='Payroll');
-window.FARNOOR_PAGE_CATALOG=window.FARNOOR_PAGE_CATALOG.filter(page=>page.id!=='payroll'&&page.parent!=='Payroll');
