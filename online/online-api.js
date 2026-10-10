@@ -20,7 +20,7 @@ window.FarnoorAPI = (() => {
     if (registration) headers['X-Registration-Token'] = registration;
     return fetch(config.url + '/functions/v1/' + config.functionName, {
       method:'POST', keepalive, mode:'cors', credentials:'omit', cache:'no-store', headers,
-      body:JSON.stringify({route, method, payload:payload || {}}), signal:AbortSignal.timeout(30000)
+      body:JSON.stringify({route, method, payload:payload || {}}), signal:AbortSignal.timeout(route==='/api/workspace'?60000:30000)
     });
   }
   async function refresh(session) {
