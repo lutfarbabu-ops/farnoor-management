@@ -26,3 +26,15 @@ document.addEventListener('click',event=>{
  dialog.innerHTML=`<form method="dialog"><h2>AutoPro · Original ${esc(payrollCore.formById(row.hrSourceForm)?.name||row.hrSourceForm)} entry</h2><table class="payroll-form-table"><tbody>${Object.entries(row.hrSourceValues).map(([k,v])=>`<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</tbody></table><p class="hint">Imported ${esc(row.hrImportedAt.slice(0,10))}. Empty fields were empty in AutoPro.</p><button>Close</button></form>`;dialog.showModal();
 });
 document.addEventListener('change',event=>{if(event.target.matches('[data-payroll-source-search]')){payrollSourceQuery=event.target.value;renderPayroll();}});
+
+// Payroll pages belong directly beneath HR > Payroll in the sidebar.
+const payrollSidebarPriorNavigation=renderNavigation;
+function payrollSidebarMenus(){
+ const forms=payrollCore.forms.map(f=>'<button type="button" data-payroll-menu="'+esc(f.id)+'" class="'+(!payrollSourceVisible&&f.id===payrollScreen?'selected':'')+'" aria-expanded="'+(!payrollSourceVisible&&f.id===payrollScreen)+'"><span>'+f.icon+'</span>'+esc(f.name)+'<span>'+(!payrollSourceVisible&&f.id===payrollScreen?'−':'+')+'</span></button>').join('');
+ const all=payrollSourceAll(),titles={salary:'Salary records',increment:'Increment records',loan:'Loan / Advance records',bonus:'Bonus records','ot-policy':'OT Policy records','att-policy':'Attendance Bonus Policy records',top:'TopSheet records'};
+ const sources=[...new Set(all.map(r=>r.hrSourceForm))].map(kind=>'<button type="button" data-payroll-source-toggle="'+esc(kind)+'" class="'+(payrollSourceVisible&&payrollSourceKind===kind?'selected':'')+'">AutoPro · '+esc(titles[kind]||kind)+' ('+all.filter(r=>r.hrSourceForm===kind).length+')</button>').join('');
+ return '<nav class="payroll-menu payroll-sidebar no-print" aria-label="Payroll menus">'+forms+(payrollRecords().some(r=>!r.payrollForm&&!r.hrSourceForm)?'<button type="button" data-payroll-action="legacy">Existing Payroll records</button>':'')+sources+'</nav>';
+}
+renderNavigation=function(){payrollSidebarPriorNavigation();const parent=$('#navigation [data-page="payroll"]');if(parent){parent.setAttribute('aria-expanded',String(activePage==='payroll'));if(activePage==='payroll')parent.insertAdjacentHTML('afterend',payrollSidebarMenus());}};
+const payrollSidebarPriorRender=renderPayroll;
+renderPayroll=function(){payrollSidebarPriorRender();$('#main .payroll-menu')?.remove();$('#main .payroll-workspace')?.classList.add('payroll-sidebar-content');renderNavigation();};

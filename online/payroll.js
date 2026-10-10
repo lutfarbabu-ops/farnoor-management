@@ -67,7 +67,7 @@ function payrollReport(){
 }
 $('#main').addEventListener('input',event=>{if(activePage!=='payroll')return;const t=event.target,draft=payrollDraft();if(t.dataset.payrollAttendance){draft.attendance.get(t.dataset.payrollAttendance)[t.dataset.payrollKey]=t.value;draft.dirty=true;}else if(t.dataset.payrollField&&t.dataset.payrollScope==='entry'){draft.values[t.dataset.payrollField]=t.type==='checkbox'?String(t.checked):t.value;draft.dirty=true;}});
 $('#main').addEventListener('change',event=>{if(activePage!=='payroll')return;const t=event.target;if(t.dataset.payrollField&&t.dataset.payrollScope==='entry'){const draft=payrollDraft();draft.values[t.dataset.payrollField]=t.type==='checkbox'?String(t.checked):t.value;draft.dirty=true;}});
-$('#main').addEventListener('click',async event=>{
+document.addEventListener('click',async event=>{
  if(activePage!=='payroll'||payrollBusy)return;const button=event.target.closest('button');if(!button)return;
  try{
   if(button.dataset.payrollAction==='legacy'){payrollLegacy=true;renderPage();return;}if(button.dataset.payrollAction==='back'){payrollLegacy=false;renderPage();return;}if(button.dataset.payrollMenu){const id=button.dataset.payrollMenu;if(id===payrollScreen)payrollDraft().collapsed=!payrollDraft().collapsed;else{payrollScreen=id;payrollDraft().collapsed=false;payrollShowOpen=false;payrollShowReport=false;}renderPayroll();return;}
