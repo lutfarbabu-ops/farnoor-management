@@ -90,3 +90,4 @@
 #navigation .department-button{width:84%;margin-left:auto;margin-right:auto}@media(max-width:700px){#navigation .department-button{width:90%}}
 
 .order-document .file-controls{justify-content:flex-end}.order-document .order-table{border-collapse:collapse}.order-document .order-table th,.order-document .order-table td{border:1px solid #476957}.order-search-results .order-table th,.order-search-results .order-table td{border:1px solid #476957}@media print{.order-document .order-table th,.order-document .order-table td{border-width:.35pt}.order-document .signatures span{font-size:11px}}
+#adminLoginUsers{background:linear-gradient(120deg,#d5f3ef,#dceafa);border-color:#75b7ba;color:#164d59}#loginUserForm{margin-top:18px}#loginUserForm .production-controls{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}#loginUserForm input,#loginUserForm select{width:100%}
