@@ -35,7 +35,7 @@ window.FarnoorAPI = (() => {
   }
   async function request(route, options = {}) {
     const method = options.method || 'GET';
-    const payload = options.body ? JSON.parse(options.body) : {};
+    const payload = options.payload ?? (options.body ? JSON.parse(options.body) : {});
     let session = read(storageKey);
     if (session && session.expires_at * 1000 <= Date.now() + 60000) session = await refresh(session);
     let response = await raw(route,method,payload,session,!!options.keepalive);
