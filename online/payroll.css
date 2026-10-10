@@ -3,3 +3,5 @@
 @media print{.payroll-menu,.payroll-controls,.payroll-details,.payroll-entry,.payroll-open-list{display:none!important}.payroll-workspace{display:block}.payroll-paper{border:0;padding:0}.payroll-result th{-webkit-print-color-adjust:exact;print-color-adjust:exact}.payroll-slip{break-inside:avoid}.payroll-result{margin:0}.payroll-slips{grid-template-columns:1fr}.payroll-slip{page-break-after:always}}
 
 .payroll-workspace.payroll-sidebar-content{grid-template-columns:minmax(0,1fr)}.payroll-sidebar{margin:3px 0 8px 12px;display:block}.payroll-sidebar button{font-size:11px}
+
+#navigation .payroll-sidebar{background:transparent;padding:0;display:block}#navigation .payroll-sidebar .page-button{margin:5px 0;width:100%;font-size:11px}#navigation .payroll-sidebar .page-button.active{outline:2px solid var(--sub-accent);outline-offset:1px}#navigation .payroll-sidebar .submenu-label{margin-left:0}

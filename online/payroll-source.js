@@ -30,11 +30,16 @@ document.addEventListener('change',event=>{if(event.target.matches('[data-payrol
 // Payroll pages belong directly beneath HR > Payroll in the sidebar.
 const payrollSidebarPriorNavigation=renderNavigation;
 function payrollSidebarMenus(){
- const forms=payrollCore.forms.map(f=>'<button type="button" data-payroll-menu="'+esc(f.id)+'" class="'+(!payrollSourceVisible&&f.id===payrollScreen?'selected':'')+'" aria-expanded="'+(!payrollSourceVisible&&f.id===payrollScreen)+'"><span>'+f.icon+'</span>'+esc(f.name)+'<span>'+(!payrollSourceVisible&&f.id===payrollScreen?'−':'+')+'</span></button>').join('');
- const all=payrollSourceAll(),titles={salary:'Salary records',increment:'Increment records',loan:'Loan / Advance records',bonus:'Bonus records','ot-policy':'OT Policy records','att-policy':'Attendance Bonus Policy records',top:'TopSheet records'};
- const sources=[...new Set(all.map(r=>r.hrSourceForm))].map(kind=>'<button type="button" data-payroll-source-toggle="'+esc(kind)+'" class="'+(payrollSourceVisible&&payrollSourceKind===kind?'selected':'')+'">AutoPro · '+esc(titles[kind]||kind)+' ('+all.filter(r=>r.hrSourceForm===kind).length+')</button>').join('');
- return '<nav class="payroll-menu payroll-sidebar no-print" aria-label="Payroll menus">'+forms+(payrollRecords().some(r=>!r.payrollForm&&!r.hrSourceForm)?'<button type="button" data-payroll-action="legacy">Existing Payroll records</button>':'')+sources+'</nav>';
+ const sourceTitles={salary:'Salary records',increment:'Increment records',loan:'Loan / Advance records',bonus:'Bonus records','ot-policy':'OT Policy records','att-policy':'Attendance Bonus Policy records',top:'TopSheet records'};
+ const sourceIcons={salary:'▤',increment:'⤴',loan:'⇄',bonus:'✦','ot-policy':'◉','att-policy':'☑',top:'▥'};
+ const all=payrollSourceAll(),kinds=[...new Set(all.map(r=>r.hrSourceForm))];
+ const button=(key,icon,label,attribute,selected,index)=>{if(!submenuLooks.has(key))submenuLooks.set(key,{hue:(index*137+22)%360,saturation:66,lightness:93,shape:['rounded','ticket','rail','pill','underline'][index%5]});return '<button type="button" class="page-button '+(selected?'active selected':'')+'" '+attribute+' '+submenuAttributes(key,1)+' aria-expanded="'+selected+'"><span class="submenu-icon" aria-hidden="true">'+icon+'</span><span class="submenu-label">'+esc(label)+'</span><span class="submenu-toggle">'+(selected?'−':'+')+'</span></button>';};
+ const forms=payrollCore.forms.map((f,i)=>button('payroll-form:'+f.id,f.icon,f.name,'data-payroll-menu="'+esc(f.id)+'"',!payrollSourceVisible&&f.id===payrollScreen,i)).join('');
+ const legacy=payrollRecords().some(r=>!r.payrollForm&&!r.hrSourceForm)?button('payroll-legacy','▧','Existing Payroll records','data-payroll-action="legacy"',payrollLegacy,21):'';
+ const sources=kinds.map((kind,i)=>button('payroll-source:'+kind,sourceIcons[kind]||'◈','AutoPro · '+(sourceTitles[kind]||kind)+' ('+all.filter(r=>r.hrSourceForm===kind).length+')','data-payroll-source-toggle="'+esc(kind)+'"',payrollSourceVisible&&payrollSourceKind===kind,payrollCore.forms.length+i)).join('');
+ return '<nav class="payroll-menu payroll-sidebar no-print" aria-label="Payroll menus">'+forms+legacy+sources+'</nav>';
 }
+
 renderNavigation=function(){payrollSidebarPriorNavigation();const parent=$('#navigation [data-page="payroll"]');if(parent){parent.setAttribute('aria-expanded',String(activePage==='payroll'));if(activePage==='payroll')parent.insertAdjacentHTML('afterend',payrollSidebarMenus());}};
 const payrollSidebarPriorRender=renderPayroll;
 renderPayroll=function(){payrollSidebarPriorRender();$('#main .payroll-menu')?.remove();$('#main .payroll-workspace')?.classList.add('payroll-sidebar-content');renderNavigation();};
