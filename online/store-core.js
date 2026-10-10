@@ -1,0 +1,13 @@
+'use strict';
+const StoreCore=(()=>{
+ const categories=['Fabric','Accessories','Stationery','Mechanical','Electrical','Requisition'];
+ const columns=category=>category==='Fabric'?['buyer','style','colour','orderQty','receiveQty','receiveDate','excess','remarks']:category==='Accessories'?['buyer','style','item','size','colour','orderQty','receiveQty','receiveDate','excess','remarks']:['item','size','receiveQty','receiveDate',...(category==='Requisition'?[]:['excess']),'remarks'];
+ const labels={buyer:'BUYER',style:'STYLE/ARTICLE',item:'ITEM',size:'SIZE',colour:'COLOUR',orderQty:'ORDER QTY',receiveQty:'RECIVE QTY',receiveDate:'RECIVE DATE',excess:'SORT/EXCESS',remarks:'REMARKS'};
+ const key=category=>'store-'+category.toLowerCase()+'-receive';
+ const digits=value=>String(value).trim().replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c)).replaceAll(',','');
+ function validate(category,rows,normalizeDate){if(!categories.includes(category)||!Array.isArray(rows)||!rows.length||rows.length>1000)throw Error('Enter at least one Store row (maximum 1000).');return rows.map(row=>{const result={};for(const field of columns(category)){if(typeof row[field]!=='string'||row[field].length>500)throw Error('Invalid Store cell.');let value=row[field].trim();if(['orderQty','receiveQty','excess'].includes(field)&&value){value=digits(value);if(!/^-?\d+(\.\d{1,3})?$/.test(value)||Math.abs(Number(value))>1000000000||(field!=='excess'&&Number(value)<0))throw Error('Enter a valid quantity, up to three decimal places.');}if(field==='receiveDate'&&value)value=normalizeDate(value);result[field]=value;}return result;});}
+ function validateFiles(records,normalizeDate){for(const category of categories){for(const file of records[key(category)]||[]){if(file.storeCategory!==category||!Number.isFinite(Date.parse(file.createdAt))||file.updatedAt&&!Number.isFinite(Date.parse(file.updatedAt)))throw Error('Invalid Store report.');validate(category,file.rows,normalizeDate);}}}
+ function surplus(records){return categories.filter(c=>c!=='Requisition').flatMap(category=>(records[key(category)]||[]).flatMap(file=>(file.rows||[]).filter(row=>Number(digits(row.excess||''))>0).map(row=>({category,item:row.item||row.style||'',size:row.size||'',colour:row.colour||'',excess:row.excess,date:row.receiveDate||'',fileId:file.id}))));}
+ function matches(rows,item,size){const norm=value=>String(value||'').normalize('NFKC').trim().toLocaleLowerCase();return rows.filter(row=>norm(item)&&norm(row.item)===norm(item)&&norm(row.size)===norm(size));}
+ return {categories,columns,labels,key,digits,validate,validateFiles,surplus,matches};
+})();
