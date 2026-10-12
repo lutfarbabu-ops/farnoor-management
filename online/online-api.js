@@ -20,7 +20,7 @@ window.FarnoorAPI = (() => {
     if (registration) headers['X-Registration-Token'] = registration;
     return fetch(config.url + '/functions/v1/' + config.functionName, {
       method:'POST', keepalive, mode:'cors', credentials:'omit', cache:'no-store', headers,
-      body:JSON.stringify({route, method, payload:payload || {}}), signal:requestSignal || AbortSignal.timeout(route==='/api/workspace'?60000:30000)
+      body:JSON.stringify({route, method, payload:payload || {}}), signal:requestSignal || AbortSignal.timeout((route==='/api/workspace'||route==='/api/booking/save')?60000:30000)
     });
   }
   async function refresh(session) {
@@ -35,7 +35,7 @@ window.FarnoorAPI = (() => {
   }
   async function request(route, options = {}) {
     const method = options.method || 'GET';
-    const requestSignal = route==='/api/workspace' ? AbortSignal.timeout(60000) : undefined;
+    const requestSignal = (route==='/api/workspace'||route==='/api/booking/save') ? AbortSignal.timeout(60000) : undefined;
     const payload = options.payload ?? (options.body ? JSON.parse(options.body) : {});
     let session = read(storageKey);
     if (session && session.expires_at * 1000 <= Date.now() + 60000) session = await refresh(session);
