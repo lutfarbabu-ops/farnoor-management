@@ -1,6 +1,6 @@
 'use strict';
 const storeDrafts=new Map();let storeEditing=null,storeSelected=null,storeSurplus=[],storeSavePending=false;
-const storeBlank=category=>Object.fromEntries(StoreCore.viewColumns(category,file.storeMovement==='Delivery').map(key=>[key,'']));
+const storeBlank=category=>Object.fromEntries(StoreCore.columns(category).map(key=>[key,'']));
 const storeCategory=()=>pageInfo(activePage).page.storeCategory;
 const storeDelivery=()=>(activePage?.endsWith('-delivery')||activePage?.endsWith('-delivery-report'))||false;
 const storeDraftKey=category=>category+(storeDelivery()?':delivery':':receive');
