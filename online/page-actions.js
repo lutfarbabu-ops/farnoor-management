@@ -14,9 +14,9 @@ function applyActionControls(){
  const main=$('#main');document.body.dataset.printDenied=String(!pagePermission('print'));
  if(adminView||!activePage)return;
  let toolbar=main.querySelector('.page-action-toolbar');
- if(((activePage.startsWith('schedule-')||activePage.startsWith('store-'))||(['order-report','order-entry'].includes(activePage)||activePage.startsWith('sewing-line-page-')))){toolbar?.remove();toolbar=null;}
- if(!toolbar&&!((activePage.startsWith('schedule-')||activePage.startsWith('store-'))||(['order-report','order-entry'].includes(activePage)||activePage.startsWith('sewing-line-page-')))){toolbar=document.createElement('div');toolbar.className='page-action-toolbar no-print';toolbar.innerHTML='<button type="button" data-page-action="pdf">Pdf</button><button type="button" data-page-action="print">Print</button>';main.prepend(toolbar);}
- main.querySelectorAll('button').forEach(button=>{const action=requiredButtonAction(button);if(action){button.disabled=!pagePermission(action,buttonPermissionPage(button));button.title=button.disabled?action.toUpperCase()+' permission is required':'';}});
+ if(((activePage.startsWith('schedule-')||activePage.startsWith('store-'))||(['order-report','order-entry','booking-entry','booking-report'].includes(activePage)||activePage.startsWith('sewing-line-page-')))){toolbar?.remove();toolbar=null;}
+ if(!toolbar&&!((activePage.startsWith('schedule-')||activePage.startsWith('store-'))||(['order-report','order-entry','booking-entry','booking-report'].includes(activePage)||activePage.startsWith('sewing-line-page-')))){toolbar=document.createElement('div');toolbar.className='page-action-toolbar no-print';toolbar.innerHTML='<button type="button" data-page-action="pdf">Pdf</button><button type="button" data-page-action="print">Print</button>';main.prepend(toolbar);}
+ main.querySelectorAll('button').forEach(button=>{const action=requiredButtonAction(button);if(action){button.disabled=button.dataset.busy==='true'||!pagePermission(action,buttonPermissionPage(button));button.title=button.disabled?action.toUpperCase()+' permission is required':'';}});
  main.querySelectorAll('.account-paper input,.account-paper select,.account-paper textarea,.order-paper input,.order-paper select,.order-paper textarea').forEach(input=>{if(input.classList.contains('balance-select')||input.classList.contains('production-section-select'))return;input.disabled=!pagePermission('edit',buttonPermissionPage(input));});
 }
 // Capture before page-specific listeners, including controls recreated by report views.
