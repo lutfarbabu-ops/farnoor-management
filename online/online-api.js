@@ -53,5 +53,6 @@ window.FarnoorAPI = (() => {
     }
     return response;
   }
-  return {request,go,configured};
+  function sessionUserId(){try{const token=read(storageKey)?.access_token;if(!token)return null;const payload=token.split('.')[1].replaceAll('-','+').replaceAll('_','/');return JSON.parse(atob(payload)).sub||null;}catch{return null;}}
+  return {request,go,configured,sessionUserId};
 })();
