@@ -2037,3 +2037,5 @@ window.FARNOOR_PAGE_CATALOG.push(...[{"id":"hr-system-settings","name":"System S
 
 // Booking views share the existing Booking record and department permission.
 {const merch=window.DEPARTMENTS.find(d=>d.id==='merch');const booking=merch.pages.find(p=>p.id==='booking');booking.hidden=true;merch.pages.splice(merch.pages.indexOf(booking)+1,0,{id:'booking-entry',name:'BOOKING ENTRY',navPath:['BOOKING'],icon:'▤',shade:'#e3edf9',permissionPage:'booking'},{id:'booking-report',name:'BOOKING REPORT',navPath:['BOOKING'],icon:'▥',shade:'#ede4fa',permissionPage:'booking'});}
+// Order menu, preserving the existing Order reports and permission resources.
+{const merch=window.DEPARTMENTS.find(d=>d.id==='merch');for(const page of merch.pages.filter(p=>['order-entry','order-report'].includes(p.id)))page.navPath=['ORDER'];merch.pages.splice(merch.pages.findIndex(p=>p.id==='order-entry'),0,{id:'order-new',name:'NEW ORDER',navPath:['ORDER'],icon:'✚',shade:'#e2f4e6',permissionPage:'order-entry'});}
