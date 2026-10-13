@@ -8,7 +8,7 @@ function loginView(){el('registration').hidden=true;el('loginForm').hidden=false
 el('openRegistration').onclick=()=>{el('loginForm').hidden=true;el('registration').hidden=false;step('Identity');el('registerUsername').focus();};
 el('backToLogin').onclick=loginView;
 el('changeRegistration').onclick=()=>step('Identity');
-el('loginForm').onsubmit=e=>{e.preventDefault();act(async()=>{await request('login',Object.fromEntries(new FormData(e.target)));el('loginPassword').value='';FarnoorAPI.go('index.html');});};
+el('loginForm').onsubmit=e=>{e.preventDefault();act(async()=>{const credentials=Object.fromEntries(new FormData(e.target));await request('login',credentials);rememberLoginUsername(credentials.username);el('loginPassword').value='';FarnoorAPI.go('index.html');});};
 async function send(person){await request('register',person);pendingPerson=person;for(const [id,key] of [['pendingUsername','username'],['pendingDepartment','department'],['pendingEmail','email']])el(id).textContent=person[key];step('Code');el('verificationCode').value='';el('verificationCode').focus();}
 el('registrationForm').onsubmit=e=>{e.preventDefault();act(()=>send(Object.fromEntries(new FormData(e.target))));};
 el('resendCode').onclick=()=>act(()=>send(pendingPerson));
@@ -18,14 +18,17 @@ el('passwordForm').onsubmit=e=>{e.preventDefault();if(el('newPassword').value!==
 document.querySelectorAll('[data-password]').forEach(button=>button.onclick=()=>{const input=el(button.dataset.password),visible=input.type==='password';input.type=visible?'text':'password';button.textContent=visible?'Hide':'Show';button.setAttribute('aria-pressed',String(visible));});
 FarnoorAPI.request('/api/auth/status',{credentials:'same-origin'}).then(r=>r.json()).then(data=>{el('emailSetupNotice').hidden=data.emailConfigured;if(data.authenticated)FarnoorAPI.go('index.html');}).catch(()=>message('Could not connect to the server. Please try again.'));
 
-// Complete a registered username inside the field; every visit starts empty.
+// Remember successful usernames on this device; never store passwords.
+function rememberedLoginUsernames(){try{return JSON.parse(localStorage.getItem('farnoor-login-usernames')||'[]').filter(name=>typeof name==='string'&&name.length<=60).slice(0,20);}catch{return [];}}
+function rememberLoginUsername(name){name=String(name||'').trim();if(!name)return;try{localStorage.setItem('farnoor-login-usernames',JSON.stringify([name,...rememberedLoginUsernames().filter(value=>value.toLowerCase()!==name.toLowerCase())].slice(0,20)));}catch{}}
+// Complete after two typed characters; every visit starts empty.
 let usernameTimer,searchVersion=0,loginEdited=false;
 function clearLogin(){el('loginForm').reset();el('loginUsername').value='';el('loginPassword').value='';el('loginPassword').type='password';clearTimeout(usernameTimer);searchVersion++;}
 el('loginUsername').addEventListener('input',event=>{
  loginEdited=true;clearTimeout(usernameTimer);const input=el('loginUsername'),prefix=input.value.normalize('NFKC').trim(),version=++searchVersion;
  if(Array.from(prefix).length<2||event.inputType?.startsWith('delete'))return;
  usernameTimer=setTimeout(async()=>{try{
-  const data=await request('usernames',{prefix});
+  const remembered=rememberedLoginUsernames().filter(name=>name.toLowerCase().startsWith(prefix.toLowerCase()));const data=remembered.length?{usernames:remembered}:await request('usernames',{prefix});
   if(version!==searchVersion||document.activeElement!==input||input.value.normalize('NFKC').trim()!==prefix||input.selectionStart!==input.value.length||input.selectionEnd!==input.value.length)return;
   const name=data.usernames.find(name=>name.toLowerCase()===prefix.toLowerCase())||data.usernames[0];
   if(!name||!name.toLowerCase().startsWith(prefix.toLowerCase()))return;
