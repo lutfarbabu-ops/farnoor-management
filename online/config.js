@@ -2040,3 +2040,6 @@ window.FARNOOR_PAGE_CATALOG.push(...[{"id":"hr-system-settings","name":"System S
 // Order menu, preserving the existing Order reports and permission resources.
 {const merch=window.DEPARTMENTS.find(d=>d.id==='merch');for(const page of merch.pages.filter(p=>['order-entry','order-report'].includes(p.id)))page.navPath=['ORDER'];merch.pages.splice(merch.pages.findIndex(p=>p.id==='order-entry'),0,{id:'order-new',name:'NEW ORDER',navPath:['ORDER'],icon:'✚',shade:'#e2f4e6',permissionPage:'order-entry'});}
 window.DEPARTMENTS.find(d=>d.id==='merch').pages=window.DEPARTMENTS.find(d=>d.id==='merch').pages.filter(p=>p.id!=='order-new');
+
+// Stock summaries use the existing category receiving permission.
+{const store=window.DEPARTMENTS.find(d=>d.id==='inventory');for(const category of ['Stationery','Mechanical','Electrical']){const prefix='store-'+category.toLowerCase(),report=store.pages.find(p=>p.id===prefix+'-delivery-report');store.pages.splice(store.pages.indexOf(report)+1,0,{id:prefix+'-stock',name:'Stock',navPath:[category],icon:'▦',shade:'#e1f4df',stockCategory:category,permissionPage:prefix+'-receive',fields:[]});}}
