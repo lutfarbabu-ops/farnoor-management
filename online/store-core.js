@@ -3,7 +3,7 @@ const StoreCore=(()=>{
  const categories=['Fabric','Accessories','Accessories2','Stationery','Mechanical','Electrical','Requisition'];
  const columns=category=>category==='Fabric'?['buyer','style','colour','orderQty','receiveQty','receiveDate','excess','remarks']:category==='Accessories'?['buyer','style','item','size','colour','orderQty','receiveQty','receiveDate','excess','remarks']:['item','size','receiveQty','receiveDate',...(category==='Requisition'?[]:['excess']),'remarks'];
  const labels={buyer:'BUYER',style:'STYLE/ARTICLE',item:'ITEM',size:'SIZE',colour:'COLOUR',orderQty:'BOOKING QTY',receiveQty:'RECIVE QTY',receiveDate:'RECIVE DATE',excess:'SORT/EXCESS',remarks:'REMARKS'};
- const viewColumns=(category,delivery=false)=>columns(category).filter(field=>field!=='excess'||(['Stationery','Accessories2'].includes(category)?delivery:!delivery));
+ const viewColumns=(category,delivery=false)=>columns(category).filter(field=>field!=='excess'||(category!=='Electrical'&&(['Stationery','Accessories2'].includes(category)?delivery:!delivery)));
  const viewLabel=(category,field,delivery=false)=>delivery&&!['Stationery','Accessories2'].includes(category)&&field==='receiveQty'?'DELIVERY QTY':delivery&&!['Stationery','Accessories2'].includes(category)&&field==='receiveDate'?'DELIVERY DATE':labels[field];
  const key=category=>'store-'+category.toLowerCase()+'-receive';
  const digits=value=>String(value).trim().replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c)).replaceAll(',','');
