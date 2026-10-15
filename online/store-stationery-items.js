@@ -4,6 +4,8 @@ const accessories2Items=["CHALK","PEN","RED PEN","PENCIL","GLASS PENCIL","RUBBER
 
 const electricalReceiveItems=["Tube Light 4\"","Tube Light 2\"","Plag","Iron Pipe","Iron Termoster","Iron Kye","Switch Machine 8700","Switch Machine 8100","Switch Machine","Switch","Elactric Tap","Socket 13A","Socket Multi","Socket 15A","Iron (Tatal/Bit)","Water Tap","Motor Baring 6204","Motor Baring 6203","Water Filter Catige","LED Light","Light Holder","Basin Magic Pipe","Shanp Button MC Super Wire","Plus","Scrw Driver","Glass","Relay (Fusing Machine)","Star Scrow","Star Scrow Big","Base","M Belt 32","M Belt 33","M Belt 34","M Belt 35","M Belt 36","M Belt 37","M Belt 38","M Belt 39","M Belt 40","M Belt 41","M Belt 42","A Belt 83","A Belt 84","A Belt 85","B Belt 51","B Belt 52","B Belt 83","B Belt 84","B Belt 85","IC","Tay Rod","Nut Waser","Anker Bult","Anti Cutter Knife","Padel Clum","Padel Rod","Lifter Spring","Thread Stand","Relay 5 pin","Push Switch Double","Push Switch 12 mm","Push Switch 16 mm","Magnatic Contrack","Acrolic Sheet (7\" x 12\")","Capacitor (Fusing Machine)","Fuse","Guty Set","Lifter Clam Nuka","Lifter Nut","Hit Gum","Cable 40/76","Cable 23/76","Ica Gum 200ml","Battry 2032","Motor Baring","Multi Meter","Max","Tweezers","Carbon","Snap Ring Pliers","Tester","Fan Demer","Jack Cable","Jack","Doyer Channel","Display"];
 
+const mechanicalReceiveItems=["P/M Auto Hook","P/M N. Plate","P/M Feat Dog","P/M Bar Bush","P/M Fix Moving Knif","8000A Knif","P/M U-L Lopper","P/M Supper Tanson","O/L N. Plate","O/L U-L Lopper","O/L Divise Knif","O/L Knif Diver","O/L U-L Knif","O/L Feat Dog","F/L N.Plate","F/L Lopper","F/L Feat D/S","F/L Feat F/S","F/L Russ Cutter","B/H Hook","P/M Guide Scuru","Supper Glue","P/M Knif Patte"];
+
 document.getElementById('main').addEventListener('input', event => {
  const input = event.target;
  if(input.dataset.storeField !== 'item' || !['Accessories','Accessories2','Stationery','Mechanical','Electrical'].includes(storeCategory()) || activePage.endsWith('-report')) return;
@@ -11,7 +13,7 @@ document.getElementById('main').addEventListener('input', event => {
  if(!list){list=document.createElement('datalist');list.id='stationeryReceiveItems';document.getElementById('main').append(list);}
  input.setAttribute('list',list.id);
  const query=StoreCore.digits(input.value.trim()).toLocaleLowerCase();
- list.innerHTML=query.length<2?'':(storeCategory()==='Accessories2'?accessories2Items:storeCategory()==='Electrical'&&!storeDelivery()?electricalReceiveItems:stationeryReceiveItems).filter(value=>StoreCore.digits(value).toLocaleLowerCase().includes(query)).map(value=>`<option value="${esc(value)}"></option>`).join('');
+ list.innerHTML=query.length<2?'':(storeCategory()==='Accessories2'?accessories2Items:storeCategory()==='Electrical'&&!storeDelivery()?electricalReceiveItems:storeCategory()==='Mechanical'&&!storeDelivery()?mechanicalReceiveItems:stationeryReceiveItems).filter(value=>StoreCore.digits(value).toLocaleLowerCase().includes(query)).map(value=>`<option value="${esc(value)}"></option>`).join('');
 });
 
 
