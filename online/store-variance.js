@@ -7,10 +7,11 @@ function refreshStoreVariance(){if(!pageInfo(activePage)?.page.storeCategory||!s
 document.getElementById('main').addEventListener('input',event=>{if(['orderQty','receiveQty'].includes(event.target.dataset.storeField))refreshStoreVariance();});
 document.getElementById('main').addEventListener('focusout',event=>{if(event.target.dataset.storeField)refreshStoreVariance();});
 
-function storeReceiptMatch(a,b){const norm=v=>String(v??'').normalize('NFKC').trim().toLocaleLowerCase();return ['buyer','style','colour','size'].every(k=>norm(a[k])===norm(b[k]))&&norm(a.buyer)&&norm(a.style);}
+function storeReceiptMatch(a,b){const norm=v=>String(v??'').normalize('NFKC').trim().toLocaleLowerCase();return (storeCategory()==='Fabric'?['buyer','style','colour']:['buyer','style','colour','size']).every(k=>norm(a[k])===norm(b[k]))&&norm(a.buyer)&&norm(a.style);}
 function storePreviousReceived(row){if(!storeVarianceEnabled())return 0;const category=storeCategory(),editing=storeEditing?.category===category?storeEditing:null;let total=0;for(const file of state.records[StoreCore.key(category)]||[]){if(file.deletedAt||file.storeMovement==='Delivery'||file.id===editing?.id)continue;for(const prior of file.rows||[])if(storeReceiptMatch(row,prior))total+=Number(StoreCore.digits(prior.receiveQty||'0'))||0;}return Math.round(total*1000)/1000;}
 function storeReceiptTotals(){if(!pageInfo(activePage)?.page.storeCategory||!storeVarianceEnabled())return;const draft=storeBookingDraft();document.querySelectorAll('[data-store-field="receiveQty"]').forEach(input=>{const row=draft.rows[Number(input.dataset.storeRow)];if(!row)return;let hint=input.parentElement.querySelector('[data-receipt-total]');if(!hint){hint=document.createElement('small');hint.dataset.receiptTotal='';hint.style.cssText='display:block;font-size:11px;white-space:normal;color:#245746';input.after(hint);}const previous=storePreviousReceived(row),current=Number(StoreCore.digits(row.receiveQty||'0'))||0;hint.textContent='Previous: '+previous+' · Total: '+Math.round((previous+current)*1000)/1000;});}
 const receiptRender=renderStore;renderStore=function(){receiptRender();storeReceiptTotals();};
 document.getElementById('main').addEventListener('input',storeReceiptTotals);
 document.getElementById('main').addEventListener('focusout',storeReceiptTotals);
 const receiptSave=saveStore;saveStore=async function(){refreshStoreVariance();return receiptSave();};
+
