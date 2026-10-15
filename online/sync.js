@@ -8,7 +8,7 @@ async function warmWorkspace(){try{if(!dataCacheUserId)return;const cached=await
 async function loadData(force=false){
  if(dataSaving)return;
  if(dataLoadInFlight){dataForceAfterLoad=dataForceAfterLoad||force;return;}
- dataLoadInFlight=true;
+ dataLoadInFlight=true;$('#dataLoadingMessage').hidden=true;$('#retryData').hidden=true;
  try{
   const body=await dataRequest();
   // A slow read started before a save must never replace its newer result.
@@ -30,3 +30,4 @@ $('#retryData').onclick=()=>loadData(true);
 setInterval(()=>{if(!document.hidden&&dataReady&&!dataSaving)loadData();},120000);
 void warmWorkspace();
 loadData(true);
+
