@@ -1,7 +1,7 @@
 'use strict';
 const StoreCore=(()=>{
- const categories=['Fabric','Accessories','Stationery','Mechanical','Electrical','Requisition'];
- const columns=category=>category==='Fabric'?['buyer','style','colour','orderQty','receiveQty','receiveDate','excess','remarks']:category==='Accessories'?['buyer','style','item','size','colour','orderQty','receiveQty','receiveDate','excess','remarks']:['item','size','receiveQty','receiveDate',...(category==='Requisition'?[]:['excess']),'remarks'];
+ const categories=['Fabric','Accessories','Accessories2','Stationery','Mechanical','Electrical','Requisition'];
+ const columns=category=>category==='Fabric'?['buyer','style','colour','orderQty','receiveQty','receiveDate','excess','remarks']:['Accessories','Accessories2'].includes(category)?['buyer','style','item','size','colour','orderQty','receiveQty','receiveDate','excess','remarks']:['item','size','receiveQty','receiveDate',...(category==='Requisition'?[]:['excess']),'remarks'];
  const labels={buyer:'BUYER',style:'STYLE/ARTICLE',item:'ITEM',size:'SIZE',colour:'COLOUR',orderQty:'BOOKING QTY',receiveQty:'RECIVE QTY',receiveDate:'RECIVE DATE',excess:'SORT/EXCESS',remarks:'REMARKS'};
  const viewColumns=(category,delivery=false)=>columns(category).filter(field=>field!=='excess'||(category==='Stationery'?delivery:!delivery));
  const viewLabel=(category,field,delivery=false)=>delivery&&category!=='Stationery'&&field==='receiveQty'?'DELIVERY QTY':delivery&&category!=='Stationery'&&field==='receiveDate'?'DELIVERY DATE':labels[field];
