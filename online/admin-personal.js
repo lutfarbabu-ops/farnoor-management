@@ -11,7 +11,11 @@ const personalFileButtons=[
  ['staff-3','Staff-3','♙','#e1e5ff','#4c5093'],
  ['electrican','Electrican','ϟ','#f4e0f4','#8a3a88']
 ];
-let personalFileSelected='';
+let personalFileSelected='',personalCardLookup='',personalCardText='';
+function personalCardKey(value){return String(value??'').normalize('NFKC').trim().toLocaleLowerCase().replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c));}
+function personalCardRows(card=personalCardLookup){return (state.records['admin-documents']||[]).filter(row=>row.personalFile&&(!card||personalCardKey(row.personalEntry?.['field-0']||row.reference)===personalCardKey(card)));}
+function personalCardCount(folder){return personalCardLookup?personalCardRows().filter(row=>row.personalFolder===folder).length:0;}
+function personalCardLookupForm(){return `<form id="personalCardLookupForm" style="display:flex;justify-content:center;align-items:center;gap:10px;max-width:500px;margin:0 auto 20px"><input id="personalCardLookup" aria-label="Card No." placeholder="Card No." maxlength="120" autocomplete="off" style="min-width:0;flex:1;text-align:center" value="${esc(personalCardText)}"><button type="submit" class="primary">Save</button></form>`;}
 const personalEntryFields=[
  'কার্ড নং','পদবী বাংলা','পদবী ইংলিশ','সেকশন বাংলা','সেকশন ইংলিশ','লাইন','যোগদানের তারিখ',
  'নাম বাংলা','নাম ইংলিশ','পিতার নাম','মাতার নাম','লিঙ্গ','স্বামী/স্ত্রীর নাম','স্বামী/স্ত্রীর (বয়স)','স্বামী/স্ত্রীর (পেশা)',
@@ -37,17 +41,17 @@ renderPage=function(...args){
  if(activePage==='admin-personal-entry-report'){renderPersonalEntryReport();return;}
  if(activePage!=='admin-personal-file')return personalFileRenderPage.apply(this,args);
  const selected=personalFileButtons.find(item=>item[0]===personalFileSelected);
- $('#main').innerHTML=heading('Admin','Personal file','')+`<section class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,145px));gap:8px">${personalFileButtons.map(([id,name,icon,bg,fg])=>`<button type="button" data-personal-file="${id}" aria-pressed="${id===personalFileSelected}" style="display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 10px;border:1px solid ${fg}55;border-radius:8px;background:${bg};color:${fg};font-size:13px;font-weight:700;${id===personalFileSelected?'box-shadow:0 0 0 2px '+fg+';':''}"><span aria-hidden="true" style="font-size:19px">${icon}</span><span>${name}</span></button>`).join('')}</div></section>${selected?`<section class="panel" aria-label="${esc(selected[1])}"><h3 style="color:${selected[4]}">${esc(selected[1])}</h3>${personalFileSelected==='new'?personalEntryForm():personalSavedList(personalFileSelected)}</section>`:''}`;
+ $('#main').innerHTML=heading('Admin','Personal file','')+personalCardLookupForm()+`<section class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,145px));gap:8px">${personalFileButtons.map(([id,name,icon,bg,fg])=>`<button type="button" data-personal-file="${id}" aria-pressed="${id===personalFileSelected}" style="display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 10px;border:1px solid ${fg}55;border-radius:8px;background:${bg};color:${fg};font-size:13px;font-weight:700;${id===personalFileSelected?'box-shadow:0 0 0 2px '+fg+';':''}"><span aria-hidden="true" style="font-size:19px">${icon}</span><span>${name}${personalCardCount(id)?` <strong aria-label="${personalCardCount(id)} matches">(${personalCardCount(id)})</strong>`:''}</span></button>`).join('')}</div></section>${selected?`<section class="panel" aria-label="${esc(selected[1])}"><h3 style="color:${selected[4]}">${esc(selected[1])}</h3>${personalFileSelected==='new'?personalEntryForm():personalSavedList(personalFileSelected)}</section>`:''}`;
  if(typeof applyActionControls==='function')applyActionControls();
 };
 $('#main').addEventListener('click',event=>{
  const button=event.target.closest('[data-personal-file]');
  if(!button||activePage!=='admin-personal-file')return;
- if(button.dataset.personalFile==='new'&&personalFileSelected!=='new'&&personalEntryId){for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];personalEntryId=null;}personalFileSelected=button.dataset.personalFile;renderPage();
+ if(button.dataset.personalFile==='new'){personalCardLookup='';personalCardText='';}if(button.dataset.personalFile==='new'&&personalFileSelected!=='new'&&personalEntryId){for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];personalEntryId=null;}personalFileSelected=button.dataset.personalFile;renderPage();
 });
 
 function personalSavedList(folder){
- const rows=(state.records['admin-documents']||[]).filter(r=>r.personalFile&&r.personalFolder===folder);
+ const rows=personalCardRows().filter(r=>r.personalFolder===folder);
  return '<div class="table-wrap"><table><thead><tr><th>Card No.</th><th>Name</th><th>Action</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.reference)+'</td><td>'+esc(r.name)+'</td><td><button data-personal-open="'+esc(r.id)+'">Open</button></td></tr>').join('')+(rows.length?'':'<tr><td colspan="3">No saved entries.</td></tr>')+'</tbody></table></div>';
 }
 $('#main').addEventListener('change',event=>{if(event.target.id==='personalFolder')personalEntryFolder=event.target.value;if(event.target.dataset.personalField)personalEntryDraft[event.target.dataset.personalField]=event.target.value;});
@@ -104,3 +108,13 @@ function renderPersonalEntryReport(){
  $('#main').innerHTML=heading('Admin · Personal file','','')+'<section class="panel"><h2 style="text-align:center;font-size:26px;font-weight:800;margin:12px 0 24px">ENTRY REPORT</h2><div class="table-wrap"><table class="personal-full-report" style="width:max-content;min-width:100%;border-collapse:collapse"><thead><tr>'+top+'</tr><tr>'+lower+'</tr></thead><tbody>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+values(row)+'<td class="no-print"><button data-personal-open="'+esc(row.id)+'">Open</button></td></tr>').join('')+(rows.length?'':'<tr><td colspan="'+count+'">No saved entries.</td></tr>')+'</tbody></table></div></section><style>.personal-full-report th,.personal-full-report td{border:1px solid #6c9485;min-width:120px;max-width:280px;padding:10px;text-align:center;vertical-align:middle;white-space:normal;overflow-wrap:anywhere}.personal-full-report th{background:#e2f1e9;color:#214d3d;font-size:14px}.personal-full-report td{font-size:15px}</style>';
  if(typeof applyActionControls==='function')applyActionControls();
 }
+
+$('#main').addEventListener('input',event=>{if(event.target.id==='personalCardLookup')personalCardText=event.target.value;});
+$('#main').addEventListener('submit',event=>{
+ if(event.target.id!=='personalCardLookupForm')return;event.preventDefault();
+ const card=$('#personalCardLookup').value.trim();if(!card)return toast('কার্ড নং লিখুন।');
+ const matches=personalCardRows(card),match=matches.find(row=>personalFileButtons.slice(1).some(button=>button[0]===row.personalFolder));
+ if(!match){personalCardLookup='';personalFileSelected='';renderPage();toast('এই কার্ড নম্বরের সেভ করা এন্ট্রি পাওয়া যায়নি।');return;}
+ personalCardText=card;personalCardLookup=card;personalFileSelected=match.personalFolder;renderPage();
+ toast('কার্ড নম্বরের সঙ্গে মিলে সেভ করা ফাইল দেখানো হয়েছে।');
+});
