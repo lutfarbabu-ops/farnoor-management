@@ -2046,3 +2046,6 @@ window.DEPARTMENTS.find(d=>d.id==='merch').pages=window.DEPARTMENTS.find(d=>d.id
 
 {const store=window.DEPARTMENTS.find(d=>d.id==='inventory');const original=store.pages.filter(p=>p.storeCategory==='Stationery'||p.stockCategory==='Stationery');const copies=original.map(p=>({...p,id:p.id.replace('store-stationery-','store-accessories2-'),navPath:['Accessories2'],...(p.storeCategory?{storeCategory:'Accessories2'}:{stockCategory:'Accessories2',permissionPage:'store-accessories2-receive'})}));const last=store.pages.map(p=>p.storeCategory||p.stockCategory).lastIndexOf('Accessories');store.pages.splice(last+1,0,...copies);const catalog=window.FARNOOR_PAGE_CATALOG.filter(p=>p.id.startsWith('store-stationery-'));window.FARNOOR_PAGE_CATALOG.push(...catalog.map(p=>({...p,id:p.id.replace('store-stationery-','store-accessories2-'),parent:'Accessories2',resources:p.resources.map(r=>r.replace('store-stationery-','store-accessories2-'))})));}
 
+
+// Admin file pages use the existing Documents viewing access.
+window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[{id:'admin-personal-file',name:'Personal file',icon:'▣',shade:'#dceffc'},{id:'admin-maternity-file',name:'Maternity File',icon:'♡',shade:'#fce0ed'},{id:'admin-warning-letter',name:'Warning Letter',icon:'⚠',shade:'#fff0ce'}].map(page=>({...page,navigationOnly:true,permissionPage:'admin-documents'})));
