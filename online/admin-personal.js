@@ -32,6 +32,7 @@ function personalEntryForm(){
 $('#main').addEventListener('input',event=>{if(event.target.dataset.personalField)personalEntryDraft[event.target.dataset.personalField]=event.target.value;});
 const personalFileRenderPage=renderPage;
 renderPage=function(...args){
+ if(activePage==='admin-personal-entry-report'){renderPersonalEntryReport();return;}
  if(activePage!=='admin-personal-file')return personalFileRenderPage.apply(this,args);
  const selected=personalFileButtons.find(item=>item[0]===personalFileSelected);
  $('#main').innerHTML=heading('Admin','Personal file','')+`<section class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,145px));gap:8px">${personalFileButtons.map(([id,name,icon,bg,fg])=>`<button type="button" data-personal-file="${id}" aria-pressed="${id===personalFileSelected}" style="display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 10px;border:1px solid ${fg}55;border-radius:8px;background:${bg};color:${fg};font-size:13px;font-weight:700;${id===personalFileSelected?'box-shadow:0 0 0 2px '+fg+';':''}"><span aria-hidden="true" style="font-size:19px">${icon}</span><span>${name}</span></button>`).join('')}</div></section>${selected?`<section class="panel" aria-label="${esc(selected[1])}"><h3 style="color:${selected[4]}">${esc(selected[1])}</h3>${personalFileSelected==='new'?personalEntryForm():personalSavedList(personalFileSelected)}</section>`:''}`;
@@ -67,9 +68,15 @@ async function personalSaveEntry(){
  try{if(await commit(next)){personalEntryId=record.id;toast('Personal file saved online.');}}finally{personalEntryBusy=false;if(activePage==='admin-personal-file')renderPage();}
 }
 $('#main').addEventListener('click',event=>{
- if(activePage!=='admin-personal-file')return;
+ if(!['admin-personal-file','admin-personal-entry-report'].includes(activePage))return;
  if(event.target.closest('#personalSave'))void personalSaveEntry();
  const open=event.target.closest('[data-personal-open]');if(!open)return;
  const row=(state.records['admin-documents']||[]).find(r=>r.id===open.dataset.personalOpen&&r.personalFile);if(!row)return;
- for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];Object.assign(personalEntryDraft,row.personalEntry);personalEntryId=row.id;personalEntryFolder=row.personalFolder;personalFileSelected='new';renderPage();
+ for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];Object.assign(personalEntryDraft,row.personalEntry);personalEntryId=row.id;personalEntryFolder=row.personalFolder;personalFileSelected='new';if(activePage==='admin-personal-entry-report')goPage('admin-personal-file');else renderPage();
 });
+
+function renderPersonalEntryReport(){
+ const rows=(state.records['admin-documents']||[]).filter(row=>row.personalFile).slice().sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||'')));
+ $('#main').innerHTML=heading('Admin · Personal file','Entry Report','')+'<section class="panel"><div class="table-wrap"><table><thead><tr><th>SL</th><th>Card No.</th><th>Name</th><th>File</th><th>Saved Date</th><th>Action</th></tr></thead><tbody>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(row.reference)+'</td><td>'+esc(row.name)+'</td><td>'+esc(personalFileButtons.find(b=>b[0]===row.personalFolder)?.[1]||'')+'</td><td>'+esc(row.date)+'</td><td><button data-personal-open="'+esc(row.id)+'">Open</button></td></tr>').join('')+(rows.length?'':'<tr><td colspan="6">No saved entries.</td></tr>')+'</tbody></table></div></section>';
+ if(typeof applyActionControls==='function')applyActionControls();
+}
