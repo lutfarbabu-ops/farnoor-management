@@ -1,5 +1,5 @@
 'use strict';
-function storeBookingEnabled(){return ['Fabric','Accessories','Accessories2'].includes(storeCategory())&&!storeDelivery()&&!activePage.endsWith('-report');}
+function storeBookingEnabled(){return ['Fabric','Accessories'].includes(storeCategory())&&!storeDelivery()&&!activePage.endsWith('-report');}
 function storeBookingSource(){return FarnoorAccess.canPage('booking-report')?(state.records.booking||[]).filter(file=>!file.deletedAt).flatMap(file=>(file.rows||[]).map(row=>({...row,orderQty:row.bookingQty??''}))):[];}
 function storeBookingDraft(){const category=storeCategory();return storeEditing?.category===category&&storeEditing.draft.storeMovement!=='Delivery'?storeEditing.draft:storeDraft(category);}
 const storeBookingFields=['buyer','style','item','orderQty'];

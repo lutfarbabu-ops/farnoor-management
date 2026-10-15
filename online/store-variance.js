@@ -1,5 +1,5 @@
 'use strict';
-function storeVarianceEnabled(category=storeCategory()){return ['Fabric','Accessories','Accessories2'].includes(category)&&!storeDelivery();}
+function storeVarianceEnabled(category=storeCategory()){return ['Fabric','Accessories'].includes(category)&&!storeDelivery();}
 function storeVarianceValue(row){const booking=StoreCore.digits(row.orderQty??''),received=StoreCore.digits(row.receiveQty??'');if(!booking||!received||!/^\d+(\.\d{1,3})?$/.test(booking)||!/^\d+(\.\d{1,3})?$/.test(received))return '';return String(Math.round((Number(received)+storePreviousReceived(row)-Number(booking))*1000)/1000);}
 function storeVarianceText(value){return value!==''&&Number(value)>0?'+'+value:value;}
 function storeVarianceCell(row,edit,index,col){if(edit)row.excess=storeVarianceValue(row);const value=String(row.excess??''),color=value!==''&&Number(value)<0?'#c62828':value!==''&&Number(value)>0?'#15803d':'inherit';return edit?`<input readonly aria-readonly="true" data-store-row="${index}" data-store-col="${col}" data-store-field="excess" aria-label="SORT/EXCESS row ${index+1}" value="${esc(storeVarianceText(value))}" style="color:${color};font-weight:700">`:`<span style="color:${color};font-weight:700">${esc(storeVarianceText(value))}</span>`;}
