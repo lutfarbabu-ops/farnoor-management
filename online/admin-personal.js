@@ -17,7 +17,7 @@ const personalEntryFields=[
  'নাম বাংলা','নাম ইংলিশ','পিতার নাম','মাতার নাম','লিঙ্গ','স্বামী/স্ত্রীর নাম','স্বামী/স্ত্রীর (বয়স)','স্বামী/স্ত্রীর (পেশা)',
  {title:'স্থায়ী ঠিকানা:',fields:['গ্রামঃ','পোঃ','থানাঃ','জেলাঃ']},
  {title:'বর্তমান ঠিকানা:',fields:['গ্রামঃ','পোঃ','থানাঃ','জেলাঃ']},
- 'জন্ম তারিখ','জন্ম সাল','শিক্ষাগত যোগ্যতা','মোবাইল নং','অভিজ্ঞতা','প্রস্তাবিত বেতন','রক্তের গ্রুপ','জাতীয় আইডি নং',
+ 'জন্ম তারিখ','জন্ম সাল','শিক্ষাগত যোগ্যতা','নিজের মোবাইল নং','অভিজ্ঞতা','প্রস্তাবিত বেতন','রক্তের গ্রুপ','জাতীয় আইডি নং',
  'শারীরিক শনাক্তকরণ চিহ্ন','উচ্চতা','ভাইয়ের সংখ্যা','বোনের সংখ্যা','নিজ অবস্থান','দৈহিক সক্ষমতা',
  {children:true,title:'সন্তানাদির বিবরণ:'},
  'পূর্ববর্তী প্রতিষ্ঠানের চাকুরীর বিবরণ','জাতীয়তা','ধর্ম','পরিচিত বিশিষ্ট ব্যক্তিবর্গ','নমিনীর নাম','নমিনীর ঠিকানা',
@@ -27,7 +27,7 @@ const personalEntryDraft={};
 let personalEntryId=null,personalEntryFolder='file-1',personalEntryBusy=false;
 function personalEntryForm(){
  const row=(label,key)=>`<div class="personal-entry-row"><label for="personal-${key}">${esc(label)}</label><input id="personal-${key}" data-personal-field="${key}" value="${esc(personalEntryDraft[key]||'')}" autocomplete="off" ${/তারিখ/.test(label)?'placeholder="DD/MM/YYYY"':''}></div>`;
- return `<style>.personal-entry-form{max-width:920px;margin:auto}.personal-entry-row{display:grid;grid-template-columns:minmax(150px,32%) minmax(0,1fr);align-items:center;gap:16px;padding:7px 0;border-bottom:1px solid #e4eee8}.personal-entry-row label{text-align:left;font-size:16px;color:#234b40}.personal-entry-row input{width:100%;min-height:39px;font-size:17px}.personal-entry-form h4{margin:24px 0 6px;padding:10px;background:#e5f2ed;color:#185b43;border-radius:7px}.personal-entry-children input{min-width:65px;width:100%;font-size:16px}.personal-entry-children th{font-size:14px}.personal-entry-children td{padding:7px}@media(max-width:520px){.personal-entry-row{grid-template-columns:minmax(120px,42%) minmax(0,1fr);gap:8px}.personal-entry-row label{font-size:14px}}</style><form class="personal-entry-form" aria-label="Personal file New Entry" onsubmit="return false">${personalEntryFields.map((field,index)=>typeof field==='string'?row(field,'field-'+index):field.children?`<h4>${field.title}</h4><div class="table-wrap"><table class="personal-entry-children"><thead><tr><th>ক্রমিক নং</th><th>নাম</th><th>বয়স</th><th>লিঙ্গ</th></tr></thead><tbody>${Array.from({length:5},(_,i)=>`<tr><td>${i+1}</td>${['নাম','বয়স','লিঙ্গ'].map((label,col)=>{const key='child-'+i+'-'+col;return `<td><input aria-label="সন্তান ${i+1} ${label}" data-personal-field="${key}" value="${esc(personalEntryDraft[key]||'')}" autocomplete="off"></td>`;}).join('')}</tr>`).join('')}</tbody></table></div>`:`<h4>${field.title}</h4>${field.fields.map((label,col)=>row(label,'address-'+index+'-'+col)).join('')}`).join('')}<div style="display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:22px"><label for="personalFolder">Save to</label><select id="personalFolder" style="width:150px">${personalFileButtons.slice(1).map(([id,name])=>`<option value="${id}" ${id===personalEntryFolder?'selected':''}>${name}</option>`).join('')}</select><button type="button" class="primary" id="personalSave" data-page-action-required="edit" ${personalEntryBusy?'disabled':''}>${personalEntryBusy?'Saving…':'Save'}</button></div></form>`;
+ return `<style>.personal-entry-form{max-width:920px;margin:auto}.personal-entry-row{display:grid;grid-template-columns:minmax(150px,32%) minmax(0,1fr);align-items:center;gap:16px;padding:7px 0;border-bottom:1px solid #e4eee8}.personal-entry-row label{text-align:left;font-size:16px;color:#234b40}.personal-entry-row input{width:100%;min-height:39px;font-size:17px}.personal-entry-form h4{margin:24px 0 6px;padding:10px;background:#e5f2ed;color:#185b43;border-radius:7px}.personal-entry-children input{min-width:65px;width:100%;font-size:16px}.personal-entry-children th{font-size:14px}.personal-entry-children td{padding:7px}@media(max-width:520px){.personal-entry-row{grid-template-columns:minmax(120px,42%) minmax(0,1fr);gap:8px}.personal-entry-row label{font-size:14px}}</style><form class="personal-entry-form" aria-label="Personal file New Entry" onsubmit="return false">${personalEntryFields.map((field,index)=>typeof field==='string'?row(field,'field-'+index)+(index===20?row('ফ্যামেলী অন্য জনের মোবাইল নং','family-mobile'):''):field.children?`<h4>${field.title}</h4><div class="table-wrap"><table class="personal-entry-children"><thead><tr><th>ক্রমিক নং</th><th>নাম</th><th>বয়স</th><th>লিঙ্গ</th></tr></thead><tbody>${Array.from({length:5},(_,i)=>`<tr><td>${i+1}</td>${['নাম','বয়স','লিঙ্গ'].map((label,col)=>{const key='child-'+i+'-'+col;return `<td><input aria-label="সন্তান ${i+1} ${label}" data-personal-field="${key}" value="${esc(personalEntryDraft[key]||'')}" autocomplete="off"></td>`;}).join('')}</tr>`).join('')}</tbody></table></div>`:`<h4>${field.title}</h4>${field.fields.map((label,col)=>row(label,'address-'+index+'-'+col)).join('')}`).join('')}<div style="display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:22px"><label for="personalFolder">Save to</label><select id="personalFolder" style="width:150px">${personalFileButtons.slice(1).map(([id,name])=>`<option value="${id}" ${id===personalEntryFolder?'selected':''}>${name}</option>`).join('')}</select><button type="button" class="primary" id="personalSave" data-page-action-required="edit" ${personalEntryBusy?'disabled':''}>${personalEntryBusy?'Saving…':'Save'}</button></div></form>`;
 }
 $('#main').addEventListener('input',event=>{if(event.target.dataset.personalField)personalEntryDraft[event.target.dataset.personalField]=event.target.value;});
 const personalFileRenderPage=renderPage;
@@ -57,6 +57,7 @@ $('#main').addEventListener('keydown',event=>{
 async function personalSaveEntry(){
  if(personalEntryBusy)return;
  if(!FarnoorAccess.canAction('admin-documents','edit'))return toast('Documents edit permission is required.');
+ try{for(const key of ['field-6','field-17'])if(personalEntryDraft[key]?.trim())personalEntryDraft[key]=normalizeDate(personalEntryDraft[key]);}catch(error){toast(error.message);return;}
  const card=(personalEntryDraft['field-0']||'').trim(),name=(personalEntryDraft['field-7']||personalEntryDraft['field-8']||'').trim();
  if(!card||!name)return toast('কার্ড নং ও নাম লিখুন।');
  if(card.length>120||name.length>200||Object.values(personalEntryDraft).some(value=>value.length>2000))return toast('কোনো ঘরে লেখা বেশি বড় হয়েছে।');
@@ -75,8 +76,28 @@ $('#main').addEventListener('click',event=>{
  for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];Object.assign(personalEntryDraft,row.personalEntry);personalEntryId=row.id;personalEntryFolder=row.personalFolder;personalFileSelected='new';if(activePage==='admin-personal-entry-report')goPage('admin-personal-file');else renderPage();
 });
 
+
+function personalReportDate(value){if(!value)return '';try{return normalizeDate(value);}catch{return value;}}
+$('#main').addEventListener('focusout',event=>{
+ const input=event.target;if(!['field-6','field-17'].includes(input.dataset.personalField)||!input.value.trim())return;
+ try{input.value=normalizeDate(input.value);personalEntryDraft[input.dataset.personalField]=input.value;input.setCustomValidity('');}catch(error){input.setCustomValidity(error.message);toast(error.message);}
+});
+function personalReportColumns(){
+ const columns=[];personalEntryFields.forEach((field,index)=>{
+  if(typeof field==='string'){columns.push({label:field,key:'field-'+index,date:/তারিখ/.test(field)});if(index===20)columns.push({label:'ফ্যামেলী অন্য জনের মোবাইল নং',key:'family-mobile'});}
+  else if(field.children)columns.push({label:field.title,children:true,labels:['ক্রমিক নং','নাম','বয়স','লিঙ্গ']});
+  else columns.push({label:field.title,keys:field.fields.map((_,col)=>'address-'+index+'-'+col),labels:field.fields});
+ });return columns;
+}
 function renderPersonalEntryReport(){
- const rows=(state.records['admin-documents']||[]).filter(row=>row.personalFile).slice().sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||'')));
- $('#main').innerHTML=heading('Admin · Personal file','Entry Report','')+'<section class="panel"><div class="table-wrap"><table><thead><tr><th>SL</th><th>Card No.</th><th>Name</th><th>File</th><th>Saved Date</th><th>Action</th></tr></thead><tbody>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(row.reference)+'</td><td>'+esc(row.name)+'</td><td>'+esc(personalFileButtons.find(b=>b[0]===row.personalFolder)?.[1]||'')+'</td><td>'+esc(row.date)+'</td><td><button data-personal-open="'+esc(row.id)+'">Open</button></td></tr>').join('')+(rows.length?'':'<tr><td colspan="6">No saved entries.</td></tr>')+'</tbody></table></div></section>';
+ const rows=(state.records['admin-documents']||[]).filter(row=>row.personalFile).slice().sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||''))),columns=personalReportColumns(),count=2+columns.reduce((sum,col)=>sum+(col.labels?.length||1),0);
+ const top='<th rowspan="2">ক্রমিক নং</th>'+columns.map(col=>col.labels?'<th colspan="4">'+esc(col.label)+'</th>':'<th rowspan="2">'+esc(col.label)+'</th>').join('')+'<th rowspan="2" class="no-print">Action</th>';
+ const lower=columns.filter(col=>col.labels).flatMap(col=>col.labels).map(label=>'<th>'+esc(label)+'</th>').join('');
+ const values=row=>{const entry=row.personalEntry||{};return columns.map(col=>{
+  if(col.children){const children=Array.from({length:5},(_,i)=>[i+1,...[0,1,2].map(n=>entry['child-'+i+'-'+n]||'')]).filter(child=>child.slice(1).some(Boolean));return [0,1,2,3].map(i=>'<td>'+children.map(child=>esc(child[i])).join('<br>')+'</td>').join('');}
+  if(col.keys)return col.keys.map(key=>'<td>'+esc(entry[key])+'</td>').join('');
+  return '<td>'+esc(col.date?personalReportDate(entry[col.key]):entry[col.key])+'</td>';
+ }).join('');};
+ $('#main').innerHTML=heading('Admin · Personal file','','')+'<section class="panel"><h2 style="text-align:center;font-size:26px;font-weight:800;margin:12px 0 24px">ENTRY REPORT</h2><div class="table-wrap"><table class="personal-full-report" style="width:max-content;min-width:100%;border-collapse:collapse"><thead><tr>'+top+'</tr><tr>'+lower+'</tr></thead><tbody>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+values(row)+'<td class="no-print"><button data-personal-open="'+esc(row.id)+'">Open</button></td></tr>').join('')+(rows.length?'':'<tr><td colspan="'+count+'">No saved entries.</td></tr>')+'</tbody></table></div></section><style>.personal-full-report th,.personal-full-report td{border:1px solid #6c9485;min-width:120px;max-width:280px;padding:10px;text-align:center;vertical-align:middle;white-space:normal;overflow-wrap:anywhere}.personal-full-report th{background:#e2f1e9;color:#214d3d;font-size:14px}.personal-full-report td{font-size:15px}</style>';
  if(typeof applyActionControls==='function')applyActionControls();
 }
