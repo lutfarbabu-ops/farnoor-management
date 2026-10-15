@@ -54,5 +54,10 @@ window.FarnoorAPI = (() => {
     return response;
   }
   function sessionUserId(){try{const token=read(storageKey)?.access_token;if(!token)return null;const payload=token.split('.')[1].replaceAll('-','+').replaceAll('_','/');return JSON.parse(atob(payload)).sub||null;}catch{return null;}}
-  return {request,go,configured,sessionUserId};
+  // Start the existing authenticated read while the remaining page scripts load.
+  // Resolve failures as data so no rejected promise is left unhandled.
+  let workspaceStartup = document.getElementById('workspace') && sessionUserId()
+    ? request('/api/workspace').then(response=>({response}),error=>({error})) : null;
+  function takeWorkspaceStartup(){const pending=workspaceStartup;workspaceStartup=null;return pending;}
+  return {request,go,configured,sessionUserId,takeWorkspaceStartup};
 })();
