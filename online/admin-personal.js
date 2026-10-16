@@ -44,7 +44,7 @@ renderPage=function(...args){
  if(activePage==='admin-personal-entry-report'){renderPersonalEntryReport();return;}
  if(!['admin-personal-file','admin-personal-print'].includes(activePage))return personalFileRenderPage.apply(this,args);
  if(activePage==='admin-personal-file'){$('#main').innerHTML=heading('Admin','Personal file','');return;}
- $('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+personalPrintFileButtons()+(personalPrintSubmitted?'<section class="panel" aria-label="Selected company and name">'+personalPrintCompanyInfo()+'<p style="text-align:center;font-size:24px;font-weight:700;color:#123f32">'+esc(personalNameChoice)+'</p></section>':'')+(personalFileSelected?'<section class="panel" aria-label="Selected file form"><h3>'+esc(personalFileButtons.find(b=>b[0]===personalFileSelected)?.[1]||'')+'</h3>'+personalSavedList(personalFileSelected)+'</section>':'');
+ $('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+personalPrintFileButtons()+(personalPrintSubmitted?'<section class="panel" aria-label="Selected company and name">'+personalPrintCompanyInfo()+'<p style="text-align:center;font-size:24px;font-weight:700;color:#123f32">'+esc(personalNameChoice)+'</p></section>':'');
  if(typeof applyActionControls==='function')applyActionControls();
 };
 $('#main').addEventListener('click',event=>{

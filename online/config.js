@@ -2059,3 +2059,5 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[{id:'admin-personal-fi
 {const admin=window.DEPARTMENTS.find(d=>d.id==='admin');for(const [key,name] of [['file-1','File-1'],['file-2','File-2'],['file-3','File-3'],['file-4','File-4'],['file-5','File-5'],['file-6','File-6'],['file-7','File-7'],['staff-3','Staff-3'],['electrican','Electrican']])admin.pages.push({id:'admin-personal-form-'+key,name,navPath:['Personal file','Print'],navigationOnly:true,permissionPage:'admin-documents'});}
 
 {const page=window.DEPARTMENTS.find(d=>d.id==='admin').pages.find(p=>p.id==='admin-personal-print');page.navPath=['Personal file','Print'];page.groupEntry=true;}
+
+{const admin=window.DEPARTMENTS.find(d=>d.id==='admin');for(const p of admin.pages.filter(p=>p.id.startsWith('admin-personal-form-')))p.icon='▤';}
