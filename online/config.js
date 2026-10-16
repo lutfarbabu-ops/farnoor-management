@@ -2051,3 +2051,5 @@ window.DEPARTMENTS.find(d=>d.id==='merch').pages=window.DEPARTMENTS.find(d=>d.id
 window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[{id:'admin-personal-file',name:'Personal file',icon:'▣',shade:'#dceffc'},{id:'admin-maternity-file',name:'Maternity File',icon:'♡',shade:'#fce0ed'},{id:'admin-warning-letter',name:'Warning Letter',icon:'⚠',shade:'#fff0ce'}].map(page=>({...page,navigationOnly:true,permissionPage:'admin-documents'})));
 
 {const admin=window.DEPARTMENTS.find(d=>d.id==='admin'),personal=admin.pages.find(p=>p.id==='admin-personal-file');personal.navPath=['Personal file'];personal.groupEntry=true;admin.pages.splice(admin.pages.indexOf(personal)+1,0,{id:'admin-personal-entry-report',name:'Entry Report',navPath:['Personal file'],icon:'▤',shade:'#e0f2ea',navigationOnly:true,permissionPage:'admin-documents'});}
+
+{const admin=window.DEPARTMENTS.find(d=>d.id==='admin'),personal=admin.pages.find(p=>p.id==='admin-personal-file');admin.pages.splice(admin.pages.indexOf(personal)+1,0,{id:'admin-personal-new-entry',name:'New Entry',navPath:['Personal file'],icon:'✚',shade:'#d9f3e6',navigationOnly:true,permissionPage:'admin-documents'});}
