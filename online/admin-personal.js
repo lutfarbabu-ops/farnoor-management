@@ -38,17 +38,18 @@ function personalOptionMatches(key,value){const norm=text=>String(text).normaliz
 $('#main').addEventListener('input',event=>{const input=event.target,key=input.dataset.personalField;if(!key)return;personalEntryDraft[key]=input.value;if(personalEntryOptions[key])personalShowChoices(input);});
 const personalFileRenderPage=renderPage;
 renderPage=function(...args){
- if(activePage==='admin-personal-print'){$('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+'<section class="panel">'+personalSavedList('file-1')+'</section>';if(typeof applyActionControls==='function')applyActionControls();return;}
+
  if(activePage==='admin-personal-new-entry'){$('#main').innerHTML=heading('Admin','New Entry','')+'<section class="panel">'+personalEntryForm()+'</section>';if(typeof applyActionControls==='function')applyActionControls();return;}
  if(activePage==='admin-personal-entry-report'){renderPersonalEntryReport();return;}
- if(activePage!=='admin-personal-file')return personalFileRenderPage.apply(this,args);
+ if(!['admin-personal-file','admin-personal-print'].includes(activePage))return personalFileRenderPage.apply(this,args);
+ if(activePage==='admin-personal-file'){$('#main').innerHTML=heading('Admin','Personal file','');return;}
  const selected=personalFileButtons.find(item=>item[0]===personalFileSelected);
- $('#main').innerHTML=heading('Admin','Personal file','')+personalCardLookupForm()+`<section class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,145px));gap:8px">${personalFileButtons.filter(item=>item[0]!=='new').map(([id,name,icon,bg,fg])=>`<button type="button" data-personal-file="${id}" aria-pressed="${id===personalFileSelected}" style="display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 10px;border:1px solid ${fg}55;border-radius:8px;background:${bg};color:${fg};font-size:13px;font-weight:700;${id===personalFileSelected?'box-shadow:0 0 0 2px '+fg+';':''}"><span aria-hidden="true" style="font-size:19px">${icon}</span><span>${name}${personalCardCount(id)?` <strong aria-label="${personalCardCount(id)} matches">(${personalCardCount(id)})</strong>`:''}</span></button>`).join('')}</div></section>${selected?`<section class="panel" aria-label="${esc(selected[1])}"><h3 style="color:${selected[4]}">${esc(selected[1])}</h3>${personalFileSelected==='new'?personalEntryForm():personalSavedList(personalFileSelected)}</section>`:''}`;
+ $('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+`<section class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,145px));gap:8px">${personalFileButtons.filter(item=>item[0]!=='new').map(([id,name,icon,bg,fg])=>`<button type="button" data-personal-file="${id}" aria-pressed="${id===personalFileSelected}" style="display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 10px;border:1px solid ${fg}55;border-radius:8px;background:${bg};color:${fg};font-size:13px;font-weight:700;${id===personalFileSelected?'box-shadow:0 0 0 2px '+fg+';':''}"><span aria-hidden="true" style="font-size:19px">${icon}</span><span>${name}${personalCardCount(id)?` <strong aria-label="${personalCardCount(id)} matches">(${personalCardCount(id)})</strong>`:''}</span></button>`).join('')}</div></section>${selected?`<section class="panel" aria-label="${esc(selected[1])}"><h3 style="color:${selected[4]}">${esc(selected[1])}</h3>${personalFileSelected==='new'?personalEntryForm():personalSavedList(personalFileSelected)}</section>`:''}`;
  if(typeof applyActionControls==='function')applyActionControls();
 };
 $('#main').addEventListener('click',event=>{
  const button=event.target.closest('[data-personal-file]');
- if(!button||activePage!=='admin-personal-file')return;
+ if(!button||activePage!=='admin-personal-print')return;
  if(button.dataset.personalFile==='new'){personalCardLookup='';personalCardText='';}if(button.dataset.personalFile==='new'&&personalFileSelected!=='new'&&personalEntryId){for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];personalEntryId=null;}personalFileSelected=button.dataset.personalFile;renderPage();
 });
 
