@@ -11,11 +11,11 @@ const personalFileButtons=[
  ['staff-3','Staff-3','♙','#e1e5ff','#4c5093'],
  ['electrican','Electrican','ϟ','#f4e0f4','#8a3a88']
 ];
-let personalFileSelected='',personalCardLookup='',personalCardText='';
+let personalFileSelected='',personalCardLookup='',personalCardText='',personalCompanyChoice='',personalNameChoice='';
 function personalCardKey(value){return String(value??'').normalize('NFKC').trim().toLocaleLowerCase().replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c));}
 function personalCardRows(card=personalCardLookup){return (state.records['admin-documents']||[]).filter(row=>row.personalFile&&(!card||personalCardKey(row.personalEntry?.['field-0']||row.reference)===personalCardKey(card)));}
 function personalCardCount(folder){return personalCardLookup?personalCardRows().filter(row=>row.personalFolder===folder).length:0;}
-function personalCardLookupForm(){return `<form id="personalCardLookupForm" style="display:flex;justify-content:center;align-items:center;gap:10px;max-width:500px;margin:0 auto 20px"><input id="personalCardLookup" aria-label="Card No." placeholder="Card No." maxlength="120" autocomplete="off" style="min-width:0;flex:1;text-align:center" value="${esc(personalCardText)}"><button type="submit" class="primary">Save</button></form>`;}
+function personalCardLookupForm(){const options=(items,current)=>items.map(item=>`<option value="${esc(item)}"${item===current?' selected':''}>${esc(item)}</option>`).join('');return `<form id="personalCardLookupForm" class="personal-file-controls" style="display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:end;gap:10px;margin:0 0 20px"><label style="display:grid;gap:4px;width:170px">Card No.<input id="personalCardLookup" aria-label="Card No." placeholder="Card No." maxlength="120" autocomplete="off" value="${esc(personalCardText)}"></label><label style="display:grid;gap:4px;min-width:240px">Company<select id="personalCompanyChoice" aria-label="Company"><option value="">Select company</option>${options(['FARNOOR GARMENTS LTD','FARNOOR GARMENTS LTD. UNIT-2'],personalCompanyChoice)}</select></label><label style="display:grid;gap:4px;min-width:220px">Name<select id="personalNameChoice" aria-label="Name"><option value="">Select name</option>${options(['সৈয়দ আশরাফুল হক','মোঃ মাসুদ রানা','মোঃ রাফে-উজ-জামান','লামুসা আলী'],personalNameChoice)}</select></label><button type="submit" class="primary">Save</button></form>`;}
 const personalEntryFields=[
  'কার্ড নং','পদবী বাংলা','পদবী ইংলিশ','সেকশন বাংলা','সেকশন ইংলিশ','লাইন','যোগদানের তারিখ',
  'নাম বাংলা','নাম ইংলিশ','পিতার নাম','মাতার নাম','লিঙ্গ','স্বামী/স্ত্রীর নাম','স্বামী/স্ত্রীর (বয়স)','স্বামী/স্ত্রীর (পেশা)',
@@ -136,3 +136,5 @@ $('#main').addEventListener('keydown',event=>{
  if(event.key==='Enter'){const value=options[Math.max(0,personalChoiceIndex)].dataset.personalChoiceValue;personalChooseValue(value);const fields=[...$('#main').querySelectorAll('[data-personal-field]')],next=fields[fields.indexOf(input)+1];if(next)next.focus();return;}
  personalChoiceIndex=(personalChoiceIndex+(event.key==='ArrowDown'?1:-1)+options.length)%options.length;options.forEach((option,index)=>option.setAttribute('aria-selected',String(index===personalChoiceIndex)));input.setAttribute('aria-activedescendant',options[personalChoiceIndex].id);options[personalChoiceIndex].scrollIntoView({block:'nearest'});
 },true);
+
+$('#main').addEventListener('change',event=>{if(event.target.id==='personalCompanyChoice')personalCompanyChoice=event.target.value;if(event.target.id==='personalNameChoice')personalNameChoice=event.target.value;});
