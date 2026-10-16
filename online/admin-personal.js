@@ -38,6 +38,7 @@ function personalOptionMatches(key,value){const norm=text=>String(text).normaliz
 $('#main').addEventListener('input',event=>{const input=event.target,key=input.dataset.personalField;if(!key)return;personalEntryDraft[key]=input.value;if(personalEntryOptions[key])personalShowChoices(input);});
 const personalFileRenderPage=renderPage;
 renderPage=function(...args){
+ if(activePage==='admin-personal-print'){$('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+'<section class="panel">'+personalSavedList('file-1')+'</section>';if(typeof applyActionControls==='function')applyActionControls();return;}
  if(activePage==='admin-personal-new-entry'){$('#main').innerHTML=heading('Admin','New Entry','')+'<section class="panel">'+personalEntryForm()+'</section>';if(typeof applyActionControls==='function')applyActionControls();return;}
  if(activePage==='admin-personal-entry-report'){renderPersonalEntryReport();return;}
  if(activePage!=='admin-personal-file')return personalFileRenderPage.apply(this,args);
