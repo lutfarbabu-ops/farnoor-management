@@ -43,7 +43,7 @@ renderPage=function(...args){
  if(activePage==='admin-personal-entry-report'){renderPersonalEntryReport();return;}
  if(!['admin-personal-file','admin-personal-print'].includes(activePage))return personalFileRenderPage.apply(this,args);
  if(activePage==='admin-personal-file'){$('#main').innerHTML=heading('Admin','Personal file','');return;}
- $('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+(personalPrintSubmitted?'<section class="panel" aria-label="Selected company and name">'+personalPrintCompanyInfo()+'<p style="text-align:center;font-size:24px;font-weight:700;color:#123f32">'+esc(personalNameChoice)+'</p></section>':'');
+ $('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+personalPrintFileButtons()+(personalPrintSubmitted?'<section class="panel" aria-label="Selected company and name">'+personalPrintCompanyInfo()+'<p style="text-align:center;font-size:24px;font-weight:700;color:#123f32">'+esc(personalNameChoice)+'</p></section>':'')+(personalFileSelected?'<section class="panel" aria-label="Selected file form"><h3>'+esc(personalFileButtons.find(b=>b[0]===personalFileSelected)?.[1]||'')+'</h3>'+personalSavedList(personalFileSelected)+'</section>':'');
  if(typeof applyActionControls==='function')applyActionControls();
 };
 $('#main').addEventListener('click',event=>{
@@ -146,3 +146,5 @@ function personalPrintCompanyInfo(){const c=personalPrintCompany();return '<div 
 $('#main').addEventListener('change',event=>{if(activePage==='admin-personal-print'&&['personalCompanyChoice','personalNameChoice'].includes(event.target.id)){personalPrintSubmitted=false;renderPage();}});
 
 function personalPrintSelection(){return '<div class="personal-print-selection" style="display:flex;flex-wrap:wrap;gap:6px 20px;border-bottom:1px solid #aaa;padding:4px 0;margin-bottom:12px;font-size:14px;color:#000"><span>কার্ড নং: <b>'+esc(personalFileOneBangla(personalCardLookup))+'</b></span><span>কোম্পানি: <b>'+esc(personalCompanyChoice)+'</b></span><span>নাম: <b>'+esc(personalNameChoice||'—')+'</b></span></div>';}
+
+function personalPrintFileButtons(){return '<div class="no-print" style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px">'+personalFileButtons.filter(b=>b[0]!=='new').map(([id,name,icon,bg,fg])=>'<button type="button" data-personal-file="'+id+'" aria-pressed="'+(personalFileSelected===id)+'" style="padding:8px 14px;border:1px solid '+fg+'55;border-radius:7px;background:'+bg+';color:'+fg+';font-weight:700">'+icon+' '+name+'</button>').join('')+'</div>';}
