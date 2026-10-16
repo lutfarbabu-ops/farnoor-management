@@ -11,7 +11,7 @@ const personalFileButtons=[
  ['staff-3','Staff-3','♙','#e1e5ff','#4c5093'],
  ['electrican','Electrican','ϟ','#f4e0f4','#8a3a88']
 ];
-let personalFileSelected='',personalCardLookup='',personalCardText='',personalCompanyChoice='',personalNameChoice='';
+let personalFileSelected='',personalCardLookup='',personalCardText='',personalCompanyChoice='FARNOOR GARMENTS LTD',personalNameChoice='';
 function personalCardKey(value){return String(value??'').normalize('NFKC').trim().toLocaleLowerCase().replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c));}
 function personalCardRows(card=personalCardLookup){return (state.records['admin-documents']||[]).filter(row=>row.personalFile&&(!card||personalCardKey(row.personalEntry?.['field-0']||row.reference)===personalCardKey(card)));}
 function personalCardCount(folder){return personalCardLookup?personalCardRows().filter(row=>row.personalFolder===folder).length:0;}
@@ -43,14 +43,14 @@ renderPage=function(...args){
  if(activePage==='admin-personal-entry-report'){renderPersonalEntryReport();return;}
  if(!['admin-personal-file','admin-personal-print'].includes(activePage))return personalFileRenderPage.apply(this,args);
  if(activePage==='admin-personal-file'){$('#main').innerHTML=heading('Admin','Personal file','');return;}
- const selected=personalFileButtons.find(item=>item[0]===personalFileSelected);
- $('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+`<section class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,145px));gap:8px">${personalFileButtons.filter(item=>item[0]!=='new').map(([id,name,icon,bg,fg])=>`<button type="button" data-personal-file="${id}" aria-pressed="${id===personalFileSelected}" style="display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 10px;border:1px solid ${fg}55;border-radius:8px;background:${bg};color:${fg};font-size:13px;font-weight:700;${id===personalFileSelected?'box-shadow:0 0 0 2px '+fg+';':''}"><span aria-hidden="true" style="font-size:19px">${icon}</span><span>${name}${personalCardCount(id)?` <strong aria-label="${personalCardCount(id)} matches">(${personalCardCount(id)})</strong>`:''}</span></button>`).join('')}</div></section>${selected?`<section class="panel" aria-label="${esc(selected[1])}"><h3 style="color:${selected[4]}">${esc(selected[1])}</h3>${personalFileSelected==='new'?personalEntryForm():personalSavedList(personalFileSelected)}</section>`:''}`;
+ const selected=personalCardText.trim()&&personalCardKey(personalCardText)===personalCardKey(personalCardLookup)?personalFileButtons.find(item=>item[0]===personalFileSelected):null;
+ $('#main').innerHTML=heading('Admin','Print','')+personalCardLookupForm()+`<section class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,145px));gap:8px">${personalFileButtons.filter(item=>item[0]!=='new').map(([id,name,icon,bg,fg])=>`<button type="button" data-personal-file="${id}" aria-pressed="${id===personalFileSelected}" style="display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 10px;border:1px solid ${fg}55;border-radius:8px;background:${bg};color:${fg};font-size:13px;font-weight:700;${id===personalFileSelected?'box-shadow:0 0 0 2px '+fg+';':''}"><span aria-hidden="true" style="font-size:19px">${icon}</span><span>${name}${personalCardCount(id)?` <strong aria-label="${personalCardCount(id)} matches">(${personalCardCount(id)})</strong>`:''}</span></button>`).join('')}</div></section>${selected?`<section class="panel" aria-label="${esc(selected[1])}"><h3 style="color:${selected[4]}">${esc(selected[1])}</h3>${personalFileSelected==='new'?personalEntryForm():personalSavedList(personalFileSelected)}</section>${personalPrintCompanyInfo()}`:''}`;
  if(typeof applyActionControls==='function')applyActionControls();
 };
 $('#main').addEventListener('click',event=>{
  const button=event.target.closest('[data-personal-file]');
  if(!button||activePage!=='admin-personal-print')return;
- if(button.dataset.personalFile==='new'){personalCardLookup='';personalCardText='';}if(button.dataset.personalFile==='new'&&personalFileSelected!=='new'&&personalEntryId){for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];personalEntryId=null;}personalFileSelected=button.dataset.personalFile;renderPage();
+ if(button.dataset.personalFile==='new'){personalCardLookup='';personalCardText='';}if(button.dataset.personalFile==='new'&&personalFileSelected!=='new'&&personalEntryId){for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];personalEntryId=null;}personalFileSelected=button.dataset.personalFile;personalCardLookup=personalCardText.trim();renderPage();
 });
 
 function personalSavedList(folder){
@@ -113,13 +113,13 @@ function renderPersonalEntryReport(){
  if(typeof applyActionControls==='function')applyActionControls();
 }
 
-$('#main').addEventListener('input',event=>{if(event.target.id==='personalCardLookup')personalCardText=event.target.value;});
+$('#main').addEventListener('input',event=>{if(event.target.id==='personalCardLookup'){personalCardText=event.target.value;personalCardLookup='';const preview=document.querySelector('#main section[aria-label]');if(preview)preview.remove();document.getElementById('personalPrintCompanyInfo')?.remove();}});
 $('#main').addEventListener('submit',event=>{
  if(event.target.id!=='personalCardLookupForm')return;event.preventDefault();
- const card=$('#personalCardLookup').value.trim();if(!card)return toast('কার্ড নং লিখুন।');
- const matches=personalCardRows(card),match=matches.find(row=>personalFileButtons.slice(1).some(button=>button[0]===row.personalFolder));
+ const card=$('#personalCardLookup').value.trim();if(!card){personalCardLookup='';personalFileSelected='';renderPage();return;}
+ const matches=personalCardRows(card),match=matches[0];
  if(!match){personalCardLookup='';personalFileSelected='';renderPage();toast('এই কার্ড নম্বরের সেভ করা এন্ট্রি পাওয়া যায়নি।');return;}
- personalCardText=card;personalCardLookup=card;personalFileSelected=match.personalFolder;renderPage();
+ personalCardText=card;personalCardLookup=card;personalFileSelected=personalFileSelected||'file-1';renderPage();
  toast('কার্ড নম্বরের সঙ্গে মিলে সেভ করা ফাইল দেখানো হয়েছে।');
 });
 
@@ -141,3 +141,7 @@ $('#main').addEventListener('keydown',event=>{
 },true);
 
 $('#main').addEventListener('change',event=>{if(event.target.id==='personalCompanyChoice')personalCompanyChoice=event.target.value;if(event.target.id==='personalNameChoice')personalNameChoice=event.target.value;});
+
+function personalPrintCompany(){return personalCompanyChoice==='FARNOOR GARMENTS LTD. UNIT-2'?{bn:'ফারনূর গার্মেন্টস লিঃ-ইউনিট-২',address:'৪৫৪, বাবুরচালা, পিরুজালী, আলীমপাড়া, গাজীপুর সদর, গাজীপুর',en:'454, BaburChala, Alimpara, Pirujali, Gazipur',holiday:'শুক্রবার'}:{bn:'ফারনূর গার্মেন্টস লিঃ',address:'১২০৮/১/২ মালিবাগ বাজার রোড, ঢাকা-১২১৭',en:'1028/1/2 Malibagh Bazar Road, Dhaka-1217',holiday:'রবিবার'};}
+function personalPrintCompanyInfo(){const c=personalPrintCompany();return '<div id="personalPrintCompanyInfo" class="no-print" style="text-align:center;padding:18px"><b>'+esc(c.bn)+'</b><div>'+esc(c.address)+'</div><div>'+esc(c.en)+'</div><div>সাপ্তাহিক ছুটি: '+c.holiday+'</div></div>';}
+$('#main').addEventListener('change',event=>{if(activePage==='admin-personal-print'&&['personalCompanyChoice','personalNameChoice'].includes(event.target.id))renderPage();});
