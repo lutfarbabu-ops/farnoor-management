@@ -13,7 +13,7 @@ function requiredButtonAction(button){
 function applyActionControls(){
  const main=$('#main');document.body.dataset.printDenied=String(!pagePermission('print'));
  if(adminView||!activePage)return;
- const entryPage=['admin-personal-new-entry','admin-maternity-new-entry'].includes(activePage);if(entryPage){const title=main.querySelector('.page-heading');if(title){title.style.justifyContent='center';title.style.textAlign='center';}}
+ const entryPage=['admin-personal-new-entry','admin-maternity-new-entry','admin-service-new-entry','admin-service-file'].includes(activePage);if(entryPage){const title=main.querySelector('.page-heading');if(title){title.style.justifyContent='center';title.style.textAlign='center';}}
  let toolbar=main.querySelector('.page-action-toolbar');if(entryPage){toolbar?.remove();toolbar=null;}
  if(((activePage.startsWith('schedule-')||activePage.startsWith('store-'))||(['order-report','order-entry','booking-entry','booking-report'].includes(activePage)||activePage.startsWith('sewing-line-page-')))){toolbar?.remove();toolbar=null;}
  if(!toolbar&&!entryPage&&!activePage.startsWith('admin-personal-form-')&&!activePage.startsWith('admin-maternity-form-')&&!((activePage.startsWith('schedule-')||activePage.startsWith('store-'))||(['order-report','order-entry','booking-entry','booking-report'].includes(activePage)||activePage.startsWith('sewing-line-page-')))){toolbar=document.createElement('div');toolbar.className='page-action-toolbar no-print';toolbar.innerHTML='<button type="button" data-page-action="pdf">Pdf</button><button type="button" data-page-action="print">Print</button>';main.prepend(toolbar);}

@@ -13,7 +13,7 @@ const personalFileButtons=[
 ];
 let personalFileSelected='',personalCardLookup='',personalCardText='',personalCompanyChoice='FARNOOR GARMENTS LTD',personalNameChoice='',personalPrintSubmitted=false;
 function personalCardKey(value){return String(value??'').normalize('NFKC').trim().toLocaleLowerCase().replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c));}
-function personalCardRows(card=personalCardLookup){return (state.records['admin-documents']||[]).filter(row=>row.personalFile&&!row.maternityBenefit&&(!card||personalCardKey(row.personalEntry?.['field-0']||row.reference)===personalCardKey(card)));}
+function personalCardRows(card=personalCardLookup){return (state.records['admin-documents']||[]).filter(row=>row.personalFile&&!row.maternityBenefit&&!row.serviceBenefit&&(!card||personalCardKey(row.personalEntry?.['field-0']||row.reference)===personalCardKey(card)));}
 function personalCardCount(folder){return personalCardLookup?personalCardRows().filter(row=>row.personalFolder===folder).length:0;}
 function personalCardLookupForm(){const options=(items,current)=>items.map(item=>`<option value="${esc(item)}"${item===current?' selected':''}>${esc(item)}</option>`).join('');return `<form id="personalCardLookupForm" style="display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin-bottom:20px"><label style="display:grid;gap:4px;width:170px">ID No.<input id="personalCardLookup" aria-label="ID No." placeholder="Card No." maxlength="120" autocomplete="off" value="${esc(personalCardText)}"></label><label style="display:grid;gap:4px;min-width:240px">Company<select id="personalCompanyChoice" aria-label="Company"><option value="">Select company</option>${options(['FARNOOR GARMENTS LTD','FARNOOR GARMENTS LTD. UNIT-2'],personalCompanyChoice)}</select></label><label style="display:grid;gap:4px;min-width:220px">Name<select id="personalNameChoice" aria-label="Name"><option value="">Select name</option>${options(['সৈয়দ আশরাফুল হক','মোঃ মাসুদ রানা','মোঃ রাফে-উজ-জামান','লামুসা আলী'],personalNameChoice)}</select></label><button type="submit" class="primary">Save</button></form>`;}
 const personalEntryFields=[
@@ -101,7 +101,7 @@ function personalReportColumns(){
  });return columns;
 }
 function renderPersonalEntryReport(){
- const rows=(state.records['admin-documents']||[]).filter(row=>row.personalFile&&!row.maternityBenefit).slice().sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||''))),columns=personalReportColumns(),count=2+columns.reduce((sum,col)=>sum+(col.labels?.length||1),0);
+ const rows=(state.records['admin-documents']||[]).filter(row=>row.personalFile&&!row.maternityBenefit&&!row.serviceBenefit).slice().sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||''))),columns=personalReportColumns(),count=2+columns.reduce((sum,col)=>sum+(col.labels?.length||1),0);
  const top='<th rowspan="2">ক্রমিক নং</th>'+columns.map(col=>col.labels?'<th colspan="4">'+esc(col.label)+'</th>':'<th rowspan="2">'+esc(col.label)+'</th>').join('')+'<th rowspan="2" class="no-print">Action</th>';
  const lower=columns.filter(col=>col.labels).flatMap(col=>col.labels).map(label=>'<th>'+esc(label)+'</th>').join('');
  const values=row=>{const entry=row.personalEntry||{};return columns.map(col=>{
