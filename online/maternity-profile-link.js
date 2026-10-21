@@ -1,0 +1,8 @@
+'use strict';
+function maternityProfileKey(value){return String(value??'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).trim().toLowerCase();}
+function maternityProfileMatch(id){const key=maternityProfileKey(id);if(!key)return null;return(state.records.employees||[]).find(row=>[row.reference,row.hrDetails?.['ID No'],row.hrDetails?.['Punch ID']].some(value=>maternityProfileKey(value)===key))||null;}
+function maternityProfileValues(row){const d=row.hrDetails||{};return{name:d['Name (Eng)']||row.name||d['Name (Bn)']||'',designation:d.Designation||'',section:d.Section||'',joiningDate:d['Date of Join']||'',salary:d.Salary??d['Gross Salary']??''};}
+let maternityProfileLastValues={};
+function maternityFillProfile(){if(activePage!=='admin-maternity-new-entry'||!FarnoorAccess.canPage('employees'))return;const input=document.getElementById('maternity-benefit-cardNo');if(!input)return;const row=maternityProfileMatch(input.value);for(const [key,value]of Object.entries(maternityProfileLastValues)){const node=document.getElementById('maternity-benefit-'+key);if(node&&node.value===String(value)){node.value='';maternityBenefitDraft[key]='';}}maternityProfileLastValues={};if(!row)return;const values=maternityProfileValues(row);for(const [key,value]of Object.entries(values)){const node=document.getElementById('maternity-benefit-'+key);if(node){node.value=String(value);maternityBenefitDraft[key]=String(value);}}maternityProfileLastValues=values;}
+document.getElementById('main').addEventListener('input',event=>{if(event.target.id==='maternity-benefit-cardNo')maternityFillProfile();});
+document.getElementById('main').addEventListener('change',event=>{if(event.target.id==='maternity-benefit-cardNo')maternityFillProfile();});
