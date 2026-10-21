@@ -2061,3 +2061,6 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[{id:'admin-personal-fi
 {const page=window.DEPARTMENTS.find(d=>d.id==='admin').pages.find(p=>p.id==='admin-personal-print');page.navPath=['Personal file','Print'];page.groupEntry=true;}
 
 {const admin=window.DEPARTMENTS.find(d=>d.id==='admin');for(const p of admin.pages.filter(p=>p.id.startsWith('admin-personal-form-')))p.icon='▤';}
+
+// Maternity file has the same three navigation entries as Personal file.
+{const admin=window.DEPARTMENTS.find(d=>d.id==='admin'),maternity=admin.pages.find(p=>p.id==='admin-maternity-file');maternity.navPath=['Maternity File'];maternity.groupEntry=true;admin.pages.splice(admin.pages.indexOf(maternity)+1,0,...[{id:'admin-maternity-new-entry',name:'New Entry',icon:'✚',shade:'#d9f3e6'},{id:'admin-maternity-print',name:'Print',icon:'▧',shade:'#fce0ed'},{id:'admin-maternity-entry-report',name:'Entry Report',icon:'▤',shade:'#e0f2ea'}].map(p=>({...p,navPath:['Maternity File'],navigationOnly:true,permissionPage:'admin-documents'})));}
