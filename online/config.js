@@ -2075,3 +2075,5 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[{id:'admin-personal-fi
 {const admin=window.DEPARTMENTS.find(d=>d.id==='admin'),parent=admin.pages.find(p=>p.id==='admin-warning-letter');parent.navPath=['Warning Letter'];parent.groupEntry=true;admin.pages.splice(admin.pages.indexOf(parent)+1,0,...[{id:'admin-warning-new-entry',name:'New Entry',icon:'✚',shade:'#d9f3e6'},{id:'admin-warning-print',name:'Print',icon:'▧',shade:'#dcecff'},{id:'admin-warning-entry-report',name:'Entry Report',icon:'▤',shade:'#eee2ff'}].map(p=>({...p,navPath:['Warning Letter'],navigationOnly:true,permissionPage:'admin-documents'})));}
 
 window.DEPARTMENTS.find(d=>d.id==='admin').pages=window.DEPARTMENTS.find(d=>d.id==='admin').pages.filter(p=>p.id!=='admin-warning-print');
+
+for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-maternity-new-entry','admin-maternity-print','admin-maternity-form-calculation-month','admin-maternity-form-first-payment','admin-maternity-form-second-payment'].includes(page.id))page.hidden=true;
