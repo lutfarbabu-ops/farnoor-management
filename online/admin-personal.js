@@ -43,13 +43,13 @@ renderPage=function(...args){
  if(activePage==='admin-personal-new-entry'){$('#main').innerHTML=heading('Admin','New Entry','')+'<section class="panel">'+personalEntryForm()+'</section>';if(typeof applyActionControls==='function')applyActionControls();return;}
  if(activePage==='admin-personal-entry-report'){renderPersonalEntryReport();return;}
  if(!['admin-personal-file','admin-personal-print'].includes(activePage))return personalFileRenderPage.apply(this,args);
- if(activePage==='admin-personal-file'){$('#main').innerHTML=heading('Admin','Personal file','');return;}
+ 
  $('#main').innerHTML=personalPrintFileButtons()+personalCardLookupForm()+(personalPrintSubmitted?'<section class="panel" aria-label="Selected company and name">'+personalPrintCompanyInfo()+'<p style="text-align:center;font-size:24px;font-weight:700;color:#123f32">'+esc(personalNameChoice)+'</p></section>':'');
  if(typeof applyActionControls==='function')applyActionControls();
 };
 $('#main').addEventListener('click',event=>{
  const button=event.target.closest('[data-personal-file]');
- if(!button||activePage!=='admin-personal-print')return;
+ if(!button||!['admin-personal-file','admin-personal-print'].includes(activePage))return;
  if(button.dataset.personalFile==='new'){personalCardLookup='';personalCardText='';}if(button.dataset.personalFile==='new'&&personalFileSelected!=='new'&&personalEntryId){for(const key of Object.keys(personalEntryDraft))delete personalEntryDraft[key];personalEntryId=null;}personalFileSelected=button.dataset.personalFile;personalCardLookup=personalCardText.trim();goPage('admin-personal-form-'+personalFileSelected);
 });
 
@@ -115,7 +115,7 @@ function renderPersonalEntryReport(){
 
 $('#main').addEventListener('input',event=>{if(event.target.id==='personalCardLookup'){personalCardText=event.target.value;personalCardLookup='';const preview=document.querySelector('#main section[aria-label]');if(preview)preview.remove();document.getElementById('personalPrintCompanyInfo')?.remove();}});
 $('#main').addEventListener('submit',event=>{
- if(event.target.id!=='personalCardLookupForm')return;event.preventDefault();if(activePage==='admin-personal-print'){if(!personalCompanyChoice||!personalNameChoice)return toast('Company ও Name নির্বাচন করুন।');const card=$('#personalCardLookup').value.trim();personalCardText=card;personalCardLookup=card;if(card&&!personalCardRows(card).length){personalPrintSubmitted=false;personalFileSelected='';renderPage();return toast('এই কার্ড নম্বরের সেভ করা এন্ট্রি পাওয়া যায়নি।');}personalPrintSubmitted=true;renderPage();return;}
+ if(event.target.id!=='personalCardLookupForm')return;event.preventDefault();if(['admin-personal-file','admin-personal-print'].includes(activePage)){if(!personalCompanyChoice||!personalNameChoice)return toast('Company ও Name নির্বাচন করুন।');const card=$('#personalCardLookup').value.trim();personalCardText=card;personalCardLookup=card;if(card&&!personalCardRows(card).length){personalPrintSubmitted=false;personalFileSelected='';renderPage();return toast('এই কার্ড নম্বরের সেভ করা এন্ট্রি পাওয়া যায়নি।');}personalPrintSubmitted=true;renderPage();return;}
  const card=$('#personalCardLookup').value.trim();if(!card){personalCardLookup='';personalFileSelected='';renderPage();return;}
  const matches=personalCardRows(card),match=matches[0];
  if(!match){personalCardLookup='';personalFileSelected='';renderPage();toast('এই কার্ড নম্বরের সেভ করা এন্ট্রি পাওয়া যায়নি।');return;}
@@ -144,7 +144,7 @@ $('#main').addEventListener('change',event=>{if(event.target.id==='personalCompa
 
 function personalPrintCompany(){return personalCompanyChoice==='FARNOOR GARMENTS LTD. UNIT-2'?{bn:'ফারনূর গার্মেন্টস লিঃ-ইউনিট-২',address:'৪৫৪, বাবুরচালা, পিরুজালী, আলীমপাড়া, গাজীপুর সদর, গাজীপুর',en:'454, BaburChala, Alimpara, Pirujali, Gazipur',holiday:'শুক্রবার'}:{bn:'ফারনূর গার্মেন্টস লিঃ',address:'১২০৮/১/২ মালিবাগ বাজার রোড, ঢাকা-১২১৭',en:'1028/1/2 Malibagh Bazar Road, Dhaka-1217',holiday:'রবিবার'};}
 function personalPrintCompanyInfo(){const c=personalPrintCompany();return '<div id="personalPrintCompanyInfo" style="text-align:center;padding:18px 12px 24px;font-size:20px;line-height:1.6;color:#123f32"><b style="font-size:28px">'+esc(c.bn)+'</b><div>'+esc(c.address)+'</div><div>'+esc(c.en)+'</div><div>সাপ্তাহিক ছুটি: '+c.holiday+'</div></div>';}
-$('#main').addEventListener('change',event=>{if(activePage==='admin-personal-print'&&['personalCompanyChoice','personalNameChoice'].includes(event.target.id)){personalPrintSubmitted=false;renderPage();}});
+$('#main').addEventListener('change',event=>{if(['admin-personal-file','admin-personal-print'].includes(activePage)&&['personalCompanyChoice','personalNameChoice'].includes(event.target.id)){personalPrintSubmitted=false;renderPage();}});
 
 function personalPrintSelection(){return '<div class="personal-print-selection" style="display:flex;flex-wrap:wrap;gap:6px 20px;border-bottom:1px solid #aaa;padding:4px 0;margin-bottom:12px;font-size:14px;color:#000"><span>কার্ড নং: <b>'+esc(personalFileOneBangla(personalCardLookup))+'</b></span><span>কোম্পানি: <b>'+esc(personalCompanyChoice)+'</b></span><span>নাম: <b>'+esc(personalNameChoice||'—')+'</b></span></div>';}
 
@@ -156,3 +156,5 @@ $('#main').addEventListener('click',async event=>{if(!activePage.startsWith('adm
 
 
 
+
+const personalTopFileButtons=personalPrintFileButtons;personalPrintFileButtons=function(){return personalTopFileButtons().replace('<div class="no-print" style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px">','<div class="no-print" style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px"><button type="button" data-personal-top="admin-personal-new-entry" style="background:#e1f4e6;color:#216243;font-weight:700">✚ New Entry</button>').replace('</div>','<button type="button" data-personal-top="admin-personal-entry-report" style="background:#fce3ed;color:#a02b60;font-weight:700">▤ Entry Report</button></div>');};document.getElementById('main').addEventListener('click',event=>{const button=event.target.closest('[data-personal-top]');if(button)goPage(button.dataset.personalTop);});

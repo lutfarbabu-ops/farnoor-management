@@ -2081,3 +2081,5 @@ for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-ma
 window.DEPARTMENTS.find(d=>d.id==='admin').pages.find(p=>p.id==='admin-maternity-entry-report').hidden=true;
 
 for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(page.id.startsWith('admin-personal-form-'))page.hidden=true;
+
+for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-personal-new-entry','admin-personal-entry-report','admin-personal-print'].includes(page.id))page.hidden=true;
