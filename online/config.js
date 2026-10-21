@@ -2077,3 +2077,5 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[{id:'admin-personal-fi
 window.DEPARTMENTS.find(d=>d.id==='admin').pages=window.DEPARTMENTS.find(d=>d.id==='admin').pages.filter(p=>p.id!=='admin-warning-print');
 
 for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-maternity-new-entry','admin-maternity-print','admin-maternity-form-calculation-month','admin-maternity-form-first-payment','admin-maternity-form-second-payment'].includes(page.id))page.hidden=true;
+
+window.DEPARTMENTS.find(d=>d.id==='admin').pages.find(p=>p.id==='admin-maternity-entry-report').hidden=true;
