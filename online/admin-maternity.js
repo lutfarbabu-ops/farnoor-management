@@ -8,7 +8,7 @@ let maternityFileSelected='',maternityCardLookup='',maternityCardText='',materni
 function maternityCardKey(value){return String(value??'').normalize('NFKC').trim().toLocaleLowerCase().replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c));}
 function maternityCardRows(card=maternityCardLookup){return (state.records['admin-documents']||[]).filter(row=>row.maternityBenefit===true&&(!card||maternityCardKey(row.maternityBenefitEntry?.cardNo||row.reference)===maternityCardKey(card)));}
 function maternityCardCount(folder){return maternityCardLookup?maternityCardRows().filter(row=>row.personalFolder===folder).length:0;}
-function maternityCardLookupForm(){const options=(items,current)=>items.map(item=>`<option value="${esc(item)}"${item===current?' selected':''}>${esc(item)}</option>`).join('');return `<form id="maternityCardLookupForm" style="display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin-bottom:20px"><label style="display:grid;gap:4px;width:170px">ID No.<input id="maternityCardLookup" aria-label="ID No." placeholder="Card No." maxlength="120" autocomplete="off" value="${esc(maternityCardText)}"></label><label style="display:grid;gap:4px;min-width:240px">Company<select id="maternityCompanyChoice" aria-label="Company"><option value="">Select company</option>${options(['FARNOOR GARMENTS LTD','FARNOOR GARMENTS LTD. UNIT-2'],maternityCompanyChoice)}</select></label><button type="submit" class="primary">Save</button></form>`;}
+function maternityCardLookupForm(){const options=(items,current)=>items.map(item=>`<option value="${esc(item)}"${item===current?' selected':''}>${esc(item)}</option>`).join('');return `<form id="maternityCardLookupForm" style="display:flex;flex-wrap:wrap;align-items:end;justify-content:center;gap:10px;margin:25px auto 20px"><label style="display:grid;gap:4px;width:170px">ID No.<input id="maternityCardLookup" aria-label="ID No." placeholder="Card No." maxlength="120" autocomplete="off" value="${esc(maternityCardText)}"></label><label style="display:grid;gap:4px;min-width:240px">Company<select id="maternityCompanyChoice" aria-label="Company"><option value="">Select company</option>${options(['FARNOOR GARMENTS LTD','FARNOOR GARMENTS LTD. UNIT-2'],maternityCompanyChoice)}</select></label><button type="submit" class="primary">Save</button></form>`;}
 const maternityEntryFields=[
  'কার্ড নং','পদবী বাংলা','পদবী ইংলিশ','সেকশন বাংলা','সেকশন ইংলিশ','লাইন','যোগদানের তারিখ',
  'নাম বাংলা','নাম ইংলিশ','পিতার নাম','মাতার নাম','লিঙ্গ','স্বামী/স্ত্রীর নাম','স্বামী/স্ত্রীর (বয়স)','স্বামী/স্ত্রীর (পেশা)',
@@ -37,7 +37,7 @@ renderPage=function(...args){
  if(activePage==='admin-maternity-entry-report'){renderMaternityEntryReport();return;}
  if(!['admin-maternity-file','admin-maternity-print'].includes(activePage))return maternityFileRenderPage.apply(this,args);
  if(activePage==='admin-maternity-file'){$('#main').innerHTML=heading('Admin','Maternity File','');return;}
- $('#main').innerHTML=heading('Admin','Print','')+maternityCardLookupForm()+maternityPrintFileButtons()+(maternityPrintSubmitted?'<section class="panel" aria-label="Selected company and name">'+maternityPrintCompanyInfo()+'</section>':'');
+ $('#main').innerHTML=maternityCardLookupForm()+(maternityPrintSubmitted?'<section class="panel" aria-label="Selected company and name">'+maternityPrintCompanyInfo()+'</section>':'');
  if(typeof applyActionControls==='function')applyActionControls();
 };
 $('#main').addEventListener('click',event=>{
