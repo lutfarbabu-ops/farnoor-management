@@ -36,6 +36,8 @@ function hrOpen(id,view){
  const values={reference:row.reference,name:row.name,date:row.date||new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'}),...Object.fromEntries(Object.entries(row.hrValues||{}).map(([key,value])=>['hr_'+key,value]))};
  if(employee)detailKeys.forEach((key,index)=>{values['detail_'+index]=row.hrDetails?.[key]||'';});
  $('#hrDetailFields').innerHTML=[...base,...detailed].map(field=>hrInput(field,values[field.inputKey||field.key],view)).join('');
+ $('#hrDetailFields').style.gridTemplateColumns=employee?'minmax(0,1fr)':'repeat(auto-fit,minmax(240px,1fr))';
+ for(const label of $('#hrDetailFields').querySelectorAll('label'))if(employee)label.style.cssText='display:grid;grid-template-columns:minmax(120px,32%) minmax(0,1fr);align-items:center;gap:15px;border-bottom:1px solid #dce9df;padding:7px 0';
  $('#hrDetailSave').hidden=view;hrDialog.showModal();
 }
 $('#hrDetailClose').onclick=()=>hrDialog.close();
@@ -53,6 +55,8 @@ $('#hrDetailForm').onsubmit=async event=>{
   if(edit.employee){row.hrDetails={...(original?.hrDetails||{})};edit.detailKeys.forEach((key,index)=>{row.hrDetails[key]=values['detail_'+index]||'';});row.hrDetails['ID No']=row.reference;row.hrDetails['Name (Eng)']=row.name;row.hrDetails['Date of Join']=date;}
   else{row.hrValues={...(original?.hrValues||{})};for(const field of edit.detailed){let value=values[field.inputKey||field.key]||'';if(value.length>4000)throw Error('Field is too long.');if(value&&field.type==='date')value=normalizeDate(value);row.hrValues[field.key]=value;}}
   if(original)rows[rows.indexOf(original)]=row;else rows.push(row);next.records[edit.page]=rows;
-  if(await commit(next)){hrDialog.close();renderPage();toast('HR record saved online.');}
+  if(await commit(next,edit.employee?{employeeFile:row,employeeOriginal:original||null}:{})){hrDialog.close();renderPage();toast('HR record saved online.');}
  }catch(error){toast(error.message);}finally{button.disabled=false;}
 };
+
+$('#hrDetailFields').addEventListener('keydown',event=>{if(!hrEditing?.employee||event.isComposing||event.ctrlKey||event.altKey||event.metaKey||!['Enter','ArrowUp','ArrowDown'].includes(event.key)||!event.target.matches('input,select,textarea'))return;event.preventDefault();const inputs=[...$('#hrDetailFields').querySelectorAll('input,select,textarea')],index=inputs.indexOf(event.target),next=inputs[index+(event.key==='ArrowUp'?-1:1)];if(next){next.focus();if(next.select)next.select();}else if(event.key==='Enter')$('#hrDetailSave').focus();});
