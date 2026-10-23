@@ -57,7 +57,7 @@ window.FarnoorAPI = (() => {
   // Start the existing authenticated read while the remaining page scripts load.
   // Resolve failures as data so no rejected promise is left unhandled.
   let workspaceStartup = document.getElementById('workspace') && sessionUserId()
-    ? request('/api/workspace').then(response=>({response}),error=>({error})) : null;
+    ? (async()=>{const userId=sessionUserId(),cached=await window.FarnoorWorkspaceCache?.read(userId);try{const response=await request('/api/workspace',cached?{payload:{knownRevision:cached.revision}}:{});return {response,cached};}catch(error){return {error};}})() : null;
   function takeWorkspaceStartup(){const pending=workspaceStartup;workspaceStartup=null;return pending;}
   return {request,go,configured,sessionUserId,takeWorkspaceStartup};
 })();
