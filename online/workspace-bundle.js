@@ -4607,6 +4607,8 @@ document.getElementById('main').addEventListener('change',event=>{if(event.targe
 ;
 ;/* personal-entry-tools.js */
 'use strict';
+const personalChildAges=Array.from({length:20},(_,i)=>String(i+1).replace(/[0-9]/g,d=>'০১২৩৪৫৬৭৮৯'[Number(d)])+' বছর');for(let child=0;child<5;child++)personalEntryOptions['child-'+child+'-1']=personalChildAges;
+
 // Entry labels keep the saved field keys and existing record mappings unchanged.
 Object.assign(personalEntryFields,{0:'কার্ড নং/আই ডি নং',1:'পদবী',2:'Designation',4:'Section',7:'নাম',8:'Name'});
 function personalNomineeYear(value){const text=String(value??'').trim().replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d));if(!/^\d{2}$/.test(text))return text;const short=Number(text),pivot=Number(new Intl.DateTimeFormat('en',{timeZone:'Asia/Dhaka',year:'numeric'}).format(new Date()).slice(-2));return String((short<=pivot?2000:1900)+short);}
