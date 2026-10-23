@@ -2083,3 +2083,5 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.find(p=>p.id==='admin-maternity
 for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(page.id.startsWith('admin-personal-form-'))page.hidden=true;
 
 for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-personal-new-entry','admin-personal-entry-report','admin-personal-print'].includes(page.id))page.hidden=true;
+
+for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-warning-new-entry','admin-warning-entry-report'].includes(page.id))page.hidden=true;

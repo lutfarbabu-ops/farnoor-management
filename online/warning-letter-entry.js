@@ -15,3 +15,6 @@ $('#main').addEventListener('click',event=>{const button=event.target.closest('[
 
 
 
+
+const warningTopPreviousRender=renderPage;renderPage=function(...args){const result=warningTopPreviousRender.apply(this,args);if(!activePage?.startsWith('admin-warning-'))return result;const nav=document.createElement('nav');nav.className='no-print';nav.setAttribute('aria-label','Warning Letter pages');nav.style.cssText='display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px';nav.innerHTML=[['admin-warning-new-entry','✚ New Entry','#e1f4e6','#216243'],['admin-warning-entry-report','▤ Entry Report','#fce3ed','#a02b60']].filter(([id])=>FarnoorAccess.canPage(id)).map(([id,label,bg,color])=>'<button type="button" data-warning-top="'+id+'" aria-current="'+(activePage===id||(activePage==='admin-warning-letter'&&id==='admin-warning-new-entry')?'page':'false')+'" style="background:'+bg+';color:'+color+';border-color:'+color+';font-weight:700">'+label+'</button>').join('');document.getElementById('main').prepend(nav);return result;};
+document.getElementById('main').addEventListener('click',event=>{const button=event.target.closest('[data-warning-top]');if(button)goPage(button.dataset.warningTop);});
