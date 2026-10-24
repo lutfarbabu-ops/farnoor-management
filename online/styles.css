@@ -107,7 +107,7 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 #navigation .page-button[data-page="admin-service-entry-report"]{--sub-bg:#eee7fb!important;--sub-edge:#bba2df!important;--sub-ink:#59327e!important;--sub-accent:#8653b2!important}
 
 
-.service-benefit-navigation{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px}
+.service-benefit-navigation{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin:0 0 20px}
 .service-benefit-navigation button{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:9px 15px;border-radius:7px;font-weight:700}
 .service-benefit-navigation [data-service-nav="admin-service-new-entry"]{background:#e0f4ee;border:1px solid #8fcbbc;color:#165747}
 .service-benefit-navigation [data-service-nav="admin-service-entry-report"]{background:#eee7fb;border:1px solid #bba2df;color:#59327e}
