@@ -99,3 +99,9 @@
 .order-table th,.order-table td,.order-table input,.booking-table th,.booking-table td,.booking-table input{text-align:center!important}.order-table input,.booking-table input{font-size:18px!important;min-height:38px}.order-document .signatures{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));justify-items:center;gap:16px}.order-document .signatures span{width:max-content;max-width:100%;text-align:center;border-top:1px solid #384f40;padding-top:4px}@media print{.order-table input,.booking-table input{font-size:11px!important}}
 
 body[data-active-department="merch"] #recordDialog input,body[data-active-department="merch"] #recordDialog select,body[data-active-department="merch"] #recordDialog textarea{text-align:center;font-size:18px}
+
+/* Service Benefit input pages: separate colored boxes in the left menu. */
+#navigation .page-button[data-page="admin-service-new-entry"],
+#navigation .page-button[data-page="admin-service-entry-report"]{border-radius:7px;border-width:1px;border-inline-start-width:4px;margin-block:5px;min-height:32px}
+#navigation .page-button[data-page="admin-service-new-entry"]{--sub-bg:#e0f4ee!important;--sub-edge:#8fcbbc!important;--sub-ink:#165747!important;--sub-accent:#21866c!important}
+#navigation .page-button[data-page="admin-service-entry-report"]{--sub-bg:#eee7fb!important;--sub-edge:#bba2df!important;--sub-ink:#59327e!important;--sub-accent:#8653b2!important}
