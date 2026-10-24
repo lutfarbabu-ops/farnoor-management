@@ -123,3 +123,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 #serviceBenefitSearchAll{background:#fff0d8;border:1px solid #dfb66f;color:#80501a}
 .service-benefit-search small{display:block;margin-top:7px;color:#47675d}
 .service-benefit-search p{margin:8px 0 0;color:#315b4d;font-size:13px}
+
+/* Service Benefit landing background matched to the supplied navy sample. */
+@media screen{#main:has(>.service-benefit-landing){background:linear-gradient(180deg,#102b50 0%,#11395a 100%)}}
