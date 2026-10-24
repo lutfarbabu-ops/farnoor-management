@@ -140,7 +140,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .service-print-controls button[hidden]{display:none}
 .service-print-save{background:#e1edf9;border:1px solid #82a8ce;color:#174f82}
 .service-print-controls [data-page-action="print"]{background:#fff0d8;border:1px solid #dfb66f;color:#80501a}
-.service-print-record-choice{flex-basis:100%!important}
 .service-print-status{flex-basis:100%;margin:0;color:#a02729}
 .service-benefit-print-surround{background:linear-gradient(135deg,#102b50,#155e75);padding:22px;overflow-x:auto;border-radius:10px}
 .service-benefit-paper{background:white;color:#000;box-sizing:border-box;width:194mm;min-width:680px;margin:auto;padding:14px 18px 24px;font:16px/1.25 Arial,"Nirmala UI",sans-serif;box-shadow:0 3px 15px #0004}
