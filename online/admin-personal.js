@@ -95,7 +95,7 @@ async function personalSaveEntry(){
  const card=(personalEntryDraft['field-0']||'').trim(),name=(personalEntryDraft['field-7']||personalEntryDraft['field-8']||'').trim();
  if(!card||!name)return toast('কার্ড নং ও নাম লিখুন।');
  if(card.length>120||name.length>200||Object.values(personalEntryDraft).some(value=>value.length>2000))return toast('কোনো ঘরে লেখা বেশি বড় হয়েছে।');
- const next=structuredClone(state),rows=next.records['admin-documents']||[],existing=personalEntryId&&rows.find(r=>r.id===personalEntryId);
+ const rows=(state.records['admin-documents']||[]).slice(),next={...state,records:{...state.records,'admin-documents':rows}},existing=personalEntryId&&rows.find(r=>r.id===personalEntryId);
  if(personalEntryId&&!existing)return toast('Saved entry is unavailable. Refresh before saving.');
  const now=new Date(),record={...existing,id:personalEntryId||personalPendingRecord?.id||crypto.randomUUID(),reference:card,name,quantity:0,date:now.toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'}),status:'Completed',personalFile:true,personalFolder:personalEntryFolder,personalEntry:structuredClone(personalEntryDraft),createdAt:existing?.createdAt||now.toISOString(),updatedAt:now.toISOString()};
  if(personalPendingRecord&&JSON.stringify(personalPendingRecord.personalEntry)===JSON.stringify(record.personalEntry)&&personalPendingRecord.personalFolder===record.personalFolder){record.createdAt=personalPendingRecord.createdAt;record.updatedAt=personalPendingRecord.updatedAt;record.date=personalPendingRecord.date;}personalPendingRecord=structuredClone(record);
