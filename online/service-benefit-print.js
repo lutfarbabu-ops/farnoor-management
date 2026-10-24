@@ -12,7 +12,7 @@ function servicePrintYearRows(joining,release){
  if(start.year===end.year){let months=end.month-start.month,days=end.day-start.day+1;if(days<0){months--;days+=30;}result.push({year:start.year,months:Math.max(0,months),days:Math.max(0,days)});return result;}
  for(let year=start.year;year<=end.year;year++){
   const first=year===start.year,last=year===end.year;
-  result.push({year,months:last?end.month-1:12,days:first?Math.min(30,new Date(Date.UTC(start.year,start.month,0)).getUTCDate()-start.day+1):last?end.day:30});
+  result.push({year,months:last?end.month-1:first?13-start.month:12,days:first?Math.min(30,new Date(Date.UTC(start.year,start.month,0)).getUTCDate()-start.day+1):last?end.day:30});
  }
  return result;
 }
