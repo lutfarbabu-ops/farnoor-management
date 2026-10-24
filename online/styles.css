@@ -170,11 +170,15 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
  .service-benefit-signatures{margin-top:20mm}
 }
 
-.service-benefit-row-actions{display:flex;align-items:center;gap:8px;white-space:nowrap}
-.service-benefit-row-actions button{padding:7px 10px;font-size:13px;min-height:34px}
 .service-benefit-delete-dialog{width:min(440px,calc(100vw - 32px));border:1px solid #c4d8cc;border-radius:12px;padding:24px;background:#fff;color:#18382d;box-shadow:0 12px 45px #0005}
 .service-benefit-delete-dialog::backdrop{background:#102b5077}
 .service-benefit-delete-dialog h3{margin:0 0 14px;font-size:21px}
 .service-benefit-delete-dialog p{line-height:1.6;overflow-wrap:anywhere}
 .service-benefit-delete-buttons{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
 .service-benefit-delete-dialog [data-delete-error]{color:#a02729}
+
+.service-benefit-report-layout{display:grid;grid-template-columns:minmax(0,1fr) 82px;gap:10px;align-items:start}
+.service-benefit-report-layout>.panel{min-width:0;margin:0}
+.service-benefit-delete-rail{position:relative;width:82px}
+.service-benefit-delete-rail button{position:absolute;left:0;width:82px;white-space:nowrap;min-height:34px;padding:7px 9px;font-size:13px}
+@media print{.service-benefit-report-layout{display:block}}
