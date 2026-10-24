@@ -126,3 +126,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 
 /* Service Benefit landing background matched to the supplied navy sample. */
 @media screen{#main:has(>.service-benefit-landing){background:linear-gradient(180deg,#102b50 0%,#11395a 100%)}}
+
+.service-benefit-landing .service-benefit-search>label,.service-benefit-landing .service-benefit-search p{color:#fff}
+.service-benefit-landing .service-benefit-search small{color:#d5e4f1}
