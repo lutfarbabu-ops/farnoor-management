@@ -105,3 +105,5 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 #navigation .page-button[data-page="admin-service-entry-report"]{border-radius:7px;border-width:1px;border-inline-start-width:4px;margin-block:5px;min-height:32px}
 #navigation .page-button[data-page="admin-service-new-entry"]{--sub-bg:#e0f4ee!important;--sub-edge:#8fcbbc!important;--sub-ink:#165747!important;--sub-accent:#21866c!important}
 #navigation .page-button[data-page="admin-service-entry-report"]{--sub-bg:#eee7fb!important;--sub-edge:#bba2df!important;--sub-ink:#59327e!important;--sub-accent:#8653b2!important}
+
+#navigation .page-button[data-page="admin-service-print"]{--sub-bg:#fff0d8!important;--sub-edge:#dfb66f!important;--sub-ink:#80501a!important;--sub-accent:#b17b23!important;border-radius:7px;border-width:1px;border-inline-start-width:4px;margin-block:5px;min-height:32px}
