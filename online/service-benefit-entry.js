@@ -63,7 +63,7 @@ function serviceBenefitConfirmDelete(id,trigger){
   if(!serviceBenefitRows().some(item=>item.id===id)){close();renderServiceBenefitReport();return;}
   busy=true;dialog.querySelectorAll('button').forEach(button=>button.disabled=true);dialog.querySelector('[data-confirm-delete]').textContent='Deleting…';
   const next={...state,records:{...state.records,'admin-documents':(state.records['admin-documents']||[]).filter(item=>item.id!==id)}};
-  try{if(await commit(next)){
+  try{if(await commit(next,{serviceBenefitDelete:id})){
    if(serviceBenefitId===id){serviceBenefitId=null;serviceBenefitPending=null;serviceBenefitDraft={};}
    if(typeof servicePrintRecordId!=='undefined'&&servicePrintRecordId===id){servicePrintRecordId='';servicePrintReady=false;}
    busy=false;close();renderServiceBenefitReport();toast('Service Benefit input deleted.');
