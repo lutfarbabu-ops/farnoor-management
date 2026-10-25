@@ -154,8 +154,9 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .service-benefit-year-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:15px;margin:0}
 .service-benefit-year-table th,.service-benefit-year-table td{border:1px solid #000!important;padding:4px 6px;text-align:center;background:#fff!important;color:#000;font-size:inherit;letter-spacing:normal;text-transform:none}
 .service-benefit-year-table tbody td,.service-benefit-year-table tfoot td{color:#1565c0}
-.service-benefit-year-table td:last-child{text-align:right}
-.service-benefit-year-table tfoot th{text-align:left}
+.service-benefit-year-table td:last-child{text-align:center}
+.service-benefit-year-table tfoot th{text-align:right}
+.service-benefit-year-table tfoot th,.service-benefit-year-table tfoot td{font-weight:700}
 .service-benefit-payment{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;font-weight:700}
 .service-benefit-payment span{width:23%;min-height:24px;border-bottom:3px double #000}
 .service-benefit-signatures{display:flex;justify-content:space-between;gap:30px;margin:90px 0 10px;break-inside:avoid}
