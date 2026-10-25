@@ -143,6 +143,8 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .service-print-status{flex-basis:100%;margin:0;color:#a02729}
 .service-benefit-print-surround{background:linear-gradient(135deg,#102b50,#155e75);padding:22px;overflow-x:auto;border-radius:10px}
 @media screen{
+ #main:has(.maternity-software-navigation){background:#123b69}
+ #main:has(.maternity-software-navigation)>.page-heading h2{color:#fff}
  #main:has(#serviceBenefitPrintForm),#main:has(#serviceBenefitForm),#main:has(#serviceBenefitReport){background:#123b69}
  #main:has(#serviceBenefitReport) .service-benefit-search>label,#main:has(#serviceBenefitReport) .service-benefit-search p{color:#fff}
  #main:has(#serviceBenefitReport) .service-benefit-search small{color:#d5e4f1}
@@ -151,6 +153,7 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
  #serviceBenefitPrintForm .service-print-status{color:#ffe0e0}
  #serviceBenefitPrintContent{background:#123b69}
 }
+.maternity-software-navigation{display:flex;gap:9px;margin-bottom:20px}
 .service-benefit-paper{background:white;color:#000;box-sizing:border-box;width:194mm;min-width:680px;margin:auto;padding:14px 18px 24px;font:16px/1.25 Arial,"Nirmala UI",sans-serif;box-shadow:0 3px 15px #0004}
 .service-benefit-paper-heading{text-align:center;margin-bottom:10px}
 .service-benefit-paper-heading h1{font:700 25px/1.2 Arial,sans-serif;margin:0 0 5px}
