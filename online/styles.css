@@ -150,10 +150,10 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .service-benefit-paper-heading h3{font-size:23px;text-decoration:underline;margin:10px 0 8px}
 .service-benefit-print-details{display:grid;grid-template-columns:32% minmax(0,1fr);margin:0 0 12px;font-weight:700;gap:4px}
 .service-benefit-print-details dt,.service-benefit-print-details dd{margin:0;overflow-wrap:anywhere}
-.service-benefit-print-details dd b{color:#f00}
+.service-benefit-print-details dd b{color:#1565c0}
 .service-benefit-year-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:15px;margin:0}
 .service-benefit-year-table th,.service-benefit-year-table td{border:1px solid #000!important;padding:4px 6px;text-align:center;background:#fff!important;color:#000;font-size:inherit;letter-spacing:normal;text-transform:none}
-.service-benefit-year-table tbody td,.service-benefit-year-table tfoot td{color:#f00}
+.service-benefit-year-table tbody td,.service-benefit-year-table tfoot td{color:#1565c0}
 .service-benefit-year-table td:last-child{text-align:right}
 .service-benefit-year-table tfoot th{text-align:left}
 .service-benefit-payment{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;font-weight:700}
@@ -164,6 +164,7 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
  body:has(#serviceBenefitPrintContent) #main>:not(#serviceBenefitPrintContent),body:has(#serviceBenefitPrintContent) .footer-note,body:has(#serviceBenefitPrintContent) #workspaceRefreshNotice{display:none!important}
  body:has(#serviceBenefitPrintContent) #main{padding:0!important;margin:0!important}
  #serviceBenefitPrintContent{background:white!important;padding:0!important;border:0!important;overflow:visible!important}
+ .service-benefit-paper,.service-benefit-paper *{color:#000!important;-webkit-text-fill-color:#000!important}
  .service-benefit-paper{width:100%;min-width:0;max-width:none;margin:0;padding:0;box-shadow:none;font-size:11pt;print-color-adjust:exact}
  .service-benefit-paper-heading h1{font-size:19pt}.service-benefit-paper-heading h3{font-size:16pt}
  .service-benefit-year-table{font-size:10pt}.service-benefit-year-table tr{break-inside:avoid;page-break-inside:avoid}.service-benefit-year-table thead{display:table-header-group}.service-benefit-year-table tfoot{display:table-row-group}
