@@ -164,7 +164,7 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
  body:has(#serviceBenefitPrintContent) #main{padding:0!important;margin:0!important}
  #serviceBenefitPrintContent{background:white!important;padding:0!important;border:0!important;overflow:visible!important}
  .service-benefit-paper,.service-benefit-paper *{color:#000!important;-webkit-text-fill-color:#000!important}
- .service-benefit-paper{width:100%;min-width:0;max-width:none;margin:0;padding:0;box-shadow:none;font-size:11pt;print-color-adjust:exact}
+ .service-benefit-paper{width:100%;min-width:0;max-width:none;margin:0;padding:0 8mm;box-shadow:none;font-size:11pt;print-color-adjust:exact}
  .service-benefit-paper-heading h1{font-size:19pt}.service-benefit-paper-heading h3{font-size:16pt}
  .service-benefit-year-table{font-size:10pt}.service-benefit-year-table tr{break-inside:avoid;page-break-inside:avoid}.service-benefit-year-table thead{display:table-header-group}.service-benefit-year-table tfoot{display:table-row-group}
  .service-benefit-signatures{margin-top:20mm}
