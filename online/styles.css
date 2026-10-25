@@ -143,7 +143,9 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .service-print-status{flex-basis:100%;margin:0;color:#a02729}
 .service-benefit-print-surround{background:linear-gradient(135deg,#102b50,#155e75);padding:22px;overflow-x:auto;border-radius:10px}
 @media screen{
- #main:has(#serviceBenefitPrintForm),#main:has(#serviceBenefitForm){background:#123b69}
+ #main:has(#serviceBenefitPrintForm),#main:has(#serviceBenefitForm),#main:has(#serviceBenefitReport){background:#123b69}
+ #main:has(#serviceBenefitReport) .service-benefit-search>label,#main:has(#serviceBenefitReport) .service-benefit-search p{color:#fff}
+ #main:has(#serviceBenefitReport) .service-benefit-search small{color:#d5e4f1}
  #main:has(#serviceBenefitForm)>.page-heading h2{color:#fff}
  #serviceBenefitPrintForm label{color:#fff}
  #serviceBenefitPrintForm .service-print-status{color:#ffe0e0}
