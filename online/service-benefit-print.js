@@ -24,9 +24,9 @@ function servicePrintYearRows(joining,release){
  for(let year=start.year;year<=end.year;year++){
   const first=year===start.year,last=year===end.year,yearStart=Date.UTC(year,0,1),yearEnd=Date.UTC(year+1,0,1);
   const from=first?Date.UTC(year,start.month-1,start.day):yearStart,to=last?Date.UTC(year,end.month-1,end.day+1):yearEnd;
-  const days=Number((rate*(to-from)/(yearEnd-yearStart)).toFixed(2));
   let months=last?end.month-1:first?13-start.month:12;
   if(first&&last){months=end.month-start.month;if(end.day-start.day+1<0)months--;months=Math.max(0,months);}
+  const days=Number((last?rate/12*months:rate*(to-from)/(yearEnd-yearStart)).toFixed(2));
   result.push({year,months,days});
  }
  return result;
