@@ -4786,6 +4786,8 @@ const maternitySoftwarePages=['admin-maternity-software','admin-maternity-softwa
  admin.pages.splice(before<0?admin.pages.length:before,0,
   {id:maternitySoftwarePages[0],name:'Maternity Benefit Software',icon:'♡',shade:'#dcecff',navPath:['Maternity Benefit Software'],groupEntry:true,navigationOnly:true,permissionPage:'admin-documents'},
   {id:maternitySoftwarePages[1],name:'New Form',icon:'✎',shade:'#d9f3e6',navPath:['Maternity Benefit Software'],navigationOnly:true,permissionPage:'admin-documents'});
+ submenuLooks.set('group:admin:Maternity Benefit Software',{hue:210,saturation:65,lightness:92,shape:'rounded'});
+ submenuLooks.set('page:'+maternitySoftwarePages[1],{hue:155,saturation:62,lightness:93,shape:'rail'});
 }
 adminHrForms.maternity.pages.push(...maternitySoftwarePages);
 let maternitySoftwareOpen=false;
