@@ -1,5 +1,6 @@
 'use strict';
-function personalFileOneValue(row,label){const index=personalEntryFields.findIndex(field=>field===label);return index<0?'':row?.personalEntry?.['field-'+index]||'';}
+const personalFileOneFieldAliases={'কার্ড নং':0,'কার্ড নং/আই ডি নং':0,'পদবী বাংলা':1,'পদবী':1,'পদবী ইংলিশ':2,'Designation':2,'সেকশন ইংলিশ':4,'Section':4,'নাম বাংলা':7,'নাম':7,'নাম ইংলিশ':8,'Name':8};
+function personalFileOneValue(row,label){const index=Object.hasOwn(personalFileOneFieldAliases,label)?personalFileOneFieldAliases[label]:personalEntryFields.findIndex(field=>field===label);return index<0?'':row?.personalEntry?.['field-'+index]??'';}
 function personalFileOneBangla(value){return String(value??'').replace(/[0-9]/g,d=>'০১২৩৪৫৬৭৮৯'[Number(d)]);}
 function personalFileOne(row){
  const company=personalPrintCompany(),e=row?.personalEntry||{},value=label=>esc(personalFileOneBangla(personalFileOneValue(row,label))),red=label=>`<span class="pf1-red">${value(label)}</span>`,date=label=>`<span class="pf1-red">${esc(personalFileOneBangla(personalReportDate(personalFileOneValue(row,label))))}</span>`,address=index=>`<div class="pf1-address-grid">${['গ্রামঃ','পোঃ','থানাঃ','জেলাঃ'].map((label,col)=>`<div class="pf1-address-part"><span>${label}</span><span class="pf1-red">${esc(personalFileOneBangla(e['address-'+index+'-'+col]))}</span></div>`).join('')}</div>`;
