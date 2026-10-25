@@ -14,12 +14,13 @@ function servicePrintMoney(value){
 function servicePrintDate(value){const [day,month,year]=normalizeDate(value).split('/').map(Number);return {day,month,year,key:year*10000+month*100+day};}
 function servicePrintBenefitRate(start,end){
  const anniversaryKey=years=>{const year=start.year+years,day=Math.min(start.day,new Date(Date.UTC(year,start.month,0)).getUTCDate());return year*10000+start.month*100+day;};
- return end.key>anniversaryKey(10)?30:end.key>anniversaryKey(4)?15:7;
+ return end.key<anniversaryKey(3)?0:end.key>anniversaryKey(10)?30:end.key>anniversaryKey(4)?15:7;
 }
 function servicePrintYearRows(joining,release){
  const start=servicePrintDate(joining),end=servicePrintDate(release);
  if(end.key<start.key)throw Error('Release তারিখ যোগদানের তারিখের আগে হতে পারবে না।');
  const rate=servicePrintBenefitRate(start,end),result=[];
+ if(rate===0)return result;
  for(let year=start.year;year<=end.year;year++){
   const first=year===start.year,last=year===end.year,yearStart=Date.UTC(year,0,1),yearEnd=Date.UTC(year+1,0,1);
   const from=first?Date.UTC(year,start.month-1,start.day):yearStart,to=last?Date.UTC(year,end.month-1,end.day+1):yearEnd;
@@ -34,6 +35,7 @@ function servicePrintMatches(){const key=serviceBenefitSearchKey(servicePrintCar
 function servicePrintBuildPaper(row,companyName){
  const entry=row.serviceBenefitEntry||{},basic=serviceBenefitBasic(entry.salary),company=servicePrintCompanies[companyName],rows=servicePrintYearRows(entry.joiningDate,entry.release),totalDays=Number(rows.reduce((sum,item)=>sum+item.days,0).toFixed(2)),totalMonths=rows.reduce((sum,item)=>sum+item.months,0);
  if(!company)throw Error('Company নির্বাচন করুন।');
+ if(!rows.length)return '<article class="service-benefit-paper service-benefit-empty" aria-label="Service benefit blank page" style="min-height:281mm"></article>';
  const amounts=rows.map(item=>basic===''?'':servicePrintMoney(Number(basic)/30*item.days)),totalAmount=basic===''?'':servicePrintMoney(amounts.reduce((sum,amount)=>sum+Number(amount.replace(/,/g,'')),0));
  return '<article class="service-benefit-paper" aria-label="Service benefit statement"><header class="service-benefit-paper-heading"><h1>'+esc(companyName)+'</h1><div>'+esc(company.enAddress)+'</div><h3>Service benefit</h3></header><dl class="service-benefit-print-details">'+[['Name',entry.name],['Designation',entry.designation],['Card/Staff No',entry.cardNo],['Date Of Joining',normalizeDate(entry.joiningDate).replaceAll('/','.')],['Salary',servicePrintMoney(entry.salary)],['Basic',servicePrintMoney(basic)]].map(([label,value])=>'<dt>'+esc(label)+'</dt><dd><span aria-hidden="true">:</span> <b>'+esc(value||'')+'</b></dd>').join('')+'</dl><table class="service-benefit-year-table"><colgroup><col style="width:10%"><col style="width:23%"><col style="width:22%"><col style="width:22%"><col style="width:23%"></colgroup><thead><tr><th>SL.</th><th>Year</th><th>Month</th><th>Days</th><th>Amount</th></tr></thead><tbody>'+rows.map((item,index)=>'<tr><td>'+String(index+1).padStart(2,'0')+'</td><td>'+item.year+'</td><td>'+item.months+' Month</td><td>'+item.days+' Days</td><td>'+esc(amounts[index])+'</td></tr>').join('')+'</tbody><tfoot><tr><th colspan="2">Total =</th><td>'+totalMonths+' Month</td><td>'+totalDays+' Days</td><td>'+esc(totalAmount)+'</td></tr></tfoot></table><footer class="service-benefit-signatures"><strong>Received Sign</strong><strong>Authorised Sign</strong></footer></article>';
 }
