@@ -4613,7 +4613,7 @@ function servicePrintMoney(value){
 function servicePrintDate(value){const [day,month,year]=normalizeDate(value).split('/').map(Number);return {day,month,year,key:year*10000+month*100+day};}
 function servicePrintBenefitRate(start,end){
  const anniversaryKey=years=>{const year=start.year+years,day=Math.min(start.day,new Date(Date.UTC(year,start.month,0)).getUTCDate());return year*10000+start.month*100+day;};
- return end.key>anniversaryKey(10)?30:end.key>anniversaryKey(3)?15:7;
+ return end.key>anniversaryKey(10)?30:end.key>anniversaryKey(4)?15:7;
 }
 function servicePrintYearRows(joining,release){
  const start=servicePrintDate(joining),end=servicePrintDate(release);
