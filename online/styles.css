@@ -143,8 +143,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .service-print-status{flex-basis:100%;margin:0;color:#a02729}
 .service-benefit-print-surround{background:linear-gradient(135deg,#102b50,#155e75);padding:22px;overflow-x:auto;border-radius:10px}
 @media screen{
- #main:has(.maternity-software-navigation){background:#123b69}
- #main:has(.maternity-software-navigation)>.page-heading h2{color:#fff}
  #main:has(#serviceBenefitPrintForm),#main:has(#serviceBenefitForm),#main:has(#serviceBenefitReport){background:#123b69}
  #main:has(#serviceBenefitReport) .service-benefit-search>label,#main:has(#serviceBenefitReport) .service-benefit-search p{color:#fff}
  #main:has(#serviceBenefitReport) .service-benefit-search small{color:#d5e4f1}
@@ -153,7 +151,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
  #serviceBenefitPrintForm .service-print-status{color:#ffe0e0}
  #serviceBenefitPrintContent{background:#123b69}
 }
-.maternity-software-navigation{display:flex;gap:9px;margin-bottom:20px}
 .maternity-entry-layout{width:min(100%,920px);margin:0 auto;display:grid;gap:14px}
 .maternity-entry-card{box-sizing:border-box;background:linear-gradient(135deg,#f0fbff,#f5f3ff 55%,#e9fbf4);border:1px solid #9dcbd4;border-top:4px solid #47c0bd;border-radius:20px;padding:26px;color:#233b50;box-shadow:0 16px 38px #061c3740}
 .maternity-entry-card h3{margin:0 0 8px;font-size:16px}
