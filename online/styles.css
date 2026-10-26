@@ -154,22 +154,18 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
  #serviceBenefitPrintContent{background:#123b69}
 }
 .maternity-software-navigation{display:flex;gap:9px;margin-bottom:20px}
-.maternity-entry-layout{width:min(100%,480px);margin:0 auto;display:grid;gap:14px}
-.maternity-entry-card{background:#fff;border:1px solid #cdd2d8;border-radius:10px;padding:14px;color:#26343a}
+.maternity-entry-layout{width:min(100%,920px);margin:0 auto;display:grid;gap:14px}
+.maternity-entry-card{box-sizing:border-box;background:linear-gradient(135deg,#f0fbff,#f5f3ff 55%,#e9fbf4);border:1px solid #9dcbd4;border-top:4px solid #47c0bd;border-radius:20px;padding:26px;color:#233b50;box-shadow:0 16px 38px #061c3740}
 .maternity-entry-card h3{margin:0 0 8px;font-size:16px}
-.maternity-entry-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px 10px}
-.maternity-entry-field{display:grid;gap:4px;min-width:0;font-size:13px;color:#48535f}
+.maternity-entry-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:17px 20px}
+.maternity-entry-field{display:grid;gap:6px;min-width:0;font-size:14px;font-weight:600;color:#294d69}
 .maternity-entry-full{grid-column:1/-1}
-.maternity-entry-field input,.maternity-entry-field select,#maternityEntryRecordSearch{box-sizing:border-box;width:100%;min-width:0;min-height:36px;border:1px solid #ccd0d6;border-radius:6px;background:#f4f5f7;color:#18222b;font-size:15px;padding:7px 8px}
+.maternity-entry-field input,.maternity-entry-field select{box-sizing:border-box;width:100%;min-width:0;min-height:42px;border:1px solid #b4cedc;border-radius:9px;background:#ffffffdc;color:#183c55;font-size:15px;font-weight:400;padding:9px 11px;box-shadow:0 2px 5px #224b6510}
+.maternity-entry-field input:focus,.maternity-entry-field select:focus{outline:2px solid #60bfc6;outline-offset:1px;border-color:#218d9c}
 .maternity-entry-field input[readonly]{color:#4c5966}
 .maternity-entry-save{display:flex;justify-content:flex-end;margin-top:3px}
-.maternity-entry-record{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 4px;border-bottom:1px solid #d7dce0;font-size:14px}
-.maternity-entry-record span{overflow-wrap:anywhere}
-.maternity-entry-record button{flex-shrink:0}
-.maternity-entry-record-list{max-height:260px;overflow:auto}
-.maternity-entry-record-total{display:flex;gap:24px;margin-top:13px;font-size:13px}
-.maternity-entry-record-total strong{display:block;font-size:17px}
-@media screen{#main:has(.maternity-entry-layout){background:#123b69}#main:has(.maternity-entry-layout)>.page-heading{justify-content:center;text-align:center}#main:has(.maternity-entry-layout)>.page-heading h2{color:white;font-size:25px}}
+.maternity-entry-save button{min-width:112px;border-radius:10px;background:linear-gradient(135deg,#087d86,#24549a);border:1px solid #198c9a;color:#fff;box-shadow:0 5px 12px #17617c35;font-weight:700}
+@media screen{#main:has(.maternity-entry-layout){background:radial-gradient(ellipse at top right,#237c8c50,transparent 60%),linear-gradient(140deg,#132e57,#154b68 60%,#20425e)}#main:has(.maternity-entry-layout)>.page-heading{justify-content:center;text-align:center}#main:has(.maternity-entry-layout)>.page-heading h2{color:#f0fdff;font-size:28px}}
 @media(max-width:380px){.maternity-entry-card{padding:10px}.maternity-entry-grid{gap:10px 7px}.maternity-entry-field input,.maternity-entry-field select{font-size:13px;padding:7px 5px}}
 .service-benefit-paper{background:white;color:#000;box-sizing:border-box;width:194mm;min-width:680px;margin:auto;padding:14px 18px 24px;font:16px/1.25 Arial,"Nirmala UI",sans-serif;box-shadow:0 3px 15px #0004}
 .service-benefit-paper-heading{text-align:center;margin-bottom:10px}

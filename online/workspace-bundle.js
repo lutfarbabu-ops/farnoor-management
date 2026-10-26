@@ -4820,7 +4820,6 @@ document.getElementById('main').addEventListener('keydown',event=>{
 'use strict';
 const maternityEntryExtraFields=[['paymentMode','Payment Mode'],['bankMobile','bKash No / Bank A/C No'],['smsMobile','Mobile Number (for SMS)'],['calculationFrom','Calculation period from'],['calculationTo','Calculation period to'],['mlFrom','Period of M/L from'],['mlTo','Period of M/L to'],['firstVoucherDate','1st voucher date'],['secondVoucherDate','2nd voucher date']];
 const maternityEntryDateKeys=['joiningDate','calculationFrom','calculationTo','mlFrom','mlTo','firstVoucherDate','secondVoucherDate'];
-let maternityEntryRecordSearch='';
 function maternityEntryDate(value){
  const text=String(value||'').trim();if(!text)return '';
  const iso=text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -4846,11 +4845,6 @@ function maternityEntryView(entry){
  if(values.mlFrom){values.firstVoucherDate=maternityEntryShiftDate(values.mlFrom,-2);values.secondVoucherDate=maternityEntryShiftDate(values.mlFrom,60);}
  return values;
 }
-function maternityEntryRecordsMarkup(){
- const key=maternityProfileKey(maternityEntryRecordSearch),rows=maternityBenefitRows().filter(row=>!key||[row.name,row.reference].some(value=>maternityProfileKey(value).includes(key)));
- const total=rows.reduce((sum,row)=>sum+(maternityCalculationAmounts(row.maternityBenefitEntry).total||0),0);
- return '<div class="maternity-entry-record-list">'+rows.map((row,index)=>'<div class="maternity-entry-record"><span>#'+(index+1)+' '+esc(row.name)+' ('+esc(row.reference)+')</span><button type="button" data-maternity-benefit-open="'+esc(row.id)+'">Open</button></div>').join('')+(rows.length?'':'<p>No matching records.</p>')+'</div><div class="maternity-entry-record-total"><div>Records<strong>'+rows.length+'</strong></div><div>Total benefit (Tk.)<strong>'+total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</strong></div></div>';
-}
 const maternityEntryPreviousEntry=renderMaternityBenefitEntry;
 renderMaternityBenefitEntry=function(){
  if(activePage!=='admin-maternity-new-entry')return maternityEntryPreviousEntry();
@@ -4860,11 +4854,10 @@ renderMaternityBenefitEntry=function(){
  field('cardNo','কার্ড নং / Card No',{full:true})+field('name','Name',{full:true})+field('salary','Gross Salary',{number:true})+field('designation','Designation')+field('section','Line/Section',{full:true})+
  '<label class="maternity-entry-field" for="maternity-benefit-paymentMode"><span>Payment Mode</span><select id="maternity-benefit-paymentMode" data-maternity-benefit="paymentMode">'+['Cash','bKash','Nagad','Bank'].map(mode=>'<option '+(maternityBenefitDraft.paymentMode===mode?'selected':'')+'>'+mode+'</option>').join('')+'</select></label>'+field('bankMobile','bKash No / Bank A/C No')+field('smsMobile','Mobile Number (for SMS)',{full:true,placeholder:'01XXXXXXXXX'})+
  field('joiningDate','Joining Date',{date:true})+field('daysDividedBy','Salary Divisor',{number:true})+field('calculationFrom','Calculation period from',{date:true})+field('calculationTo','to',{date:true})+field('mlFrom','Period of M/L from',{date:true})+field('mlTo','to',{date:true})+field('firstVoucherDate','1st voucher date (auto)',{date:true,auto:true})+field('secondVoucherDate','2nd voucher date (auto)',{date:true,auto:true})+
- Object.entries(maternityBenefitChoices).map(([key,choices])=>'<datalist id="maternity-entry-options-'+key+'">'+choices.map(value=>'<option value="'+esc(value)+'"></option>').join('')+'</datalist>').join('')+'<div class="maternity-entry-full maternity-entry-save"><button id="maternityBenefitSave" type="submit" class="primary" data-page-action-required="edit" '+(maternityBenefitBusy?'disabled':'')+'>'+(maternityBenefitBusy?'Saving…':'Save')+'</button></div></form></section><section class="maternity-entry-card"><h3>Records</h3><input id="maternityEntryRecordSearch" aria-label="Search name / card no" placeholder="Search name / card no" value="'+esc(maternityEntryRecordSearch)+'"><div id="maternityEntryRecords">'+maternityEntryRecordsMarkup()+'</div></section></div>';
+ Object.entries(maternityBenefitChoices).map(([key,choices])=>'<datalist id="maternity-entry-options-'+key+'">'+choices.map(value=>'<option value="'+esc(value)+'"></option>').join('')+'</datalist>').join('')+'<div class="maternity-entry-full maternity-entry-save"><button id="maternityBenefitSave" type="submit" class="primary" data-page-action-required="edit" '+(maternityBenefitBusy?'disabled':'')+'>'+(maternityBenefitBusy?'Saving…':'Save')+'</button></div></form></section></div>';
  if(typeof applyActionControls==='function')applyActionControls();
 };
 document.getElementById('main').addEventListener('input',event=>{
- if(event.target.id==='maternityEntryRecordSearch'){maternityEntryRecordSearch=event.target.value;document.getElementById('maternityEntryRecords').innerHTML=maternityEntryRecordsMarkup();if(typeof applyActionControls==='function')applyActionControls();return;}
  if(activePage!=='admin-maternity-new-entry'||!event.target.dataset.maternityBenefit)return;
  const key=event.target.dataset.maternityBenefit;
  if(maternityEntryDateKeys.includes(key)){maternityBenefitDraft[key]=event.target.value?maternityEntryDate(event.target.value):'';event.target.setCustomValidity('');}
