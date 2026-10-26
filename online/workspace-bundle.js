@@ -4860,4 +4860,29 @@ function renderMaternityA4Page(folder){
 const maternityA4PreviousRender=renderPage;renderPage=function(...args){const folder=activePage?.replace('admin-maternity-form-','');if(maternityA4Folders.includes(folder))return renderMaternityA4Page(folder);maternityA4Observer?.disconnect();return maternityA4PreviousRender.apply(this,args);};
 document.getElementById('main').addEventListener('input',event=>{if(event.target.id==='maternityCardLookup'&&document.querySelector('.mta-preview'))document.getElementById('maternityFilePrintContent').innerHTML='';});
 
+// The A4 pages own their Excel action, before the older form export listeners.
+let maternityA4ExcelBusy=false;
+async function maternityA4SaveExcel(button){
+ if(maternityA4ExcelBusy)return;
+ if(!FarnoorAccess.canAction('admin-documents','view'))return toast('Excel permission is required.');
+ const folder=maternityFileSelected,rows=maternityCardLookup?maternityCardRows():[];
+ if(!maternityA4Folders.includes(folder)||!rows.length)return toast('এই ID-এর Maternity Entry Report-এর তথ্য পাওয়া যায়নি। Print পেইজে ID নির্বাচন করুন।');
+ const calculation=folder==='calculation-month',number=folder==='first-payment'?1:2,title=calculation?'Calculatin Month':number===1?'1st Payment':'2nd Payment';
+ const name=(calculation?'Calculatin-Month':number===1?'1st-Payment':'2nd-Payment')+'-'+maternityCardLookup.replace(/[^a-zA-Z0-9০-৯_-]/g,'_')+'.xlsx',mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+ maternityA4ExcelBusy=true;button.disabled=true;
+ try{
+  const data=makeXlsx(rows.flatMap(row=>calculation?maternityCalculationExcelMatrix(row):maternityA4VoucherExcel(row,number)),title);
+  if(window.showSaveFilePicker){
+   const handle=await window.showSaveFilePicker({suggestedName:name,types:[{description:'Excel workbook',accept:{[mime]:['.xlsx']}}]});
+   const stream=await handle.createWritable();await stream.write(new Blob([data],{type:mime}));await stream.close();toast('Excel file saved.');
+  }else{download(name,data,mime);toast('Excel downloaded.');}
+ }catch(error){toast(error.name==='AbortError'?'Excel সেভ বাতিল করা হয়েছে।':error.message);}
+ finally{maternityA4ExcelBusy=false;button.disabled=false;}
+}
+document.addEventListener('click',event=>{
+ const button=event.target.closest('#maternityFormExcel');
+ if(!button||!document.querySelector('#maternityFilePrintContent.mta-preview'))return;
+ event.preventDefault();event.stopImmediatePropagation();void maternityA4SaveExcel(button);
+},true);
+
 ;
