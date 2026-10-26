@@ -78,7 +78,7 @@ saveWarningBenefit=async function(){
   let unchanged=false;try{unchanged=!!original&&warningInputDateText(warningInputDate(original.absenceDate))===warningInputDateText(warningInputDate(warningBenefitDraft.absenceDate))&&warningInputCompany(original.company)===warningInputCompany(warningBenefitDraft.company)&&warningLetterDateKeys.every(key=>String(original[key]||'')===String(warningBenefitDraft[key]||''));}catch{}
   if(!unchanged){toast(document.getElementById('warning-letter-date-status').textContent);return;}
  }
- const parts=['presentVillage','presentPostOffice','presentPoliceStation','presentDistrict'].map((key,i)=>warningBenefitDraft[key]?['গ্রামঃ','পোঃ','থানাঃ','জেলাঃ'][i]+' '+warningBenefitDraft[key]:'').filter(Boolean);if(parts.length)warningBenefitDraft.presentAddress=parts.join(', ');
+ const parts=['presentVillage','presentPostOffice','presentPoliceStation','presentDistrict'].map((key,i)=>warningBenefitDraft[key]?['গ্রামঃ','পোঃ','থানাঃ','জেলাঃ'][i]+' '+warningBenefitDraft[key]:'').filter(Boolean);if(parts.length){const address=parts.join(', ');if(warningBenefitDraft.presentAddress&&warningBenefitDraft.presentAddress!==address&&!warningBenefitDraft.legacyPresentAddress)warningBenefitDraft.legacyPresentAddress=warningBenefitDraft.presentAddress;warningBenefitDraft.presentAddress=address;}
  return warningInputPreviousSave();
 };
 document.getElementById('main').addEventListener('input',event=>{
