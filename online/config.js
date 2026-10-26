@@ -2086,4 +2086,4 @@ for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-pe
 
 for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-warning-new-entry','admin-warning-entry-report'].includes(page.id))page.hidden=true;
 
-window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-letter','1st Letter'],['admin-warning-second-letter','2nd Letter'],['admin-warning-third-letter','3rd Letter']].map(([id,name])=>({id,name,icon:'▤',navPath:['Warning Letter'],navigationOnly:true,permissionPage:'admin-documents',hidden:true})));
+window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-letter','1st Letter'],['admin-warning-second-letter','2nd Letter'],['admin-warning-third-letter','3rd Letter'],['admin-warning-envelope-1','Envelope1'],['admin-warning-envelope-2','Envelope2']].map(([id,name])=>({id,name,icon:'▤',navPath:['Warning Letter'],navigationOnly:true,permissionPage:'admin-documents',hidden:true})));
