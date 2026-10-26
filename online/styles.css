@@ -154,6 +154,23 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
  #serviceBenefitPrintContent{background:#123b69}
 }
 .maternity-software-navigation{display:flex;gap:9px;margin-bottom:20px}
+.maternity-entry-layout{width:min(100%,480px);margin:0 auto;display:grid;gap:14px}
+.maternity-entry-card{background:#fff;border:1px solid #cdd2d8;border-radius:10px;padding:14px;color:#26343a}
+.maternity-entry-card h3{margin:0 0 8px;font-size:16px}
+.maternity-entry-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px 10px}
+.maternity-entry-field{display:grid;gap:4px;min-width:0;font-size:13px;color:#48535f}
+.maternity-entry-full{grid-column:1/-1}
+.maternity-entry-field input,.maternity-entry-field select,#maternityEntryRecordSearch{box-sizing:border-box;width:100%;min-width:0;min-height:36px;border:1px solid #ccd0d6;border-radius:6px;background:#f4f5f7;color:#18222b;font-size:15px;padding:7px 8px}
+.maternity-entry-field input[readonly]{color:#4c5966}
+.maternity-entry-save{display:flex;justify-content:flex-end;margin-top:3px}
+.maternity-entry-record{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 4px;border-bottom:1px solid #d7dce0;font-size:14px}
+.maternity-entry-record span{overflow-wrap:anywhere}
+.maternity-entry-record button{flex-shrink:0}
+.maternity-entry-record-list{max-height:260px;overflow:auto}
+.maternity-entry-record-total{display:flex;gap:24px;margin-top:13px;font-size:13px}
+.maternity-entry-record-total strong{display:block;font-size:17px}
+@media screen{#main:has(.maternity-entry-layout){background:#123b69}#main:has(.maternity-entry-layout)>.page-heading{justify-content:center;text-align:center}#main:has(.maternity-entry-layout)>.page-heading h2{color:white;font-size:25px}}
+@media(max-width:380px){.maternity-entry-card{padding:10px}.maternity-entry-grid{gap:10px 7px}.maternity-entry-field input,.maternity-entry-field select{font-size:13px;padding:7px 5px}}
 .service-benefit-paper{background:white;color:#000;box-sizing:border-box;width:194mm;min-width:680px;margin:auto;padding:14px 18px 24px;font:16px/1.25 Arial,"Nirmala UI",sans-serif;box-shadow:0 3px 15px #0004}
 .service-benefit-paper-heading{text-align:center;margin-bottom:10px}
 .service-benefit-paper-heading h1{font:700 25px/1.2 Arial,sans-serif;margin:0 0 5px}
