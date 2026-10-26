@@ -99,6 +99,6 @@ document.getElementById('main').addEventListener('keydown',event=>{
  const options=[...event.target.parentElement.querySelectorAll('[role=option]')];if(!options.length)return;
  event.preventDefault();event.stopImmediatePropagation();
  if(event.key==='Enter'){warningInputChoose(options[Math.max(0,warningChoiceIndex)].dataset.warningChoiceValue);return;}
- warningChoiceIndex=(warningChoiceIndex+(event.key==='ArrowDown'?1:-1)+options.length)%options.length;
+ warningChoiceIndex=warningChoiceIndex<0?(event.key==='ArrowDown'?0:options.length-1):(warningChoiceIndex+(event.key==='ArrowDown'?1:-1)+options.length)%options.length;
  options.forEach((option,i)=>option.setAttribute('aria-selected',String(i===warningChoiceIndex)));options[warningChoiceIndex].scrollIntoView({block:'nearest'});
 },true);
