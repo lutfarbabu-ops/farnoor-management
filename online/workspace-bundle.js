@@ -4848,8 +4848,10 @@ maternityCalculationExcelMatrix=function(row){const e=row?.maternityBenefitEntry
 function maternityA4VoucherExcel(row,number){const e=row?.maternityBenefitEntry||{},a=maternityCalculationAmounts(e),amount=number===1?a.first:a.second;return[[maternityCompanyChoice],[maternityPrintCompany().en],['Maternity Benefit Payment Voucher',number===1?'1st payment':'2nd payment'],['Date',maternityA4Date(maternityA4VoucherDate(e,number))],['Name',e.name||''],['Designation',e.designation||''],['Section',e.section||''],['Card Number',e.cardNo||''],['Mobile No',e.smsMobile||''],['Bank A/C No',e.bankMobile||''],[],['Mode of Payment','Accounts Code','Accounts Title','Amount (Taka)','Folio No.'],[e.paymentMode||'Cash','','Maternity Benefit',amount??'',''],['Total Taka','','',amount??'','']];}
 maternityFirstExcelMatrix=row=>maternityA4VoucherExcel(row,1);maternitySecondExcelMatrix=row=>maternityA4VoucherExcel(row,2);
 let maternityA4Observer=null;
+let maternityA4ExcelDownloadUrl=null;
 function maternityA4Fit(){const preview=document.getElementById('maternityFilePrintContent');if(!preview?.classList.contains('mta-preview'))return;const available=preview.clientWidth-parseFloat(getComputedStyle(preview).paddingLeft)-parseFloat(getComputedStyle(preview).paddingRight);preview.style.setProperty('--mta-scale',String(Math.min(1,Math.max(.2,available/(210*96/25.4)))));}
 function renderMaternityA4Page(folder){
+ if(maternityA4ExcelDownloadUrl){URL.revokeObjectURL(maternityA4ExcelDownloadUrl);maternityA4ExcelDownloadUrl=null;}
  maternityFileSelected=folder;
  const rows=maternityCardLookup?maternityCardRows():[],title=maternityFileButtons.find(item=>item[0]===folder)?.[1]||folder;
  const nav='<nav class="mta-nav no-print" aria-label="Maternity File pages">'+maternityTopPages.filter(([id])=>FarnoorAccess.canPage(id)).map(([id,label,bg,color])=>'<button type="button" data-maternity-top="'+id+'" style="background:'+bg+';color:'+color+';border-color:'+color+'">'+label+'</button>').join('')+'</nav>';
@@ -4870,14 +4872,23 @@ async function maternityA4SaveExcel(button){
  if(!maternityA4Folders.includes(folder)||!rows.length)return toast('এই ID-এর Maternity Entry Report-এর তথ্য পাওয়া যায়নি। Print পেইজে ID নির্বাচন করুন।');
  const calculation=folder==='calculation-month',number=folder==='first-payment'?1:2,title=calculation?'Calculatin Month':number===1?'1st Payment':'2nd Payment';
  const name=(calculation?'Calculatin-Month':number===1?'1st-Payment':'2nd-Payment')+'-'+maternityCardLookup.replace(/[^a-zA-Z0-9০-৯_-]/g,'_')+'.xlsx',mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
- maternityA4ExcelBusy=true;button.disabled=true;
+ maternityA4ExcelBusy=true;button.disabled=true;let exportBlob=null;
  try{
   const data=makeXlsx(rows.flatMap(row=>calculation?maternityCalculationExcelMatrix(row):maternityA4VoucherExcel(row,number)),title);
+  exportBlob=new Blob([data],{type:mime});
   if(window.showSaveFilePicker){
    const handle=await window.showSaveFilePicker({suggestedName:name,types:[{description:'Excel workbook',accept:{[mime]:['.xlsx']}}]});
    const stream=await handle.createWritable();await stream.write(new Blob([data],{type:mime}));await stream.close();toast('Excel file saved.');
   }else{download(name,data,mime);toast('Excel downloaded.');}
- }catch(error){toast(error.name==='AbortError'?'Excel সেভ বাতিল করা হয়েছে।':error.message);}
+ }catch(error){
+  if(error.name==='AbortError'&&exportBlob){
+   if(maternityA4ExcelDownloadUrl)URL.revokeObjectURL(maternityA4ExcelDownloadUrl);
+   maternityA4ExcelDownloadUrl=URL.createObjectURL(exportBlob);
+   document.getElementById('maternityExcelDownload')?.remove();
+   const link=document.createElement('a');link.id='maternityExcelDownload';link.href=maternityA4ExcelDownloadUrl;link.download=name;link.textContent='Download Excel';link.style.cssText='display:inline-flex;align-items:center;padding:8px 12px;border:1px solid #8cbea0;border-radius:6px;background:#e0f4e6;color:#165c35;font-weight:700;text-decoration:none';button.parentElement.append(link);
+   toast('সেভ বাতিল হয়েছে। চাইলে Download Excel চাপুন।');
+  }else toast(error.message);
+ }
  finally{maternityA4ExcelBusy=false;button.disabled=false;}
 }
 
