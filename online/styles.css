@@ -162,6 +162,43 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .maternity-entry-field input[readonly]{color:#4c5966}
 .maternity-entry-save{display:flex;justify-content:flex-end;margin-top:3px}
 .maternity-entry-save button{min-width:112px;border-radius:10px;background:linear-gradient(135deg,#087d86,#24549a);border:1px solid #198c9a;color:#fff;box-shadow:0 5px 12px #17617c35;font-weight:700}
+.mta-nav{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px}
+.mta-nav button{font-weight:700}
+.mta-actions{display:flex;justify-content:flex-end;gap:10px;margin-bottom:14px}
+.mta-actions button:last-child{background:#e0f4e6;border-color:#8cbea0;color:#165c35}
+.mta-preview{box-sizing:border-box;background:#123b69;padding:22px;overflow:auto;border-radius:12px;border:0}
+.mta-paper{box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;background:#fff;color:#000;padding:10mm;display:flex;flex-direction:column;font:12pt/1.32 'Times New Roman',serif;box-shadow:0 5px 18px #071a3855;border:1px solid #d6dce4;zoom:var(--mta-scale,1)}
+.mta-paper+.mta-paper{margin-top:20px}
+.mta-heading{text-align:center;position:relative;margin-bottom:7mm}
+.mta-heading h2{font:bold 18pt/1.2 'Times New Roman',serif;margin:0}
+.mta-heading p{font-size:11pt;margin:2px 0 0}
+.mta-heading h3{font-size:12pt;text-decoration:underline;margin:6mm 0 0}
+.mta-voucher .mta-heading{padding-bottom:9mm;margin-bottom:5mm}
+.mta-badge{position:absolute;bottom:0;right:0;border:1px solid #000;font-size:10.5pt;padding:1px 8px;font-weight:bold}
+.mta-details{display:grid;grid-template-columns:38mm minmax(0,1fr);gap:4px 0;margin:0 0 6mm;font-size:11pt}
+.mta-details dt,.mta-details dd{margin:0;overflow-wrap:anywhere}
+.mta-details dd{display:grid;grid-template-columns:12px minmax(0,1fr)}
+.mta-period{display:grid;grid-template-columns:minmax(0,1fr) auto 16px auto;gap:8px;align-items:baseline;font-size:10.5pt;margin:2mm 0}
+.mta-period b{font-weight:normal}
+.mta-table{border-collapse:collapse;table-layout:fixed;width:100%;font:10.5pt/1.25 'Times New Roman',serif;margin:6mm 0 0;min-width:0}
+.mta-table th,.mta-table td{border:1px solid #000!important;background:#fff!important;color:#000;padding:5px 6px!important;font:inherit;text-transform:none;letter-spacing:normal;white-space:normal;overflow-wrap:anywhere;text-align:center}
+.mta-table th{font-weight:bold}
+.mta-table .mta-money{text-align:right}
+.mta-calculation-table thead th{height:16mm}
+.mta-calculation-table tbody tr{height:14mm}
+.mta-calculation-table tfoot tr{height:9mm}
+.mta-formula{font-size:10.5pt;margin:4mm 0 0}
+.mta-voucher-table tbody tr{height:9mm}
+.mta-voucher-table tfoot th{text-align:right}
+.mta-voucher-table .mta-diagonal-cell{position:relative;padding:0!important}
+.mta-diagonal-cell svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.mta-inwords{font-size:10.5pt;margin:4mm 0 0}
+.mta-recipient{margin-top:22mm;font-size:10.5pt}
+.mta-recipient span{display:inline-block;border-top:1px solid #000;min-width:38mm;text-align:center;padding-top:3px}
+.mta-signatures{display:flex;justify-content:space-between;gap:15px;margin-top:auto;padding-top:18mm;font-size:10.5pt;break-inside:avoid}
+.mta-signatures span{min-width:29mm;border-top:1px solid #000;text-align:center;padding-top:3px}
+@media screen{#main:has(.mta-preview){background:#123b69}#main:has(.mta-preview) .mta-page-heading{justify-content:center;color:#fff}#main:has(.mta-preview) .mta-controls{color:#fff}}
+@media print{body:has(.mta-preview) #main>:not(#maternityFilePrintContent),body:has(.mta-preview) #workspaceRefreshNotice,body:has(.mta-preview) .footer-note{display:none!important}body:has(.mta-preview) #main{padding:0!important;margin:0!important}#maternityFilePrintContent.mta-preview{padding:0!important;margin:0!important;border:0!important;background:#fff!important;overflow:visible!important;width:194mm!important}.mta-paper{zoom:1!important;width:194mm;min-height:280mm;padding:8mm;margin:0;box-shadow:none;border:0;page:auto;break-inside:avoid;page-break-inside:avoid}.mta-paper+.mta-paper{margin-top:0;break-before:page;page-break-before:always}.mta-paper,.mta-paper *{color:#000!important;-webkit-text-fill-color:#000!important}.mta-table tr{break-inside:avoid}.mta-table thead{display:table-header-group}.mta-table tfoot{display:table-row-group}}
 @media screen{#main:has(.maternity-entry-layout){background:radial-gradient(ellipse at top right,#237c8c50,transparent 60%),linear-gradient(140deg,#132e57,#154b68 60%,#20425e)}#main:has(.maternity-entry-layout)>.page-heading{justify-content:center;text-align:center}#main:has(.maternity-entry-layout)>.page-heading h2{color:#f0fdff;font-size:28px}}
 @media(max-width:380px){.maternity-entry-card{padding:10px}.maternity-entry-grid{gap:10px 7px}.maternity-entry-field input,.maternity-entry-field select{font-size:13px;padding:7px 5px}}
 .service-benefit-paper{background:white;color:#000;box-sizing:border-box;width:194mm;min-width:680px;margin:auto;padding:14px 18px 24px;font:16px/1.25 Arial,"Nirmala UI",sans-serif;box-shadow:0 3px 15px #0004}
