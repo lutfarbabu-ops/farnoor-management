@@ -312,3 +312,5 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 
 .hourly-pd-field select{box-sizing:border-box;width:100%;min-width:0;min-height:38px;background:#f6faff;border:1px solid #b8cde0;border-radius:6px;padding:7px 10px;color:#173048;font:inherit}
 .hourly-pd-field select:focus{outline:2px solid #4789c5;outline-offset:1px}
+
+.hourly-pd-edit-links{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;justify-content:flex-end}.hourly-pd-edit-links button{background:#e0f4eb;border:1px solid #91c9b0;color:#145c43;font-weight:700}
