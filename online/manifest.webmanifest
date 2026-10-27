@@ -1,0 +1,20 @@
+{
+  "id": "./index.html",
+  "name": "Farnoor Management",
+  "short_name": "Farnoor",
+  "description": "FARNOOR GARMENTS LTD. management workspace",
+  "lang": "bn",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#edf7ee",
+  "theme_color": "#12633f",
+  "icons": [
+    {"src": "pwa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ],
+  "prefer_related_applications": false,
+  "categories": ["business", "productivity"]
+}
