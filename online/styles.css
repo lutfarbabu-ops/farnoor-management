@@ -314,3 +314,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .hourly-pd-field select:focus{outline:2px solid #4789c5;outline-offset:1px}
 
 .hourly-pd-edit-links{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;justify-content:flex-end}.hourly-pd-edit-links button{background:#e0f4eb;border:1px solid #91c9b0;color:#145c43;font-weight:700}
+
+.hourly-pd-manpower-label{font-size:16px;font-weight:700;color:#244660}.hourly-pd-manpower-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 14px;min-width:0}.hourly-pd-manpower-pair label{display:grid;gap:5px;min-width:0}.hourly-pd-manpower-pair label>span{font-size:13px}.hourly-pd-manpower-sum{grid-column:1/-1;color:#46637c;font-size:12px}.hourly-pd-manpower-sum output{font-weight:700}
+@media(max-width:650px){.hourly-pd-manpower-label{font-size:14px}.hourly-pd-manpower-pair{gap:6px}.hourly-pd-manpower-pair label>span{font-size:12px}}
