@@ -2091,6 +2091,9 @@ for(const page of window.DEPARTMENTS.find(d=>d.id==='admin').pages)if(['admin-wa
 
 window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-letter','1st Letter'],['admin-warning-second-letter','2nd Letter'],['admin-warning-third-letter','3rd Letter'],['admin-warning-envelope-1','Envelope1'],['admin-warning-envelope-2','Envelope2']].map(([id,name])=>({id,name,icon:'▤',navPath:['Warning Letter'],navigationOnly:true,permissionPage:'admin-documents',hidden:true})));
 
+// Production / Sewing: dedicated hourly production page.
+{const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='schedule-cutting');production.pages.splice(index,0,{id:'production-line-wise-hourly-pd',name:'Line Wise Hourly PD',navPath:['Sewing'],icon:'◷',shade:'#e8e0ff',navigationOnly:true,permissionPage:'output'});}
+
 ;
 ;/* payroll-core.js */
 'use strict';

@@ -254,3 +254,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .maternity-entry-save{margin-top:22px}
 @media(max-width:600px){.maternity-entry-card{padding:20px 12px;min-height:0}.maternity-entry-field{grid-template-columns:112px minmax(0,1fr);gap:8px;font-size:13px}.maternity-entry-period{grid-template-columns:minmax(0,1fr);gap:4px}.maternity-entry-period>span{text-align:center}.maternity-entry-field input{padding:8px 6px;font-size:14px}}
 @media print{.maternity-entry-card{box-shadow:none;border:0;width:100%;min-height:0}.maternity-entry-save{display:none}}
+
+#navigation [data-page="production-line-wise-hourly-pd"]{--sub-bg:#eee7ff!important;--sub-edge:#b59ae8!important;--sub-ink:#56358b!important;--sub-accent:#8959c5!important}
+#navigation [data-page="production-line-wise-hourly-pd"] .submenu-icon{color:#7440ae}
