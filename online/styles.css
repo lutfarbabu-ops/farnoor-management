@@ -309,3 +309,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 
 .hourly-pd-summary>tbody>tr>th,.hourly-pd-summary>tbody>tr>td{background-color:inherit!important;color:inherit!important;font-weight:700!important}
 .hourly-pd-summary .hourly-summary-2>td:nth-child(2){background-color:#9dc3e6!important}
+
+.hourly-pd-field select{box-sizing:border-box;width:100%;min-width:0;min-height:38px;background:#f6faff;border:1px solid #b8cde0;border-radius:6px;padding:7px 10px;color:#173048;font:inherit}
+.hourly-pd-field select:focus{outline:2px solid #4789c5;outline-offset:1px}
