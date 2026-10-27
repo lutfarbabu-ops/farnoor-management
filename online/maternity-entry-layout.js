@@ -1,6 +1,6 @@
 'use strict';
-const maternityEntryExtraFields=[['paymentMode','Payment Mode'],['bankMobile','bKash No / Bank A/C No'],['smsMobile','Mobile Number (for SMS)'],['calculationFrom','Calculation period from'],['calculationTo','Calculation period to'],['mlFrom','Period of M/L from'],['mlTo','Period of M/L to'],['firstVoucherDate','1st voucher date'],['secondVoucherDate','2nd voucher date']];
-const maternityEntryDateKeys=['joiningDate','calculationFrom','calculationTo','mlFrom','mlTo','firstVoucherDate','secondVoucherDate'];
+const maternityEntryExtraFields=[['eddDate','EDD Date'],['paymentMode','Payment Mode'],['bankMobile','bKash No / Bank A/C No'],['smsMobile','Mobile Number (for SMS)'],['calculationFrom','Calculation period from'],['calculationTo','Calculation period to'],['mlFrom','Period of M/L from'],['mlTo','Period of M/L to'],['firstVoucherDate','1st voucher date'],['secondVoucherDate','2nd voucher date']];
+const maternityEntryDateKeys=['joiningDate','eddDate','calculationFrom','calculationTo','mlFrom','mlTo','firstVoucherDate','secondVoucherDate'];
 function maternityEntryDate(value){
  const text=String(value||'').trim();if(!text)return '';
  const iso=text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -34,7 +34,7 @@ renderMaternityBenefitEntry=function(){
  const field=(key,label,options={})=>'<div class="maternity-entry-field"><label for="maternity-benefit-'+key+'">'+label+'</label>'+control(key,{...options,label})+'</div>';
  const period=(from,to,label)=>'<div class="maternity-entry-field"><label for="maternity-benefit-'+from+'">'+label+'</label><div class="maternity-entry-period">'+control(from,{date:true,label:label+' from'})+'<span>to</span>'+control(to,{date:true,label:label+' to'})+'</div></div>';
  $('#main').innerHTML='<div class="page-heading"><div><h2>Maternity File — New Entry</h2></div></div><div class="maternity-entry-layout"><section class="maternity-entry-card"><form id="maternityBenefitForm" aria-label="Maternity File New Entry" class="maternity-entry-grid">'+
- field('cardNo','ID/Card No')+field('name','Name')+field('designation','Designation')+field('section','Section')+field('salary','Salary',{number:true})+field('joiningDate','Joining Date',{placeholder:'DD/MM/YYYY'})+
+ field('cardNo','ID/Card No')+field('name','Name')+field('designation','Designation')+field('section','Section')+field('salary','Salary',{number:true})+field('joiningDate','Joining Date',{placeholder:'DD/MM/YYYY'})+field('eddDate','EDD Date',{placeholder:'DD/MM/YYYY'})+
  period('calculationFrom','calculationTo','Calculatin Month')+period('mlFrom','mlTo','Period M/L')+field('lastMonth','Last Month',{placeholder:'MM/YYYY'})+field('daysDividedBy','Days Divided',{number:true})+field('firstVoucherDate','1st Payment',{date:true,auto:true})+field('secondVoucherDate','2nd Payment',{date:true,auto:true})+
  Object.entries(maternityBenefitChoices).map(([key,choices])=>'<datalist id="maternity-entry-options-'+key+'">'+choices.map(value=>'<option value="'+esc(value)+'"></option>').join('')+'</datalist>').join('')+'<div class="maternity-entry-full maternity-entry-save"><button id="maternityBenefitSave" type="submit" class="primary" data-page-action-required="edit" '+(maternityBenefitBusy?'disabled':'')+'>'+(maternityBenefitBusy?'Saving…':'Save')+'</button></div></form></section></div>';
  if(typeof applyActionControls==='function')applyActionControls();
@@ -45,4 +45,9 @@ document.getElementById('main').addEventListener('input',event=>{
  if(maternityEntryDateKeys.includes(key)&&event.target.type==='date'){maternityBenefitDraft[key]=event.target.value?maternityEntryDate(event.target.value):'';event.target.setCustomValidity('');}
  if(key==='calculationTo'){const value=event.target.value?maternityEntryDate(event.target.value).slice(3):'';maternityBenefitDraft.lastMonth=value;document.getElementById('maternity-benefit-lastMonth').value=value;}
  if(key==='mlFrom')for(const [target,days]of [['firstVoucherDate',-2],['secondVoucherDate',60]]){const value=event.target.value?maternityEntryShiftDate(event.target.value,days):'';maternityBenefitDraft[target]=value;document.getElementById('maternity-benefit-'+target).value=maternityEntryDateISO(value);}
+});
+
+document.getElementById('main').addEventListener('focusout',event=>{
+ if(activePage!=='admin-maternity-new-entry'||event.target.dataset.maternityBenefit!=='eddDate')return;
+ try{const value=maternityEntryDate(event.target.value);event.target.value=value;maternityBenefitDraft.eddDate=value;event.target.setCustomValidity('');}catch(error){event.target.setCustomValidity(error.message);}
 });
