@@ -5609,8 +5609,8 @@ qualityPDPrintSheet=function(records){
  const columns=[15.85546875,24,22,30,25,20.28515625,9.140625,9.140625,9.140625,17.42578125,...qualityPDHours.map(()=>9.140625),9.140625,15,9.140625,18.85546875];
  const width=columns.reduce((a,b)=>a+b,0),calculations=records.map(record=>qualityFinishingCalculate(record.hourlyPD));
  const color=(value,defect=false)=>defect?'qf-rate-cyan':value===null?'':value>.9?'qf-rate-green':value>=.8?'qf-rate-yellow':'qf-rate-red';
- const body=records.map((record,index)=>{const fields=record.hourlyPD.fields||{},a=calculations[index];return [2,3,4].map((col,row)=>'<tr class="qf-detail qf-detail-'+row+'">'+(!row?cell(fields.tableNo||String(index+1),'rowspan="3" class="qf-table-no"'):'')+
-  cell(row===1?fields.incharge:'','class="qf-supervisor"')+cell(row===1?fields.buyer:'','class="qf-buyer"')+
+ const body=records.map((record,index)=>{const fields=record.hourlyPD.fields||{},a=calculations[index],tableNo=qualityPDTable(fields)||String(index+1),supervisor=qualityPDSupervisors[qualityPDSection(tableNo)]??fields.incharge;return [2,3,4].map((col,row)=>'<tr class="qf-detail qf-detail-'+row+'">'+(!row?cell(tableNo,'rowspan="3" class="qf-table-no"'):'')+
+  cell(row===1?supervisor:'','class="qf-supervisor"')+cell(row===1?fields.buyer:'','class="qf-buyer"')+
   cell(row===1?fields.style:row===2?(fields.styleLast===undefined?fields.style:fields.styleLast):'','class="qf-style"')+
   cell(row===1?fields.item:row===2?(fields.itemLast===undefined?fields.item:fields.itemLast):'','class="qf-item"')+
   cell(row===1?(fields.qcName||(fields.qualityFormVersion==='2'?'':fields.incharge)):row===2?fields.qcNameLast:'','class="qf-name"')+
