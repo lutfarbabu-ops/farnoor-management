@@ -3745,7 +3745,7 @@ async function commit(next,saveOptions={}){
  try{
   const scopedPersonal=!!personalRecord||!!saveOptions.serviceBenefitDelete;
   let changes=[],compact=false;
-  if(!scopedPersonal){validateState(next);changes=workspaceChanges(dataSavedState||state,next);if(!changes.length){dataStatus('Already saved');return true;}compact=changes.length<=5000&&JSON.stringify(changes).length<JSON.stringify(next).length*.75;}
+  if(!scopedPersonal&&!saveOptions.hourlyOutput){validateState(next);changes=workspaceChanges(dataSavedState||state,next);if(!changes.length){dataStatus('Already saved');return true;}compact=changes.length<=5000&&JSON.stringify(changes).length<JSON.stringify(next).length*.75;}
   const rebase=async()=>{
    dataStatus('সর্বশেষ ডাটা মিলিয়ে সেভ হচ্ছে…');
    const body=await dataRequest();
@@ -3755,10 +3755,11 @@ async function commit(next,saveOptions={}){
    next=prepared;expectedRevision=body.revision;rebased=true;
   };
   if(personalRecord&&dataChanged)await rebase();
-  const request=()=>saveOptions.serviceBenefitDelete?{route:'/api/service-benefit/delete',method:'POST',payload:{id:saveOptions.serviceBenefitDelete,revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.employeeFile?{route:'/api/employee/save',method:'POST',payload:{file:saveOptions.employeeFile,original:saveOptions.employeeOriginal,revision:expectedRevision,accessRevision:accessInfo.revision}}:personalRecord?{route:'/api/personal/save',method:'POST',payload:{file:personalRecord,revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.orderFile?{route:'/api/order/save',method:'POST',payload:{file:saveOptions.orderFile,revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.emailGroup?{route:'/api/admin/email/save',method:'POST',payload:{group:saveOptions.emailGroup,contacts:next.emailContacts[saveOptions.emailGroup],revision:expectedRevision}}:saveOptions.storeFile?{route:'/api/store/save',method:'POST',payload:{file:saveOptions.storeFile,revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.bookingFile?{route:'/api/booking/save',method:'POST',payload:{file:saveOptions.bookingFile,revision:expectedRevision,accessRevision:accessInfo.revision}}:compact?{route:'/api/workspace/changes',method:'POST',payload:{changes,revision:expectedRevision,accessRevision:accessInfo.revision}}:{method:'PUT',payload:{state:next,revision:expectedRevision,accessRevision:accessInfo.revision}};
+  const request=()=>saveOptions.hourlyOutput?{route:'/api/hourly-output/save',method:'POST',payload:{file:saveOptions.hourlyOutput,order:next.records.output.map(row=>row.id),revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.serviceBenefitDelete?{route:'/api/service-benefit/delete',method:'POST',payload:{id:saveOptions.serviceBenefitDelete,revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.employeeFile?{route:'/api/employee/save',method:'POST',payload:{file:saveOptions.employeeFile,original:saveOptions.employeeOriginal,revision:expectedRevision,accessRevision:accessInfo.revision}}:personalRecord?{route:'/api/personal/save',method:'POST',payload:{file:personalRecord,revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.orderFile?{route:'/api/order/save',method:'POST',payload:{file:saveOptions.orderFile,revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.emailGroup?{route:'/api/admin/email/save',method:'POST',payload:{group:saveOptions.emailGroup,contacts:next.emailContacts[saveOptions.emailGroup],revision:expectedRevision}}:saveOptions.storeFile?{route:'/api/store/save',method:'POST',payload:{file:saveOptions.storeFile,revision:expectedRevision,accessRevision:accessInfo.revision}}:saveOptions.bookingFile?{route:'/api/booking/save',method:'POST',payload:{file:saveOptions.bookingFile,revision:expectedRevision,accessRevision:accessInfo.revision}}:compact?{route:'/api/workspace/changes',method:'POST',payload:{changes,revision:expectedRevision,accessRevision:accessInfo.revision}}:{method:'PUT',payload:{state:next,revision:expectedRevision,accessRevision:accessInfo.revision}};
   let result;
   try{result=await dataRequest(request());}
   catch(error){if(!personalRecord||error.status!==409||rebased)throw error;await rebase();result=await dataRequest(request());}
+  if(saveOptions.hourlyOutput&&result.savedId!==saveOptions.hourlyOutput.id)throw Error('Save was not confirmed. Your input is retained.');
   if(saveOptions.serviceBenefitDelete&&result.deletedId!==saveOptions.serviceBenefitDelete)throw Error('Delete was not confirmed. Refresh and retry.');
   state=next;
   dataSavedState=rebased?structuredClone(next):scopedPersonal&&dataSavedState?{...dataSavedState,records:{...dataSavedState.records,'admin-documents':structuredClone(next.records['admin-documents']||[])}}:structuredClone(next);
@@ -5214,7 +5215,7 @@ async function saveHourlyPD(){
   const record={...existing,id:existing?.id||(hourlyPDPendingId||=crypto.randomUUID()),reference:String(fields.section).slice(0,120),name:[fields.buyer,fields.style].filter(Boolean).join(' / ').slice(0,200)||String(fields.section).slice(0,200),date:fields.date,quantity:Number(hourlyPDSum(data.rows.map(r=>r[3]))||0),status:'Completed',hourlyProduction:true,hourlyPD:data,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
   if(existing)rows[rows.indexOf(existing)]=record;else rows.unshift(record);next.records.output=rows;
   hourlyPDBusy=true;renderHourlyPD();
-  if(await commit(next)){hourlyPDEditId=record.id;hourlyPDPendingId=null;hourlyPDSelectedId=record.id;hourlyPDPrintDate=record.date;hourlyPDView='input-report';toast('Hourly Production saved online.');}
+  if(await commit(next,{hourlyOutput:record})){hourlyPDEditId=record.id;hourlyPDPendingId=null;hourlyPDSelectedId=record.id;hourlyPDPrintDate=record.date;hourlyPDView='input-report';toast('Hourly Production saved online.');}
  }catch(error){toast(error.message);}finally{hourlyPDBusy=false;if(activePage===hourlyPDPage)renderHourlyPD();}
 }
 const hourlyPDPreviousRenderPage=renderPage;

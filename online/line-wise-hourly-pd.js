@@ -89,7 +89,7 @@ async function saveHourlyPD(){
   const record={...existing,id:existing?.id||(hourlyPDPendingId||=crypto.randomUUID()),reference:String(fields.section).slice(0,120),name:[fields.buyer,fields.style].filter(Boolean).join(' / ').slice(0,200)||String(fields.section).slice(0,200),date:fields.date,quantity:Number(hourlyPDSum(data.rows.map(r=>r[3]))||0),status:'Completed',hourlyProduction:true,hourlyPD:data,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
   if(existing)rows[rows.indexOf(existing)]=record;else rows.unshift(record);next.records.output=rows;
   hourlyPDBusy=true;renderHourlyPD();
-  if(await commit(next)){hourlyPDEditId=record.id;hourlyPDPendingId=null;hourlyPDSelectedId=record.id;hourlyPDPrintDate=record.date;hourlyPDView='input-report';toast('Hourly Production saved online.');}
+  if(await commit(next,{hourlyOutput:record})){hourlyPDEditId=record.id;hourlyPDPendingId=null;hourlyPDSelectedId=record.id;hourlyPDPrintDate=record.date;hourlyPDView='input-report';toast('Hourly Production saved online.');}
  }catch(error){toast(error.message);}finally{hourlyPDBusy=false;if(activePage===hourlyPDPage)renderHourlyPD();}
 }
 const hourlyPDPreviousRenderPage=renderPage;
