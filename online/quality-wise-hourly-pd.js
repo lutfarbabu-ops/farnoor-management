@@ -1,6 +1,6 @@
 'use strict';
 const qualityPDPage='production-quality-wise-hourly-pd';
-const qualityPDFields=[['section','Section'],['incharge','Incharg Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['workingPlan','Working Plan'],['hourlyTarget','Hourly Target'],['layoutManpower','Layout Manpower'],['presentManpower','Present Manpower'],['remarks','Remarks']];
+const qualityPDFields=[['tableNo','Table'],['section','Section'],['incharge','Incharg Name'],['qcName','Name'],['qcNameLast','Name 2'],['buyer','Buyer'],['style','Style'],['item','Item'],['workingPlan','Working Plan'],['hourlyTarget','Hourly Target'],['layoutManpower','Layout Manpower'],['presentManpower','Present Manpower'],['remarks','Remarks']];
 const qualityPDHours=['8:00-9:00','9:00-10:00','10:00-11:00','11:00-12:00','12:00-1:00','2:00-3:00','3:00-4:00','4:00-5:00','5:00-6:00','6:00-7:00','7:00-8:00'];
 const qualityPDIncharges={'Line-1':'Sree Bipul','Line-2':'Md Nasir','Line-3':'Md Kalam','Line-4':'Md.Masum','Unit-2. Line-1':'Md RASHID'};
 function qualityPDSection(value){const key=String(value||'').replace(/[.\s]/g,'').toLowerCase();return Object.keys(qualityPDIncharges).find(section=>section.replace(/[.\s]/g,'').toLowerCase()===key)||String(value||'');}
