@@ -320,3 +320,5 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 
 /* Hourly entry totals, deletion and tightly bounded report paper. */
 .hourly-pd-table tfoot{background:#d9e9fa;color:#102f50;font-weight:800}.hourly-pd-table tfoot td{font-size:17px}.hourly-pd-delete{background:#ba283b!important;color:#fff!important;border:1px solid #9e1c2e!important}#hourlyPDDeleteDialog{border:0;border-radius:14px;padding:24px;color:#173048;max-width:90vw}#hourlyPDDeleteDialog::backdrop{background:#061b38aa}#hourlyPDDeleteDialog .dialog-actions{display:flex;gap:12px;justify-content:flex-end}.hourly-pd-print-pages{padding-bottom:0}.hourly-pd-print-pages .hourly-pd-print-sheet{min-height:0;padding:0;margin-bottom:0}
+
+.hourly-pd-report [data-hourly-pd-delete]{font-size:11px!important;line-height:1.2!important;padding:4px 7px!important;min-width:0!important;min-height:0!important;border-radius:4px!important;white-space:nowrap}
