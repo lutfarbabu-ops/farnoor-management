@@ -2090,3 +2090,6 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-
 
 // Production / Sewing: dedicated hourly production page.
 {const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='schedule-cutting');production.pages.splice(index,0,{id:'production-line-wise-hourly-pd',name:'Line Wise Hourly PD',navPath:['Sewing'],icon:'◷',shade:'#e8e0ff',navigationOnly:true,permissionPage:'output'});}
+
+// Production / Quality uses the existing Output access and a separate report family.
+{const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='schedule-quality');production.pages.splice(index+1,0,{id:'production-quality-wise-hourly-pd',name:'Quality Wise Hourly PD',navPath:['Quality'],icon:'◉',shade:'#cff5ee',navigationOnly:true,permissionPage:'output'});}

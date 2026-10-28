@@ -322,3 +322,73 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .hourly-pd-table tfoot{background:#d9e9fa;color:#102f50;font-weight:800}.hourly-pd-table tfoot td{font-size:17px}.hourly-pd-delete{background:#ba283b!important;color:#fff!important;border:1px solid #9e1c2e!important}#hourlyPDDeleteDialog{border:0;border-radius:14px;padding:24px;color:#173048;max-width:90vw}#hourlyPDDeleteDialog::backdrop{background:#061b38aa}#hourlyPDDeleteDialog .dialog-actions{display:flex;gap:12px;justify-content:flex-end}.hourly-pd-print-pages{padding-bottom:0}.hourly-pd-print-pages .hourly-pd-print-sheet{min-height:0;padding:0;margin-bottom:0}
 
 .hourly-pd-report [data-hourly-pd-delete]{font-size:11px!important;line-height:1.2!important;padding:4px 7px!important;min-width:0!important;min-height:0!important;border-radius:4px!important;white-space:nowrap}
+
+/* Quality hourly workspace: separate navy page and teal navigation. */
+/* Line Wise Hourly Production workspace. */
+@media screen{#main:has(.quality-pd-workspace){background:#102d50;min-height:calc(100vh - 140px)}}
+.quality-pd-nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;justify-content:flex-start}
+.quality-pd-nav button{font-weight:700;padding:10px 18px;border-radius:8px;border:1px solid}
+.quality-pd-nav .quality-pd-new-input{background:#def8ec;border-color:#78c9a5;color:#126c4b}
+.quality-pd-nav .quality-pd-print{background:#fff0d5;border-color:#e6ad4b;color:#935514}
+.quality-pd-nav .quality-pd-input-report{background:#ece3ff;border-color:#b49ae3;color:#624091}
+.quality-pd-nav button[aria-pressed="true"]{outline:2px solid #fff;outline-offset:3px;box-shadow:0 3px 9px #0003}
+.quality-pd-paper{box-sizing:border-box;max-width:1050px;margin:0 auto;background:#fff;padding:30px 34px;border-radius:9px;box-shadow:0 7px 24px #061a343d;color:#173048}
+.quality-pd-paper>h2{font-size:clamp(23px,3vw,34px);font-weight:900;letter-spacing:1px;color:#d11f32;text-align:center;margin:3px 0 28px;font-family:Georgia,'Times New Roman',serif;text-shadow:0 2px 0 #ffdce0}
+.quality-pd-details{display:grid;gap:9px;max-width:760px;margin:0 auto 30px}
+.quality-pd-field{display:grid;grid-template-columns:180px minmax(0,1fr);align-items:center;gap:20px}
+.quality-pd-field label{font-size:16px;font-weight:700;color:#244660}
+.quality-pd-field input{box-sizing:border-box;width:100%;min-width:0;min-height:38px;background:#f6faff;border:1px solid #b8cde0;border-radius:6px;padding:7px 10px;color:#173048}
+.quality-pd-table-wrap{overflow-x:auto}
+.quality-pd-table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:600px}
+.quality-pd-table th,.quality-pd-table td{border:1px solid #8199b0;text-align:center;padding:7px 6px}
+.quality-pd-table thead th{background:#173f68;color:#fff;font-size:14px;font-weight:700}
+.quality-pd-table tbody th{background:#eaf1f9;color:#244660;font-size:14px;white-space:nowrap}
+.quality-pd-table input{box-sizing:border-box;width:100%;min-width:0;border:1px solid #d4dfea;border-radius:4px;text-align:center;padding:7px 3px;background:#fff;color:#173048}
+.quality-pd-field input:focus,.quality-pd-table input:focus{outline:2px solid #4789c5;outline-offset:1px}
+.quality-pd-print-actions{display:flex;justify-content:flex-end;margin-bottom:12px}
+.quality-pd-print-actions button{background:#fff0d5;color:#935514;border:1px solid #e6ad4b}
+.quality-pd-report{background:#fff;border-radius:9px;min-height:280px;padding:28px;color:#173048}
+.quality-pd-report h2{margin:0}
+@media(max-width:650px){.quality-pd-paper{padding:20px 12px}.quality-pd-field{grid-template-columns:130px minmax(0,1fr);gap:9px}.quality-pd-field label{font-size:14px}.quality-pd-nav{gap:8px}.quality-pd-nav button{padding:9px 11px}}
+@media print{.quality-pd-paper{max-width:none;width:100%;padding:8mm;box-shadow:none;border-radius:0}.quality-pd-paper>h2{color:#000;text-shadow:none;font-size:23pt}.quality-pd-paper input{color:#000;background:#fff;border-color:transparent;box-shadow:none}.quality-pd-table{min-width:0}.quality-pd-table th,.quality-pd-table td{color:#000!important;background:#fff!important;border-color:#000}.quality-pd-nav,.quality-pd-print-actions{display:none!important}}
+
+.quality-pd-extra{margin-top:20px;border:1px solid #b8cde0;border-radius:7px;padding:13px}.quality-pd-extra summary{cursor:pointer;font-weight:700}.quality-pd-extra-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}.quality-pd-extra-fields label{display:grid;gap:5px}.quality-pd-extra input{width:100%;min-width:0;box-sizing:border-box}.quality-pd-extra-table{width:100%;border-collapse:collapse;min-width:460px}.quality-pd-extra-table th,.quality-pd-extra-table td{border:1px solid #b8cde0;padding:7px}.quality-pd-save-actions{display:flex;justify-content:flex-end;margin-top:20px}.quality-pd-save-actions button{background:#137354;color:#fff;font-weight:700;min-width:110px}.quality-pd-report h2{margin-bottom:18px}.quality-pd-print-actions{align-items:end;flex-wrap:wrap}.quality-pd-print-actions label{color:#fff;display:grid;gap:5px}.quality-pd-print-pages{overflow-x:auto;padding-bottom:15px}
+.quality-pd-print-sheet{box-sizing:border-box;background:#fff;color:#000;width:281mm;min-height:194mm;padding:12mm 0;margin:0 auto 20px;font:7pt/1.15 Arial,sans-serif;box-shadow:0 7px 24px #061a343d}
+.quality-pd-print-sheet header{background:#9dc3e6;border:0.5px solid #555;padding:0;color:#000}.quality-pd-print-sheet header h2{font:bold 12pt/1.15 Arial,sans-serif;letter-spacing:normal;text-align:center;margin:1px 0;border-bottom:0.5px solid #555}.quality-pd-print-sheet header h3{font:bold 8pt/1.2 Arial,sans-serif;text-align:center;margin:1px 0}.quality-pd-print-sheet header>div{display:flex;align-items:center;gap:12mm;min-height:4mm;padding:1mm 3mm;font-size:6pt;color:red}.quality-pd-print-sheet header strong{flex:1;text-align:center}.quality-key-red{color:red}.quality-key-yellow{color:#fffb00}.quality-key-green{color:#00a830}.quality-pd-value{color:#7030a0;font-weight:700}
+.quality-pd-print-table,.quality-pd-summary{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed;margin:0;color:#000}.quality-pd-print-table th,.quality-pd-print-table td{border:.5px solid #000;padding:.3mm .2mm;text-align:center;vertical-align:middle;white-space:normal;overflow-wrap:anywhere;font-size:5.4pt;line-height:1.1;height:3.35mm}.quality-pd-print-table thead th{background:#a9d18e;color:#000;font-size:5.3pt;font-weight:700}.quality-pd-print-table tbody tr>td:nth-child(4){font-weight:700}.quality-pd-print-table .quality-status{font-size:5.2pt;color:#000;font-weight:700}.quality-status-0{background:#b9e3ae}.quality-status-1{background:#9dc3e6}.quality-status-2{background:#ffff00}.quality-status-3{background:#f4b183}.quality-status-4{background:#4472c4}.quality-pd-total{font-weight:700}.quality-pd-total td,.quality-pd-total th{height:4mm}
+.quality-pd-summary th,.quality-pd-summary td{border:.5px solid #444;text-align:center;font:bold 8pt/1.15 Arial,sans-serif;padding:.8mm 1mm;height:4.5mm;box-sizing:border-box;white-space:normal}.quality-pd-summary tr:nth-child(1),.quality-pd-summary tr:nth-child(2){background:#002060;color:#fff}.quality-pd-summary tr:nth-child(3),.quality-pd-summary tr:nth-child(4){background:#00b0f0;color:#fff}.quality-pd-summary .quality-summary-0{background:#a9d18e}.quality-pd-summary .quality-summary-1{background:#9dc3e6;color:#fff}.quality-pd-summary .quality-summary-2{background:#000;color:#fff}.quality-pd-summary .quality-summary-2 td:nth-child(2){background:#9dc3e6}.quality-pd-summary .quality-summary-3{background:#ed7d31;color:#fff}.quality-pd-summary .quality-summary-4{background:#5b9bd5}
+
+/* Match the supplied quality Excel template. */
+.quality-pd-print-sheet .quality-style .quality-pd-value,.quality-pd-print-sheet .quality-item .quality-pd-value{font:bold 8.2pt/1.05 Calibri,Arial,sans-serif}
+.quality-pd-print-sheet .quality-buyer .quality-pd-value,.quality-pd-print-sheet .quality-incharge .quality-pd-value{font-size:6pt}
+.quality-pd-print-sheet .quality-calculated{color:#000;font-weight:700}
+.quality-pd-print-sheet .quality-difference{color:#f00;font-weight:700}
+.quality-pd-print-sheet .quality-qc-total{background:#ff0!important}
+.quality-pd-print-sheet .quality-achievement{font-weight:700;color:#000;background:#00b0f0}
+.quality-pd-print-sheet .quality-rate-red{background:#ff5050!important}.quality-pd-print-sheet .quality-rate-yellow{background:#ff0!important}.quality-pd-print-sheet .quality-rate-green{background:#00b050!important}.quality-pd-print-sheet .quality-rate-cyan{background:#00b0f0!important}
+.quality-pd-print-sheet .quality-status-0{background:#fff}.quality-pd-print-sheet .quality-first-later{background:#f7caac}.quality-pd-print-sheet .quality-status-1{background:#9cc2e5}.quality-pd-print-sheet .quality-status-3{background:#f4b083}
+.quality-pd-print-sheet header strong span{color:red}.quality-pd-print-sheet header b .quality-pd-value{margin-left:8mm}
+.quality-pd-print-sheet .quality-summary-4{color:#fff}
+
+@page farnoorHourlyLandscape{size:A4 landscape!important;margin:8mm!important}
+@media print{body:has(.quality-pd-print-sheet){page:farnoorHourlyLandscape!important}body:has(.quality-pd-print-sheet) #main{width:100%!important;max-width:none!important;overflow:visible!important;height:auto!important;max-height:none!important;padding:0!important;background:#fff!important}.quality-pd-print-pages{overflow:visible;padding:0}.quality-pd-print-sheet{page:farnoorHourlyLandscape!important;width:281mm!important;max-width:281mm!important;min-height:0;margin:0!important;padding:6mm 0 0!important;box-shadow:none;break-after:page;break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}.quality-pd-print-sheet:last-child{break-after:auto}.quality-pd-print-sheet table{width:100%!important;min-width:0!important;table-layout:fixed}.quality-pd-print-sheet .quality-pd-print-table th,.quality-pd-print-sheet .quality-pd-print-table td{padding:.3mm .2mm!important;font-size:5.4pt!important;border:.5px solid #000!important;line-height:1.1!important}.quality-pd-print-sheet .quality-pd-summary th,.quality-pd-print-sheet .quality-pd-summary td{padding:.8mm 1mm!important;font-size:8pt!important;line-height:1.15!important}.quality-pd-extra,.quality-pd-save-actions{display:none!important}}
+
+.quality-pd-summary>tbody>tr>th,.quality-pd-summary>tbody>tr>td{background-color:inherit!important;color:inherit!important;font-weight:700!important}
+.quality-pd-summary .quality-summary-2>td:nth-child(2){background-color:#9dc3e6!important}
+
+.quality-pd-field select{box-sizing:border-box;width:100%;min-width:0;min-height:38px;background:#f6faff;border:1px solid #b8cde0;border-radius:6px;padding:7px 10px;color:#173048;font:inherit}
+.quality-pd-field select:focus{outline:2px solid #4789c5;outline-offset:1px}
+
+.quality-pd-edit-links{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;justify-content:flex-end}.quality-pd-edit-links button{background:#e0f4eb;border:1px solid #91c9b0;color:#145c43;font-weight:700}
+
+.quality-pd-manpower-label{font-size:16px;font-weight:700;color:#244660}.quality-pd-manpower-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 14px;min-width:0}.quality-pd-manpower-pair label{display:grid;gap:5px;min-width:0}.quality-pd-manpower-pair label>span{font-size:13px}.quality-pd-manpower-sum{grid-column:1/-1;color:#46637c;font-size:12px}.quality-pd-manpower-sum output{font-weight:700}
+@media(max-width:650px){.quality-pd-manpower-label{font-size:14px}.quality-pd-manpower-pair{gap:6px}.quality-pd-manpower-pair label>span{font-size:12px}}
+
+/* Hourly entry totals, deletion and tightly bounded report paper. */
+.quality-pd-table tfoot{background:#d9e9fa;color:#102f50;font-weight:800}.quality-pd-table tfoot td{font-size:17px}.quality-pd-delete{background:#ba283b!important;color:#fff!important;border:1px solid #9e1c2e!important}#qualityPDDeleteDialog{border:0;border-radius:14px;padding:24px;color:#173048;max-width:90vw}#qualityPDDeleteDialog::backdrop{background:#061b38aa}#qualityPDDeleteDialog .dialog-actions{display:flex;gap:12px;justify-content:flex-end}.quality-pd-print-pages{padding-bottom:0}.quality-pd-print-pages .quality-pd-print-sheet{min-height:0;padding:0;margin-bottom:0}
+
+.quality-pd-report [data-quality-pd-delete]{font-size:11px!important;line-height:1.2!important;padding:4px 7px!important;min-width:0!important;min-height:0!important;border-radius:4px!important;white-space:nowrap}
+
+#navigation [data-page="production-quality-wise-hourly-pd"]{--sub-bg:#d3f5ef!important;--sub-edge:#65bfb1!important;--sub-ink:#075a60!important;--sub-accent:#139c98!important}#navigation [data-page="production-quality-wise-hourly-pd"] .submenu-icon{color:#07847d}
+@media screen{#main:has(.quality-pd-workspace){background:#101f47}}
+.quality-pd-nav .quality-pd-new-input{background:#dcf8ee;border-color:#60bda4;color:#07684c}.quality-pd-nav .quality-pd-print{background:#dcecff;border-color:#7ba9e6;color:#174b8f}.quality-pd-nav .quality-pd-input-report{background:#f5e0f4;border-color:#c590c5;color:#813580}.quality-pd-report>h2{color:#fff}

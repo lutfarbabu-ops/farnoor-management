@@ -11,7 +11,7 @@ const hourlyPDDraft={fields:{},rows:hourlyPDHours.map(()=>Array(5).fill('')),tar
 let hourlyPDEditId=null,hourlyPDPendingId=null,hourlyPDBusy=false,hourlyPDSelectedId=null,hourlyPDPrintDate='';
 function hourlyPDToday(){return new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'});}
 function hourlyPDKey(date,section){let day=String(date||'').trim();try{day=normalizeDate(day);}catch{}return day+'|'+hourlyPDSection(section).toLowerCase();}
-function hourlyPDRecords(){const files=new Map();for(const row of (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&!r.deletedAt)){const key=hourlyPDKey(row.date,row.hourlyPD.fields?.section),old=files.get(key);if(!old||(Date.parse(row.updatedAt||row.createdAt)||0)>(Date.parse(old.updatedAt||old.createdAt)||0))files.set(key,row);}return [...files.values()].sort(hourlyPDCompare);
+function hourlyPDRecords(){const files=new Map();for(const row of (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind!=='quality'&&!r.deletedAt)){const key=hourlyPDKey(row.date,row.hourlyPD.fields?.section),old=files.get(key);if(!old||(Date.parse(row.updatedAt||row.createdAt)||0)>(Date.parse(old.updatedAt||old.createdAt)||0))files.set(key,row);}return [...files.values()].sort(hourlyPDCompare);
 }
 function hourlyPDCompare(a,b){const dates=String(b.date).split("/").reverse().join("-").localeCompare(String(a.date).split("/").reverse().join("-"));if(dates)return dates;const order=Object.keys(hourlyPDIncharges),rank=r=>{const index=order.indexOf(hourlyPDSection(r.hourlyPD?.fields?.section));return index<0?order.length:index;};return rank(a)-rank(b);}
 function hourlyPDLookupInput(){
