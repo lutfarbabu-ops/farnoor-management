@@ -59,7 +59,7 @@ document.getElementById('main').addEventListener('click',async event=>{
 });
 const hourlyAutoMailQueue=[];let hourlyAutoMailBusy=false;
 function hourlyPDAutoEmailSaved(record,previous){
- if(!Object.hasOwn(hourlyPDIncharges,record.hourlyPD.fields.section))return;const rows=record.hourlyPD.rows;if(JSON.stringify(rows)===JSON.stringify(previous?.hourlyPD?.rows)||!rows.some(row=>row.some(value=>value!=='')))return;
+ if(!Object.hasOwn(hourlyPDIncharges,record.hourlyPD.fields.section))return;const rows=record.hourlyPD.rows;if(JSON.stringify(hourlyPDComputedRows(rows))===JSON.stringify(hourlyPDComputedRows(previous?.hourlyPD?.rows))||!rows.some(row=>row.some(value=>value!=='')))return;
  hourlyAutoMailQueue.push({records:structuredClone(hourlyPDRecords().filter(row=>row.date===record.date&&Object.hasOwn(hourlyPDIncharges,row.hourlyPD.fields.section))),requestId:crypto.randomUUID()});void hourlyAutoMailRun();
 }
 async function hourlyAutoMailRun(){
