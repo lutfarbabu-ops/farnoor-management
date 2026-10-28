@@ -8,11 +8,11 @@ async function hourlyReportImages(records,copy=false){
  const frame=document.createElement('iframe');frame.title='রিপোর্টের ছবি প্রস্তুত হচ্ছে';frame.style.cssText='position:fixed;left:-20000px;top:0;width:1123px;height:794px;border:0;pointer-events:none';
  try{
   const ready=new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=()=>reject(Error('রিপোর্ট প্রস্তুত করা যায়নি।'));});frame.srcdoc=hourlyPDPrintHTML(records);document.body.append(frame);await ready;
-  const doc=frame.contentDocument;const style=doc.createElement('style');style.textContent='html,body{width:1123px;margin:0;background:#fff}.hourly-pd-print-sheet{width:1062px!important;min-height:0!important;margin:0 auto!important;padding:0!important;box-sizing:border-box!important;box-shadow:none!important}';doc.head.append(style);
+  const doc=frame.contentDocument;const style=doc.createElement('style');style.textContent='html,body{width:1123px;margin:0;background:#fff}.hourly-pd-print-sheet{width:1062px!important;min-height:0!important;margin:0 auto!important;padding:0!important;box-sizing:border-box!important;box-shadow:none!important}.hourly-pd-print-sheet table th,.hourly-pd-print-sheet table td,.hourly-pd-print-sheet header,.hourly-pd-print-sheet header h2{border-width:.35px!important}';doc.head.append(style);
   await doc.fonts.ready;await personalLoadPdfLibrary(frame.contentWindow);
   const images=[],sheets=[...doc.querySelectorAll('.hourly-pd-print-sheet')];
   for(let i=0;i<sheets.length;i++){
-   const rendered=await frame.contentWindow.html2pdf().set({margin:0,jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},html2canvas:{scale:5,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,scrollX:0,scrollY:0}}).from(sheets[i]).toCanvas().get('canvas');const canvas=hourlyTrimCanvas(rendered);
+   const rendered=await frame.contentWindow.html2pdf().set({margin:0,jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},html2canvas:{scale:6,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,scrollX:0,scrollY:0}}).from(sheets[i]).toCanvas().get('canvas');const canvas=hourlyTrimCanvas(rendered);
    // Encode while the rendering document is alive; never pass its canvas out.
    if(copy){if(!hourlyCanvasHasReport(canvas))throw Error('রিপোর্টের ছবি সাদা এসেছে। আবার Copy Image চাপুন।');images.push({png:canvas.toDataURL('image/png'),width:canvas.width,height:canvas.height});continue;}
    const jpg=canvas.toDataURL('image/jpeg',1),name='Line-Wise-Hourly-PD-'+records[0].date.replaceAll('/','-')+'-'+(i+1)+'.jpg';images.push({jpg,name});
