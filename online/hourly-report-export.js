@@ -8,11 +8,11 @@ async function hourlyReportImages(records,copy=false){
  const frame=document.createElement('iframe');frame.title='রিপোর্টের ছবি প্রস্তুত হচ্ছে';frame.style.cssText='position:fixed;left:-20000px;top:0;width:1123px;height:794px;border:0;pointer-events:none';
  try{
   const ready=new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=()=>reject(Error('রিপোর্ট প্রস্তুত করা যায়নি।'));});frame.srcdoc=hourlyPDPrintHTML(records);document.body.append(frame);await ready;
-  const doc=frame.contentDocument;const style=doc.createElement('style');style.textContent='html,body{width:1123px;margin:0;background:#fff}.hourly-pd-print-sheet{width:1062px!important;min-height:0!important;margin:0 auto!important;padding:24px 0!important;box-sizing:border-box!important;box-shadow:none!important}';doc.head.append(style);
+  const doc=frame.contentDocument;const style=doc.createElement('style');style.textContent='html,body{width:1123px;margin:0;background:#fff}.hourly-pd-print-sheet{width:1062px!important;min-height:0!important;margin:0 auto!important;padding:0!important;box-sizing:border-box!important;box-shadow:none!important}';doc.head.append(style);
   await doc.fonts.ready;await personalLoadPdfLibrary(frame.contentWindow);
   const images=[],sheets=[...doc.querySelectorAll('.hourly-pd-print-sheet')];
   for(let i=0;i<sheets.length;i++){
-   const canvas=await frame.contentWindow.html2pdf().set({margin:0,jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},html2canvas:{scale:4,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,scrollX:0,scrollY:0}}).from(sheets[i]).toCanvas().get('canvas');
+   const canvas=await frame.contentWindow.html2pdf().set({margin:0,jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},html2canvas:{scale:5,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,scrollX:0,scrollY:0}}).from(sheets[i]).toCanvas().get('canvas');
    // Encode while the rendering document is alive; never pass its canvas out.
    if(copy){if(!hourlyCanvasHasReport(canvas))throw Error('রিপোর্টের ছবি সাদা এসেছে। আবার Copy Image চাপুন।');images.push({png:canvas.toDataURL('image/png'),width:canvas.width,height:canvas.height});continue;}
    const jpg=canvas.toDataURL('image/jpeg',1),name='Line-Wise-Hourly-PD-'+records[0].date.replaceAll('/','-')+'-'+(i+1)+'.jpg';images.push({jpg,name});
@@ -58,11 +58,11 @@ document.getElementById('main').addEventListener('click',async event=>{
 });
 const hourlyAutoMailQueue=[];let hourlyAutoMailBusy=false;
 function hourlyPDAutoEmailSaved(record,previous){
- const rows=record.hourlyPD.rows;if(JSON.stringify(rows)===JSON.stringify(previous?.hourlyPD?.rows)||!rows.some(row=>row.some(value=>value!=='')))return;
- hourlyAutoMailQueue.push({records:structuredClone(hourlyPDRecords().filter(row=>row.date===record.date)),requestId:crypto.randomUUID()});void hourlyAutoMailRun();
+ if(!Object.hasOwn(hourlyPDIncharges,record.hourlyPD.fields.section))return;const rows=record.hourlyPD.rows;if(JSON.stringify(rows)===JSON.stringify(previous?.hourlyPD?.rows)||!rows.some(row=>row.some(value=>value!=='')))return;
+ hourlyAutoMailQueue.push({records:structuredClone(hourlyPDRecords().filter(row=>row.date===record.date&&Object.hasOwn(hourlyPDIncharges,row.hourlyPD.fields.section))),requestId:crypto.randomUUID()});void hourlyAutoMailRun();
 }
 async function hourlyAutoMailRun(){
  if(hourlyAutoMailBusy)return;hourlyAutoMailBusy=true;
- try{while(hourlyAutoMailQueue.length){const item=hourlyAutoMailQueue.shift();try{toast('Saved online. ঘণ্টার রিপোর্ট ইমেইলের জন্য প্রস্তুত হচ্ছে…');const images=await hourlyReportImages(item.records);const sent=await hourlyEmailRequest('/api/hourly-output/email',{automatic:true,to:['rakibislam103137@gmail.com'],requestId:item.requestId,reports:item.records.map(r=>({id:r.id,version:r.updatedAt||r.createdAt})),images:images.map(image=>({jpg:image.jpg.split(',')[1]}))});let job;for(let i=0;i<40;i++){await new Promise(resolve=>setTimeout(resolve,1500));job=await hourlyEmailRequest('/api/hourly-output/email/job',{key:sent.jobKey});if(job.status!=='processing')break;}toast(job?.status==='accepted'?'Saved online. ঘণ্টার JPG রিপোর্ট Gmail গ্রহণ করেছে।':job?.status==='processing'?'Saved online. ঘণ্টার ইমেইল প্রক্রিয়াধীন আছে।':'Saved online. Email: '+(job?.error||'পাঠানো যায়নি।'));}catch(error){toast('Saved online. Email: '+error.message);}}}
+ try{while(hourlyAutoMailQueue.length){const item=hourlyAutoMailQueue.shift();try{toast('Saved online. ঘণ্টার রিপোর্ট ইমেইলের জন্য প্রস্তুত হচ্ছে…');const images=await hourlyReportImages(item.records);const sent=await hourlyEmailRequest('/api/hourly-output/email',{automatic:true,to:['rakibislam103137@gmail.com','farnoorgl@gmail.com'],requestId:item.requestId,reports:item.records.map(r=>({id:r.id,version:r.updatedAt||r.createdAt})),images:images.map(image=>({jpg:image.jpg.split(',')[1]}))});let job;for(let i=0;i<40;i++){await new Promise(resolve=>setTimeout(resolve,1500));job=await hourlyEmailRequest('/api/hourly-output/email/job',{key:sent.jobKey});if(job.status!=='processing')break;}toast(job?.status==='accepted'?'Saved online. ঘণ্টার JPG রিপোর্ট Gmail গ্রহণ করেছে।':job?.status==='processing'?'Saved online. ঘণ্টার ইমেইল প্রক্রিয়াধীন আছে।':'Saved online. Email: '+(job?.error||'পাঠানো যায়নি।'));}catch(error){toast('Saved online. Email: '+error.message);}}}
  finally{hourlyAutoMailBusy=false;}
 }
