@@ -59,8 +59,8 @@ document.getElementById('main').addEventListener('click',async event=>{
 });
 const qualityAutoMailQueue=[];let qualityAutoMailBusy=false;
 function qualityPDAutoEmailSaved(record,previous){
- if(!Object.hasOwn(qualityPDIncharges,record.hourlyPD.fields.section))return;const rows=record.hourlyPD.rows;if(JSON.stringify(qualityPDComputedRows(rows))===JSON.stringify(qualityPDComputedRows(previous?.hourlyPD?.rows))||!rows.some(row=>row.some(value=>value!=='')))return;
- qualityAutoMailQueue.push({records:structuredClone(qualityPDRecords().filter(row=>row.date===record.date&&Object.hasOwn(qualityPDIncharges,row.hourlyPD.fields.section))),requestId:crypto.randomUUID()});void qualityAutoMailRun();
+ if(!qualityPDTable(record.hourlyPD.fields))return;const rows=record.hourlyPD.rows;if(JSON.stringify(qualityPDComputedRows(rows).map(row=>row.slice(2)))===JSON.stringify(qualityPDComputedRows(previous?.hourlyPD?.rows).map(row=>row.slice(2)))||!rows.some(row=>row.slice(2).some(value=>value!=='')))return;
+ qualityAutoMailQueue.push({records:structuredClone(qualityPDRecords().filter(row=>row.date===record.date&&qualityPDTable(row.hourlyPD.fields))),requestId:crypto.randomUUID()});void qualityAutoMailRun();
 }
 async function qualityAutoMailRun(){
  if(qualityAutoMailBusy)return;qualityAutoMailBusy=true;
