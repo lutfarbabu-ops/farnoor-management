@@ -5652,6 +5652,7 @@ const qualityFinishingCSS=`
 .quality-finishing-report .qf-summary-0{background:#000!important;color:#fff!important}.quality-finishing-report .qf-summary .qf-summary-0>td:nth-child(2){background:#f4b083!important;color:#000!important}
 .quality-finishing-report .qf-summary-1{background:#ed7d31!important;color:#fff!important}.quality-finishing-report .qf-summary .qf-summary-1>td:nth-child(2){color:#000!important}
 .quality-finishing-report .qf-summary-2{background:#5b9bd5!important;color:#fff!important}.quality-finishing-report .qf-summary .qf-summary-2>td:nth-child(2){color:#000!important}
+@media screen{.quality-pd-print-pages .quality-finishing-report{max-width:100%;margin-left:auto;margin-right:auto}}
 @media print{.quality-finishing-report .qf-table th,.quality-finishing-report .qf-table td{font-size:6.2pt!important}.quality-finishing-report .qf-summary th,.quality-finishing-report .qf-summary td{font-size:9pt!important}.quality-finishing-report{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 `;
 const qualityFinishingStyle=document.createElement('style');qualityFinishingStyle.textContent=qualityFinishingCSS;document.head.append(qualityFinishingStyle);
