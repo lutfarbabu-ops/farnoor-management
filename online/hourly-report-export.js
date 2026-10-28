@@ -1,10 +1,10 @@
 'use strict';
 let hourlyExportBusy=false,hourlyEmailDraft=null;
 const hourlyExportPreviousView=hourlyPDPrintView;
-hourlyPDPrintView=function(){return hourlyExportPreviousView().replace('</div><div class="hourly-pd-edit-links', '<button type="button" class="hourly-image-button" data-hourly-image data-page-action-required="pdf">📷 ছবি ডাউনলোড</button><button type="button" class="hourly-email-button" data-hourly-email data-page-action-required="pdf">✉ ইমেইল পাঠান</button></div><div class="hourly-pd-edit-links');};
+hourlyPDPrintView=function(){return hourlyExportPreviousView().replace('</div><div class="hourly-pd-edit-links', '<button type="button" class="hourly-image-button" data-hourly-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="hourly-email-button" data-hourly-email data-page-action-required="pdf">✉ ইমেইল পাঠান</button></div><div class="hourly-pd-edit-links');};
 const hourlyExportStyle=document.createElement('style');hourlyExportStyle.textContent='.hourly-image-button{background:#e0f2fe!important;color:#075985!important;border:1px solid #38bdf8!important}.hourly-email-button{background:#f3e8ff!important;color:#6b21a8!important;border:1px solid #c084fc!important}#hourlyEmailDialog{width:min(740px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:14px;padding:24px;color:#172b42}#hourlyEmailDialog::backdrop{background:#071e3acc}#hourlyEmailDialog img{display:block;width:100%;height:auto;border:1px solid #cbd5e1;margin:12px 0}#hourlyEmailDialog input{box-sizing:border-box;width:100%;padding:10px;border:1px solid #94a3b8;border-radius:7px}#hourlyEmailDialog .dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}#hourlyEmailDialog button{padding:10px 16px}#hourlyEmailStatus{white-space:pre-wrap}';document.head.append(hourlyExportStyle);
 function hourlyExportRecords(){if(!FarnoorAccess.canAction('output','pdf'))throw Error('Report export permission is required.');const records=hourlyPDPrintRows();if(!records.length)throw Error('এই তারিখে সেভ করা ইনপুট নেই।');return structuredClone(records);}
-async function hourlyReportImages(records){
+async function hourlyReportImages(records,copy=false){
  const frame=document.createElement('iframe');frame.title='রিপোর্টের ছবি প্রস্তুত হচ্ছে';frame.style.cssText='position:fixed;left:-20000px;top:0;width:1123px;height:794px;border:0;pointer-events:none';
  try{
   const ready=new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=()=>reject(Error('রিপোর্ট প্রস্তুত করা যায়নি।'));});frame.srcdoc=hourlyPDPrintHTML(records);document.body.append(frame);await ready;
@@ -13,12 +13,17 @@ async function hourlyReportImages(records){
   const images=[],sheets=[...doc.querySelectorAll('.hourly-pd-print-sheet')];
   for(let i=0;i<sheets.length;i++){
    const canvas=await frame.contentWindow.html2pdf().set({margin:0,jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},html2canvas:{scale:4,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,scrollX:0,scrollY:0}}).from(sheets[i]).toCanvas().get('canvas');
+   if(copy){images.push({canvas});continue;}
    const jpg=canvas.toDataURL('image/jpeg',1),name='Line-Wise-Hourly-PD-'+records[0].date.replaceAll('/','-')+'-'+(i+1)+'.jpg';images.push({jpg,name});
   }
   return images;
  }finally{frame.remove();}
 }
-function hourlyDownloadImages(images){for(const image of images){const link=document.createElement('a');link.href=image.jpg;link.download=image.name;document.body.append(link);link.click();link.remove();}}
+async function hourlyClipboardBlob(records){
+ const pages=await hourlyReportImages(records,true),canvas=document.createElement('canvas');canvas.width=Math.max(...pages.map(p=>p.canvas.width));canvas.height=pages.reduce((sum,p)=>sum+p.canvas.height,0);if(canvas.height>16384)throw Error('কম পেইজ নির্বাচন করে Copy Image চাপুন।');
+ const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);let top=0;for(const page of pages){context.drawImage(page.canvas,0,top);top+=page.canvas.height;}
+ return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('ছবি কপি করার জন্য প্রস্তুত হয়নি।')),'image/png'));
+}
 async function hourlyEmailRequest(route,payload){const response=await FarnoorAPI.request(route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await response.json();if(!response.ok)throw Error(result.error||'ইমেইল অনুরোধ সম্পন্ন হয়নি।');return result;}
 function hourlyCloseEmail(){const dialog=document.getElementById('hourlyEmailDialog');if(dialog?.dataset.sending==='true')return;dialog?.close();dialog?.remove();hourlyEmailDraft=null;}
 function hourlyShowEmail(records,images){
@@ -41,6 +46,16 @@ async function hourlySendEmail(event){
 document.getElementById('main').addEventListener('click',async event=>{
  const button=event.target.closest('[data-hourly-image],[data-hourly-email]');if(!button||activePage!==hourlyPDPage||hourlyExportBusy)return;
  hourlyExportBusy=true;button.disabled=true;const title=button.textContent;button.textContent='ছবি প্রস্তুত হচ্ছে…';
- try{const records=hourlyExportRecords(),images=await hourlyReportImages(records);if(button.hasAttribute('data-hourly-email'))hourlyShowEmail(records,images);else{hourlyDownloadImages(images);toast(images.length+'টি রিপোর্টের ছবি ডাউনলোড শুরু হয়েছে।');}}
- catch(error){toast(error.message);}finally{hourlyExportBusy=false;button.disabled=false;button.textContent=title;}
+ try{const records=hourlyExportRecords();if(button.hasAttribute('data-hourly-email'))hourlyShowEmail(records,await hourlyReportImages(records));else{if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw Error('এই ব্রাউজারে ছবি কপি সমর্থিত নয়। Chrome বা Edge ব্যবহার করুন।');await navigator.clipboard.write([new ClipboardItem({'image/png':hourlyClipboardBlob(records)})]);toast('Image copied. এখন Ctrl+V দিয়ে পেস্ট করুন।');}}
+ catch(error){toast(error.name==='NotAllowedError'?'ছবি কপি করার অনুমতি পাওয়া যায়নি। ব্রাউজারে Clipboard অনুমতি দিয়ে আবার Copy Image চাপুন।':error.message);}finally{hourlyExportBusy=false;button.disabled=false;button.textContent=title;}
 });
+const hourlyAutoMailQueue=[];let hourlyAutoMailBusy=false;
+function hourlyPDAutoEmailSaved(record,previous){
+ const rows=record.hourlyPD.rows;if(JSON.stringify(rows)===JSON.stringify(previous?.hourlyPD?.rows)||!rows.some(row=>row.some(value=>value!=='')))return;
+ hourlyAutoMailQueue.push({records:structuredClone(hourlyPDRecords().filter(row=>row.date===record.date)),requestId:crypto.randomUUID()});void hourlyAutoMailRun();
+}
+async function hourlyAutoMailRun(){
+ if(hourlyAutoMailBusy)return;hourlyAutoMailBusy=true;
+ try{while(hourlyAutoMailQueue.length){const item=hourlyAutoMailQueue.shift();try{toast('Saved online. ঘণ্টার রিপোর্ট ইমেইলের জন্য প্রস্তুত হচ্ছে…');const images=await hourlyReportImages(item.records);const sent=await hourlyEmailRequest('/api/hourly-output/email',{automatic:true,to:['rakibislam103137@gmail.com'],requestId:item.requestId,reports:item.records.map(r=>({id:r.id,version:r.updatedAt||r.createdAt})),images:images.map(image=>({jpg:image.jpg.split(',')[1]}))});let job;for(let i=0;i<40;i++){await new Promise(resolve=>setTimeout(resolve,1500));job=await hourlyEmailRequest('/api/hourly-output/email/job',{key:sent.jobKey});if(job.status!=='processing')break;}toast(job?.status==='accepted'?'Saved online. ঘণ্টার JPG রিপোর্ট Gmail গ্রহণ করেছে।':job?.status==='processing'?'Saved online. ঘণ্টার ইমেইল প্রক্রিয়াধীন আছে।':'Saved online. Email: '+(job?.error||'পাঠানো যায়নি।'));}catch(error){toast('Saved online. Email: '+error.message);}}}
+ finally{hourlyAutoMailBusy=false;}
+}
