@@ -392,3 +392,7 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 #navigation [data-page="production-quality-wise-hourly-pd"]{--sub-bg:#d3f5ef!important;--sub-edge:#65bfb1!important;--sub-ink:#075a60!important;--sub-accent:#139c98!important}#navigation [data-page="production-quality-wise-hourly-pd"] .submenu-icon{color:#07847d}
 @media screen{#main:has(.quality-pd-workspace){background:#101f47}}
 .quality-pd-nav .quality-pd-new-input{background:#dcf8ee;border-color:#60bda4;color:#07684c}.quality-pd-nav .quality-pd-print{background:#dcecff;border-color:#7ba9e6;color:#174b8f}.quality-pd-nav .quality-pd-input-report{background:#f5e0f4;border-color:#c590c5;color:#813580}.quality-pd-report>h2{color:#fff}
+
+/* Two-level machine headings in the Sewing Input Report. */
+.hourly-pd-report thead th[scope="colgroup"]{text-align:center;vertical-align:middle;border-inline:1px solid #d6e3dc;border-bottom:1px solid #c4d7cf}
+.hourly-pd-report thead tr:nth-child(2)>th{text-align:center;white-space:nowrap}
