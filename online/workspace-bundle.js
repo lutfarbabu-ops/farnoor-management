@@ -5287,22 +5287,24 @@ async function hourlyReportImages(records,copy=false){
   const images=[],sheets=[...doc.querySelectorAll('.hourly-pd-print-sheet')];
   for(let i=0;i<sheets.length;i++){
    const canvas=await frame.contentWindow.html2pdf().set({margin:0,jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},html2canvas:{scale:4,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,scrollX:0,scrollY:0}}).from(sheets[i]).toCanvas().get('canvas');
-   // Preserve the pixels in the main document before removing the render frame.
-   if(copy){images.push({canvas:hourlyKeepCanvas(canvas)});continue;}
+   // Encode while the rendering document is alive; never pass its canvas out.
+   if(copy){if(!hourlyCanvasHasReport(canvas))throw Error('রিপোর্টের ছবি সাদা এসেছে। আবার Copy Image চাপুন।');images.push({png:canvas.toDataURL('image/png'),width:canvas.width,height:canvas.height});continue;}
    const jpg=canvas.toDataURL('image/jpeg',1),name='Line-Wise-Hourly-PD-'+records[0].date.replaceAll('/','-')+'-'+(i+1)+'.jpg';images.push({jpg,name});
   }
   return images;
  }finally{frame.remove();}
 }
-function hourlyKeepCanvas(source){const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);return canvas;}
 function hourlyCanvasHasReport(canvas){const sample=document.createElement('canvas');sample.width=64;sample.height=64;const context=sample.getContext('2d');context.drawImage(canvas,0,0,64,64);const pixels=context.getImageData(0,0,64,64).data;let ink=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]>0&&Math.min(pixels[i],pixels[i+1],pixels[i+2])<235)ink++;return ink>20;}
 async function hourlyClipboardBlob(records){
- const pages=await hourlyReportImages(records,true),canvas=document.createElement('canvas');canvas.width=Math.max(...pages.map(p=>p.canvas.width));canvas.height=pages.reduce((sum,p)=>sum+p.canvas.height,0);if(canvas.height>16384)throw Error('কম পেইজ নির্বাচন করে Copy Image চাপুন।');
- const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);let top=0;for(const page of pages){context.drawImage(page.canvas,0,top);top+=page.canvas.height;}
+ const pages=await hourlyReportImages(records,true);
+ if(pages.length===1)return new Blob([Uint8Array.from(atob(pages[0].png.split(',')[1]),c=>c.charCodeAt(0))],{type:'image/png'});
+ const canvas=document.createElement('canvas');canvas.width=Math.max(...pages.map(p=>p.width));canvas.height=pages.reduce((sum,p)=>sum+p.height,0);if(canvas.height>16384)throw Error('কম পেইজ নির্বাচন করে Copy Image চাপুন।');
+ const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);let top=0;for(const page of pages){const image=new Image();image.src=page.png;await image.decode();context.drawImage(image,0,top);top+=page.height;}
  if(!hourlyCanvasHasReport(canvas))throw Error('রিপোর্টের ছবি সাদা এসেছে। আবার Copy Image চাপুন।');
  return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('ছবি কপি করার জন্য প্রস্তুত হয়নি।')),'image/png'));
 }
-async function hourlyCopyImage(records){let timer;try{await Promise.race([navigator.clipboard.write([new ClipboardItem({'image/png':hourlyClipboardBlob(records)})]),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('সফটওয়্যার পেইজ সামনে রেখে আবার Copy Image চাপুন।')),30000);})]);}finally{clearTimeout(timer);}}
+async function hourlyCopyImage(records){let timer;const image=hourlyClipboardBlob(records);try{await Promise.race([navigator.clipboard.write([new ClipboardItem({'image/png':image})]),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('সফটওয়্যার পেইজ সামনে রেখে আবার Copy Image চাপুন।')),30000);})]);hourlyCopyPreview(await image);}finally{clearTimeout(timer);}}
+function hourlyCopyPreview(blob){document.getElementById('hourlyCopyPreview')?.remove();const dialog=document.createElement('dialog'),url=URL.createObjectURL(blob);dialog.id='hourlyCopyPreview';dialog.style.cssText='width:min(1000px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:12px;padding:20px';dialog.innerHTML='<h2 style="margin-top:0">Image copied</h2><p>এই ছবিটি কপি হয়েছে। WhatsApp বা অন্য অ্যাপে Ctrl+V দিয়ে পেস্ট করুন।</p><img alt="Copied production report" style="width:100%;height:auto" src="'+url+'"><div class="dialog-actions"><button type="button">Close</button></div>';dialog.addEventListener('close',()=>{URL.revokeObjectURL(url);dialog.remove();},{once:true});dialog.querySelector('button').onclick=()=>dialog.close();document.body.append(dialog);dialog.showModal();}
 async function hourlyEmailRequest(route,payload){const response=await FarnoorAPI.request(route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await response.json();if(!response.ok)throw Error(result.error||'ইমেইল অনুরোধ সম্পন্ন হয়নি।');return result;}
 function hourlyCloseEmail(){const dialog=document.getElementById('hourlyEmailDialog');if(dialog?.dataset.sending==='true')return;dialog?.close();dialog?.remove();hourlyEmailDraft=null;}
 function hourlyShowEmail(records,images){
