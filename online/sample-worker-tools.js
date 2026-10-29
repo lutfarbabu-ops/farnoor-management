@@ -22,7 +22,7 @@ function sampleWorkerSelect(source,paint=true){
  sampleWorkerSync(source);
  const identity={sl:sampleBoardForm.sl||'',ironManName:sampleBoardForm.ironManName||'',cardNo:sampleBoardForm.cardNo||''};
  const row=identity.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===identity.ironManName):null;
- sampleBoardForm=row?{...row.fields,...identity}:identity;
+ sampleBoardForm=row?{...row.fields,...identity}:{sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
  sampleBoardEditingName=row?identity.ironManName:null;
  if(paint)for(const [key]of sampleBoardFields){const input=document.getElementById('sample-board-'+key);if(input)input.value=sampleBoardForm[key]??'';}
  return sampleBoardForm;

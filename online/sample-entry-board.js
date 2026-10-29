@@ -1,7 +1,7 @@
 'use strict';
 const sampleBoardNames=['Md. Sohel Rana','Md. Liton','Md. Muslim Uddin','Rezakul Islam','Aulad Hossan','Md. Abul Kalam','Md. Salim','Md. Enamul Haque','Md. Sahidul Islam Salim','Md. Antor','Ridy Ahmed'];
 const sampleBoardCards={'Md. Sohel Rana':'1074','Md. Liton':'1094','Md. Muslim Uddin':'1095','Rezakul Islam':'1103','Aulad Hossan':'1108','Md. Abul Kalam':'1123','Md. Salim':'1174','Md. Enamul Haque':'1186','Md. Sahidul Islam Salim':'1221','Md. Antor':'1272','Ridy Ahmed':'1283'};
-const sampleBoardFields=[['sl','SL'],['ironManName','Sample Man Name'],['sampleSection','Section'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
+const sampleBoardFields=[['sampleSection','Section'],['sampleNewOld','New/ Old'],['ironManName','Sample Man Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
 let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null;
 const sampleBoardHours=['8-9 AM','9-10AM','10-11AM','11-12 AM','12.-1 PM','2.-3 PM','3.-4 PM','4.-5 PM','5.-6 PM','6.-7 PM'];
 function sampleBoardSuggestions(key,query){
