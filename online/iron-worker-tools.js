@@ -17,6 +17,15 @@ function ironWorkerSync(source,form=ironBoardForm){
  else{const worker=list.find(w=>w.name===form.ironManName);if(worker){form.sl=String(worker.sl);form.cardNo=worker.card;}}
  return form;
 }
+function ironWorkerSelect(source,paint=true){
+ ironWorkerSync(source);
+ const identity={sl:ironBoardForm.sl||'',ironManName:ironBoardForm.ironManName||'',cardNo:ironBoardForm.cardNo||''};
+ const row=identity.ironManName?ironBoardRows.find(r=>r.fields.ironManName===identity.ironManName):null;
+ ironBoardForm=row?{...row.fields,...identity}:identity;
+ ironBoardEditingName=row?identity.ironManName:null;
+ if(paint)for(const [key]of ironBoardFields){const input=document.getElementById('iron-board-'+key);if(input)input.value=ironBoardForm[key]??'';}
+ return ironBoardForm;
+}
 function ironWorkerHydrate(){
  if(ironBoardRows.length||ironBoardBusy)return;
  const records=ironPDRecords(),date=ironPDDraft.fields.date||ironPDToday(),today=records.filter(r=>r.date===date);
@@ -28,6 +37,7 @@ ironPDPaper=function(readonly=false){
  ironWorkerRefresh();ironWorkerHydrate();
  if(!Object.keys(ironBoardForm).length){const used=new Set(ironBoardRows.map(r=>r.fields.ironManName)),worker=ironWorkerList().find(w=>!used.has(w.name));if(worker)ironBoardForm={sl:String(worker.sl),ironManName:worker.name,cardNo:worker.card};}
  else if(ironBoardForm.ironManName)ironWorkerSync('name');else if(ironBoardForm.sl)ironWorkerSync('sl');
+ if(ironBoardForm.ironManName&&Object.keys(ironBoardForm).every(key=>['sl','ironManName','cardNo'].includes(key)))ironWorkerSelect('name',false);
  return ironWorkerPreviousPaper(readonly).replace('<div class="iron-pd-details">','<div class="iron-worker-toolbar"><button type="button" data-iron-worker-manage '+(!FarnoorAccess.canAction('output','edit')?'disabled':'')+'>♙ Manage Names</button></div><div class="iron-pd-details">');
 };
 const ironWorkerPreviousLoad=ironPDLoad;
@@ -55,6 +65,6 @@ function ironWorkerManage(){
  dialog.querySelector('[data-worker-close]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>dialog.remove(),{once:true});document.body.append(dialog);dialog.showModal();
 }
 document.getElementById('main').addEventListener('click',event=>{if(activePage!==ironPDPage)return;const row=event.target.closest('[data-iron-worker-row]');if(row)ironWorkerEditRow(Number(row.dataset.ironWorkerRow));if(event.target.closest('[data-iron-worker-manage]'))ironWorkerManage();});
-document.getElementById('main').addEventListener('input',event=>{if(activePage!==ironPDPage||ironBoardBusy)return;const key=event.target.dataset.ironBoardField;if(!['sl','ironManName'].includes(key))return;ironWorkerSync(key==='sl'?'sl':'name');const name=document.getElementById('iron-board-ironManName'),sl=document.getElementById('iron-board-sl');if(name)name.value=ironBoardForm.ironManName||'';if(sl)sl.value=ironBoardForm.sl||'';});
-document.getElementById('main').addEventListener('change',event=>{if(activePage!==ironPDPage)return;if(event.target.dataset.ironBoardChoose!==undefined){const row=ironBoardRows[Number(event.target.dataset.ironBoardChoose)];if(row?.fields.ironManName){ironWorkerSync('name',row.fields);renderIronPD();}return;}if(event.target.dataset.ironBoardField!=='ironManName')return;ironWorkerSync('name');const sl=document.getElementById('iron-board-sl');if(sl)sl.value=ironBoardForm.sl||'';});
+document.getElementById('main').addEventListener('input',event=>{if(activePage!==ironPDPage||ironBoardBusy)return;const key=event.target.dataset.ironBoardField;if(!['sl','ironManName'].includes(key))return;ironWorkerSelect(key==='sl'?'sl':'name');});
+document.getElementById('main').addEventListener('change',event=>{if(activePage!==ironPDPage)return;if(event.target.dataset.ironBoardChoose!==undefined){const row=ironBoardRows[Number(event.target.dataset.ironBoardChoose)];if(row?.fields.ironManName){ironWorkerSync('name',row.fields);renderIronPD();}return;}if(event.target.dataset.ironBoardField!=='ironManName')return;ironWorkerSelect('name');});
 const ironWorkerStyle=document.createElement('style');ironWorkerStyle.textContent='.iron-pd-edit-links{gap:5px!important;flex-wrap:wrap!important;justify-content:flex-start!important}.iron-pd-edit-links button{font-size:11px!important;padding:5px 8px!important;min-height:27px!important;line-height:1.2!important}.iron-worker-row-name{font-size:12px;padding:4px 6px;white-space:normal}.iron-worker-toolbar{text-align:right;margin-bottom:10px}#ironWorkerDialog{width:min(500px,90vw);border:0;border-radius:12px;padding:22px;color:#17334c}#ironWorkerDialog label{display:grid;gap:4px;margin:10px 0}#ironWorkerDialog input,#ironWorkerDialog select{padding:9px;width:100%;box-sizing:border-box}#ironWorkerDialog .dialog-actions{display:flex;justify-content:flex-end;gap:8px}#ironWorkerDialog::backdrop{background:#071e3acc}';document.head.append(ironWorkerStyle);
