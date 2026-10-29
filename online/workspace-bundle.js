@@ -3784,7 +3784,9 @@ $('#logout').onclick=async()=>{try{const response=await FarnoorAPI.request('/api
 $('#refreshData').onclick=()=>{if(accessInfo.role!=='super_admin')return toast('Super Admin access is required.');if(confirm('Refresh saved data? Copy any unsaved inputs first.'))loadData(true);};
 $('#retryData').onclick=()=>loadData(true);
 setInterval(()=>{if(!document.hidden&&(dataReady||dataCached)&&!dataSaving)loadData();},120000);
-// Startup cache is used only after a fresh server revision and access check.
+// Show the encrypted cache only after fresh authentication, with writes locked.
+// The normal revision-checked online read still controls when editing is enabled.
+void warmWorkspace();
 loadData(true);
 
 

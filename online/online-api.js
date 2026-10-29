@@ -18,8 +18,8 @@ window.FarnoorAPI = (() => {
     if (session?.access_token) headers['X-User-Token'] = session.access_token;
     const registration = read(registrationKey);
     if (registration) headers['X-Registration-Token'] = registration;
-    // Keep Personal writes next to the project's Tokyo database.
-    const endpoint = config.url + '/functions/v1/' + config.functionName + (['/api/personal/save','/api/service-benefit/delete'].includes(route) ? '?forceFunctionRegion=ap-northeast-1' : '');
+    // Keep startup reads and existing scoped writes next to the Tokyo database.
+    const endpoint = config.url + '/functions/v1/' + config.functionName + (['/api/personal/save','/api/service-benefit/delete','/api/workspace','/api/auth/status','/api/auth/refresh'].includes(route) ? '?forceFunctionRegion=ap-northeast-1' : '');
     return fetch(endpoint, {
       method:'POST', keepalive, mode:'cors', credentials:'omit', cache:'no-store', headers,
       body:JSON.stringify({route, method, payload:payload || {}}), signal:requestSignal || AbortSignal.timeout((route==='/api/workspace'||route==='/api/booking/save')?60000:30000)
