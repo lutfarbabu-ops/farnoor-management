@@ -5,6 +5,8 @@ function sampleFinishingCalculate(data){
  return {qty:f.sampleQty??'',sizeQty:f.sampleSizeQty??'',complete:f.sampleComplete??samplePDSum(values)};
 }
 function sampleDailySection(fields){return /^sample[ ._-]*2$|^2$/i.test(String(fields.sampleSection||fields.section||''))?'SAMPLE-2':'SAMPLE-1';}
+const samplePrintWorkerIds={'Md. Saidul Islam':'1139','Sha-Alam (Boro)':'1197','Md. Shahalam (Shoto)':'1217','Md. Hafiz':'1145','Sala Uddin':'1146','Md. Liton Hossain':'1251'};
+function samplePrintWorkerCell(name){const label=String(name||''),key=Object.keys(samplePrintWorkerIds).find(n=>n.toLowerCase()===label.trim().replace(/\s+/g,' ').toLowerCase()),id=key?samplePrintWorkerIds[key]:'';return '<td><span class="sample-pd-value">'+samplePDDisplay(label)+'</span>'+(id?'<span class="sample-pd-value sample-worker-id">'+id+'</span>':'')+'</td>';}
 samplePDPrintSheet=function(records){
  records=records.slice().sort(samplePDCompare);
  const text=v=>samplePDDisplay(v),date=records[0]?.date||samplePDPrintDate||samplePDToday();
@@ -14,7 +16,7 @@ samplePDPrintSheet=function(records){
   const rows=records.filter(r=>sampleDailySection(r.hourlyPD.fields||{})===section),min=section==='SAMPLE-1'?8:7;
   const details=Array.from({length:Math.max(min,rows.length)},(_,i)=>{
    const r=rows[i],f=r?.hourlyPD.fields||{},a=r?sampleFinishingCalculate(r.hourlyPD):{};
-   return '<tr class="sd-detail">'+cell(r?f.sl||i+1:i+1)+cell(f.ironManName||f.qcName)+cell(r?f.sampleStartDate||r.date:'')+cell(f.sampleStartTime,'sd-start')+cell(f.buyer)+cell(f.style)+cell(a.qty,'sd-qty')+cell(a.sizeQty)+cell(f.item)+cell(f.sampleEndDate,'sd-end-date')+cell(f.sampleEndTime,'sd-end-time')+cell(a.complete)+cell(f.remarks)+'</tr>';
+   return '<tr class="sd-detail">'+cell(r?f.sl||i+1:i+1)+samplePrintWorkerCell(f.ironManName||f.qcName)+cell(r?f.sampleStartDate||r.date:'')+cell(f.sampleStartTime,'sd-start')+cell(f.buyer)+cell(f.style)+cell(a.qty,'sd-qty')+cell(a.sizeQty)+cell(f.item)+cell(f.sampleEndDate,'sd-end-date')+cell(f.sampleEndTime,'sd-end-time')+cell(a.complete)+cell(f.remarks)+'</tr>';
   }).join('');
   const total=key=>rows.length?samplePDSum(rows.map(r=>sampleFinishingCalculate(r.hourlyPD)[key])):'';
   return '<section class="sd-section"><header><h2>FARNOOR GARMENTS LTD.</h2><h3>DAILY SAMPLE PRODUCTION REPORT</h3><div class="sd-meta"><b>SECTION: '+section+'</b><b>DATE : <span class="sample-pd-value">'+text(date)+'</span></b></div></header><table class="sample-pd-print-table sd-table"><colgroup>'+widths.map(w=>'<col style="width:'+(w/width*100)+'%">').join('')+'</colgroup><thead><tr>'+['SL','SAMPLE MAN NAME','DATE','START TIME','BUYER','STYLE','QTY','SIZE QTY','ITEM','END DATE','END TIME','DAILY COMPLETE SAMPLE','REMARK'].map(t=>'<th scope="col">'+t+'</th>').join('')+'</tr></thead><tbody>'+details+'<tr class="sd-total"><td colspan="5"></td><th>TOTAL</th>'+cell(total('qty'),'sd-qty')+cell(total('sizeQty'))+'<td colspan="3"></td>'+cell(total('complete'),'sd-complete')+'<td></td></tr></tbody></table></section>';
@@ -30,6 +32,7 @@ const sampleFinishingCSS=`
 .sample-daily-report header h3{background:#4bacc6;color:#000;font:bold 9pt/1.2 Arial,sans-serif;margin:0;padding:1mm;border:solid #000;border-width:0 .5px .5px;text-align:center}
 .sample-daily-report header .sd-meta{display:flex;justify-content:space-between;align-items:center;min-height:5mm;padding:1mm 2mm;border:solid #000;border-width:0 .5px .5px;font:9pt/1.2 Arial,sans-serif;color:#000;gap:4mm}
 .sample-daily-report .sample-pd-value{color:#7030a0;font-weight:700}
+.sample-daily-report .sample-worker-id{display:block;font:700 6pt/1 Arial,sans-serif;margin-top:.3mm}
 .sample-daily-report .sd-table{border-collapse:collapse;width:100%;table-layout:fixed;margin:0}
 .sample-daily-report .sd-table th,.sample-daily-report .sd-table td{border:.5px solid #000!important;box-sizing:border-box;padding:.65mm .4mm!important;font:7pt/1.2 Arial,sans-serif!important;text-align:center;vertical-align:middle;overflow-wrap:normal;word-break:normal;white-space:normal;height:6mm}
 .sample-daily-report .sd-table thead th{background:#d9d9d9;color:#000;font-weight:700!important;height:9mm}
