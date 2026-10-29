@@ -5147,7 +5147,7 @@ const hourlyPDDraft={fields:{},rows:hourlyPDHours.map(()=>Array(5).fill('')),tar
 let hourlyPDEditId=null,hourlyPDPendingId=null,hourlyPDBusy=false,hourlyPDSelectedId=null,hourlyPDPrintDate='';
 function hourlyPDToday(){return new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'});}
 function hourlyPDKey(date,section){let day=String(date||'').trim();try{day=normalizeDate(day);}catch{}return day+'|'+hourlyPDSection(section).toLowerCase();}
-function hourlyPDRecords(){const files=new Map();for(const row of (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&!['quality','iron'].includes(r.hourlyPDKind)&&!r.deletedAt)){const key=hourlyPDKey(row.date,row.hourlyPD.fields?.section),old=files.get(key);if(!old||(Date.parse(row.updatedAt||row.createdAt)||0)>(Date.parse(old.updatedAt||old.createdAt)||0))files.set(key,row);}return [...files.values()].sort(hourlyPDCompare);
+function hourlyPDRecords(){const files=new Map();for(const row of (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&!['quality','iron','sample'].includes(r.hourlyPDKind)&&!r.deletedAt)){const key=hourlyPDKey(row.date,row.hourlyPD.fields?.section),old=files.get(key);if(!old||(Date.parse(row.updatedAt||row.createdAt)||0)>(Date.parse(old.updatedAt||old.createdAt)||0))files.set(key,row);}return [...files.values()].sort(hourlyPDCompare);
 }
 function hourlyPDCompare(a,b){const dates=String(b.date).split("/").reverse().join("-").localeCompare(String(a.date).split("/").reverse().join("-"));if(dates)return dates;const order=Object.keys(hourlyPDIncharges),rank=r=>{const index=order.indexOf(hourlyPDSection(r.hourlyPD?.fields?.section));return index<0?order.length:index;};return rank(a)-rank(b);}
 function hourlyPDLookupInput(){
@@ -6175,5 +6175,434 @@ const sampleHourlyStyle=document.createElement('style');sampleHourlyStyle.textCo
 .sample-hourly-heading button{display:inline-flex;gap:12px;align-items:center;padding:14px 20px;border:1px solid #adc6ef;border-radius:9px;background:#e0ecff;color:#244d83;font-size:16px;font-weight:700;cursor:pointer}
 @media(max-width:600px){.sample-hourly-workspace{padding:24px 5px}.sample-hourly-heading{padding:18px 5px}.sample-hourly-heading button{font-size:14px;padding:12px}}
 `;document.head.append(sampleHourlyStyle);
+
+;
+;/* sample-wise-hourly-pd.js */
+'use strict';
+const samplePDPage='production-sample-wise-hourly-pd';
+const samplePDFields=[['section','Section / Sample Man No'],['incharge','Supervisor Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['ironManName','Sample Man Name'],['cardNo','Card No'],['workingPlan','Working Plan'],['hourlyTarget','Hourly Target'],['remarks','Remarks']];
+const samplePDHours=['8:00-9:00','9:00-10:00','10:00-11:00','11:00-12:00','12:00-1:00','2:00-3:00','3:00-4:00','4:00-5:00','5:00-6:00','6:00-7:00','7:00-8:00'];
+function samplePDSection(value){return String(value||'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).trim().replace(/\s+/g,' ').replace(/^(?:table|line)[.\s-]*(\d)/i,'$1');}
+function samplePDTable(fields){return samplePDSection(fields?.tableNo||fields?.section);}
+function samplePDSectionControl(readonly=false){const values=[...new Set(['1','2','3','4',...samplePDRecords().map(row=>samplePDTable(row.hourlyPD.fields))])];return samplePDInput(samplePDDraft.fields.section,'id="sample-pd-section" data-sample-pd-field="section" maxlength="120" list="sample-pd-table-options"',readonly)+'<datalist id="sample-pd-table-options">'+values.map(value=>'<option value="'+esc(value)+'"></option>').join('')+'</datalist>';}
+const samplePDSupervisors={};
+function samplePDApplySupervisor(fields=samplePDDraft.fields,clear=false){const name=samplePDSupervisors[samplePDSection(fields.section)];if(name!==undefined)fields.incharge=name;else if(clear)fields.incharge='';return fields.incharge||'';}
+const samplePDEntryColumns=[['QC Check',2],['Production',3],['Defect',4]];
+const samplePDColumns=['1st Machine','Last Machine','QC Check','QC Pass','Defect'];
+let samplePDView='new-input';
+const samplePDDraft={fields:{},rows:samplePDHours.map(()=>Array(5).fill('')),targets:Array(5).fill(''),differences:Array(5).fill(''),achievements:Array(5).fill('')};
+let samplePDEditId=null,samplePDPendingId=null,samplePDBusy=false,samplePDSelectedId=null,samplePDPrintDate='';
+function samplePDToday(){return new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'});}
+function samplePDKey(date,section){let day=String(date||'').trim();try{day=normalizeDate(day);}catch{}return day+'|'+samplePDSection(section).replace(/[.\s]/g,'').toLowerCase();}
+function samplePDRecords(){const files=new Map();for(const row of (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind==='sample'&&!r.deletedAt)){const key=samplePDKey(row.date,samplePDTable(row.hourlyPD.fields)),old=files.get(key);if(!old||(Date.parse(row.updatedAt||row.createdAt)||0)>(Date.parse(old.updatedAt||old.createdAt)||0))files.set(key,row);}return [...files.values()].sort(samplePDCompare);
+}
+function samplePDCompare(a,b){const dates=String(b.date).split('/').reverse().join('-').localeCompare(String(a.date).split('/').reverse().join('-'));const as=samplePDNumber(a.hourlyPD.fields?.sl),bs=samplePDNumber(b.hourlyPD.fields?.sl);return dates||(as!==null&&bs!==null?as-bs:0)||samplePDTable(a.hourlyPD.fields).localeCompare(samplePDTable(b.hourlyPD.fields),undefined,{numeric:true,sensitivity:'base'});}
+function samplePDLookupInput(){
+ let date;try{date=normalizeDate(samplePDDraft.fields.date||samplePDToday());}catch{return;}
+ const section=samplePDSection(samplePDDraft.fields.section);if(!section)return;
+ const row=samplePDRecords().find(r=>samplePDKey(r.date,samplePDTable(r.hourlyPD.fields))===samplePDKey(date,section));
+ if(row){if(row.id!==samplePDEditId){samplePDLoad(row);renderSamplePD();}else samplePDDraft.fields.date=date;return;}
+ if(samplePDEditId){samplePDDraft.fields={date,section,tableNo:section};samplePDApplySupervisor();samplePDDraft.rows=samplePDHours.map(()=>Array(5).fill(''));for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=null;samplePDPendingId=null;renderSamplePD();}else{samplePDDraft.fields.date=date;samplePDDraft.fields.section=section;samplePDApplySupervisor();}
+}
+function samplePDApplyPrintDate(){try{const node=document.getElementById('sample-pd-print-date');samplePDPrintDate=normalizeDate(node.value.trim()||samplePDToday());samplePDSelectedId=null;renderSamplePD();}catch(error){toast(error.message);}}
+
+function samplePDNumber(value){const text=String(value??'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).replaceAll(',','').trim();return text===''?null:Number(text);}
+function samplePDDisplay(value){return value===undefined||value===null||value===''?'':esc(value);}
+function samplePDSum(values){const numbers=values.map(samplePDNumber).filter(n=>n!==null&&Number.isFinite(n));return numbers.length?numbers.reduce((a,b)=>a+b,0):'';}
+function samplePDDefect(row){return row?.[4]??'';}
+function samplePDComputedRows(rows){return samplePDHours.map((_,r)=>samplePDColumns.map((_,c)=>rows?.[r]?.[c]??''));}
+function samplePDLoad(record){const data=structuredClone(record.hourlyPD);samplePDDraft.fields=data.fields||{};const fields=samplePDDraft.fields;if(!fields.line&&/^Line-|^Unit-/i.test(fields.section||''))fields.line=fields.section;fields.ironManName??=fields.qcName||'';fields.section=samplePDTable(fields);fields.tableNo=fields.section;fields.date=record.date;samplePDApplySupervisor(fields);samplePDDraft.rows=samplePDComputedRows(data.rows);for(const key of ['targets','differences','achievements'])samplePDDraft[key]=data[key]||Array(5).fill('');samplePDEditId=record.id;samplePDPendingId=null;}
+function samplePDInput(value,attributes,readonly=false){return '<input '+attributes+' value="'+esc(value??'')+'" '+(readonly?'readonly':'')+' autocomplete="off">';}
+function samplePDPaper(readonly=false){samplePDApplySupervisor();samplePDDraft.rows=samplePDComputedRows(samplePDDraft.rows);return '<section class="sample-pd-paper" aria-label="Sample Wise Hourly Production"><h2>SAMPLE WISE HOURLY PRODUCTION</h2><div class="sample-pd-details"><div class="sample-pd-field"><label for="sample-pd-date">Date</label>'+samplePDInput(samplePDDraft.fields.date||samplePDToday(),'id="sample-pd-date" data-sample-pd-field="date" placeholder="DD/MM/YYYY" maxlength="10"',readonly)+'</div>'+samplePDFields.map(([key,label])=>'<div class="sample-pd-field"><label for="sample-pd-'+key+'">'+label+'</label>'+(key==='section'?samplePDSectionControl(readonly):samplePDInput(samplePDDraft.fields[key],'id="sample-pd-'+key+'" data-sample-pd-field="'+key+'" type="'+(['workingPlan','hourlyTarget'].includes(key)?'number':'text')+'" '+(['workingPlan','hourlyTarget'].includes(key)?'min="0" step="1"':'maxlength="300"')+(key==='buyer'?' list="sample-pd-buyer-options"':key==='style'?' list="sample-pd-style-options"':''),readonly))+'</div>').join('')+'</div><div class="sample-pd-table-wrap"><table class="sample-pd-table"><thead><tr><th scope="col">Hourly</th>'+samplePDEntryColumns.map(([label])=>'<th scope="col">'+label+'</th>').join('')+'</tr></thead><tbody>'+samplePDHours.map((hour,row)=>'<tr><th scope="row">'+hour+'</th>'+samplePDEntryColumns.map(([label,col])=>'<td>'+samplePDInput(samplePDDraft.rows[row][col],'type="number" min="0" step="1" data-sample-pd-row="'+row+'" data-sample-pd-col="'+col+'" aria-label="'+hour+' '+label+'"',readonly)+'</td>').join('')+'</tr>').join('')+'</tbody><tfoot><tr><th>Total</th>'+samplePDEntryColumns.map(([,col])=>'<td><output data-sample-pd-total="'+col+'">'+samplePDDisplay(samplePDSum(samplePDDraft.rows.map(row=>row[col])))+'</output></td>').join('')+'</tr></tfoot></table></div><datalist id="sample-pd-buyer-options"></datalist><datalist id="sample-pd-style-options"></datalist>'+(!readonly?'<div class="sample-pd-save-actions no-print"><button type="button" data-sample-pd-save data-page-action-required="edit" '+(samplePDBusy?'disabled':'')+'>'+(samplePDBusy?'Saving…':'Save')+'</button></div>':'')+'</section>';}
+function samplePDStyleField(readonly=false){return samplePDPairField('style','Style',readonly);}
+function samplePDPairField(key,title,readonly=false){return '<div class="sample-pd-field" role="group" aria-label="'+title+'"><span class="sample-pd-manpower-label">'+title+'</span><div class="sample-pd-manpower-pair">'+[[key,'1st Machine'],[key+'Last','Last Machine']].map(([field,label])=>'<label for="sample-pd-'+field+'"><span>'+label+'</span>'+samplePDInput(samplePDDraft.fields[field],'id="sample-pd-'+field+'" data-sample-pd-field="'+field+'" maxlength="200"'+(key==='style'?' list="sample-pd-style-options"':''),readonly)+'</label>').join('')+'</div></div>';}
+function samplePDSuggestionValues(kind){return [...new Set(samplePDRecords().flatMap(row=>(kind==='buyer'?['buyer']:['style','styleLast']).map(key=>String(row.hourlyPD.fields?.[key]||'').trim())).filter(Boolean))];}
+function samplePDSuggest(node){const kind=node.dataset.samplePdField==='buyer'?'buyer':['style','styleLast'].includes(node.dataset.samplePdField)?'style':null;if(!kind)return;const list=document.getElementById('sample-pd-'+kind+'-options'),query=node.value.trim().toLocaleLowerCase();if(list)list.innerHTML=query.length<2?'':samplePDSuggestionValues(kind).filter(value=>value.toLocaleLowerCase().includes(query)).map(value=>'<option value="'+esc(value)+'"></option>').join('');}
+function samplePDDeletePrompt(id){if(!FarnoorAccess.canAction('output','edit'))return;const record=samplePDRecords().find(row=>row.id===id);if(!record)return;document.getElementById('samplePDDeleteDialog')?.remove();const dialog=document.createElement('dialog');dialog.id='samplePDDeleteDialog';dialog.innerHTML='<h3>এই রো ডিলেক্ট করবেন?</h3><p>'+esc(record.date)+' · Table '+esc(samplePDTable(record.hourlyPD.fields))+'</p><div class="dialog-actions"><button type="button" class="sample-pd-delete" data-confirm>OK</button><button type="button" data-cancel>Cancel</button></div>';dialog.querySelector('[data-cancel]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.querySelector('[data-confirm]').onclick=async()=>{if(samplePDBusy)return;const next={...state,records:{...state.records,output:state.records.output.slice()}},target=next.records.output.find(row=>row.id===id&&row.hourlyProduction&&!row.deletedAt);if(!target)return dialog.close();next.records.output=next.records.output.filter(row=>row.id!==id);samplePDBusy=true;dialog.querySelectorAll('button').forEach(button=>button.disabled=true);dialog.querySelector('[data-confirm]').textContent='Deleting…';try{if(await commit(next,{hourlyDelete:id})){if(samplePDEditId===id){samplePDEditId=null;samplePDPendingId=null;samplePDDraft.fields={};samplePDDraft.rows=samplePDHours.map(()=>Array(5).fill(''));}if(samplePDSelectedId===id)samplePDSelectedId=null;dialog.close();renderSamplePD();toast('ডাটা ডিলেক্ট হয়েছে।');}}finally{samplePDBusy=false;if(dialog.open){dialog.querySelectorAll('button').forEach(button=>button.disabled=false);dialog.querySelector('[data-confirm]').textContent='OK';}}};document.body.append(dialog);dialog.showModal();}
+function samplePDManpowerTotal(fields,prefix){const op=samplePDNumber(fields[prefix+'Op']),assistant=samplePDNumber(fields[prefix+'Hp']);if(op!==null||assistant!==null)return (Number.isFinite(op)?op:0)+(Number.isFinite(assistant)?assistant:0);const old=samplePDNumber(fields[prefix+'Manpower']);return old!==null&&Number.isFinite(old)?old:'';}
+function samplePDManpowerField(key,label,readonly=false){const prefix=key==='layoutManpower'?'layout':'present';return '<div class="sample-pd-field sample-pd-manpower-field" role="group" aria-label="'+label+'"><span class="sample-pd-manpower-label">'+label+'</span><div class="sample-pd-manpower-pair">'+[['Op','Operator'],['Hp','Ast. Operator']].map(([suffix,title])=>'<label for="sample-pd-'+prefix+suffix+'"><span>'+title+'</span>'+samplePDInput(samplePDDraft.fields[prefix+suffix],'id="sample-pd-'+prefix+suffix+'" data-sample-pd-field="'+prefix+suffix+'" type="number" min="0" step="1"',readonly)+'</label>').join('')+'<span class="sample-pd-manpower-sum">Total: <output id="sample-pd-'+prefix+'-total">'+samplePDDisplay(samplePDManpowerTotal(samplePDDraft.fields,prefix))+'</output></span></div></div>';}
+// Preserve the template COUNT ranges: P:Y for first/last, P:Z for QC Pass.
+function samplePDCalculate(data){
+ const f=data.fields||{},rows=samplePDComputedRows(data.rows),numbers=rows.map(row=>row.map(samplePDNumber));
+ const count=(c,end)=>numbers.slice(0,end).filter(r=>r[c]!==null&&Number.isFinite(r[c])).length;
+ const totals=samplePDColumns.map((_,c)=>numbers.reduce((sum,r)=>sum+(Number.isFinite(r[c])?r[c]:0),0));
+ const sample=samplePDNumber(f.hourlyTarget),target=count=>sample!==null&&Number.isFinite(sample)?count*sample:null;
+ const first=target(count(0,10)),last=target(count(1,10)),pass=target(count(3,11));
+ const targets=[first===null?null:Math.round(first*1.1*1e9)/1e9,last,null,pass,null];
+ const differences=totals.map((total,c)=>c===2?totals[1]-total:targets[0]===null?null:Math.round((total-targets[0])*1e9)/1e9);
+ const divide=(a,b)=>b!==null&&Number.isFinite(b)&&b!==0?a/b:null;
+ const rates=[divide(totals[0],targets[0]),divide(totals[1],targets[1]),null,divide(totals[3],targets[3]),divide(totals[4],totals[2])];
+ const op=samplePDNumber(f.presentOp),hp=samplePDNumber(f.presentHp),present=op!==null||hp!==null?(op||0)+(hp||0):samplePDNumber(f.presentManpower)??0;
+ return {totals,targets,differences,rates,present};
+}
+function samplePDRateClass(rate,c){if(rate===null)return c===2?'sample-rate-red':'';if(c===4)return 'sample-rate-cyan';return rate>(c===0?1.1:.9)?'sample-rate-green':rate>=(c===0?1:.8)?'sample-rate-yellow':'sample-rate-red';}
+function samplePDPrintSheet(records){
+ records=records.slice().sort(samplePDCompare);
+ const source=v=>'<span class="sample-pd-value">'+samplePDDisplay(v)+'</span>',number=v=>v===null||v===undefined||v===''?'':Math.round(v).toString(),rate=v=>v===null||v===undefined?'':Math.round(v*100)+'%';
+ const cell=(v,attrs='',input=true)=>'<td '+attrs+'>'+(input?source(v):samplePDDisplay(v))+'</td>';
+ const widths=[4.386,2.924,6.8756,9.2463,7.8632,2.6074,2.5285,2.133,2.5285,2.8051,2.5285,2.5285,2.5285,2.5285,4.8204,...samplePDHours.map(()=>2.5285),2.5285,2.5285,2.5285,5.7691];
+ const calculations=records.map(r=>samplePDCalculate(r.hourlyPD));
+ const groups=records.map((record,index)=>{const d=record.hourlyPD,f=d.fields||{},a=calculations[index],computed=samplePDComputedRows(d.rows);return samplePDColumns.map((label,c)=>'<tr>'+(!c?cell(f.incharge,'rowspan="5" class="sample-incharge"')+cell(f.section,'rowspan="5"'):'')+cell(c===0?f.buyer:c===1?(f.buyerLast||f.buyer):'','class="sample-buyer"')+cell(c===0?f.style:c===1?(f.styleLast===undefined?f.style:f.styleLast):'','class="sample-style"')+cell(c===0?f.item:c===1?(f.itemLast===undefined?f.item:f.itemLast):'','class="sample-item"')+['layoutOp','layoutHp','layoutManpower','presentOp','presentHp','presentManpower'].map(key=>cell(!c?(key==='presentManpower'?a.present:f[key]):'')).join('')+(!c?cell(f.workingPlan,'rowspan="5"'):'')+cell(!c?f.hourlyTarget:'')+cell(number(a.targets[c]))+'<th class="sample-status sample-status-'+c+(c===0&&index>0?' sample-first-later':'')+'">'+label+'</th>'+samplePDHours.map((_,r)=>cell(computed[r][c])).join('')+cell(number(a.totals[c]),'class="sample-calculated '+(c===2?'sample-qc-total':'')+'"',false)+cell(c===2&&a.differences[c]<0?'('+number(-a.differences[c])+')':number(a.differences[c]),'class="sample-difference '+(c===2?'sample-qc-total':'')+'"',false)+cell(rate(a.rates[c]),'class="sample-achievement '+samplePDRateClass(a.rates[c],c)+'"',false)+(!c?cell(f.remarks,'rowspan="5" class="sample-remarks"'):'')+'</tr>').join('');}).join('');
+ const sumField=key=>samplePDSum(records.map((r,i)=>key==='presentManpower'?calculations[i].present:r.hourlyPD.fields?.[key]));
+ const sumMetric=c=>records.length?calculations.reduce((sum,a)=>sum+a.totals[c],0):null;
+ const unitTarget=samplePDSum(calculations.map(a=>a.targets[3]));
+ const summaryRate=c=>{const denominator=c===4?sumMetric(2):unitTarget;return denominator!==''&&denominator!==null&&denominator!==0?sumMetric(c)/denominator:null;};
+ const totalRate=summaryRate(3);
+ const footer='<tr class="sample-pd-total"><th colspan="5">Total</th>'+['layoutOp','layoutHp','layoutManpower','presentOp','presentHp','presentManpower'].map(key=>cell(records.length?(sumField(key)||0):'')).join('')+'<td></td>'+cell(sumField('hourlyTarget'))+cell(number(unitTarget))+'<th class="sample-status-3">Total QC Pass<br>Production</th>'+samplePDHours.map((_,h)=>cell(records.length?(samplePDSum(records.map(r=>r.hourlyPD.rows?.[h]?.[3]))||0):'')).join('')+cell(number(sumMetric(3)),'class="sample-calculated"',false)+cell(number(samplePDSum(calculations.map(a=>a.differences[3]))),'class="sample-calculated"',false)+cell(rate(totalRate),'class="sample-achievement '+samplePDRateClass(totalRate,3)+'"',false)+'<td></td></tr>';
+ return '<article class="sample-pd-print-sheet"><header><h2>Farnoor Garments Ltd</h2><h3>Sample Wise Hourly 1st m/c,Last m/c &amp; QC Pass Report</h3><div><b>Date:- <span class="sample-pd-value">'+esc((records[0]?.date||samplePDPrintDate||'').replaceAll('/','.'))+'</span></b><strong>1st Machine: <span class="sample-key-red">&lt;100,</span> <span class="sample-key-yellow">100&gt;,</span> <span class="sample-key-green">110/</span> Last Machine &amp; QC Pass: <span class="sample-key-red">&lt;80,</span> <span class="sample-key-yellow">80&gt;,</span> <span class="sample-key-green">90/</span></strong></div></header><table class="sample-pd-print-table"><colgroup>'+widths.map(w=>'<col style="width:'+w+'%">').join('')+'</colgroup><thead><tr>'+['Line incharge','Line','Buyer','Style','Item'].map(t=>'<th rowspan="2">'+t+'</th>').join('')+'<th colspan="3">Lay Out Man Power</th><th colspan="3">Use Man Power</th>'+['W.<br>Plan','Hourly<br>Target','Total<br>Target','Production<br>Status',...samplePDHours.map(t=>t.replace('-','-<br>')),'Total','<span class="sample-difference">Difference</span>','Acv %','Remarks'].map(t=>'<th rowspan="2">'+t+'</th>').join('')+'</tr><tr>'+Array(2).fill(['Op','Hp','Total'].map(t=>'<th>'+t+'</th>').join('')).join('')+'</tr></thead><tbody>'+groups+(records.length?'':'<tr><td colspan="30">Input Report থেকে একটি সেভ করা ইনপুট নির্বাচন করুন।</td></tr>')+footer+'</tbody></table><table class="sample-pd-summary"><colgroup><col style="width:31%"><col style="width:40%"><col style="width:29%"></colgroup><tbody><tr><th colspan="3">Farnoor Garments Ltd</th></tr><tr><th colspan="3">Sample Wise 1st m/c,Last m/c &amp; QC Pass Summary</th></tr><tr><th colspan="3">Total Summary</th></tr><tr><th>Unit Target</th><td>'+number(unitTarget)+'</td><th>TARGET %</th></tr>'+samplePDColumns.map((label,c)=>'<tr class="sample-summary-'+c+'"><th>Total '+label+'</th><td>'+number(sumMetric(c))+'</td><td>'+rate(summaryRate(c))+'</td></tr>').join('')+'</tbody></table></article>';
+}
+function samplePDReport(){const rows=samplePDRecords(),columns=[['tableNo','Section'],['incharge','Supervisor Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['ironManName','Sample Man Name'],['cardNo','Card No']];return '<section class="sample-pd-report"><h2>Input Report</h2><div class="table-wrap"><table><thead><tr><th>Date</th>'+columns.map(([,label])=>'<th>'+label+'</th>').join('')+'<th>Action</th></tr></thead><tbody>'+rows.map(row=>{const fields=row.hourlyPD.fields||{};return '<tr><td>'+esc(row.date)+'</td>'+columns.map(([key])=>'<td>'+esc(key==='tableNo'?samplePDTable(fields):fields[key]||'')+'</td>').join('')+'<td><button type="button" data-sample-pd-open="'+esc(row.id)+'">Open</button> <button type="button" data-sample-pd-select="'+esc(row.id)+'">Print</button> <button type="button" class="sample-pd-delete" data-page-action-required="edit" data-sample-pd-delete="'+esc(row.id)+'">▣ Delete</button></td></tr>';}).join('')+(rows.length?'':'<tr><td colspan="9">কোনো সেভ করা ইনপুট নেই।</td></tr>')+'</tbody></table></div></section>';}
+function samplePDPrintRows(){const rows=samplePDRecords();if(samplePDSelectedId)return rows.filter(r=>r.id===samplePDSelectedId);return rows.filter(r=>!samplePDPrintDate||r.date===samplePDPrintDate);}
+function samplePDPrintView(){const rows=samplePDPrintRows(),pages=[];for(const date of [...new Set(rows.map(r=>r.date))]){const dated=rows.filter(r=>r.date===date);for(let i=0;i<dated.length;i+=11)pages.push(dated.slice(i,i+11));}if(!pages.length)pages.push([]);return '<div class="sample-pd-print-actions no-print"><label>Date '+samplePDInput(samplePDPrintDate||samplePDToday(),'id="sample-pd-print-date" placeholder="DD/MM/YYYY" maxlength="10"')+'</label><button type="button" data-sample-pd-filter>Search</button><button type="button" data-sample-pd-print data-page-action-required="print">▧ Print</button></div>'+'<div class="sample-pd-edit-links no-print">'+rows.map(row=>'<button type="button" data-sample-pd-open="'+esc(row.id)+'" data-page-action-required="edit">'+esc(row.hourlyPD.fields?.ironManName||row.hourlyPD.fields?.section||'')+'</button>').join('')+'</div><div class="sample-pd-print-pages">'+pages.map(samplePDPrintSheet).join('')+'</div>';}
+function samplePDPrintHTML(records){const pages=[];for(const date of [...new Set(records.map(r=>r.date))]){const dated=records.filter(r=>r.date===date);for(let i=0;i<dated.length;i+=11)pages.push(dated.slice(i,i+11));}if(!pages.length)pages.push([]);return '<!doctype html><html><head><meta charset="utf-8"><title>Sample Wise Hourly Production</title><style>'+".sample-pd-print-sheet{box-sizing:border-box;background:#fff;color:#000;width:281mm;min-height:194mm;padding:12mm 0;margin:0 auto 20px;font:7pt/1.15 Arial,sans-serif;box-shadow:0 7px 24px #061a343d}\n.sample-pd-print-sheet header{background:#9dc3e6;border:0.5px solid #555;padding:0;color:#000}.sample-pd-print-sheet header h2{font:bold 12pt/1.15 Arial,sans-serif;letter-spacing:normal;text-align:center;margin:1px 0;border-bottom:0.5px solid #555}.sample-pd-print-sheet header h3{font:bold 8pt/1.2 Arial,sans-serif;text-align:center;margin:1px 0}.sample-pd-print-sheet header>div{display:flex;align-items:center;gap:12mm;min-height:4mm;padding:1mm 3mm;font-size:6pt;color:red}.sample-pd-print-sheet header strong{flex:1;text-align:center}.sample-key-red{color:red}.sample-key-yellow{color:#fffb00}.sample-key-green{color:#00a830}.sample-pd-value{color:#7030a0;font-weight:700}\n.sample-pd-print-table,.sample-pd-summary{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed;margin:0;color:#000}.sample-pd-print-table th,.sample-pd-print-table td{border:.5px solid #000;padding:.3mm .2mm;text-align:center;vertical-align:middle;white-space:normal;overflow-wrap:anywhere;font-size:5.4pt;line-height:1.1;height:3.35mm}.sample-pd-print-table thead th{background:#a9d18e;color:#000;font-size:5.3pt;font-weight:700}.sample-pd-print-table tbody tr>td:nth-child(4){font-weight:700}.sample-pd-print-table .sample-status{font-size:5.2pt;color:#000;font-weight:700}.sample-status-0{background:#b9e3ae}.sample-status-1{background:#9dc3e6}.sample-status-2{background:#ffff00}.sample-status-3{background:#f4b183}.sample-status-4{background:#4472c4}.sample-pd-total{font-weight:700}.sample-pd-total td,.sample-pd-total th{height:4mm}\n.sample-pd-summary th,.sample-pd-summary td{border:.5px solid #444;text-align:center;font:bold 8pt/1.15 Arial,sans-serif;padding:.8mm 1mm;height:4.5mm;box-sizing:border-box;white-space:normal}.sample-pd-summary tr:nth-child(1),.sample-pd-summary tr:nth-child(2){background:#002060;color:#fff}.sample-pd-summary tr:nth-child(3),.sample-pd-summary tr:nth-child(4){background:#00b0f0;color:#fff}.sample-pd-summary .sample-summary-0{background:#a9d18e}.sample-pd-summary .sample-summary-1{background:#9dc3e6;color:#fff}.sample-pd-summary .sample-summary-2{background:#000;color:#fff}.sample-pd-summary .sample-summary-2 td:nth-child(2){background:#9dc3e6}.sample-pd-summary .sample-summary-3{background:#ed7d31;color:#fff}.sample-pd-summary .sample-summary-4{background:#5b9bd5}\n\n/* Match the supplied sample Excel template. */\n.sample-pd-print-sheet .sample-style .sample-pd-value,.sample-pd-print-sheet .sample-item .sample-pd-value{font:bold 8.2pt/1.05 Calibri,Arial,sans-serif}\n.sample-pd-print-sheet .sample-buyer .sample-pd-value,.sample-pd-print-sheet .sample-incharge .sample-pd-value{font-size:6pt}\n.sample-pd-print-sheet .sample-calculated{color:#000;font-weight:700}\n.sample-pd-print-sheet .sample-difference{color:#f00;font-weight:700}\n.sample-pd-print-sheet .sample-qc-total{background:#ff0!important}\n.sample-pd-print-sheet .sample-achievement{font-weight:700;color:#000;background:#00b0f0}\n.sample-pd-print-sheet .sample-rate-red{background:#ff5050!important}.sample-pd-print-sheet .sample-rate-yellow{background:#ff0!important}.sample-pd-print-sheet .sample-rate-green{background:#00b050!important}.sample-pd-print-sheet .sample-rate-cyan{background:#00b0f0!important}\n.sample-pd-print-sheet .sample-status-0{background:#fff}.sample-pd-print-sheet .sample-first-later{background:#f7caac}.sample-pd-print-sheet .sample-status-1{background:#9cc2e5}.sample-pd-print-sheet .sample-status-3{background:#f4b083}\n.sample-pd-print-sheet header strong span{color:red}.sample-pd-print-sheet header b .sample-pd-value{margin-left:8mm}\n.sample-pd-print-sheet .sample-summary-4{color:#fff}\n\n\n@page{size:A4 landscape;margin:8mm}html,body{margin:0;padding:0;background:#fff}body{font-family:Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sample-pd-print-sheet{width:100%;max-width:none;min-height:0;padding:6mm 0 0;margin:0;box-shadow:none;break-after:page;break-inside:avoid}.sample-pd-print-sheet:last-child{break-after:auto}tr{break-inside:avoid}.sample-pd-summary>tbody>tr>th,.sample-pd-summary>tbody>tr>td{background-color:inherit;color:inherit;font-weight:700}.sample-pd-summary .sample-summary-2>td:nth-child(2){background-color:#9dc3e6}\n"+ '</style></head><body>'+pages.map(samplePDPrintSheet).join('')+'</body></html>';}
+function printSamplePD(){
+ if(!FarnoorAccess.canAction('output','print'))return;
+ document.querySelectorAll('iframe[data-sample-print-frame]').forEach(node=>node.remove());
+ const frame=document.createElement('iframe');frame.dataset.samplePrintFrame='true';frame.title='Sample Wise Hourly Production Print';frame.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;opacity:0;border:0';
+ frame.addEventListener('load',async()=>{try{await frame.contentDocument.fonts.ready;frame.contentWindow.addEventListener('afterprint',()=>{frame.dataset.printed='true';},{once:true});frame.contentWindow.focus();frame.contentWindow.print();}catch(error){frame.remove();toast(error.message);}},{once:true});
+ frame.srcdoc=samplePDPrintHTML(samplePDPrintRows());document.body.append(frame);
+}
+function renderSamplePD(){
+ const nav=[['new-input','✚','New Input'],['print','▧','Print'],['input-report','▤','Input Report']];
+ $('#main').innerHTML='<div class="sample-pd-workspace"><nav class="sample-pd-nav no-print" aria-label="Sample Wise Hourly PD pages">'+nav.map(([key,icon,name])=>'<button type="button" data-sample-pd-view="'+key+'" class="sample-pd-'+key+'" aria-pressed="'+(samplePDView===key)+'"><span aria-hidden="true">'+icon+'</span> '+name+'</button>').join('')+'</nav>'+(samplePDView==='input-report'?samplePDReport():samplePDView==='print'?samplePDPrintView():samplePDPaper())+'</div>';
+ if(typeof applyActionControls==='function')applyActionControls();
+}
+async function saveSamplePD(){
+ if(samplePDBusy)return;if(!FarnoorAccess.canAction('output','edit'))return toast('Edit permission is required.');
+ try{
+  const fields={...samplePDDraft.fields,date:normalizeDate(samplePDDraft.fields.date||samplePDToday())};
+  fields.section=samplePDSection(fields.section);if(!fields.section)throw Error('Table লিখুন।');if(fields.section.length>120)throw Error('Table-এর লেখা বেশি বড় হয়েছে।');fields.tableNo=fields.section;samplePDApplySupervisor(fields);fields.ironFormVersion='2';for(const key of ['styleLast','itemLast','buyerLast','qcNameLast'])fields[key]='';
+  if(Object.values(fields).some(v=>String(v).length>300))throw Error('ঘরের লেখা বেশি বড় হয়েছে।');
+  const number=(value,negative=false)=>{if(value==='')return '';const n=samplePDNumber(value);if(n===null)return '';if(!Number.isFinite(n)||(!negative&&n<0))throw Error('সংখ্যার ঘরে সঠিক সংখ্যা লিখুন।');return String(n);};
+  const data={fields,rows:samplePDComputedRows(samplePDDraft.rows).map(row=>row.map((v,col)=>col<2?'':number(v))),targets:samplePDDraft.targets.map(v=>number(v)),differences:samplePDDraft.differences.map(v=>number(v,true)),achievements:samplePDDraft.achievements.map(v=>number(v))};
+  for(const key of ['workingPlan','hourlyTarget','layoutManpower','presentManpower','layoutOp','layoutHp','presentOp','presentHp'])if(fields[key]!==undefined)fields[key]=number(fields[key]);
+  for(const prefix of ['layout','present']){const total=samplePDManpowerTotal(fields,prefix);fields[prefix+'Manpower']=total===''?'':String(total);}
+  const next=structuredClone(state),rows=next.records.output||[],key=samplePDKey(fields.date,fields.section),canonical=samplePDRecords().find(r=>samplePDKey(r.date,samplePDTable(r.hourlyPD.fields))===key),existing=canonical&&rows.find(r=>r.id===canonical.id);
+  if(samplePDEditId&&!rows.some(r=>r.id===samplePDEditId&&r.hourlyProduction))throw Error('এই ইনপুট পাওয়া যাচ্ছে না। Refresh করে দেখুন।');
+  const record={...existing,id:existing?.id||(samplePDPendingId||=crypto.randomUUID()),reference:String(fields.section).slice(0,120),name:[fields.buyer,fields.style].filter(Boolean).join(' / ').slice(0,200)||('Table '+fields.section).slice(0,200),date:fields.date,quantity:Number(samplePDSum(data.rows.map(r=>r[3]))||0),status:'Completed',hourlyProduction:true,hourlyPDKind:'sample',hourlyPD:data,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  if(existing)rows[rows.indexOf(existing)]=record;else rows.unshift(record);next.records.output=rows;
+  samplePDBusy=true;renderSamplePD();
+  if(await commit(next,{hourlyOutput:record})){samplePDEditId=record.id;samplePDPendingId=null;samplePDSelectedId=record.id;samplePDPrintDate=record.date;samplePDView='input-report';toast('Sample Hourly Production saved online.');if(typeof samplePDAutoEmailSaved==='function')samplePDAutoEmailSaved(record,existing);return true;}return false;
+ }catch(error){toast(error.message);return false;}finally{samplePDBusy=false;if(activePage===samplePDPage)renderSamplePD();}
+}
+const samplePDPreviousRenderPage=renderPage;
+renderPage=function(...args){if(activePage===samplePDPage)return renderSamplePD();return samplePDPreviousRenderPage.apply(this,args);};
+document.getElementById('main').addEventListener('click',event=>{
+ if(activePage!==samplePDPage)return;
+ const remove=event.target.closest('[data-sample-pd-delete]');if(remove){samplePDDeletePrompt(remove.dataset.samplePdDelete);return;}
+ const button=event.target.closest('[data-sample-pd-view]');
+ if(button){samplePDView=button.dataset.samplePdView;if(samplePDView==='new-input'&&samplePDEditId){samplePDDraft.fields={};samplePDDraft.rows=samplePDHours.map(()=>Array(5).fill(''));for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=null;samplePDPendingId=null;}if(samplePDView==='print'){samplePDSelectedId=null;samplePDPrintDate||=samplePDToday();}renderSamplePD();return;}
+ if(event.target.closest('[data-sample-pd-save]')){void saveSamplePD();return;}
+ const open=event.target.closest('[data-sample-pd-open]'),select=event.target.closest('[data-sample-pd-select]');
+ if(open||select){const row=samplePDRecords().find(r=>r.id===(open?.dataset.samplePdOpen||select?.dataset.samplePdSelect));if(!row)return;if(open){samplePDLoad(row);samplePDView='new-input';}else{samplePDSelectedId=row.id;samplePDPrintDate=row.date;samplePDView='print';}renderSamplePD();return;}
+ if(event.target.closest('[data-sample-pd-filter]')){samplePDApplyPrintDate();return;}
+ if(event.target.closest('[data-sample-pd-print]'))printSamplePD();
+});
+document.getElementById('main').addEventListener('input',event=>{
+ if(activePage!==samplePDPage)return;
+ const node=event.target;samplePDSuggest(node);
+ if(node.dataset.samplePdField)samplePDDraft.fields[node.dataset.samplePdField]=node.value;
+ if(node.dataset.samplePdField==='section'){const name=samplePDApplySupervisor(samplePDDraft.fields,true),input=document.getElementById('sample-pd-incharge');if(input)input.value=name;}
+ if(['layoutOp','layoutHp','presentOp','presentHp'].includes(node.dataset.samplePdField)){const prefix=node.dataset.samplePdField.startsWith('layout')?'layout':'present',op=samplePDNumber(samplePDDraft.fields[prefix+'Op']),assistant=samplePDNumber(samplePDDraft.fields[prefix+'Hp']),total=op===null&&assistant===null?'':(op||0)+(assistant||0);samplePDDraft.fields[prefix+'Manpower']=total===''?'':String(total);document.getElementById('sample-pd-'+prefix+'-total').textContent=String(total);}
+
+ if(node.dataset.samplePdExtra)samplePDDraft[node.dataset.samplePdExtra][Number(node.dataset.samplePdMetric)]=node.value;
+ if(node.dataset.samplePdRow!==undefined){const row=Number(node.dataset.samplePdRow);samplePDDraft.rows[row][Number(node.dataset.samplePdCol)]=node.value;document.querySelectorAll('[data-sample-pd-total]').forEach(output=>output.textContent=String(samplePDSum(samplePDDraft.rows.map(row=>row[Number(output.dataset.samplePdTotal)]))));}
+});
+
+document.getElementById('main').addEventListener('change',event=>{
+ if(activePage!==samplePDPage)return;
+ if(event.target.id==='sample-pd-print-date'){samplePDApplyPrintDate();return;}
+ if(event.target.id==='sample-pd-date'){try{event.target.value=normalizeDate(event.target.value||samplePDToday());samplePDDraft.fields.date=event.target.value;samplePDLookupInput();}catch(error){toast(error.message);}return;}
+ if(event.target.id!=='sample-pd-section')return;
+ const section=samplePDSection(event.target.value);event.target.value=section;samplePDDraft.fields.section=section;samplePDDraft.fields.tableNo=section;samplePDLookupInput();
+});
+document.getElementById('main').addEventListener('keydown',event=>{if(activePage===samplePDPage&&event.target.id==='sample-pd-print-date'&&event.key==='Enter'){event.preventDefault();samplePDApplyPrintDate();}});
+
+// Enter moves through visible entry controls, then focuses Save before saving.
+document.getElementById('main').addEventListener('keydown',event=>{
+ if(activePage!==samplePDPage||samplePDView!=='new-input'||event.key!=='Enter'||event.isComposing||event.keyCode===229||event.ctrlKey||event.altKey||event.metaKey||event.shiftKey)return;
+ const target=event.target;if(!target.closest('.sample-pd-paper'))return;
+ const save=target.closest('[data-sample-pd-save]');
+ if(!save&&!target.matches('[data-sample-pd-field],[data-sample-pd-row]'))return;
+ event.preventDefault();if(event.repeat||samplePDBusy)return;
+ if(save){if(!save.disabled)save.click();return;}
+ const key=node=>node.id||'hour:'+node.dataset.samplePdRow+':'+node.dataset.samplePdCol,current=key(target);
+ if(target.id==='sample-pd-date'){try{target.value=normalizeDate(target.value||samplePDToday());samplePDDraft.fields.date=target.value;samplePDLookupInput();}catch(error){toast(error.message);target.focus();return;}}
+ else if(target.id==='sample-pd-section')samplePDLookupInput();
+ const fields=[...document.querySelectorAll('.sample-pd-paper [data-sample-pd-field],.sample-pd-paper [data-sample-pd-row]')].filter(node=>!node.disabled&&!node.readOnly&&node.type!=='hidden'),index=fields.findIndex(node=>key(node)===current);
+ if(index<0)return;
+ const next=fields[index+1]||document.querySelector('.sample-pd-paper [data-sample-pd-save]');
+ if(next&&!next.disabled){next.focus();if(next.tagName==='INPUT'&&next.type==='text')next.select();}
+});
+
+;
+;/* sample-report-export.js */
+'use strict';
+let sampleExportBusy=false,sampleEmailDraft=null;
+const sampleExportPreviousView=samplePDPrintView;
+samplePDPrintView=function(){return sampleExportPreviousView().replace('</div><div class="sample-pd-edit-links', '<button type="button" class="sample-image-button" data-sample-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="sample-email-button" data-sample-email data-page-action-required="pdf">✉ Email</button></div><div class="sample-pd-edit-links');};
+const sampleExportStyle=document.createElement('style');sampleExportStyle.textContent='.sample-image-button{background:#e0f2fe!important;color:#075985!important;border:1px solid #38bdf8!important}.sample-email-button{background:#f3e8ff!important;color:#6b21a8!important;border:1px solid #c084fc!important}#sampleEmailDialog{width:min(740px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:14px;padding:24px;color:#172b42}#sampleEmailDialog::backdrop{background:#071e3acc}#sampleEmailDialog img{display:block;width:100%;height:auto;border:1px solid #cbd5e1;margin:12px 0}#sampleEmailDialog input{box-sizing:border-box;width:100%;padding:10px;border:1px solid #94a3b8;border-radius:7px}#sampleEmailDialog .dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}#sampleEmailDialog button{padding:10px 16px}#sampleEmailStatus{white-space:pre-wrap}';document.head.append(sampleExportStyle);
+function sampleExportRecords(){if(!FarnoorAccess.canAction('output','pdf'))throw Error('Report export permission is required.');const records=samplePDPrintRows();if(!records.length)throw Error('এই তারিখে সেভ করা ইনপুট নেই।');return structuredClone(records);}
+async function sampleReportImages(records,copy=false){
+ const frame=document.createElement('iframe');frame.title='রিপোর্টের ছবি প্রস্তুত হচ্ছে';frame.style.cssText='position:fixed;left:-20000px;top:0;width:1123px;height:794px;border:0;pointer-events:none';
+ try{
+  const ready=new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=()=>reject(Error('রিপোর্ট প্রস্তুত করা যায়নি।'));});frame.srcdoc=samplePDPrintHTML(records);document.body.append(frame);await ready;
+  const doc=frame.contentDocument;const style=doc.createElement('style');style.textContent='html,body{width:1123px;margin:0;background:#fff}.sample-pd-print-sheet{width:1062px!important;min-height:0!important;margin:0 auto!important;padding:0!important;box-sizing:border-box!important;box-shadow:none!important}.sample-pd-print-sheet table th,.sample-pd-print-sheet table td,.sample-pd-print-sheet header,.sample-pd-print-sheet header h2{border-width:.35px!important}.sample-pd-print-sheet .qf-table th,.sample-pd-print-sheet .qf-table td{font-size:6.4pt!important;line-height:1.15!important}';doc.head.append(style);
+  await doc.fonts.ready;await personalLoadPdfLibrary(frame.contentWindow);
+  const images=[],sheets=[...doc.querySelectorAll('.sample-pd-print-sheet')];
+  for(let i=0;i<sheets.length;i++){
+   const rendered=await frame.contentWindow.html2pdf().set({margin:0,jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},html2canvas:{scale:6,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,scrollX:0,scrollY:0}}).from(sheets[i]).toCanvas().get('canvas');const canvas=sampleTrimCanvas(rendered);
+   // Encode while the rendering document is alive; never pass its canvas out.
+   if(copy){if(!sampleCanvasHasReport(canvas))throw Error('রিপোর্টের ছবি সাদা এসেছে। আবার Copy Image চাপুন।');images.push({png:canvas.toDataURL('image/png'),width:canvas.width,height:canvas.height});continue;}
+   const jpg=canvas.toDataURL('image/jpeg',1),name='Sample-Wise-Hourly-PD-'+records[0].date.replaceAll('/','-')+'-'+(i+1)+'.jpg';images.push({jpg,name});
+  }
+  return images;
+ }finally{frame.remove();}
+}
+function sampleTrimCanvas(source){const context=source.getContext('2d'),pixels=context.getImageData(0,0,source.width,source.height).data;let left=source.width,right=-1,top=source.height,bottom=-1;for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++){const i=(y*source.width+x)*4;if(pixels[i+3]&&Math.min(pixels[i],pixels[i+1],pixels[i+2])<245){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}}if(right<left)return source;left=Math.max(0,left-2);top=Math.max(0,top-2);right=Math.min(source.width-1,right+2);bottom=Math.min(source.height-1,bottom+2);const canvas=document.createElement('canvas');canvas.width=right-left+1;canvas.height=bottom-top+1;canvas.getContext('2d').drawImage(source,left,top,canvas.width,canvas.height,0,0,canvas.width,canvas.height);return canvas;}
+function sampleCanvasHasReport(canvas){const sample=document.createElement('canvas');sample.width=64;sample.height=64;const context=sample.getContext('2d');context.drawImage(canvas,0,0,64,64);const pixels=context.getImageData(0,0,64,64).data;let ink=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]>0&&Math.min(pixels[i],pixels[i+1],pixels[i+2])<235)ink++;return ink>20;}
+async function sampleClipboardBlob(records){
+ const pages=await sampleReportImages(records,true);
+ if(pages.length===1)return new Blob([Uint8Array.from(atob(pages[0].png.split(',')[1]),c=>c.charCodeAt(0))],{type:'image/png'});
+ const canvas=document.createElement('canvas');canvas.width=Math.max(...pages.map(p=>p.width));canvas.height=pages.reduce((sum,p)=>sum+p.height,0);if(canvas.height>16384)throw Error('কম পেইজ নির্বাচন করে Copy Image চাপুন।');
+ const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);let top=0;for(const page of pages){const image=new Image();image.src=page.png;await image.decode();context.drawImage(image,0,top);top+=page.height;}
+ if(!sampleCanvasHasReport(canvas))throw Error('রিপোর্টের ছবি সাদা এসেছে। আবার Copy Image চাপুন।');
+ return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('ছবি কপি করার জন্য প্রস্তুত হয়নি।')),'image/png'));
+}
+async function sampleCopyImage(records){let timer;const image=sampleClipboardBlob(records);try{await Promise.race([navigator.clipboard.write([new ClipboardItem({'image/png':image})]),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('সফটওয়্যার পেইজ সামনে রেখে আবার Copy Image চাপুন।')),30000);})]);sampleCopyPreview(await image);}finally{clearTimeout(timer);}}
+function sampleCopyPreview(blob){document.getElementById('sampleCopyPreview')?.remove();const dialog=document.createElement('dialog'),url=URL.createObjectURL(blob);dialog.id='sampleCopyPreview';dialog.style.cssText='width:min(1000px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:12px;padding:20px';dialog.innerHTML='<h2 style="margin-top:0">Image copied</h2><p>এই ছবিটি কপি হয়েছে। WhatsApp বা অন্য অ্যাপে Ctrl+V দিয়ে পেস্ট করুন।</p><img alt="Copied production report" style="width:100%;height:auto" src="'+url+'"><div class="dialog-actions"><button type="button">Close</button></div>';dialog.addEventListener('close',()=>{URL.revokeObjectURL(url);dialog.remove();},{once:true});dialog.querySelector('button').onclick=()=>dialog.close();document.body.append(dialog);dialog.showModal();}
+async function sampleEmailRequest(route,payload){const response=await FarnoorAPI.request(route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await response.json();if(!response.ok)throw Object.assign(Error(result.error||'ইমেইল অনুরোধ সম্পন্ন হয়নি।'),{status:response.status});return result;}
+function sampleCloseEmail(){const dialog=document.getElementById('sampleEmailDialog');if(dialog?.dataset.sending==='true')return;dialog?.close();dialog?.remove();sampleEmailDraft=null;}
+function sampleShowEmail(records,images){
+ document.getElementById('sampleEmailDialog')?.remove();sampleEmailDraft={records,images,requestId:crypto.randomUUID()};
+ const dialog=document.createElement('dialog');dialog.id='sampleEmailDialog';dialog.innerHTML='<form id="sampleEmailForm"><h2>✉ রিপোর্টের ছবি ইমেইল করুন</h2><p>'+esc(records[0].date)+' · '+records.map(r=>esc(r.hourlyPD.fields.section)).join(', ')+'</p><label for="sampleEmailTo">প্রাপকের ইমেইল (একাধিক হলে কমা দিন)</label><input id="sampleEmailTo" type="email" multiple required maxlength="2600" placeholder="name@example.com"><p>নিচের '+images.length+'টি JPG ছবি সংযুক্ত হবে।</p>'+images.map(image=>'<img src="'+image.jpg+'" alt="'+esc(image.name)+'">').join('')+'<p id="sampleEmailStatus" role="status"></p><div class="dialog-actions"><button type="button" data-sample-email-cancel>Cancel</button><button type="submit" class="primary">পাঠানো নিশ্চিত করুন</button></div></form>';
+ document.body.append(dialog);dialog.addEventListener('cancel',event=>{if(dialog.dataset.sending==='true')event.preventDefault();else sampleEmailDraft=null;});dialog.querySelector('[data-sample-email-cancel]').onclick=sampleCloseEmail;dialog.querySelector('form').onsubmit=sampleSendEmail;dialog.showModal();
+}
+async function sampleSendEmail(event){
+ event.preventDefault();const draft=sampleEmailDraft,dialog=document.getElementById('sampleEmailDialog');if(!draft||dialog.dataset.sending==='true')return;
+ const to=[...new Set(document.getElementById('sampleEmailTo').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean))],status=document.getElementById('sampleEmailStatus');if(!to.length||to.length>10){status.textContent='১–১০টি ইমেইল ঠিকানা দিন।';return;}
+ dialog.dataset.sending='true';dialog.querySelectorAll('button,input').forEach(node=>node.disabled=true);status.textContent='ইমেইল পাঠানো হচ্ছে…';
+ try{
+  const sent=await sampleEmailRequest('/api/hourly-output/email',{reportKind:'sample',to,requestId:draft.requestId,reports:draft.records.map(r=>({id:r.id,version:r.updatedAt||r.createdAt})),images:draft.images.map(image=>({name:image.name,jpg:image.jpg.split(',')[1]}))});
+  let job;for(let i=0;i<40;i++){await new Promise(resolve=>setTimeout(resolve,1500));job=await sampleEmailRequest('/api/hourly-output/email/job',{key:sent.jobKey});if(job.status!=='processing')break;}
+  if(job?.status==='accepted'){status.textContent='Gmail '+job.accepted+' জন প্রাপকের জন্য ইমেইল গ্রহণ করেছে।';dialog.querySelector('button[type=submit]').hidden=true;dialog.querySelector('[data-sample-email-cancel]').textContent='Close';}
+  else if(job?.status==='processing'){status.textContent='ইমেইল এখনও প্রক্রিয়াধীন। আবার পাঠালে একই অনুরোধের অবস্থা দেখা হবে।';}
+  else throw Error(job?.error||'ইমেইল পাঠানো যায়নি।');
+ }catch(error){status.textContent=error.message;}finally{dialog.dataset.sending='false';dialog.querySelectorAll('button,input').forEach(node=>node.disabled=false);}
+}
+document.getElementById('main').addEventListener('click',async event=>{
+ const button=event.target.closest('[data-sample-image],[data-sample-email]');if(!button||activePage!==samplePDPage||sampleExportBusy)return;
+ sampleExportBusy=true;button.disabled=true;const title=button.textContent;button.textContent='ছবি প্রস্তুত হচ্ছে…';
+ try{const records=sampleExportRecords();if(button.hasAttribute('data-sample-email'))sampleShowEmail(records,await sampleReportImages(records));else{if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw Error('এই ব্রাউজারে ছবি কপি সমর্থিত নয়। Chrome বা Edge ব্যবহার করুন।');await sampleCopyImage(records);toast('Image copied. এখন Ctrl+V দিয়ে পেস্ট করুন।');}}
+ catch(error){toast(error.name==='NotAllowedError'?'ছবি কপি করার অনুমতি পাওয়া যায়নি। ব্রাউজারে Clipboard অনুমতি দিয়ে আবার Copy Image চাপুন।':error.message);}finally{sampleExportBusy=false;button.disabled=false;button.textContent=title;}
+});
+
+;
+;/* sample-report-share.js */
+'use strict';
+const sampleSharePreviousView=samplePDPrintView;
+samplePDPrintView=function(){return sampleSharePreviousView().replace('<button type="button" class="sample-email-button"','<button type="button" class="sample-share-button" data-sample-share data-page-action-required="pdf">↗ Share Image</button><button type="button" class="sample-email-button"');};
+const sampleShareStyle=document.createElement('style');sampleShareStyle.textContent='.sample-share-button{background:#dcfce7!important;color:#166534!important;border:1px solid #4ade80!important}#sampleShareDialog{width:min(900px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:12px;padding:20px}#sampleShareDialog img{display:block;width:100%;height:auto;margin:12px 0}#sampleShareDialog .dialog-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}#sampleShareDialog::backdrop{background:#071e3acc}';document.head.append(sampleShareStyle);
+function sampleShareFiles(images){return images.map(image=>new File([Uint8Array.from(atob(image.jpg.split(',')[1]),c=>c.charCodeAt(0))],image.name,{type:'image/jpeg'}));}
+function sampleCanShareFiles(files){try{return typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files});}catch{return false;}}
+function sampleShowShare(images){
+ const files=sampleShareFiles(images),supported=sampleCanShareFiles(files);
+ document.getElementById('sampleShareDialog')?.close();
+ const dialog=document.createElement('dialog');dialog.id='sampleShareDialog';
+ dialog.innerHTML='<h2>Share Image</h2><p>'+(supported?'Share চাপুন, তারপর অ্যাপ ও প্রাপক বেছে নিন।':'এই ব্রাউজারে সরাসরি ছবি শেয়ার সমর্থিত নয়। JPG ডাউনলোড করে অ্যাপে সংযুক্ত করুন।')+'</p>'+images.map(image=>'<img src="'+image.jpg+'" alt="Report image to share">').join('')+'<p role="status"></p><div class="dialog-actions">'+(supported?'<button type="button" data-share-send class="sample-share-button">↗ Share</button>':'')+'<button type="button" data-share-download>Download JPG</button><button type="button" data-share-close>Close</button></div>';
+ dialog.querySelector('[data-share-close]').onclick=()=>dialog.close();
+ dialog.addEventListener('close',()=>dialog.remove(),{once:true});
+ dialog.querySelector('[data-share-download]').onclick=()=>{for(const image of images){const link=document.createElement('a');link.href=image.jpg;link.download=image.name;document.body.append(link);link.click();link.remove();}};
+ const send=dialog.querySelector('[data-share-send]');if(send)send.onclick=async()=>{if(!FarnoorAccess.canAction('output','pdf'))return toast('Report export permission is required.');send.disabled=true;const status=dialog.querySelector('[role="status"]');status.textContent='';try{await navigator.share({files,title:'Sample Wise Hourly Production'});status.textContent='ছবি শেয়ার করার জন্য নির্বাচিত অ্যাপে দেওয়া হয়েছে।';}catch(error){if(error.name!=='AbortError')status.textContent='শেয়ার করা যায়নি। আবার Share চাপুন অথবা Download JPG ব্যবহার করুন।';}finally{send.disabled=false;}};
+ document.body.append(dialog);dialog.showModal();
+}
+document.getElementById('main').addEventListener('click',async event=>{const button=event.target.closest('[data-sample-share]');if(!button||activePage!==samplePDPage||sampleExportBusy)return;sampleExportBusy=true;button.disabled=true;const title=button.textContent;button.textContent='ছবি প্রস্তুত হচ্ছে…';try{const records=sampleExportRecords();sampleShowShare(await sampleReportImages(records));}catch(error){toast(error.message);}finally{sampleExportBusy=false;button.disabled=false;button.textContent=title;}});
+
+;
+;/* sample-finishing-print.js */
+'use strict';
+// The source workbook supplies layout only. Values always come from saved Sample inputs.
+function sampleFinishingCalculate(data){
+ const f=data.fields||{},rows=samplePDComputedRows(data.rows),values=rows.map(row=>samplePDNumber(row[3])),valid=values.filter(n=>n!==null&&Number.isFinite(n)),hourly=samplePDNumber(f.hourlyTarget),hours=samplePDNumber(f.workingPlan);
+ const target=hourly===null?null:valid.length*hourly,production=valid.reduce((a,b)=>a+b,0);
+ return {values:rows.map(row=>row[3]),totalTarget:hourly===null||hours===null?null:hourly*hours,target,production,variance:target===null?null:production-target,rate:target?production/target:null};
+}
+samplePDPrintSheet=function(records){
+ records=records.slice().sort(samplePDCompare);
+ const text=v=>samplePDDisplay(v),num=v=>v===null||v===undefined||v===''?'':String(Math.round(v*1e9)/1e9),percent=v=>v===null?'':Math.round(v*100)+'%';
+ const cell=(v,cls='',source=true)=>'<td class="'+cls+'">'+(source?'<span class="sample-pd-value">'+text(v)+'</span>':text(v))+'</td>';
+ const widths=[18,6,23,14,16,22,17,14,16,...samplePDHours.map(()=>16),14,17,16,14,20],width=widths.reduce((a,b)=>a+b,0),calculations=records.map(r=>sampleFinishingCalculate(r.hourlyPD));
+ const sum=key=>records.length?calculations.reduce((s,a)=>s+(a[key]??0),0):'';
+ const body=records.map((record,i)=>{const f=record.hourlyPD.fields||{},a=calculations[i];return '<tr class="if-detail">'+cell(f.section)+cell(f.sl||i+1)+cell(f.ironManName||f.qcName)+cell(f.cardNo)+cell(f.workingPlan)+cell(f.buyer)+cell(f.item)+cell(num(a.totalTarget))+cell(f.hourlyTarget)+a.values.map(v=>cell(v,'if-hour')).join('')+cell(num(a.target),'if-target',false)+cell(num(a.production),'if-production',false)+cell(num(a.variance),'if-variance',false)+cell(percent(a.rate),'if-rate',false)+cell(f.remarks)+'</tr>';}).join('');
+ const footer='<tr class="if-total"><th colspan="7">Total</th>'+cell(num(sum('totalTarget')),'',false)+cell(records.length?samplePDSum(records.map(r=>r.hourlyPD.fields?.hourlyTarget)):'','',false)+samplePDHours.map((_,h)=>cell(records.length?samplePDSum(calculations.map(a=>a.values[h])):'','if-hour',false)).join('')+cell(num(sum('target')),'',false)+cell(num(sum('production')),'',false)+cell(num(sum('variance')),'if-variance',false)+cell(records.length?percent(sum('target')?sum('production')/sum('target'):null):'','',false)+'<td></td></tr>';
+ const supervisors=[...new Set(records.map(r=>r.hourlyPD.fields?.incharge).filter(Boolean))];
+ return '<article class="sample-pd-print-sheet sample-finishing-report"><header><div class="if-title"><h2>FARNOOR GARMENTS LTD.</h2><aside>Today Target Qty<br><b>'+num(sum('totalTarget'))+' Pcs</b></aside></div><h3>SAMPLE SECTION HOURLY PRODUCTION MONITORING BOARD</h3><div class="if-meta"><b>Supervisor Name : <span class="sample-pd-value">'+text(supervisors.join(', '))+'</span></b><b>Date : <span class="sample-pd-value">'+text((records[0]?.date||samplePDPrintDate||'').replaceAll('/','.'))+'</span></b></div></header><table class="sample-pd-print-table if-table"><colgroup>'+widths.map(w=>'<col style="width:'+(w/width*100)+'%">').join('')+'</colgroup><thead><tr>'+['SECTION','SL.','SAMPLE MAN NAME','CARD NO:','WORKING<br>HOUR','BUYER','ITEM','TOTAL TARGET','TARGET/<br>Hrs'].map(t=>'<th rowspan="2" scope="col">'+t+'</th>').join('')+samplePDHours.map((_,i)=>'<th scope="col" class="if-hour">'+(i+1)+'</th>').join('')+['Target','Production','Variance','HIT<br>RATE','Remarks'].map((t,i)=>'<th rowspan="2" scope="col" class="if-head-'+i+'">'+t+'</th>').join('')+'</tr><tr>'+samplePDHours.map(h=>'<th scope="col" class="if-hour if-time">'+h+'</th>').join('')+'</tr></thead><tbody>'+body+(!records.length?'<tr><td colspan="25">Input Report থেকে সেভ করা ডাটা নির্বাচন করুন।</td></tr>':'')+footer+'</tbody></table></article>';
+};
+const sampleFinishingCSS=`
+.sample-finishing-report{font-family:Arial,sans-serif!important;min-height:0!important;padding:0!important}
+.sample-finishing-report header{background:#fff;color:#000;border:.5px solid #000}
+.sample-finishing-report header .if-title{display:flex;align-items:center;min-height:19mm;padding:0;color:#000}
+.sample-finishing-report header h2{flex:1;font:bold 21pt/1.2 Arial,sans-serif;text-align:center;margin:0;padding:3mm 0;border:0}
+.sample-finishing-report header aside{width:33mm;align-self:stretch;border-left:.5px solid #000;font:bold 8pt/1.5 Arial,sans-serif;text-align:center;padding:3mm 1mm;box-sizing:border-box}
+.sample-finishing-report header h3{font:bold 10pt/1.2 Arial,sans-serif;text-align:center;margin:0;padding:1.8mm 0;border-top:.5px solid #000;border-bottom:.5px solid #000}
+.sample-finishing-report header .if-meta{display:flex;justify-content:space-between;gap:5mm;min-height:10mm;padding:2mm 2mm;color:#000;font:9pt/1.3 Arial,sans-serif}
+.sample-finishing-report .sample-pd-value{color:#7030a0;font-weight:700}
+.sample-finishing-report .if-table th,.sample-finishing-report .if-table td{font:bold 6.5pt/1.2 Arial,sans-serif!important;padding:1mm .35mm!important;border:.5px solid #000!important;box-sizing:border-box;text-align:center;vertical-align:middle;overflow-wrap:normal;word-break:normal}
+.sample-finishing-report .if-table thead th{background:#e2efda;color:#000;height:auto;font-size:6pt!important}
+.sample-finishing-report .if-table thead .if-hour{background:#edf4e8}
+.sample-finishing-report .if-table thead th.if-time{white-space:nowrap!important;font-size:5.2pt!important;letter-spacing:-.1px;padding:.8mm .1mm!important}
+.sample-finishing-report .if-table .if-detail td{height:11mm}
+.sample-finishing-report .if-table .if-detail td:first-child{background:#bdd7ee}
+.sample-finishing-report .if-table .if-target{background:#fce4d6;color:#000}
+.sample-finishing-report .if-table .if-production{background:#f4b183;color:#000}
+.sample-finishing-report .if-table .if-variance{background:#ff0;color:red}
+.sample-finishing-report .if-table .if-rate{background:#00b050;color:#000}
+.sample-finishing-report .if-table .if-head-3{background:#ff33cc}
+.sample-finishing-report .if-table .if-head-4{background:#ffc000}
+.sample-finishing-report .if-table .if-hour{white-space:nowrap}
+.sample-finishing-report .if-table .if-total>*{background:#92d050;font-weight:700!important;height:11mm;font-size:8pt!important}
+@media screen{.sample-pd-print-pages{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.sample-pd-print-pages .sample-finishing-report{width:281mm;min-width:281mm;max-width:none;margin-left:auto;margin-right:auto}}
+@media print{.sample-finishing-report{-webkit-print-color-adjust:exact;print-color-adjust:exact}.sample-finishing-report .if-table{width:100%;table-layout:fixed;border-collapse:collapse}.sample-finishing-report .if-table th,.sample-finishing-report .if-table td{font-size:6.5pt!important}}
+`;
+const sampleFinishingStyle=document.createElement('style');sampleFinishingStyle.textContent=sampleFinishingCSS;document.head.append(sampleFinishingStyle);
+const sampleFinishingPreviousPrintHTML=samplePDPrintHTML;
+samplePDPrintHTML=function(records){return sampleFinishingPreviousPrintHTML(records).replace('</style>',sampleFinishingCSS+'</style>');};
+
+;
+;/* sample-entry-board.js */
+'use strict';
+const sampleBoardNames=['Md. Sohel Rana','Md. Liton','Md. Muslim Uddin','Rezakul Islam','Aulad Hossan','Md. Abul Kalam','Md. Salim','Md. Enamul Haque','Md. Sahidul Islam Salim','Md. Antor','Ridy Ahmed'];
+const sampleBoardCards={'Md. Sohel Rana':'1074','Md. Liton':'1094','Md. Muslim Uddin':'1095','Rezakul Islam':'1103','Aulad Hossan':'1108','Md. Abul Kalam':'1123','Md. Salim':'1174','Md. Enamul Haque':'1186','Md. Sahidul Islam Salim':'1221','Md. Antor':'1272','Ridy Ahmed':'1283'};
+const sampleBoardFields=[['sl','SL'],['ironManName','Sample Man Name'],['workingPlan','Working Hour'],['buyer','Buyer'],['style','Style'],['item','Item'],['hourlyTarget','Target Hour'],['remarks','Remarks']];
+let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null;
+const sampleBoardHours=['8-9 AM','9-10AM','10-11AM','11-12 AM','12.-1 PM','2.-3 PM','3.-4 PM','4.-5 PM','5.-6 PM','6.-7 PM'];
+function sampleBoardSuggestions(key,query){
+ const q=String(query||'').trim().toLocaleLowerCase();if(q.length<2)return [];
+ return [...new Set([...samplePDRecords().map(r=>r.hourlyPD.fields?.[key]),...sampleBoardRows.map(r=>r.fields[key])].map(v=>String(v??'').trim()).filter(Boolean))].filter(v=>v.toLocaleLowerCase().includes(q));
+}
+function sampleBoardInput(value,attrs,readonly=false){return '<input '+attrs+' value="'+esc(value??'')+'" '+(readonly?'readonly':'')+' autocomplete="off">';}
+function sampleBoardTotal(row){const h=samplePDNumber(row.fields.workingPlan),t=samplePDNumber(row.fields.hourlyTarget);return h===null||t===null?'':h*t;}
+samplePDPaper=function(readonly=false){
+ const edit=FarnoorAccess.canAction('output','edit')&&!readonly;
+ return '<section class="sample-pd-paper sample-board"><h2>SAMPLE WISE HOURLY PRODUCTION</h2><div class="sample-pd-details">'+sampleBoardFields.map(([key,label])=>'<div class="sample-pd-field"><label for="sample-board-'+key+'">'+label+'</label>'+(key==='ironManName'?'<select id="sample-board-'+key+'" data-sample-board-field="'+key+'" '+(!edit?'disabled':'')+'><option value="">Select Sample Man Name</option>'+[...new Set([...sampleBoardNames,sampleBoardForm.ironManName].filter(Boolean))].map(name=>'<option '+(name===sampleBoardForm.ironManName?'selected ':'')+'value="'+esc(name)+'">'+esc(name)+'</option>').join('')+'</select>':sampleBoardInput(sampleBoardForm[key]??(key==='sl'?sampleBoardRows.length+1:''),'id="sample-board-'+key+'" data-sample-board-field="'+key+'" maxlength="300"'+(['sl','workingPlan','hourlyTarget'].includes(key)?' inputmode="decimal"':'')+(['buyer','style','item','hourlyTarget'].includes(key)?' list="sample-board-options-'+key+'"':''),!edit))+'</div>').join('')+'</div>'+['buyer','style','item','hourlyTarget'].map(key=>'<datalist id="sample-board-options-'+key+'">'+sampleBoardSuggestions(key,sampleBoardForm[key]).map(v=>'<option value="'+esc(v)+'"></option>').join('')+'</datalist>').join('')+'<div class="sample-pd-save-actions"><button type="button" data-sample-board-add '+(!edit||sampleBoardBusy?'disabled':'')+'>Input</button></div><div class="sample-pd-table-wrap"><table class="sample-pd-table sample-board-table"><thead><tr>'+['SL.','SAMPLE MAN NAME','CARD NO','WORKING HOUR','BUYER','ITEM','TOTAL TARGET','TARGET/Hrs',...sampleBoardHours].map(t=>'<th scope="col">'+t+'</th>').join('')+'</tr></thead><tbody>'+sampleBoardRows.map((r,i)=>'<tr data-sample-board-index="'+i+'"><td>'+esc(r.fields.sl||i+1)+'</td><td>'+(r.fields.ironManName?'<button type="button" class="sample-worker-row-name" data-sample-worker-row="'+i+'">'+esc(r.fields.ironManName)+'</button>':'<select data-sample-board-choose="'+i+'" aria-label="Sample Man Name row '+(i+1)+'" '+(!edit?'disabled':'')+'><option value="">Select Sample Man Name</option>'+sampleBoardNames.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+'</select>')+'</td><td>'+sampleBoardInput(r.fields.cardNo,'data-sample-board-card="'+i+'" aria-label="Card No '+esc(r.fields.ironManName)+'" maxlength="120"',!edit||Object.hasOwn(sampleBoardCards,r.fields.ironManName))+'</td><td>'+esc(r.fields.workingPlan)+'</td><td>'+esc(r.fields.buyer)+'</td><td>'+esc(r.fields.item)+'</td><td><output>'+esc(sampleBoardTotal(r))+'</output></td><td>'+esc(r.fields.hourlyTarget)+'</td>'+sampleBoardHours.map((hour,h)=>'<td>'+sampleBoardInput(r.rows[h][3],'type="number" min="0" step="1" data-sample-board-hour="'+h+'" data-sample-board-worker="'+i+'" aria-label="'+esc(r.fields.ironManName)+' '+hour+'"',!edit)+'</td>').join('')+'</tr>').join('')+(!sampleBoardRows.length?'<tr><td colspan="18">Input চাপলে এখানে রো যোগ হবে।</td></tr>':'')+'</tbody><tfoot><tr><th colspan="6">Total</th><td>'+esc(samplePDSum(sampleBoardRows.map(sampleBoardTotal)))+'</td><td>'+esc(samplePDSum(sampleBoardRows.map(r=>r.fields.hourlyTarget)))+'</td>'+sampleBoardHours.map((_,h)=>'<td><output data-sample-board-sum="'+h+'">'+esc(samplePDSum(sampleBoardRows.map(r=>r.rows[h][3])))+'</output></td>').join('')+'</tr></tfoot></table></div><div class="sample-pd-save-actions"><button type="button" data-sample-board-save '+(!edit||sampleBoardBusy||!sampleBoardRows.length?'disabled':'')+'>'+(sampleBoardBusy?'Saving…':'Save')+'</button></div></section>';
+};
+function sampleBoardAdd(){
+ if(sampleBoardBusy||!FarnoorAccess.canAction('output','edit'))return;
+ try{
+  const f={ironManName:'',...sampleBoardForm};if(f.ironManName&&!sampleBoardNames.includes(f.ironManName)&&!sampleBoardRows.some(r=>r.fields.ironManName===f.ironManName))throw Error('Sample Man Name নির্বাচন করুন।');
+  for(const key of ['sl','workingPlan','hourlyTarget']){const raw=f[key]??'';if(key!=='sl'&&String(raw).trim()===''){f[key]='';continue;}const n=samplePDNumber(key==='sl'&&String(raw).trim()===''?sampleBoardRows.length+1:raw);if(n===null||!Number.isFinite(n)||n<0||(key==='sl'&&(!Number.isInteger(n)||n<1)))throw Error(key==='sl'?'সঠিক SL লিখুন।':'Working Hour ও Target Hour-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
+  const staged=f.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===f.ironManName):null,date=staged?.fields.date||samplePDDraft.fields.date||samplePDToday();
+  const saved=f.ironManName?samplePDRecords().find(r=>r.date===date&&r.hourlyPD.fields?.ironManName===f.ironManName):null;
+  if(staged&&sampleBoardEditingName!==f.ironManName)return toast('এই নামের এন্ট্রি ইতোমধ্যে আছে। একই নামে দ্বিতীয় রো যোগ করা যাবে না।');
+  const previous=staged||(saved?{id:saved.id,fields:saved.hourlyPD.fields,rows:saved.hourlyPD.rows}:null);
+  const row={id:previous?.id,fields:{...previous?.fields,...f,cardNo:sampleBoardCards[f.ironManName]??previous?.fields.cardNo??f.cardNo??'',date,section:previous?.fields.section||f.ironManName,tableNo:previous?.fields.section||f.ironManName},rows:samplePDComputedRows(previous?.rows)};
+  if(staged)sampleBoardRows[sampleBoardRows.indexOf(staged)]=row;else sampleBoardRows.push(row);
+  sampleBoardEditingName=null;sampleBoardForm={sl:String(sampleBoardRows.length+1)};renderSamplePD();
+ }catch(error){toast(error.message);}
+}
+const sampleBoardOriginalLoad=samplePDLoad;
+samplePDLoad=function(record){sampleBoardOriginalLoad(record);samplePDDraft.fields.cardNo=sampleBoardCards[samplePDDraft.fields.ironManName]??samplePDDraft.fields.cardNo??'';sampleBoardRows=[{id:record.id,fields:structuredClone(samplePDDraft.fields),rows:samplePDComputedRows(record.hourlyPD.rows)}];sampleBoardForm={...samplePDDraft.fields,sl:samplePDDraft.fields.sl||'1'};};
+const sampleBoardOriginalSave=saveSamplePD;
+async function sampleBoardSave(){
+ if(sampleBoardBusy||!sampleBoardRows.length||!FarnoorAccess.canAction('output','edit'))return;
+ if(sampleBoardRows.some(row=>!row.fields.ironManName))return toast('সেভ করার আগে প্রতিটি রোতে Sample Man Name নির্বাচন করুন।');if(new Set(sampleBoardRows.map(row=>row.fields.ironManName)).size!==sampleBoardRows.length)return toast('একই নাম একাধিক রোতে আছে। নামগুলো আলাদা করুন।');
+ sampleBoardBusy=true;let complete=true;const formBefore=structuredClone(sampleBoardForm);
+ try{for(const row of sampleBoardRows){row.fields.cardNo=sampleBoardCards[row.fields.ironManName]??row.fields.cardNo??'';samplePDDraft.fields={...row.fields};samplePDDraft.rows=samplePDComputedRows(row.rows);for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=row.id||null;samplePDPendingId=null;
+   if(!await sampleBoardOriginalSave()){complete=false;break;}row.id=samplePDEditId;
+  }
+ }finally{sampleBoardBusy=false;sampleBoardForm=complete?{}:formBefore;sampleBoardEditingName=null;samplePDView='new-input';renderSamplePD();}
+}
+const sampleBoardMain=document.getElementById('main');
+sampleBoardMain.addEventListener('click',event=>{if(activePage===samplePDPage&&samplePDEditId&&event.target.closest('[data-sample-pd-view="new-input"]')){sampleBoardRows=[];sampleBoardForm={};}},true);
+sampleBoardMain.addEventListener('click',event=>{if(activePage!==samplePDPage)return;if(event.target.closest('[data-sample-board-add]'))sampleBoardAdd();if(event.target.closest('[data-sample-board-save]'))void sampleBoardSave();});
+sampleBoardMain.addEventListener('input',event=>{
+ if(activePage!==samplePDPage||sampleBoardBusy)return;const node=event.target,key=node.dataset.sampleBoardField;
+ if(key){sampleBoardForm[key]=node.value;const list=document.getElementById('sample-board-options-'+key);if(list)list.innerHTML=sampleBoardSuggestions(key,node.value).map(v=>'<option value="'+esc(v)+'"></option>').join('');}
+ if(node.dataset.sampleBoardCard!==undefined)sampleBoardRows[Number(node.dataset.sampleBoardCard)].fields.cardNo=node.value;
+ if(node.dataset.sampleBoardHour!==undefined){const hour=Number(node.dataset.sampleBoardHour),worker=Number(node.dataset.sampleBoardWorker);sampleBoardRows[worker].rows[hour][3]=node.value;document.querySelector('[data-sample-board-sum="'+hour+'"]').textContent=String(samplePDSum(sampleBoardRows.map(r=>r.rows[hour][3])));}
+});
+sampleBoardMain.addEventListener('change',event=>{if(activePage===samplePDPage&&!sampleBoardBusy&&event.target.dataset.sampleBoardChoose!==undefined){const row=sampleBoardRows[Number(event.target.dataset.sampleBoardChoose)],name=event.target.value;if(!sampleBoardNames.includes(name))return;if(sampleBoardRows.some(other=>other!==row&&other.fields.ironManName===name)){event.target.value='';toast('এই নামের এন্ট্রি ইতোমধ্যে আছে। অন্য নাম নির্বাচন করুন।');return;}row.fields.ironManName=name;row.fields.cardNo=sampleBoardCards[name];if(!row.id)row.fields.section=row.fields.tableNo=name;renderSamplePD();return;}if(activePage===samplePDPage&&event.target.dataset.sampleBoardField)sampleBoardForm[event.target.dataset.sampleBoardField]=event.target.value;});
+sampleBoardMain.addEventListener('keydown',event=>{
+ if(activePage!==samplePDPage||samplePDView!=='new-input'||event.key!=='Enter'||event.isComposing||event.repeat||sampleBoardBusy)return;
+ const target=event.target;if(target.matches('[data-sample-board-add],[data-sample-board-save]'))return;
+ if(!target.matches('[data-sample-board-field],[data-sample-board-card],[data-sample-board-hour]'))return;event.preventDefault();
+ const selector=target.hasAttribute('data-sample-board-field')?'[data-sample-board-field]':'[data-sample-board-card],[data-sample-board-hour]',fields=[...document.querySelectorAll('.sample-board '+selector)],index=fields.indexOf(target);
+ (fields[index+1]||document.querySelector(target.hasAttribute('data-sample-board-field')?'[data-sample-board-add]':'[data-sample-board-save]'))?.focus();
+});
+const sampleBoardStyle=document.createElement('style');sampleBoardStyle.textContent='.sample-board .sample-board-table{min-width:1650px}.sample-board .sample-board-table th{white-space:normal;min-width:72px}.sample-board .sample-board-table th:nth-child(2){min-width:165px}.sample-board .sample-board-table input{min-width:65px;width:100%;box-sizing:border-box}.sample-board .sample-board-table td:nth-child(2){white-space:normal;font-weight:700}.sample-board select{width:100%;min-height:38px;padding:8px;border:1px solid #b4c9e4;border-radius:6px;background:#f6faff;color:#163a59}.sample-board .sample-pd-save-actions{justify-content:flex-end}';document.head.append(sampleBoardStyle);
+
+;
+;/* sample-worker-tools.js */
+'use strict';
+const sampleWorkerDefaults=['Ridy Ahmed','Md. Abul Kalam','Md. Salim','Md. Sohel Rana','Rezakul Islam','Md. Muslim Uddin','Aulad Hossan','Md. Liton','Md. Antor','Md. Enamul Haque','Md. Sahidul Islam Salim'];
+const sampleWorkerDefaultCards={...sampleBoardCards};
+let sampleWorkerOverrides=[];
+try{if(localStorage.getItem('farnoor-sample-workers-v1')===null){localStorage.setItem('farnoor-sample-workers-v1',localStorage.getItem('farnoor-iron-workers-v1')||'[]');}}catch{}
+try{const list=JSON.parse(localStorage.getItem('farnoor-sample-workers-v1')||'[]');if(Array.isArray(list))sampleWorkerOverrides=list.filter(w=>w&&typeof w.name==='string'&&w.name.length<=120&&typeof w.card==='string'&&w.card.length<=40&&Number.isInteger(w.sl)&&w.sl>0).slice(0,200);}catch{}
+function sampleWorkerList(){
+ const workers=sampleWorkerDefaults.map((name,i)=>({name,card:sampleWorkerDefaultCards[name]||'',sl:i+1}));
+ const merge=w=>{const index=workers.findIndex(old=>w.previousCard&&old.card===w.previousCard||w.card&&old.card===w.card||old.name===w.name);if(index<0)workers.push(w);else workers[index]=w;};
+ const records=samplePDRecords().slice().sort((a,b)=>String(a.updatedAt||a.createdAt).localeCompare(String(b.updatedAt||b.createdAt)));
+ for(const row of records){const f=row.hourlyPD.fields||{};if(f.workerProfile==='1'&&f.ironManName){const n=Number(f.sl);if(Number.isInteger(n)&&n>0)merge({name:f.ironManName,card:f.cardNo||'',sl:n,previousCard:f.workerPreviousCard||''});}}
+ for(const w of sampleWorkerOverrides)merge({...w});
+ return workers.sort((a,b)=>a.sl-b.sl);
+}
+function sampleWorkerRefresh(){const list=sampleWorkerList();sampleBoardNames.splice(0,sampleBoardNames.length,...list.map(w=>w.name));for(const key of Object.keys(sampleBoardCards))delete sampleBoardCards[key];for(const w of list)sampleBoardCards[w.name]=w.card;return list;}
+function sampleWorkerSync(source,form=sampleBoardForm){
+ const list=sampleWorkerRefresh();if(source==='sl'){const raw=String(form.sl??'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d));form.sl=raw;const worker=list.find(w=>String(w.sl)===raw);form.ironManName=worker?.name||'';form.cardNo=worker?.card||'';}
+ else{const worker=list.find(w=>w.name===form.ironManName);if(worker){form.sl=String(worker.sl);form.cardNo=worker.card;}}
+ return form;
+}
+function sampleWorkerSelect(source,paint=true){
+ sampleWorkerSync(source);
+ const identity={sl:sampleBoardForm.sl||'',ironManName:sampleBoardForm.ironManName||'',cardNo:sampleBoardForm.cardNo||''};
+ const row=identity.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===identity.ironManName):null;
+ sampleBoardForm=row?{...row.fields,...identity}:identity;
+ sampleBoardEditingName=row?identity.ironManName:null;
+ if(paint)for(const [key]of sampleBoardFields){const input=document.getElementById('sample-board-'+key);if(input)input.value=sampleBoardForm[key]??'';}
+ return sampleBoardForm;
+}
+function sampleWorkerHydrate(){
+ if(sampleBoardRows.length||sampleBoardBusy)return;
+ const records=samplePDRecords(),date=samplePDDraft.fields.date||samplePDToday(),today=records.filter(r=>r.date===date);
+ const source=today.length?today:[...new Map(records.map(r=>[r.hourlyPD.fields?.cardNo||r.hourlyPD.fields?.ironManName,r]).reverse()).values()];
+ sampleBoardRows=source.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>{const fields={...r.hourlyPD.fields,date};const worker=sampleWorkerList().find(w=>w.card&&w.card===fields.cardNo||w.name===fields.ironManName);if(worker){fields.ironManName=worker.name;fields.sl=String(worker.sl);fields.cardNo=worker.card;}return {id:today.length?r.id:undefined,fields,rows:today.length?samplePDComputedRows(r.hourlyPD.rows):samplePDComputedRows()};}).sort((a,b)=>Number(a.fields.sl)-Number(b.fields.sl));
+}
+const sampleWorkerPreviousPaper=samplePDPaper;
+samplePDPaper=function(readonly=false){
+ sampleWorkerRefresh();sampleWorkerHydrate();
+ if(!Object.keys(sampleBoardForm).length){const used=new Set(sampleBoardRows.map(r=>r.fields.ironManName)),worker=sampleWorkerList().find(w=>!used.has(w.name));if(worker)sampleBoardForm={sl:String(worker.sl),ironManName:worker.name,cardNo:worker.card};}
+ else if(sampleBoardForm.ironManName)sampleWorkerSync('name');else if(sampleBoardForm.sl)sampleWorkerSync('sl');
+ if(sampleBoardForm.ironManName&&Object.keys(sampleBoardForm).every(key=>['sl','ironManName','cardNo'].includes(key)))sampleWorkerSelect('name',false);
+ return sampleWorkerPreviousPaper(readonly).replace('<div class="sample-pd-details">','<div class="sample-worker-toolbar"><button type="button" data-sample-worker-manage '+(!FarnoorAccess.canAction('output','edit')?'disabled':'')+'>♙ Manage Names</button></div><div class="sample-pd-details">');
+};
+const sampleWorkerPreviousLoad=samplePDLoad;
+samplePDLoad=function(record){sampleWorkerPreviousLoad(record);sampleBoardRows=[];sampleWorkerHydrate();const current=sampleBoardRows.find(r=>r.id===record.id);sampleBoardForm={...(current?.fields||record.hourlyPD.fields)};sampleWorkerSync('name');sampleBoardEditingName=sampleBoardForm.ironManName;};
+const sampleWorkerPreviousAdd=sampleBoardAdd;
+sampleBoardAdd=function(){if(sampleBoardForm.ironManName)sampleWorkerSync('name');const name=sampleBoardForm.ironManName;sampleWorkerPreviousAdd();const row=sampleBoardRows.find(r=>r.fields.ironManName===name);if(row){row.fields.workerProfile='1';row.fields.workerPreviousCard=sampleWorkerList().find(w=>w.name===name)?.previousCard||'';}};
+function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();document.getElementById('sample-board-workingPlan')?.focus();}
+function sampleWorkerSaveProfile(profile,originalCard=''){
+ const name=String(profile.name||'').trim(),card=String(profile.card||'').trim(),sl=Number(String(profile.sl||'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)));
+ if(!name||name.length>120||!card||card.length>40||!Number.isInteger(sl)||sl<1||sl>999)throw Error('সঠিক নাম, Card No ও SL লিখুন।');
+ const workers=sampleWorkerList(),original=workers.find(w=>w.card===originalCard);
+ if(workers.some(w=>w!==original&&(w.name.toLocaleLowerCase()===name.toLocaleLowerCase()||w.card===card||w.sl===sl)))throw Error('এই নাম, Card No বা SL আগে থেকেই আছে।');
+ const previousOverride=sampleWorkerOverrides.find(w=>w.card===originalCard);const worker={name,card,sl,previousCard:previousOverride?.previousCard||original?.card||''};sampleWorkerOverrides=sampleWorkerOverrides.filter(w=>w.card!==originalCard&&w.card!==card);sampleWorkerOverrides.push(worker);
+ localStorage.setItem('farnoor-sample-workers-v1',JSON.stringify(sampleWorkerOverrides));
+ for(const row of sampleBoardRows)if(original&&(row.fields.cardNo===original.card||row.fields.ironManName===original.name)){Object.assign(row.fields,{ironManName:name,cardNo:card,sl:String(sl),workerProfile:'1',workerPreviousCard:worker.previousCard});}
+ sampleWorkerRefresh();sampleBoardForm={ironManName:name,cardNo:card,sl:String(sl)};sampleBoardEditingName=sampleBoardRows.some(r=>r.fields.ironManName===name)?name:null;
+ return worker;
+}
+function sampleWorkerManage(){
+ if(!FarnoorAccess.canAction('output','edit')||sampleBoardBusy)return;
+ document.getElementById('sampleWorkerDialog')?.remove();const dialog=document.createElement('dialog');dialog.id='sampleWorkerDialog';
+ dialog.innerHTML='<h2>Sample Man Names</h2><label>Existing Name<select data-worker-existing><option value="">New Name</option>'+sampleWorkerList().map(w=>'<option value="'+esc(w.card)+'">'+esc(w.sl+'. '+w.name)+'</option>').join('')+'</select></label><label>SL<input data-worker-sl inputmode="numeric"></label><label>Sample Man Name<input data-worker-name maxlength="120"></label><label>Card No<input data-worker-card maxlength="40"></label><p>নাম তালিকা এই ডিভাইসে থাকবে। রোতে Input দিয়ে নিচের Save চাপলে অনলাইনেও থাকবে।</p><p role="status"></p><div class="dialog-actions"><button type="button" data-worker-save>Save Name</button><button type="button" data-worker-close>Close</button></div>';
+ dialog.querySelector('[data-worker-existing]').onchange=event=>{const w=sampleWorkerList().find(w=>w.card===event.target.value);for(const key of ['sl','name','card'])dialog.querySelector('[data-worker-'+key+']').value=w?.[key]??'';};
+ dialog.querySelector('[data-worker-save]').onclick=()=>{try{const profile={};for(const key of ['sl','name','card'])profile[key]=dialog.querySelector('[data-worker-'+key+']').value;sampleWorkerSaveProfile(profile,dialog.querySelector('[data-worker-existing]').value);dialog.close();renderSamplePD();toast('নাম তালিকায় রাখা হয়েছে।');}catch(error){dialog.querySelector('[role="status"]').textContent=error.message;}};
+ dialog.querySelector('[data-worker-close]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>dialog.remove(),{once:true});document.body.append(dialog);dialog.showModal();
+}
+document.getElementById('main').addEventListener('click',event=>{if(activePage!==samplePDPage)return;const row=event.target.closest('[data-sample-worker-row]');if(row)sampleWorkerEditRow(Number(row.dataset.sampleWorkerRow));if(event.target.closest('[data-sample-worker-manage]'))sampleWorkerManage();});
+document.getElementById('main').addEventListener('input',event=>{if(activePage!==samplePDPage||sampleBoardBusy)return;const key=event.target.dataset.sampleBoardField;if(!['sl','ironManName'].includes(key))return;sampleWorkerSelect(key==='sl'?'sl':'name');});
+document.getElementById('main').addEventListener('change',event=>{if(activePage!==samplePDPage)return;if(event.target.dataset.sampleBoardChoose!==undefined){const row=sampleBoardRows[Number(event.target.dataset.sampleBoardChoose)];if(row?.fields.ironManName){sampleWorkerSync('name',row.fields);renderSamplePD();}return;}if(event.target.dataset.sampleBoardField!=='ironManName')return;sampleWorkerSelect('name');});
+const sampleWorkerStyle=document.createElement('style');sampleWorkerStyle.textContent='.sample-pd-edit-links{gap:5px!important;flex-wrap:wrap!important;justify-content:flex-start!important}.sample-pd-edit-links button{font-size:11px!important;padding:5px 8px!important;min-height:27px!important;line-height:1.2!important}.sample-worker-row-name{font-size:12px;padding:4px 6px;white-space:normal}.sample-worker-toolbar{text-align:right;margin-bottom:10px}#sampleWorkerDialog{width:min(500px,90vw);border:0;border-radius:12px;padding:22px;color:#17334c}#sampleWorkerDialog label{display:grid;gap:4px;margin:10px 0}#sampleWorkerDialog input,#sampleWorkerDialog select{padding:9px;width:100%;box-sizing:border-box}#sampleWorkerDialog .dialog-actions{display:flex;justify-content:flex-end;gap:8px}#sampleWorkerDialog::backdrop{background:#071e3acc}';document.head.append(sampleWorkerStyle);
 
 ;
