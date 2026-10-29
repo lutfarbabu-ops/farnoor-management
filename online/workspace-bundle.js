@@ -6512,7 +6512,7 @@ function sampleBoardTable(edit){
 }
 samplePDPaper=function(readonly=false){
  const edit=FarnoorAccess.canAction('output','edit')&&!readonly;
- return '<section class="sample-pd-paper sample-board"><h2>SAMPLE WISE HOURLY PRODUCTION</h2><div class="sample-pd-details">'+sampleBoardFields.map(([key,label])=>'<div class="sample-pd-field"><label for="sample-board-'+key+'">'+label+'</label>'+sampleBoardFieldControl(key,label,edit)+'</div>').join('')+'</div>'+['buyer','style','item','hourlyTarget'].map(key=>'<datalist id="sample-board-options-'+key+'">'+sampleBoardSuggestions(key,sampleBoardForm[key]).map(v=>'<option value="'+esc(v)+'"></option>').join('')+'</datalist>').join('')+'<div class="sample-pd-save-actions"><button type="button" data-sample-board-add '+(!edit||sampleBoardBusy?'disabled':'')+'>Input</button></div>'+sampleBoardTable(edit)+'<div class="sample-pd-save-actions"><button type="button" data-sample-board-save '+(!edit||sampleBoardBusy||!sampleBoardRows.length?'disabled':'')+'>'+(sampleBoardBusy?'Saving…':'Save')+'</button></div></section>';
+ return '<section class="sample-pd-paper sample-board"><h2>SAMPLE WISE HOURLY PRODUCTION</h2><div class="sample-pd-details">'+sampleBoardFields.map(([key,label])=>'<div class="sample-pd-field"><label for="sample-board-'+key+'">'+label+'</label>'+sampleBoardFieldControl(key,label,edit)+'</div>').join('')+'</div>'+['buyer','style','item','hourlyTarget'].map(key=>'<datalist id="sample-board-options-'+key+'">'+sampleBoardSuggestions(key,sampleBoardForm[key]).map(v=>'<option value="'+esc(v)+'"></option>').join('')+'</datalist>').join('')+'<div class="sample-pd-save-actions"><button type="button" data-sample-board-save '+(!edit||sampleBoardBusy?'disabled':'')+'>'+(sampleBoardBusy?'Saving…':'Save')+'</button></div>'+sampleBoardTable(edit)+'</section>';
 };
 function sampleBoardAdd(){
  if(sampleBoardBusy||!FarnoorAccess.canAction('output','edit'))return;
@@ -6529,24 +6529,34 @@ function sampleBoardAdd(){
   const previous=staged||(saved?{id:saved.id,fields:saved.hourlyPD.fields,rows:saved.hourlyPD.rows}:null);
   const row={id:previous?.id,fields:{...previous?.fields,...f,cardNo:sampleBoardCards[f.ironManName]??previous?.fields.cardNo??f.cardNo??'',date,section:previous?.fields.section||f.ironManName,tableNo:previous?.fields.section||f.ironManName},rows:samplePDComputedRows(previous?.rows)};
   if(staged)sampleBoardRows[sampleBoardRows.indexOf(staged)]=row;else sampleBoardRows.push(row);
-  sampleBoardEditingName=null;sampleBoardForm={sampleSection:f.sampleSection||''};renderSamplePD();
+  sampleBoardEditingName=null;sampleBoardForm={sampleSection:f.sampleSection||''};renderSamplePD();return row;
  }catch(error){toast(error.message);}
 }
 const sampleBoardOriginalLoad=samplePDLoad;
 samplePDLoad=function(record){sampleBoardOriginalLoad(record);samplePDDraft.fields.cardNo=sampleBoardCards[samplePDDraft.fields.ironManName]??samplePDDraft.fields.cardNo??'';sampleBoardRows=[{id:record.id,fields:structuredClone(samplePDDraft.fields),rows:samplePDComputedRows(record.hourlyPD.rows)}];sampleBoardForm={...samplePDDraft.fields,sl:samplePDDraft.fields.sl||'1'};};
 const sampleBoardOriginalSave=saveSamplePD;
-async function sampleBoardSave(){
- if(sampleBoardBusy||!sampleBoardRows.length||!FarnoorAccess.canAction('output','edit'))return;
- if(sampleBoardRows.some(row=>!row.fields.ironManName))return toast('সেভ করার আগে প্রতিটি রোতে Sample Man Name নির্বাচন করুন।');if(new Set(sampleBoardRows.map(row=>row.fields.ironManName)).size!==sampleBoardRows.length)return toast('একই নাম একাধিক রোতে আছে। নামগুলো আলাদা করুন।');
+async function sampleBoardSave(rowsToSave=sampleBoardRows){
+ if(sampleBoardBusy||!rowsToSave.length||!FarnoorAccess.canAction('output','edit'))return false;
+ if(rowsToSave.some(row=>!row.fields.ironManName))return toast('সেভ করার আগে প্রতিটি রোতে Sample Man Name নির্বাচন করুন।');if(new Set(sampleBoardRows.map(row=>row.fields.ironManName)).size!==sampleBoardRows.length)return toast('একই নাম একাধিক রোতে আছে। নামগুলো আলাদা করুন।');
  sampleBoardBusy=true;let complete=true;const formBefore=structuredClone(sampleBoardForm);
- try{for(const row of sampleBoardRows){row.fields.cardNo=sampleBoardCards[row.fields.ironManName]??row.fields.cardNo??'';samplePDDraft.fields={...row.fields};samplePDDraft.rows=samplePDComputedRows(row.rows);for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=row.id||null;samplePDPendingId=null;
+ try{for(const row of rowsToSave){row.fields.cardNo=sampleBoardCards[row.fields.ironManName]??row.fields.cardNo??'';samplePDDraft.fields={...row.fields};samplePDDraft.rows=samplePDComputedRows(row.rows);for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=row.id||null;samplePDPendingId=null;
    if(!await sampleBoardOriginalSave()){complete=false;break;}row.id=samplePDEditId;
   }
  }finally{sampleBoardBusy=false;sampleBoardForm=complete?{}:formBefore;sampleBoardEditingName=null;samplePDView='new-input';renderSamplePD();}
+ return complete;
+}
+async function sampleBoardSubmit(){
+ if(sampleBoardBusy||!FarnoorAccess.canAction('output','edit'))return false;
+ if(!sampleBoardForm.sampleSection){toast('Section নির্বাচন করুন।');return false;}
+ if(!sampleBoardForm.ironManName){toast('Sample Man Name নির্বাচন করুন।');return false;}
+ const row=sampleBoardAdd();if(!row||typeof row!=='object')return false;
+ const saved=await sampleBoardSave([row]);
+ if(!saved){sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();}
+ return saved===true;
 }
 const sampleBoardMain=document.getElementById('main');
 sampleBoardMain.addEventListener('click',event=>{if(activePage===samplePDPage&&samplePDEditId&&event.target.closest('[data-sample-pd-view="new-input"]')){sampleBoardRows=[];sampleBoardForm={};}},true);
-sampleBoardMain.addEventListener('click',event=>{if(activePage!==samplePDPage)return;if(event.target.closest('[data-sample-board-add]'))sampleBoardAdd();if(event.target.closest('[data-sample-board-save]'))void sampleBoardSave();});
+sampleBoardMain.addEventListener('click',event=>{if(activePage!==samplePDPage)return;if(event.target.closest('[data-sample-board-add]'))sampleBoardAdd();if(event.target.closest('[data-sample-board-save]'))void sampleBoardSubmit();});
 sampleBoardMain.addEventListener('input',event=>{
  if(activePage!==samplePDPage||sampleBoardBusy)return;const node=event.target,key=node.dataset.sampleBoardField;
  if(key){sampleBoardForm[key]=sampleBoardFieldValue(key,node.value);const list=document.getElementById('sample-board-options-'+key);if(list)list.innerHTML=sampleBoardSuggestions(key,node.value).map(v=>'<option value="'+esc(v)+'"></option>').join('');}
@@ -6559,7 +6569,7 @@ sampleBoardMain.addEventListener('keydown',event=>{
  const target=event.target;if(target.matches('[data-sample-board-add],[data-sample-board-save]'))return;
  if(!target.matches('[data-sample-board-field],[data-sample-board-card],[data-sample-board-hour]'))return;event.preventDefault();
  const selector=target.hasAttribute('data-sample-board-field')?'[data-sample-board-field]':'[data-sample-board-card],[data-sample-board-hour]',fields=[...document.querySelectorAll('.sample-board '+selector)],index=fields.indexOf(target);
- (fields[index+1]||document.querySelector(target.hasAttribute('data-sample-board-field')?'[data-sample-board-add]':'[data-sample-board-save]'))?.focus();
+ (fields[index+1]||document.querySelector('[data-sample-board-save]'))?.focus();
 });
 const sampleBoardStyle=document.createElement('style');sampleBoardStyle.textContent='.sample-board .sample-board-table{min-width:1650px}.sample-board .sample-board-table th{white-space:normal;min-width:72px}.sample-board .sample-board-table th:nth-child(3){min-width:165px}.sample-board .sample-board-table input{min-width:65px;width:100%;box-sizing:border-box}.sample-board .sample-board-table td:nth-child(3){white-space:normal;font-weight:700}.sample-board select{width:100%;min-height:38px;padding:8px;border:1px solid #b4c9e4;border-radius:6px;background:#f6faff;color:#163a59}.sample-board .sample-pd-save-actions{justify-content:flex-end}';document.head.append(sampleBoardStyle);
 
@@ -6607,7 +6617,7 @@ samplePDPaper=function(readonly=false){
 const sampleWorkerPreviousLoad=samplePDLoad;
 samplePDLoad=function(record){sampleWorkerPreviousLoad(record);sampleBoardRows=[];sampleWorkerHydrate();const current=sampleBoardRows.find(r=>r.id===record.id);sampleBoardForm={...(current?.fields||record.hourlyPD.fields)};sampleWorkerSync('name');sampleBoardEditingName=sampleBoardForm.ironManName;};
 const sampleWorkerPreviousAdd=sampleBoardAdd;
-sampleBoardAdd=function(){if(sampleBoardForm.ironManName)sampleWorkerSync('name');const name=sampleBoardForm.ironManName;sampleWorkerPreviousAdd();const row=sampleBoardRows.find(r=>r.fields.ironManName===name);if(row){row.fields.workerProfile='1';row.fields.workerPreviousCard=sampleWorkerList().find(w=>w.name===name)?.previousCard||'';}};
+sampleBoardAdd=function(){if(sampleBoardForm.ironManName)sampleWorkerSync('name');const name=sampleBoardForm.ironManName,row=sampleWorkerPreviousAdd();if(row&&typeof row==='object'){row.fields.workerProfile='1';row.fields.workerPreviousCard=sampleWorkerList().find(w=>w.name===name)?.previousCard||'';}return row;};
 function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();document.getElementById('sample-board-buyer')?.focus();}
 function sampleWorkerSaveProfile(profile,originalCard=''){
  const name=String(profile.name||'').trim(),card=String(profile.card||'').trim(),sl=Number(String(profile.sl||'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)));
