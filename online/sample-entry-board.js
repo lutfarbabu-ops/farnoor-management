@@ -2,7 +2,7 @@
 const sampleBoardSectionWorkers={'SAMPLE-1':['Md. Saidul Islam','Sha-Alam (Boro)','Md. Shahalam (Shoto)'],'SAMPLE-2':['Md. Hafiz','Sala Uddin','Md. Liton Hossain']};
 const sampleBoardNames=Object.values(sampleBoardSectionWorkers).flat();
 const sampleBoardCards={};
-function sampleBoardNamesForSection(section){return sampleBoardSectionWorkers[String(section||'').toUpperCase()]||[];}
+function sampleBoardNamesForSection(section){const key=String(section||'').toUpperCase();return typeof sampleWorkerList==='function'?sampleWorkerList().filter(w=>sampleWorkerSection(w)===key).map(w=>w.name):sampleBoardSectionWorkers[key]||[];}
 function sampleBoardDateValue(value){const v=String(value||'');return /^\d{2}\/\d{2}\/\d{4}$/.test(v)?v.split('/').reverse().join('-'):v;}
 function sampleBoardTimeValue(value){const v=String(value||'').trim(),m=v.match(/^(\d{1,2})[:.](\d{2})(?:\s*(AM|PM))?$/i);if(!m)return '';let h=Number(m[1]);if(m[3])h=h%12+(/PM/i.test(m[3])?12:0);return String(h).padStart(2,'0')+':'+m[2];}
 function sampleBoardFieldValue(key,value){return ['sampleStartDate','sampleEndDate'].includes(key)&&/^\d{4}-\d{2}-\d{2}$/.test(value)?value.split('-').reverse().join('/'):value;}

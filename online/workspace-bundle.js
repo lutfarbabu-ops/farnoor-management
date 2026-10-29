@@ -6479,7 +6479,7 @@ samplePDPrintHTML=function(records){return sampleFinishingPreviousPrintHTML(reco
 const sampleBoardSectionWorkers={'SAMPLE-1':['Md. Saidul Islam','Sha-Alam (Boro)','Md. Shahalam (Shoto)'],'SAMPLE-2':['Md. Hafiz','Sala Uddin','Md. Liton Hossain']};
 const sampleBoardNames=Object.values(sampleBoardSectionWorkers).flat();
 const sampleBoardCards={};
-function sampleBoardNamesForSection(section){return sampleBoardSectionWorkers[String(section||'').toUpperCase()]||[];}
+function sampleBoardNamesForSection(section){const key=String(section||'').toUpperCase();return typeof sampleWorkerList==='function'?sampleWorkerList().filter(w=>sampleWorkerSection(w)===key).map(w=>w.name):sampleBoardSectionWorkers[key]||[];}
 function sampleBoardDateValue(value){const v=String(value||'');return /^\d{2}\/\d{2}\/\d{4}$/.test(v)?v.split('/').reverse().join('-'):v;}
 function sampleBoardTimeValue(value){const v=String(value||'').trim(),m=v.match(/^(\d{1,2})[:.](\d{2})(?:\s*(AM|PM))?$/i);if(!m)return '';let h=Number(m[1]);if(m[3])h=h%12+(/PM/i.test(m[3])?12:0);return String(h).padStart(2,'0')+':'+m[2];}
 function sampleBoardFieldValue(key,value){return ['sampleStartDate','sampleEndDate'].includes(key)&&/^\d{4}-\d{2}-\d{2}$/.test(value)?value.split('-').reverse().join('/'):value;}
@@ -6577,15 +6577,16 @@ const sampleBoardStyle=document.createElement('style');sampleBoardStyle.textCont
 ;/* sample-worker-tools.js */
 'use strict';
 const sampleWorkerDefaults=Object.values(sampleBoardSectionWorkers).flat();
-const sampleWorkerDefaultCards={...sampleBoardCards};
+const sampleWorkerDefaultCards={...samplePrintWorkerIds,...sampleBoardCards};
+function sampleWorkerSection(worker){const value=String(worker.section||'').toUpperCase();return ['SAMPLE-1','SAMPLE-2'].includes(value)?value:Object.keys(sampleBoardSectionWorkers).find(k=>sampleBoardSectionWorkers[k].includes(worker.name))||'';}
 let sampleWorkerOverrides=[];
 
 try{const list=JSON.parse(localStorage.getItem('farnoor-sample-workers-v1')||'[]');if(Array.isArray(list))sampleWorkerOverrides=list.filter(w=>w&&typeof w.name==='string'&&w.name.length<=120&&typeof w.card==='string'&&w.card.length<=40&&Number.isInteger(w.sl)&&w.sl>0).slice(0,200);}catch{}
 function sampleWorkerList(){
- const workers=sampleWorkerDefaults.map((name,i)=>({name,card:sampleWorkerDefaultCards[name]||'',sl:i+1}));
+ const workers=sampleWorkerDefaults.map((name,i)=>({name,card:sampleWorkerDefaultCards[name]||'',sl:i+1,section:sampleWorkerSection({name})}));
  const merge=w=>{const index=workers.findIndex(old=>w.previousCard&&old.card===w.previousCard||w.card&&old.card===w.card||old.name===w.name);if(index<0)workers.push(w);else workers[index]=w;};
  const records=samplePDRecords().slice().sort((a,b)=>String(a.updatedAt||a.createdAt).localeCompare(String(b.updatedAt||b.createdAt)));
- for(const row of records){const f=row.hourlyPD.fields||{};if(f.workerProfile==='1'&&f.ironManName){const n=Number(f.sl);if(Number.isInteger(n)&&n>0)merge({name:f.ironManName,card:f.cardNo||'',sl:n,previousCard:f.workerPreviousCard||''});}}
+ for(const row of records){const f=row.hourlyPD.fields||{};if(f.workerProfile==='1'&&f.ironManName){const n=Number(f.sl);if(Number.isInteger(n)&&n>0)merge({name:f.ironManName,card:f.cardNo||sampleWorkerDefaultCards[f.ironManName]||'',sl:n,section:f.sampleSection||'',previousCard:f.workerPreviousCard||''});}}
  for(const w of sampleWorkerOverrides)merge({...w});
  return workers.sort((a,b)=>a.sl-b.sl);
 }
@@ -6607,7 +6608,7 @@ function sampleWorkerHydrate(){
  if(sampleBoardRows.length||sampleBoardBusy)return;
  const records=samplePDRecords(),date=samplePDDraft.fields.date||samplePDToday(),today=records.filter(r=>r.date===date);
  const source=today.length?today:[...new Map(records.map(r=>[r.hourlyPD.fields?.cardNo||r.hourlyPD.fields?.ironManName,r]).reverse()).values()];
- sampleBoardRows=source.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>{const fields={...r.hourlyPD.fields,date};const worker=sampleWorkerList().find(w=>w.card&&w.card===fields.cardNo||w.name===fields.ironManName);if(worker){fields.ironManName=worker.name;fields.sl=String(worker.sl);fields.cardNo=worker.card;}return {id:today.length?r.id:undefined,fields,rows:today.length?samplePDComputedRows(r.hourlyPD.rows):samplePDComputedRows()};}).sort((a,b)=>Number(a.fields.sl)-Number(b.fields.sl));
+ sampleBoardRows=source.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>{const fields={...r.hourlyPD.fields,date};const worker=sampleWorkerList().find(w=>w.card&&w.card===fields.cardNo||w.name===fields.ironManName);if(worker){fields.ironManName=worker.name;fields.sl=String(worker.sl);fields.cardNo=worker.card;if(sampleWorkerSection(worker))fields.sampleSection=sampleWorkerSection(worker);}return {id:today.length?r.id:undefined,fields,rows:today.length?samplePDComputedRows(r.hourlyPD.rows):samplePDComputedRows()};}).sort((a,b)=>Number(a.fields.sl)-Number(b.fields.sl));
 }
 const sampleWorkerPreviousPaper=samplePDPaper;
 samplePDPaper=function(readonly=false){
@@ -6620,22 +6621,23 @@ const sampleWorkerPreviousAdd=sampleBoardAdd;
 sampleBoardAdd=function(){if(sampleBoardForm.ironManName)sampleWorkerSync('name');const name=sampleBoardForm.ironManName,row=sampleWorkerPreviousAdd();if(row&&typeof row==='object'){row.fields.workerProfile='1';row.fields.workerPreviousCard=sampleWorkerList().find(w=>w.name===name)?.previousCard||'';}return row;};
 function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();document.getElementById('sample-board-buyer')?.focus();}
 function sampleWorkerSaveProfile(profile,originalCard=''){
- const name=String(profile.name||'').trim(),card=String(profile.card||'').trim(),sl=Number(String(profile.sl||'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)));
- if(!name||name.length>120||!card||card.length>40||!Number.isInteger(sl)||sl<1||sl>999)throw Error('সঠিক নাম, Card No ও SL লিখুন।');
- const workers=sampleWorkerList(),original=workers.find(w=>w.card===originalCard);
- if(workers.some(w=>w!==original&&(w.name.toLocaleLowerCase()===name.toLocaleLowerCase()||w.card===card||w.sl===sl)))throw Error('এই নাম, Card No বা SL আগে থেকেই আছে।');
- const previousOverride=sampleWorkerOverrides.find(w=>w.card===originalCard);const worker={name,card,sl,previousCard:previousOverride?.previousCard||original?.card||''};sampleWorkerOverrides=sampleWorkerOverrides.filter(w=>w.card!==originalCard&&w.card!==card);sampleWorkerOverrides.push(worker);
+ const name=String(profile.name||'').trim(),card=String(profile.card||'').trim(),section=String(profile.section||'').toUpperCase();
+ const workers=sampleWorkerList(),original=originalCard?workers.find(w=>w.card===originalCard||w.name===originalCard):null;
+ const sl=original?.sl||(profile.sl?Number(profile.sl):Math.max(0,...workers.map(w=>w.sl))+1);
+ if(!name||name.length>120||!card||card.length>40||!['SAMPLE-1','SAMPLE-2'].includes(section)||!Number.isInteger(sl)||sl<1||sl>999)throw Error('Section নির্বাচন করে সঠিক নাম ও Card No লিখুন।');
+ if(workers.some(w=>w!==original&&(w.name.toLocaleLowerCase()===name.toLocaleLowerCase()||w.card===card||w.sl===sl)))throw Error('এই নাম বা Card No আগে থেকেই আছে।');
+ const previousOverride=sampleWorkerOverrides.find(w=>w.card===originalCard||w.name===originalCard);const worker={name,card,sl,section,previousCard:previousOverride?.previousCard||original?.card||''};sampleWorkerOverrides=sampleWorkerOverrides.filter(w=>w.name!==original?.name&&w.card!==originalCard&&w.card!==card);sampleWorkerOverrides.push(worker);
  localStorage.setItem('farnoor-sample-workers-v1',JSON.stringify(sampleWorkerOverrides));
- for(const row of sampleBoardRows)if(original&&(row.fields.cardNo===original.card||row.fields.ironManName===original.name)){Object.assign(row.fields,{ironManName:name,cardNo:card,sl:String(sl),workerProfile:'1',workerPreviousCard:worker.previousCard});}
- sampleWorkerRefresh();sampleBoardForm={ironManName:name,cardNo:card,sl:String(sl)};sampleBoardEditingName=sampleBoardRows.some(r=>r.fields.ironManName===name)?name:null;
+ for(const row of sampleBoardRows)if(original&&(original.card&&row.fields.cardNo===original.card||row.fields.ironManName===original.name)){Object.assign(row.fields,{ironManName:name,cardNo:card,sl:String(sl),sampleSection:section,workerProfile:'1',workerPreviousCard:worker.previousCard});}
+ sampleWorkerRefresh();sampleBoardForm={ironManName:name,cardNo:card,sl:String(sl),sampleSection:section};sampleBoardEditingName=sampleBoardRows.some(r=>r.fields.ironManName===name)?name:null;
  return worker;
 }
 function sampleWorkerManage(){
  if(!FarnoorAccess.canAction('output','edit')||sampleBoardBusy)return;
  document.getElementById('sampleWorkerDialog')?.remove();const dialog=document.createElement('dialog');dialog.id='sampleWorkerDialog';
- dialog.innerHTML='<h2>Sample Man Names</h2><label>Existing Name<select data-worker-existing><option value="">New Name</option>'+sampleWorkerList().map(w=>'<option value="'+esc(w.card)+'">'+esc(w.sl+'. '+w.name)+'</option>').join('')+'</select></label><label>SL<input data-worker-sl inputmode="numeric"></label><label>Sample Man Name<input data-worker-name maxlength="120"></label><label>Card No<input data-worker-card maxlength="40"></label><p>নাম তালিকা এই ডিভাইসে থাকবে। রোতে Input দিয়ে নিচের Save চাপলে অনলাইনেও থাকবে।</p><p role="status"></p><div class="dialog-actions"><button type="button" data-worker-save>Save Name</button><button type="button" data-worker-close>Close</button></div>';
- dialog.querySelector('[data-worker-existing]').onchange=event=>{const w=sampleWorkerList().find(w=>w.card===event.target.value);for(const key of ['sl','name','card'])dialog.querySelector('[data-worker-'+key+']').value=w?.[key]??'';};
- dialog.querySelector('[data-worker-save]').onclick=()=>{try{const profile={};for(const key of ['sl','name','card'])profile[key]=dialog.querySelector('[data-worker-'+key+']').value;sampleWorkerSaveProfile(profile,dialog.querySelector('[data-worker-existing]').value);dialog.close();renderSamplePD();toast('নাম তালিকায় রাখা হয়েছে।');}catch(error){dialog.querySelector('[role="status"]').textContent=error.message;}};
+ dialog.innerHTML='<h2>Sample Man Names</h2><label>Existing Name<select data-worker-existing><option value="">New Name</option>'+sampleWorkerList().map(w=>'<option value="'+esc(w.name)+'">'+esc(w.name)+'</option>').join('')+'</select></label><label>Section<select data-worker-section><option value="">Select Section</option><option value="SAMPLE-1">Sample-1</option><option value="SAMPLE-2">Sample-2</option></select></label><label>Sample Man Name<input data-worker-name maxlength="120"></label><label>Card No<input data-worker-card maxlength="40"></label><p>নাম তালিকা এই ডিভাইসে থাকবে। ফরমের Save চাপলে অনলাইনেও থাকবে।</p><p role="status"></p><div class="dialog-actions"><button type="button" data-worker-save>Save Name</button><button type="button" data-worker-close>Close</button></div>';
+ dialog.querySelector('[data-worker-existing]').onchange=event=>{const w=sampleWorkerList().find(w=>w.name===event.target.value);for(const key of ['name','card'])dialog.querySelector('[data-worker-'+key+']').value=w?.[key]??'';dialog.querySelector('[data-worker-section]').value=w?sampleWorkerSection(w):'';};
+ dialog.querySelector('[data-worker-save]').onclick=()=>{try{const profile={};for(const key of ['section','name','card'])profile[key]=dialog.querySelector('[data-worker-'+key+']').value;sampleWorkerSaveProfile(profile,dialog.querySelector('[data-worker-existing]').value);dialog.close();renderSamplePD();toast('নাম তালিকায় রাখা হয়েছে।');}catch(error){dialog.querySelector('[role="status"]').textContent=error.message;}};
  dialog.querySelector('[data-worker-close]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>dialog.remove(),{once:true});document.body.append(dialog);dialog.showModal();
 }
 document.getElementById('main').addEventListener('click',event=>{if(activePage!==samplePDPage)return;const row=event.target.closest('[data-sample-worker-row]');if(row)sampleWorkerEditRow(Number(row.dataset.sampleWorkerRow));if(event.target.closest('[data-sample-worker-manage]'))sampleWorkerManage();});
