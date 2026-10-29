@@ -6449,17 +6449,17 @@ const sampleFinishingCSS=`
 .sample-daily-report .sd-section{break-inside:avoid;margin:0 0 4mm}
 .sample-daily-report .sd-section:last-child{margin-bottom:0}
 .sample-daily-report header{background:#fff;color:#000;border:0;padding:0}
-.sample-daily-report header h2{background:#00b0f0;color:#000;font:bold 17pt/1.15 Arial,sans-serif;margin:0;padding:2mm;border:.5px solid #000;text-align:center;letter-spacing:normal}
-.sample-daily-report header h3{background:#4bacc6;color:#000;font:bold 10pt/1.2 Arial,sans-serif;margin:0;padding:1.2mm;border:solid #000;border-width:0 .5px .5px;text-align:center}
-.sample-daily-report header .sd-meta{display:flex;justify-content:space-between;align-items:center;min-height:7mm;padding:1mm 2mm;border:solid #000;border-width:0 .5px .5px;font:9pt/1.2 Arial,sans-serif;color:#000;gap:4mm}
+.sample-daily-report header h2{background:#00b0f0;color:#000;font:bold 14pt/1.15 Arial,sans-serif;margin:0;padding:1mm;border:.5px solid #000;text-align:center;letter-spacing:normal}
+.sample-daily-report header h3{background:#4bacc6;color:#000;font:bold 9pt/1.2 Arial,sans-serif;margin:0;padding:1mm;border:solid #000;border-width:0 .5px .5px;text-align:center}
+.sample-daily-report header .sd-meta{display:flex;justify-content:space-between;align-items:center;min-height:5mm;padding:1mm 2mm;border:solid #000;border-width:0 .5px .5px;font:9pt/1.2 Arial,sans-serif;color:#000;gap:4mm}
 .sample-daily-report .sample-pd-value{color:#7030a0;font-weight:700}
 .sample-daily-report .sd-table{border-collapse:collapse;width:100%;table-layout:fixed;margin:0}
 .sample-daily-report .sd-table th,.sample-daily-report .sd-table td{border:.5px solid #000!important;box-sizing:border-box;padding:.65mm .4mm!important;font:7pt/1.2 Arial,sans-serif!important;text-align:center;vertical-align:middle;overflow-wrap:normal;word-break:normal;white-space:normal;height:6mm}
-.sample-daily-report .sd-table thead th{background:#d9d9d9;color:#000;font-weight:700!important;height:10mm}
+.sample-daily-report .sd-table thead th{background:#d9d9d9;color:#000;font-weight:700!important;height:9mm}
 .sample-daily-report .sd-table .sd-qty{background:#eeece1}
 .sample-daily-report .sd-table .sd-start,.sample-daily-report .sd-table .sd-end-date{background:#d7e4bc}
 .sample-daily-report .sd-table .sd-end-time{background:#92cddc}
-.sample-daily-report .sd-table .sd-total>*{font-weight:700!important;height:7mm}
+.sample-daily-report .sd-table .sd-total>*{font-weight:700!important;height:6mm}
 .sample-daily-report .sd-table .sd-complete{background:#ff0}
 @media screen{.sample-pd-print-pages{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.sample-pd-print-pages .sample-daily-report{width:281mm;min-width:281mm;max-width:none;margin-left:auto;margin-right:auto}}
 @media print{.sample-daily-report{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid}}
