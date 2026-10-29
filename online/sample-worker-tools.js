@@ -45,7 +45,7 @@ const sampleWorkerPreviousLoad=samplePDLoad;
 samplePDLoad=function(record){sampleWorkerPreviousLoad(record);sampleBoardRows=[];sampleWorkerHydrate();const current=sampleBoardRows.find(r=>r.id===record.id);sampleBoardForm={...(current?.fields||record.hourlyPD.fields)};sampleWorkerSync('name');sampleBoardEditingName=sampleBoardForm.ironManName;};
 const sampleWorkerPreviousAdd=sampleBoardAdd;
 sampleBoardAdd=function(){if(sampleBoardForm.ironManName)sampleWorkerSync('name');const name=sampleBoardForm.ironManName;sampleWorkerPreviousAdd();const row=sampleBoardRows.find(r=>r.fields.ironManName===name);if(row){row.fields.workerProfile='1';row.fields.workerPreviousCard=sampleWorkerList().find(w=>w.name===name)?.previousCard||'';}};
-function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();document.getElementById('sample-board-workingPlan')?.focus();}
+function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();document.getElementById('sample-board-buyer')?.focus();}
 function sampleWorkerSaveProfile(profile,originalCard=''){
  const name=String(profile.name||'').trim(),card=String(profile.card||'').trim(),sl=Number(String(profile.sl||'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)));
  if(!name||name.length>120||!card||card.length>40||!Number.isInteger(sl)||sl<1||sl>999)throw Error('সঠিক নাম, Card No ও SL লিখুন।');
