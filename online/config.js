@@ -2096,3 +2096,6 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-
 
 // Production / Finishing: independent Iron hourly reports.
 {const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='schedule-finishing');production.pages[index].navPath=['Finishing'];production.pages[index].groupEntry=true;production.pages.splice(index+1,0,{id:'production-iron-wise-hourly-pd',name:'Iron Wise Hourly PD',navPath:['Finishing'],icon:'♨',shade:'#ffe3cc',navigationOnly:true,permissionPage:'output'});}
+
+// Production / Sample is a distinct section below Quality.
+{const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='production-quality-wise-hourly-pd');production.pages.splice(index+1,0,{id:'production-sample',name:'Sample',navPath:['Sample'],groupEntry:true,icon:'✂',shade:'#f9dfef',navigationOnly:true,permissionPage:'output'},{id:'production-sample-wise-hourly-pd',name:'Sample Wise Hourly PD',navPath:['Sample'],icon:'◴',shade:'#e0ecff',navigationOnly:true,permissionPage:'output'});}
