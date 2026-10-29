@@ -5294,7 +5294,7 @@ document.getElementById('main').addEventListener('keydown',event=>{
 'use strict';
 let hourlyExportBusy=false,hourlyEmailDraft=null;
 const hourlyExportPreviousView=hourlyPDPrintView;
-hourlyPDPrintView=function(){return hourlyExportPreviousView().replace('</div><div class="hourly-pd-edit-links', '<button type="button" class="hourly-image-button" data-hourly-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="hourly-email-button" data-hourly-email data-page-action-required="pdf">✉ ইমেইল পাঠান</button></div><div class="hourly-pd-edit-links');};
+hourlyPDPrintView=function(){return hourlyExportPreviousView().replace('</div><div class="hourly-pd-edit-links', '<button type="button" class="hourly-image-button" data-hourly-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="hourly-email-button" data-hourly-email data-page-action-required="pdf">✉ Email</button></div><div class="hourly-pd-edit-links');};
 const hourlyExportStyle=document.createElement('style');hourlyExportStyle.textContent='.hourly-image-button{background:#e0f2fe!important;color:#075985!important;border:1px solid #38bdf8!important}.hourly-email-button{background:#f3e8ff!important;color:#6b21a8!important;border:1px solid #c084fc!important}#hourlyEmailDialog{width:min(740px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:14px;padding:24px;color:#172b42}#hourlyEmailDialog::backdrop{background:#071e3acc}#hourlyEmailDialog img{display:block;width:100%;height:auto;border:1px solid #cbd5e1;margin:12px 0}#hourlyEmailDialog input{box-sizing:border-box;width:100%;padding:10px;border:1px solid #94a3b8;border-radius:7px}#hourlyEmailDialog .dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}#hourlyEmailDialog button{padding:10px 16px}#hourlyEmailStatus{white-space:pre-wrap}';document.head.append(hourlyExportStyle);
 function hourlyExportRecords(){if(!FarnoorAccess.canAction('output','pdf'))throw Error('Report export permission is required.');const records=hourlyPDPrintRows();if(!records.length)throw Error('এই তারিখে সেভ করা ইনপুট নেই।');return structuredClone(records);}
 async function hourlyReportImages(records,copy=false){
@@ -5553,7 +5553,7 @@ document.getElementById('main').addEventListener('keydown',event=>{
 'use strict';
 let qualityExportBusy=false,qualityEmailDraft=null;
 const qualityExportPreviousView=qualityPDPrintView;
-qualityPDPrintView=function(){return qualityExportPreviousView().replace('</div><div class="quality-pd-edit-links', '<button type="button" class="quality-image-button" data-quality-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="quality-email-button" data-quality-email data-page-action-required="pdf">✉ ইমেইল পাঠান</button></div><div class="quality-pd-edit-links');};
+qualityPDPrintView=function(){return qualityExportPreviousView().replace('</div><div class="quality-pd-edit-links', '<button type="button" class="quality-image-button" data-quality-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="quality-email-button" data-quality-email data-page-action-required="pdf">✉ Email</button></div><div class="quality-pd-edit-links');};
 const qualityExportStyle=document.createElement('style');qualityExportStyle.textContent='.quality-image-button{background:#e0f2fe!important;color:#075985!important;border:1px solid #38bdf8!important}.quality-email-button{background:#f3e8ff!important;color:#6b21a8!important;border:1px solid #c084fc!important}#qualityEmailDialog{width:min(740px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:14px;padding:24px;color:#172b42}#qualityEmailDialog::backdrop{background:#071e3acc}#qualityEmailDialog img{display:block;width:100%;height:auto;border:1px solid #cbd5e1;margin:12px 0}#qualityEmailDialog input{box-sizing:border-box;width:100%;padding:10px;border:1px solid #94a3b8;border-radius:7px}#qualityEmailDialog .dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}#qualityEmailDialog button{padding:10px 16px}#qualityEmailStatus{white-space:pre-wrap}';document.head.append(qualityExportStyle);
 function qualityExportRecords(){if(!FarnoorAccess.canAction('output','pdf'))throw Error('Report export permission is required.');const records=qualityPDPrintRows();if(!records.length)throw Error('এই তারিখে সেভ করা ইনপুট নেই।');return structuredClone(records);}
 async function qualityReportImages(records,copy=false){
@@ -5626,6 +5626,27 @@ async function qualityAutoMailRun(){
   toast(job?.status==='accepted'?'Saved online. চার টেবিলের এক JPG Gmail গ্রহণ করেছে।':job?.status==='processing'?'Saved online. ঘণ্টার ইমেইল প্রক্রিয়াধীন আছে।':'Saved online. Email: '+(job?.error||'পাঠানো যায়নি।'));
  }catch(error){if(error.status===409&&!item.retried){item.retried=true;qualityAutoMailQueue.push(item);}else toast('Saved online. Email: '+error.message);}}}finally{qualityAutoMailBusy=false;}
 }
+
+;
+;/* quality-report-share.js */
+'use strict';
+const qualitySharePreviousView=qualityPDPrintView;
+qualityPDPrintView=function(){return qualitySharePreviousView().replace('<button type="button" class="quality-email-button"','<button type="button" class="quality-share-button" data-quality-share data-page-action-required="pdf">↗ Share Image</button><button type="button" class="quality-email-button"');};
+const qualityShareStyle=document.createElement('style');qualityShareStyle.textContent='.quality-share-button{background:#dcfce7!important;color:#166534!important;border:1px solid #4ade80!important}#qualityShareDialog{width:min(900px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:12px;padding:20px}#qualityShareDialog img{display:block;width:100%;height:auto;margin:12px 0}#qualityShareDialog .dialog-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}#qualityShareDialog::backdrop{background:#071e3acc}';document.head.append(qualityShareStyle);
+function qualityShareFiles(images){return images.map(image=>new File([Uint8Array.from(atob(image.jpg.split(',')[1]),c=>c.charCodeAt(0))],image.name,{type:'image/jpeg'}));}
+function qualityCanShareFiles(files){try{return typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files});}catch{return false;}}
+function qualityShowShare(images){
+ const files=qualityShareFiles(images),supported=qualityCanShareFiles(files);
+ document.getElementById('qualityShareDialog')?.close();
+ const dialog=document.createElement('dialog');dialog.id='qualityShareDialog';
+ dialog.innerHTML='<h2>Share Image</h2><p>'+(supported?'Share চাপুন, তারপর অ্যাপ ও প্রাপক বেছে নিন।':'এই ব্রাউজারে সরাসরি ছবি শেয়ার সমর্থিত নয়। JPG ডাউনলোড করে অ্যাপে সংযুক্ত করুন।')+'</p>'+images.map(image=>'<img src="'+image.jpg+'" alt="Report image to share">').join('')+'<p role="status"></p><div class="dialog-actions">'+(supported?'<button type="button" data-share-send class="quality-share-button">↗ Share</button>':'')+'<button type="button" data-share-download>Download JPG</button><button type="button" data-share-close>Close</button></div>';
+ dialog.querySelector('[data-share-close]').onclick=()=>dialog.close();
+ dialog.addEventListener('close',()=>dialog.remove(),{once:true});
+ dialog.querySelector('[data-share-download]').onclick=()=>{for(const image of images){const link=document.createElement('a');link.href=image.jpg;link.download=image.name;document.body.append(link);link.click();link.remove();}};
+ const send=dialog.querySelector('[data-share-send]');if(send)send.onclick=async()=>{if(!FarnoorAccess.canAction('output','pdf'))return toast('Report export permission is required.');send.disabled=true;const status=dialog.querySelector('[role="status"]');status.textContent='';try{await navigator.share({files,title:'Quality Wise Hourly Production'});status.textContent='ছবি শেয়ার করার জন্য নির্বাচিত অ্যাপে দেওয়া হয়েছে।';}catch(error){if(error.name!=='AbortError')status.textContent='শেয়ার করা যায়নি। আবার Share চাপুন অথবা Download JPG ব্যবহার করুন।';}finally{send.disabled=false;}};
+ document.body.append(dialog);dialog.showModal();
+}
+document.getElementById('main').addEventListener('click',async event=>{const button=event.target.closest('[data-quality-share]');if(!button||activePage!==qualityPDPage||qualityExportBusy)return;qualityExportBusy=true;button.disabled=true;const title=button.textContent;button.textContent='ছবি প্রস্তুত হচ্ছে…';try{const records=qualityExportRecords();qualityShowShare(await qualityReportImages(records));}catch(error){toast(error.message);}finally{qualityExportBusy=false;button.disabled=false;button.textContent=title;}});
 
 ;
 ;/* quality-finishing-print.js */
@@ -5860,7 +5881,7 @@ document.getElementById('main').addEventListener('keydown',event=>{
 'use strict';
 let ironExportBusy=false,ironEmailDraft=null;
 const ironExportPreviousView=ironPDPrintView;
-ironPDPrintView=function(){return ironExportPreviousView().replace('</div><div class="iron-pd-edit-links', '<button type="button" class="iron-image-button" data-iron-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="iron-email-button" data-iron-email data-page-action-required="pdf">✉ ইমেইল পাঠান</button></div><div class="iron-pd-edit-links');};
+ironPDPrintView=function(){return ironExportPreviousView().replace('</div><div class="iron-pd-edit-links', '<button type="button" class="iron-image-button" data-iron-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="iron-email-button" data-iron-email data-page-action-required="pdf">✉ Email</button></div><div class="iron-pd-edit-links');};
 const ironExportStyle=document.createElement('style');ironExportStyle.textContent='.iron-image-button{background:#e0f2fe!important;color:#075985!important;border:1px solid #38bdf8!important}.iron-email-button{background:#f3e8ff!important;color:#6b21a8!important;border:1px solid #c084fc!important}#ironEmailDialog{width:min(740px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:14px;padding:24px;color:#172b42}#ironEmailDialog::backdrop{background:#071e3acc}#ironEmailDialog img{display:block;width:100%;height:auto;border:1px solid #cbd5e1;margin:12px 0}#ironEmailDialog input{box-sizing:border-box;width:100%;padding:10px;border:1px solid #94a3b8;border-radius:7px}#ironEmailDialog .dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}#ironEmailDialog button{padding:10px 16px}#ironEmailStatus{white-space:pre-wrap}';document.head.append(ironExportStyle);
 function ironExportRecords(){if(!FarnoorAccess.canAction('output','pdf'))throw Error('Report export permission is required.');const records=ironPDPrintRows();if(!records.length)throw Error('এই তারিখে সেভ করা ইনপুট নেই।');return structuredClone(records);}
 async function ironReportImages(records,copy=false){
@@ -5916,6 +5937,27 @@ document.getElementById('main').addEventListener('click',async event=>{
  try{const records=ironExportRecords();if(button.hasAttribute('data-iron-email'))ironShowEmail(records,await ironReportImages(records));else{if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw Error('এই ব্রাউজারে ছবি কপি সমর্থিত নয়। Chrome বা Edge ব্যবহার করুন।');await ironCopyImage(records);toast('Image copied. এখন Ctrl+V দিয়ে পেস্ট করুন।');}}
  catch(error){toast(error.name==='NotAllowedError'?'ছবি কপি করার অনুমতি পাওয়া যায়নি। ব্রাউজারে Clipboard অনুমতি দিয়ে আবার Copy Image চাপুন।':error.message);}finally{ironExportBusy=false;button.disabled=false;button.textContent=title;}
 });
+
+;
+;/* iron-report-share.js */
+'use strict';
+const ironSharePreviousView=ironPDPrintView;
+ironPDPrintView=function(){return ironSharePreviousView().replace('<button type="button" class="iron-email-button"','<button type="button" class="iron-share-button" data-iron-share data-page-action-required="pdf">↗ Share Image</button><button type="button" class="iron-email-button"');};
+const ironShareStyle=document.createElement('style');ironShareStyle.textContent='.iron-share-button{background:#dcfce7!important;color:#166534!important;border:1px solid #4ade80!important}#ironShareDialog{width:min(900px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:12px;padding:20px}#ironShareDialog img{display:block;width:100%;height:auto;margin:12px 0}#ironShareDialog .dialog-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}#ironShareDialog::backdrop{background:#071e3acc}';document.head.append(ironShareStyle);
+function ironShareFiles(images){return images.map(image=>new File([Uint8Array.from(atob(image.jpg.split(',')[1]),c=>c.charCodeAt(0))],image.name,{type:'image/jpeg'}));}
+function ironCanShareFiles(files){try{return typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files});}catch{return false;}}
+function ironShowShare(images){
+ const files=ironShareFiles(images),supported=ironCanShareFiles(files);
+ document.getElementById('ironShareDialog')?.close();
+ const dialog=document.createElement('dialog');dialog.id='ironShareDialog';
+ dialog.innerHTML='<h2>Share Image</h2><p>'+(supported?'Share চাপুন, তারপর অ্যাপ ও প্রাপক বেছে নিন।':'এই ব্রাউজারে সরাসরি ছবি শেয়ার সমর্থিত নয়। JPG ডাউনলোড করে অ্যাপে সংযুক্ত করুন।')+'</p>'+images.map(image=>'<img src="'+image.jpg+'" alt="Report image to share">').join('')+'<p role="status"></p><div class="dialog-actions">'+(supported?'<button type="button" data-share-send class="iron-share-button">↗ Share</button>':'')+'<button type="button" data-share-download>Download JPG</button><button type="button" data-share-close>Close</button></div>';
+ dialog.querySelector('[data-share-close]').onclick=()=>dialog.close();
+ dialog.addEventListener('close',()=>dialog.remove(),{once:true});
+ dialog.querySelector('[data-share-download]').onclick=()=>{for(const image of images){const link=document.createElement('a');link.href=image.jpg;link.download=image.name;document.body.append(link);link.click();link.remove();}};
+ const send=dialog.querySelector('[data-share-send]');if(send)send.onclick=async()=>{if(!FarnoorAccess.canAction('output','pdf'))return toast('Report export permission is required.');send.disabled=true;const status=dialog.querySelector('[role="status"]');status.textContent='';try{await navigator.share({files,title:'Iron Wise Hourly Production'});status.textContent='ছবি শেয়ার করার জন্য নির্বাচিত অ্যাপে দেওয়া হয়েছে।';}catch(error){if(error.name!=='AbortError')status.textContent='শেয়ার করা যায়নি। আবার Share চাপুন অথবা Download JPG ব্যবহার করুন।';}finally{send.disabled=false;}};
+ document.body.append(dialog);dialog.showModal();
+}
+document.getElementById('main').addEventListener('click',async event=>{const button=event.target.closest('[data-iron-share]');if(!button||activePage!==ironPDPage||ironExportBusy)return;ironExportBusy=true;button.disabled=true;const title=button.textContent;button.textContent='ছবি প্রস্তুত হচ্ছে…';try{const records=ironExportRecords();ironShowShare(await ironReportImages(records));}catch(error){toast(error.message);}finally{ironExportBusy=false;button.disabled=false;button.textContent=title;}});
 
 ;
 ;/* iron-finishing-print.js */
