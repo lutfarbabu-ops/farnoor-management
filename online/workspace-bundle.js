@@ -6473,8 +6473,23 @@ samplePDPrintHTML=function(records){return sampleFinishingPreviousPrintHTML(reco
 ;
 ;/* sample-entry-board.js */
 'use strict';
-const sampleBoardNames=['Md. Sohel Rana','Md. Liton','Md. Muslim Uddin','Rezakul Islam','Aulad Hossan','Md. Abul Kalam','Md. Salim','Md. Enamul Haque','Md. Sahidul Islam Salim','Md. Antor','Ridy Ahmed'];
-const sampleBoardCards={'Md. Sohel Rana':'1074','Md. Liton':'1094','Md. Muslim Uddin':'1095','Rezakul Islam':'1103','Aulad Hossan':'1108','Md. Abul Kalam':'1123','Md. Salim':'1174','Md. Enamul Haque':'1186','Md. Sahidul Islam Salim':'1221','Md. Antor':'1272','Ridy Ahmed':'1283'};
+const sampleBoardSectionWorkers={'SAMPLE-1':['Md. Saidul Islam','Sha-Alam (Boro)','Md. Shahalam (Shoto)'],'SAMPLE-2':['Md. Hafiz','Sala Uddin','Md. Liton Hossain']};
+const sampleBoardNames=Object.values(sampleBoardSectionWorkers).flat();
+const sampleBoardCards={};
+function sampleBoardNamesForSection(section){return sampleBoardSectionWorkers[String(section||'').toUpperCase()]||[];}
+function sampleBoardDateValue(value){const v=String(value||'');return /^\d{2}\/\d{2}\/\d{4}$/.test(v)?v.split('/').reverse().join('-'):v;}
+function sampleBoardTimeValue(value){const v=String(value||'').trim(),m=v.match(/^(\d{1,2})[:.](\d{2})(?:\s*(AM|PM))?$/i);if(!m)return '';let h=Number(m[1]);if(m[3])h=h%12+(/PM/i.test(m[3])?12:0);return String(h).padStart(2,'0')+':'+m[2];}
+function sampleBoardFieldValue(key,value){return ['sampleStartDate','sampleEndDate'].includes(key)&&/^\d{4}-\d{2}-\d{2}$/.test(value)?value.split('-').reverse().join('/'):value;}
+function sampleBoardFieldControl(key,label,edit){
+ const value=sampleBoardForm[key]??'',attrs='id="sample-board-'+key+'" data-sample-board-field="'+key+'"';
+ if(['sampleSection','sampleNewOld','ironManName'].includes(key)){
+  let options=key==='sampleSection'?['Sample-1','Sample-2']:key==='sampleNewOld'?['New','Old']:sampleBoardNamesForSection(sampleBoardForm.sampleSection);
+  if(key==='ironManName'&&sampleBoardEditingName===value&&!options.includes(value))options=[...options,value];
+  return '<select '+attrs+' '+(!edit?'disabled':'')+'><option value="">Select '+label+'</option>'+options.map(v=>'<option value="'+esc(v)+'" '+(v.toLowerCase()===String(value).toLowerCase()?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select>';
+ }
+ const date=['sampleStartDate','sampleEndDate'].includes(key),time=['sampleStartTime','sampleEndTime'].includes(key);
+ return sampleBoardInput(date?sampleBoardDateValue(value):time?sampleBoardTimeValue(value):value,attrs+' type="'+(date?'date':time?'time':'text')+'" maxlength="300"'+(['sampleQty','sampleSizeQty','sampleComplete'].includes(key)?' inputmode="decimal"':'')+(['buyer','style','item'].includes(key)?' list="sample-board-options-'+key+'"':''),!edit);
+}
 const sampleBoardFields=[['sampleSection','Section'],['sampleNewOld','New/ Old'],['ironManName','Sample Man Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
 let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null;
 const sampleBoardHours=['8-9 AM','9-10AM','10-11AM','11-12 AM','12.-1 PM','2.-3 PM','3.-4 PM','4.-5 PM','5.-6 PM','6.-7 PM'];
@@ -6486,13 +6501,14 @@ function sampleBoardInput(value,attrs,readonly=false){return '<input '+attrs+' v
 function sampleBoardTotal(row){const h=samplePDNumber(row.fields.workingPlan),t=samplePDNumber(row.fields.hourlyTarget);return h===null||t===null?'':h*t;}
 samplePDPaper=function(readonly=false){
  const edit=FarnoorAccess.canAction('output','edit')&&!readonly;
- return '<section class="sample-pd-paper sample-board"><h2>SAMPLE WISE HOURLY PRODUCTION</h2><div class="sample-pd-details">'+sampleBoardFields.map(([key,label])=>'<div class="sample-pd-field"><label for="sample-board-'+key+'">'+label+'</label>'+(key==='ironManName'?'<select id="sample-board-'+key+'" data-sample-board-field="'+key+'" '+(!edit?'disabled':'')+'><option value="">Select Sample Man Name</option>'+[...new Set([...sampleBoardNames,sampleBoardForm.ironManName].filter(Boolean))].map(name=>'<option '+(name===sampleBoardForm.ironManName?'selected ':'')+'value="'+esc(name)+'">'+esc(name)+'</option>').join('')+'</select>':sampleBoardInput(sampleBoardForm[key]??(key==='sl'?sampleBoardRows.length+1:''),'id="sample-board-'+key+'" data-sample-board-field="'+key+'" maxlength="300"'+(['sampleStartDate','sampleEndDate'].includes(key)?' placeholder="DD/MM/YYYY"':'')+(['sl','workingPlan','hourlyTarget','sampleQty','sampleSizeQty','sampleComplete'].includes(key)?' inputmode="decimal"':'')+(['buyer','style','item','hourlyTarget'].includes(key)?' list="sample-board-options-'+key+'"':''),!edit))+'</div>').join('')+'</div>'+['buyer','style','item','hourlyTarget'].map(key=>'<datalist id="sample-board-options-'+key+'">'+sampleBoardSuggestions(key,sampleBoardForm[key]).map(v=>'<option value="'+esc(v)+'"></option>').join('')+'</datalist>').join('')+'<div class="sample-pd-save-actions"><button type="button" data-sample-board-add '+(!edit||sampleBoardBusy?'disabled':'')+'>Input</button></div><div class="sample-pd-table-wrap"><table class="sample-pd-table sample-board-table"><thead><tr>'+['SL.','SAMPLE MAN NAME','CARD NO','WORKING HOUR','BUYER','ITEM','TOTAL TARGET','TARGET/Hrs',...sampleBoardHours].map(t=>'<th scope="col">'+t+'</th>').join('')+'</tr></thead><tbody>'+sampleBoardRows.map((r,i)=>'<tr data-sample-board-index="'+i+'"><td>'+esc(r.fields.sl||i+1)+'</td><td>'+(r.fields.ironManName?'<button type="button" class="sample-worker-row-name" data-sample-worker-row="'+i+'">'+esc(r.fields.ironManName)+'</button>':'<select data-sample-board-choose="'+i+'" aria-label="Sample Man Name row '+(i+1)+'" '+(!edit?'disabled':'')+'><option value="">Select Sample Man Name</option>'+sampleBoardNames.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+'</select>')+'</td><td>'+sampleBoardInput(r.fields.cardNo,'data-sample-board-card="'+i+'" aria-label="Card No '+esc(r.fields.ironManName)+'" maxlength="120"',!edit||Object.hasOwn(sampleBoardCards,r.fields.ironManName))+'</td><td>'+esc(r.fields.workingPlan)+'</td><td>'+esc(r.fields.buyer)+'</td><td>'+esc(r.fields.item)+'</td><td><output>'+esc(sampleBoardTotal(r))+'</output></td><td>'+esc(r.fields.hourlyTarget)+'</td>'+sampleBoardHours.map((hour,h)=>'<td>'+sampleBoardInput(r.rows[h][3],'type="number" min="0" step="1" data-sample-board-hour="'+h+'" data-sample-board-worker="'+i+'" aria-label="'+esc(r.fields.ironManName)+' '+hour+'"',!edit)+'</td>').join('')+'</tr>').join('')+(!sampleBoardRows.length?'<tr><td colspan="18">Input চাপলে এখানে রো যোগ হবে।</td></tr>':'')+'</tbody><tfoot><tr><th colspan="6">Total</th><td>'+esc(samplePDSum(sampleBoardRows.map(sampleBoardTotal)))+'</td><td>'+esc(samplePDSum(sampleBoardRows.map(r=>r.fields.hourlyTarget)))+'</td>'+sampleBoardHours.map((_,h)=>'<td><output data-sample-board-sum="'+h+'">'+esc(samplePDSum(sampleBoardRows.map(r=>r.rows[h][3])))+'</output></td>').join('')+'</tr></tfoot></table></div><div class="sample-pd-save-actions"><button type="button" data-sample-board-save '+(!edit||sampleBoardBusy||!sampleBoardRows.length?'disabled':'')+'>'+(sampleBoardBusy?'Saving…':'Save')+'</button></div></section>';
+ return '<section class="sample-pd-paper sample-board"><h2>SAMPLE WISE HOURLY PRODUCTION</h2><div class="sample-pd-details">'+sampleBoardFields.map(([key,label])=>'<div class="sample-pd-field"><label for="sample-board-'+key+'">'+label+'</label>'+sampleBoardFieldControl(key,label,edit)+'</div>').join('')+'</div>'+['buyer','style','item','hourlyTarget'].map(key=>'<datalist id="sample-board-options-'+key+'">'+sampleBoardSuggestions(key,sampleBoardForm[key]).map(v=>'<option value="'+esc(v)+'"></option>').join('')+'</datalist>').join('')+'<div class="sample-pd-save-actions"><button type="button" data-sample-board-add '+(!edit||sampleBoardBusy?'disabled':'')+'>Input</button></div><div class="sample-pd-table-wrap"><table class="sample-pd-table sample-board-table"><thead><tr>'+['SL.','SAMPLE MAN NAME','CARD NO','WORKING HOUR','BUYER','ITEM','TOTAL TARGET','TARGET/Hrs',...sampleBoardHours].map(t=>'<th scope="col">'+t+'</th>').join('')+'</tr></thead><tbody>'+sampleBoardRows.map((r,i)=>'<tr data-sample-board-index="'+i+'"><td>'+esc(r.fields.sl||i+1)+'</td><td>'+(r.fields.ironManName?'<button type="button" class="sample-worker-row-name" data-sample-worker-row="'+i+'">'+esc(r.fields.ironManName)+'</button>':'<select data-sample-board-choose="'+i+'" aria-label="Sample Man Name row '+(i+1)+'" '+(!edit?'disabled':'')+'><option value="">Select Sample Man Name</option>'+sampleBoardNames.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+'</select>')+'</td><td>'+sampleBoardInput(r.fields.cardNo,'data-sample-board-card="'+i+'" aria-label="Card No '+esc(r.fields.ironManName)+'" maxlength="120"',!edit||Object.hasOwn(sampleBoardCards,r.fields.ironManName))+'</td><td>'+esc(r.fields.workingPlan)+'</td><td>'+esc(r.fields.buyer)+'</td><td>'+esc(r.fields.item)+'</td><td><output>'+esc(sampleBoardTotal(r))+'</output></td><td>'+esc(r.fields.hourlyTarget)+'</td>'+sampleBoardHours.map((hour,h)=>'<td>'+sampleBoardInput(r.rows[h][3],'type="number" min="0" step="1" data-sample-board-hour="'+h+'" data-sample-board-worker="'+i+'" aria-label="'+esc(r.fields.ironManName)+' '+hour+'"',!edit)+'</td>').join('')+'</tr>').join('')+(!sampleBoardRows.length?'<tr><td colspan="18">Input চাপলে এখানে রো যোগ হবে।</td></tr>':'')+'</tbody><tfoot><tr><th colspan="6">Total</th><td>'+esc(samplePDSum(sampleBoardRows.map(sampleBoardTotal)))+'</td><td>'+esc(samplePDSum(sampleBoardRows.map(r=>r.fields.hourlyTarget)))+'</td>'+sampleBoardHours.map((_,h)=>'<td><output data-sample-board-sum="'+h+'">'+esc(samplePDSum(sampleBoardRows.map(r=>r.rows[h][3])))+'</output></td>').join('')+'</tr></tfoot></table></div><div class="sample-pd-save-actions"><button type="button" data-sample-board-save '+(!edit||sampleBoardBusy||!sampleBoardRows.length?'disabled':'')+'>'+(sampleBoardBusy?'Saving…':'Save')+'</button></div></section>';
 };
 function sampleBoardAdd(){
  if(sampleBoardBusy||!FarnoorAccess.canAction('output','edit'))return;
  try{
   const f={ironManName:'',...sampleBoardForm};if(f.ironManName&&!sampleBoardNames.includes(f.ironManName)&&!sampleBoardRows.some(r=>r.fields.ironManName===f.ironManName))throw Error('Sample Man Name নির্বাচন করুন।');
   for(const key of ['sl','workingPlan','hourlyTarget']){const raw=f[key]??'';if(key!=='sl'&&String(raw).trim()===''){f[key]='';continue;}const n=samplePDNumber(key==='sl'&&String(raw).trim()===''?sampleBoardRows.length+1:raw);if(n===null||!Number.isFinite(n)||n<0||(key==='sl'&&(!Number.isInteger(n)||n<1)))throw Error(key==='sl'?'সঠিক SL লিখুন।':'Working Hour ও Target Hour-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
+  if(f.sampleNewOld&&!['New','Old'].includes(f.sampleNewOld))throw Error('New বা Old নির্বাচন করুন।');
   if(String(f.sampleSection||'').trim()){const section=String(f.sampleSection).trim().toUpperCase().replace(/^SAMPLE[ ._-]*/, '');if(!['1','2'].includes(section))throw Error('Sample Section-এ SAMPLE-1 বা SAMPLE-2 লিখুন।');f.sampleSection='SAMPLE-'+section;}
   for(const key of ['sampleStartDate','sampleEndDate'])if(String(f[key]||'').trim())f[key]=normalizeDate(f[key]);
   for(const key of ['sampleQty','sampleSizeQty','sampleComplete'])if(String(f[key]??'').trim()){const n=samplePDNumber(f[key]);if(n===null||!Number.isFinite(n)||n<0)throw Error('QTY, Size QTY ও Daily Complete Sample-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
@@ -6502,7 +6518,7 @@ function sampleBoardAdd(){
   const previous=staged||(saved?{id:saved.id,fields:saved.hourlyPD.fields,rows:saved.hourlyPD.rows}:null);
   const row={id:previous?.id,fields:{...previous?.fields,...f,cardNo:sampleBoardCards[f.ironManName]??previous?.fields.cardNo??f.cardNo??'',date,section:previous?.fields.section||f.ironManName,tableNo:previous?.fields.section||f.ironManName},rows:samplePDComputedRows(previous?.rows)};
   if(staged)sampleBoardRows[sampleBoardRows.indexOf(staged)]=row;else sampleBoardRows.push(row);
-  sampleBoardEditingName=null;sampleBoardForm={sl:String(sampleBoardRows.length+1)};renderSamplePD();
+  sampleBoardEditingName=null;sampleBoardForm={sampleSection:f.sampleSection||''};renderSamplePD();
  }catch(error){toast(error.message);}
 }
 const sampleBoardOriginalLoad=samplePDLoad;
@@ -6522,11 +6538,11 @@ sampleBoardMain.addEventListener('click',event=>{if(activePage===samplePDPage&&s
 sampleBoardMain.addEventListener('click',event=>{if(activePage!==samplePDPage)return;if(event.target.closest('[data-sample-board-add]'))sampleBoardAdd();if(event.target.closest('[data-sample-board-save]'))void sampleBoardSave();});
 sampleBoardMain.addEventListener('input',event=>{
  if(activePage!==samplePDPage||sampleBoardBusy)return;const node=event.target,key=node.dataset.sampleBoardField;
- if(key){sampleBoardForm[key]=node.value;const list=document.getElementById('sample-board-options-'+key);if(list)list.innerHTML=sampleBoardSuggestions(key,node.value).map(v=>'<option value="'+esc(v)+'"></option>').join('');}
+ if(key){sampleBoardForm[key]=sampleBoardFieldValue(key,node.value);const list=document.getElementById('sample-board-options-'+key);if(list)list.innerHTML=sampleBoardSuggestions(key,node.value).map(v=>'<option value="'+esc(v)+'"></option>').join('');}
  if(node.dataset.sampleBoardCard!==undefined)sampleBoardRows[Number(node.dataset.sampleBoardCard)].fields.cardNo=node.value;
  if(node.dataset.sampleBoardHour!==undefined){const hour=Number(node.dataset.sampleBoardHour),worker=Number(node.dataset.sampleBoardWorker);sampleBoardRows[worker].rows[hour][3]=node.value;document.querySelector('[data-sample-board-sum="'+hour+'"]').textContent=String(samplePDSum(sampleBoardRows.map(r=>r.rows[hour][3])));}
 });
-sampleBoardMain.addEventListener('change',event=>{if(activePage===samplePDPage&&!sampleBoardBusy&&event.target.dataset.sampleBoardChoose!==undefined){const row=sampleBoardRows[Number(event.target.dataset.sampleBoardChoose)],name=event.target.value;if(!sampleBoardNames.includes(name))return;if(sampleBoardRows.some(other=>other!==row&&other.fields.ironManName===name)){event.target.value='';toast('এই নামের এন্ট্রি ইতোমধ্যে আছে। অন্য নাম নির্বাচন করুন।');return;}row.fields.ironManName=name;row.fields.cardNo=sampleBoardCards[name];if(!row.id)row.fields.section=row.fields.tableNo=name;renderSamplePD();return;}if(activePage===samplePDPage&&event.target.dataset.sampleBoardField)sampleBoardForm[event.target.dataset.sampleBoardField]=event.target.value;});
+sampleBoardMain.addEventListener('change',event=>{if(activePage===samplePDPage&&!sampleBoardBusy&&event.target.dataset.sampleBoardChoose!==undefined){const row=sampleBoardRows[Number(event.target.dataset.sampleBoardChoose)],name=event.target.value;if(!sampleBoardNames.includes(name))return;if(sampleBoardRows.some(other=>other!==row&&other.fields.ironManName===name)){event.target.value='';toast('এই নামের এন্ট্রি ইতোমধ্যে আছে। অন্য নাম নির্বাচন করুন।');return;}row.fields.ironManName=name;row.fields.cardNo=sampleBoardCards[name];if(!row.id)row.fields.section=row.fields.tableNo=name;renderSamplePD();return;}if(activePage===samplePDPage&&event.target.dataset.sampleBoardField)sampleBoardForm[event.target.dataset.sampleBoardField]=sampleBoardFieldValue(event.target.dataset.sampleBoardField,event.target.value);if(activePage===samplePDPage&&event.target.dataset.sampleBoardField==='sampleSection'){sampleBoardForm={sampleSection:event.target.value,sampleNewOld:sampleBoardForm.sampleNewOld||''};sampleBoardEditingName=null;renderSamplePD();}});
 sampleBoardMain.addEventListener('keydown',event=>{
  if(activePage!==samplePDPage||samplePDView!=='new-input'||event.key!=='Enter'||event.isComposing||event.repeat||sampleBoardBusy)return;
  const target=event.target;if(target.matches('[data-sample-board-add],[data-sample-board-save]'))return;
@@ -6539,10 +6555,10 @@ const sampleBoardStyle=document.createElement('style');sampleBoardStyle.textCont
 ;
 ;/* sample-worker-tools.js */
 'use strict';
-const sampleWorkerDefaults=['Ridy Ahmed','Md. Abul Kalam','Md. Salim','Md. Sohel Rana','Rezakul Islam','Md. Muslim Uddin','Aulad Hossan','Md. Liton','Md. Antor','Md. Enamul Haque','Md. Sahidul Islam Salim'];
+const sampleWorkerDefaults=Object.values(sampleBoardSectionWorkers).flat();
 const sampleWorkerDefaultCards={...sampleBoardCards};
 let sampleWorkerOverrides=[];
-try{if(localStorage.getItem('farnoor-sample-workers-v1')===null){localStorage.setItem('farnoor-sample-workers-v1',localStorage.getItem('farnoor-iron-workers-v1')||'[]');}}catch{}
+
 try{const list=JSON.parse(localStorage.getItem('farnoor-sample-workers-v1')||'[]');if(Array.isArray(list))sampleWorkerOverrides=list.filter(w=>w&&typeof w.name==='string'&&w.name.length<=120&&typeof w.card==='string'&&w.card.length<=40&&Number.isInteger(w.sl)&&w.sl>0).slice(0,200);}catch{}
 function sampleWorkerList(){
  const workers=sampleWorkerDefaults.map((name,i)=>({name,card:sampleWorkerDefaultCards[name]||'',sl:i+1}));
@@ -6561,9 +6577,8 @@ function sampleWorkerSync(source,form=sampleBoardForm){
 function sampleWorkerSelect(source,paint=true){
  sampleWorkerSync(source);
  const identity={sl:sampleBoardForm.sl||'',ironManName:sampleBoardForm.ironManName||'',cardNo:sampleBoardForm.cardNo||''};
- const row=identity.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===identity.ironManName):null;
- sampleBoardForm=row?{...row.fields,...identity}:{sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
- sampleBoardEditingName=row?identity.ironManName:null;
+ sampleBoardForm={sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
+ sampleBoardEditingName=null;
  if(paint)for(const [key]of sampleBoardFields){const input=document.getElementById('sample-board-'+key);if(input)input.value=sampleBoardForm[key]??'';}
  return sampleBoardForm;
 }
@@ -6576,9 +6591,6 @@ function sampleWorkerHydrate(){
 const sampleWorkerPreviousPaper=samplePDPaper;
 samplePDPaper=function(readonly=false){
  sampleWorkerRefresh();sampleWorkerHydrate();
- if(!Object.keys(sampleBoardForm).length){const used=new Set(sampleBoardRows.map(r=>r.fields.ironManName)),worker=sampleWorkerList().find(w=>!used.has(w.name));if(worker)sampleBoardForm={sl:String(worker.sl),ironManName:worker.name,cardNo:worker.card};}
- else if(sampleBoardForm.ironManName)sampleWorkerSync('name');else if(sampleBoardForm.sl)sampleWorkerSync('sl');
- if(sampleBoardForm.ironManName&&Object.keys(sampleBoardForm).every(key=>['sl','ironManName','cardNo'].includes(key)))sampleWorkerSelect('name',false);
  return sampleWorkerPreviousPaper(readonly).replace('<div class="sample-pd-details">','<div class="sample-worker-toolbar"><button type="button" data-sample-worker-manage '+(!FarnoorAccess.canAction('output','edit')?'disabled':'')+'>♙ Manage Names</button></div><div class="sample-pd-details">');
 };
 const sampleWorkerPreviousLoad=samplePDLoad;

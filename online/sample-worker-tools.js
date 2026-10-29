@@ -1,8 +1,8 @@
 'use strict';
-const sampleWorkerDefaults=['Ridy Ahmed','Md. Abul Kalam','Md. Salim','Md. Sohel Rana','Rezakul Islam','Md. Muslim Uddin','Aulad Hossan','Md. Liton','Md. Antor','Md. Enamul Haque','Md. Sahidul Islam Salim'];
+const sampleWorkerDefaults=Object.values(sampleBoardSectionWorkers).flat();
 const sampleWorkerDefaultCards={...sampleBoardCards};
 let sampleWorkerOverrides=[];
-try{if(localStorage.getItem('farnoor-sample-workers-v1')===null){localStorage.setItem('farnoor-sample-workers-v1',localStorage.getItem('farnoor-iron-workers-v1')||'[]');}}catch{}
+
 try{const list=JSON.parse(localStorage.getItem('farnoor-sample-workers-v1')||'[]');if(Array.isArray(list))sampleWorkerOverrides=list.filter(w=>w&&typeof w.name==='string'&&w.name.length<=120&&typeof w.card==='string'&&w.card.length<=40&&Number.isInteger(w.sl)&&w.sl>0).slice(0,200);}catch{}
 function sampleWorkerList(){
  const workers=sampleWorkerDefaults.map((name,i)=>({name,card:sampleWorkerDefaultCards[name]||'',sl:i+1}));
@@ -21,9 +21,8 @@ function sampleWorkerSync(source,form=sampleBoardForm){
 function sampleWorkerSelect(source,paint=true){
  sampleWorkerSync(source);
  const identity={sl:sampleBoardForm.sl||'',ironManName:sampleBoardForm.ironManName||'',cardNo:sampleBoardForm.cardNo||''};
- const row=identity.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===identity.ironManName):null;
- sampleBoardForm=row?{...row.fields,...identity}:{sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
- sampleBoardEditingName=row?identity.ironManName:null;
+ sampleBoardForm={sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
+ sampleBoardEditingName=null;
  if(paint)for(const [key]of sampleBoardFields){const input=document.getElementById('sample-board-'+key);if(input)input.value=sampleBoardForm[key]??'';}
  return sampleBoardForm;
 }
@@ -36,9 +35,6 @@ function sampleWorkerHydrate(){
 const sampleWorkerPreviousPaper=samplePDPaper;
 samplePDPaper=function(readonly=false){
  sampleWorkerRefresh();sampleWorkerHydrate();
- if(!Object.keys(sampleBoardForm).length){const used=new Set(sampleBoardRows.map(r=>r.fields.ironManName)),worker=sampleWorkerList().find(w=>!used.has(w.name));if(worker)sampleBoardForm={sl:String(worker.sl),ironManName:worker.name,cardNo:worker.card};}
- else if(sampleBoardForm.ironManName)sampleWorkerSync('name');else if(sampleBoardForm.sl)sampleWorkerSync('sl');
- if(sampleBoardForm.ironManName&&Object.keys(sampleBoardForm).every(key=>['sl','ironManName','cardNo'].includes(key)))sampleWorkerSelect('name',false);
  return sampleWorkerPreviousPaper(readonly).replace('<div class="sample-pd-details">','<div class="sample-worker-toolbar"><button type="button" data-sample-worker-manage '+(!FarnoorAccess.canAction('output','edit')?'disabled':'')+'>♙ Manage Names</button></div><div class="sample-pd-details">');
 };
 const sampleWorkerPreviousLoad=samplePDLoad;
