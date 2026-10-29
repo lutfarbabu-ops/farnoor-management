@@ -2099,3 +2099,6 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-
 
 // Production / Sample is a distinct section below Quality.
 {const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='production-quality-wise-hourly-pd');production.pages.splice(index+1,0,{id:'production-sample',name:'Sample',navPath:['Sample'],groupEntry:true,icon:'✂',shade:'#f9dfef',navigationOnly:true,permissionPage:'output'},{id:'production-sample-wise-hourly-pd',name:'Sample Wise Hourly PD',navPath:['Sample'],icon:'◴',shade:'#e0ecff',navigationOnly:true,permissionPage:'output'});}
+
+// Main Requistion department; child pages can be added without changing existing registers.
+{const index=window.DEPARTMENTS.findIndex(d=>d.id==='production');window.DEPARTMENTS.splice(index,0,{id:'requistion',name:'Requistion',icon:'📋',color:'#534bc4',placeholder:true,pages:[]});}

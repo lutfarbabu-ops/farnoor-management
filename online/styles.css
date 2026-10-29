@@ -545,3 +545,6 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 
 
 #navigation [data-page="production-sample-wise-hourly-pd"]{--sub-bg:#ffe3cc!important;--sub-edge:#e6a56c!important;--sub-ink:#8d4214!important;--sub-accent:#d87925!important}.sample-pd-nav .sample-pd-new-input{background:#dcf8ee;color:#07684c}.sample-pd-nav .sample-pd-print{background:#fff0d5;color:#935514}.sample-pd-nav .sample-pd-input-report{background:#eee2ff;color:#624091}
+
+.department-button[data-department="requistion"]{--dept-start:#6557d1;--dept-end:#302776;--dept-pattern:linear-gradient(135deg,#ffffff15 0 25%,transparent 25%);border-radius:8px 18px 8px 18px;--badge-radius:8px}
+.requistion-home{display:grid;place-items:center;gap:14px;min-height:300px;border:1px solid #c9c2f4;border-radius:18px;background:linear-gradient(135deg,#f2eeff,#e4ecff);color:#302776;padding:32px;text-align:center}.requistion-home>span{font-size:56px}.requistion-home h2{margin:0}
