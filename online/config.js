@@ -2093,3 +2093,6 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-
 
 // Production / Quality uses the existing Output access and a separate report family.
 {const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='schedule-quality');production.pages[index].navPath=['Quality'];production.pages[index].groupEntry=true;production.pages.splice(index+1,0,{id:'production-quality-wise-hourly-pd',name:'Quality Wise Hourly PD',navPath:['Quality'],icon:'◉',shade:'#cff5ee',navigationOnly:true,permissionPage:'output'});}
+
+// Production / Finishing: independent Iron hourly reports.
+{const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='schedule-finishing');production.pages[index].navPath=['Finishing'];production.pages[index].groupEntry=true;production.pages.splice(index+1,0,{id:'production-iron-wise-hourly-pd',name:'Iron Wise Hourly PD',navPath:['Finishing'],icon:'♨',shade:'#ffe3cc',navigationOnly:true,permissionPage:'output'});}

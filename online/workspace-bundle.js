@@ -2097,6 +2097,9 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-
 // Production / Quality uses the existing Output access and a separate report family.
 {const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='schedule-quality');production.pages[index].navPath=['Quality'];production.pages[index].groupEntry=true;production.pages.splice(index+1,0,{id:'production-quality-wise-hourly-pd',name:'Quality Wise Hourly PD',navPath:['Quality'],icon:'◉',shade:'#cff5ee',navigationOnly:true,permissionPage:'output'});}
 
+// Production / Finishing: independent Iron hourly reports.
+{const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='schedule-finishing');production.pages[index].navPath=['Finishing'];production.pages[index].groupEntry=true;production.pages.splice(index+1,0,{id:'production-iron-wise-hourly-pd',name:'Iron Wise Hourly PD',navPath:['Finishing'],icon:'♨',shade:'#ffe3cc',navigationOnly:true,permissionPage:'output'});}
+
 ;
 ;/* payroll-core.js */
 'use strict';
@@ -5141,7 +5144,7 @@ const hourlyPDDraft={fields:{},rows:hourlyPDHours.map(()=>Array(5).fill('')),tar
 let hourlyPDEditId=null,hourlyPDPendingId=null,hourlyPDBusy=false,hourlyPDSelectedId=null,hourlyPDPrintDate='';
 function hourlyPDToday(){return new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'});}
 function hourlyPDKey(date,section){let day=String(date||'').trim();try{day=normalizeDate(day);}catch{}return day+'|'+hourlyPDSection(section).toLowerCase();}
-function hourlyPDRecords(){const files=new Map();for(const row of (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind!=='quality'&&!r.deletedAt)){const key=hourlyPDKey(row.date,row.hourlyPD.fields?.section),old=files.get(key);if(!old||(Date.parse(row.updatedAt||row.createdAt)||0)>(Date.parse(old.updatedAt||old.createdAt)||0))files.set(key,row);}return [...files.values()].sort(hourlyPDCompare);
+function hourlyPDRecords(){const files=new Map();for(const row of (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&!['quality','iron'].includes(r.hourlyPDKind)&&!r.deletedAt)){const key=hourlyPDKey(row.date,row.hourlyPD.fields?.section),old=files.get(key);if(!old||(Date.parse(row.updatedAt||row.createdAt)||0)>(Date.parse(old.updatedAt||old.createdAt)||0))files.set(key,row);}return [...files.values()].sort(hourlyPDCompare);
 }
 function hourlyPDCompare(a,b){const dates=String(b.date).split("/").reverse().join("-").localeCompare(String(a.date).split("/").reverse().join("-"));if(dates)return dates;const order=Object.keys(hourlyPDIncharges),rank=r=>{const index=order.indexOf(hourlyPDSection(r.hourlyPD?.fields?.section));return index<0?order.length:index;};return rank(a)-rank(b);}
 function hourlyPDLookupInput(){
@@ -5692,5 +5695,295 @@ const qualityFinishingCSS=`
 const qualityFinishingStyle=document.createElement('style');qualityFinishingStyle.textContent=qualityFinishingCSS;document.head.append(qualityFinishingStyle);
 const qualityFinishingPreviousPrintHTML=qualityPDPrintHTML;
 qualityPDPrintHTML=function(records){return qualityFinishingPreviousPrintHTML(records).replace('</style>',qualityFinishingCSS+'</style>');};
+
+;
+;/* iron-wise-hourly-pd.js */
+'use strict';
+const ironPDPage='production-iron-wise-hourly-pd';
+const ironPDFields=[['section','Table'],['incharge','Supervisor Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['qcName','Checker Name'],['workingPlan','Working Plan'],['hourlyTarget','Hourly Target'],['remarks','Remarks']];
+const ironPDHours=['8:00-9:00','9:00-10:00','10:00-11:00','11:00-12:00','12:00-1:00','2:00-3:00','3:00-4:00','4:00-5:00','5:00-6:00','6:00-7:00','7:00-8:00'];
+function ironPDSection(value){return String(value||'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).trim().replace(/\s+/g,' ').replace(/^(?:table|line)[.\s-]*(\d)/i,'$1');}
+function ironPDTable(fields){return ironPDSection(fields?.tableNo||fields?.section);}
+function ironPDSectionControl(readonly=false){const values=[...new Set(['1','2','3','4',...ironPDRecords().map(row=>ironPDTable(row.hourlyPD.fields))])];return ironPDInput(ironPDDraft.fields.section,'id="iron-pd-section" data-iron-pd-field="section" maxlength="120" list="iron-pd-table-options"',readonly)+'<datalist id="iron-pd-table-options">'+values.map(value=>'<option value="'+esc(value)+'"></option>').join('')+'</datalist>';}
+const ironPDSupervisors={};
+function ironPDApplySupervisor(fields=ironPDDraft.fields,clear=false){const name=ironPDSupervisors[ironPDSection(fields.section)];if(name!==undefined)fields.incharge=name;else if(clear)fields.incharge='';return fields.incharge||'';}
+const ironPDEntryColumns=[['QC Check',2],['QC Pass',3],['Defect',4]];
+const ironPDColumns=['1st Machine','Last Machine','QC Check','QC Pass','Defect'];
+let ironPDView='new-input';
+const ironPDDraft={fields:{},rows:ironPDHours.map(()=>Array(5).fill('')),targets:Array(5).fill(''),differences:Array(5).fill(''),achievements:Array(5).fill('')};
+let ironPDEditId=null,ironPDPendingId=null,ironPDBusy=false,ironPDSelectedId=null,ironPDPrintDate='';
+function ironPDToday(){return new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'});}
+function ironPDKey(date,section){let day=String(date||'').trim();try{day=normalizeDate(day);}catch{}return day+'|'+ironPDSection(section).replace(/[.\s]/g,'').toLowerCase();}
+function ironPDRecords(){const files=new Map();for(const row of (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind==='iron'&&!r.deletedAt)){const key=ironPDKey(row.date,ironPDTable(row.hourlyPD.fields)),old=files.get(key);if(!old||(Date.parse(row.updatedAt||row.createdAt)||0)>(Date.parse(old.updatedAt||old.createdAt)||0))files.set(key,row);}return [...files.values()].sort(ironPDCompare);
+}
+function ironPDCompare(a,b){const dates=String(b.date).split('/').reverse().join('-').localeCompare(String(a.date).split('/').reverse().join('-'));return dates||ironPDTable(a.hourlyPD.fields).localeCompare(ironPDTable(b.hourlyPD.fields),undefined,{numeric:true,sensitivity:'base'});}
+function ironPDLookupInput(){
+ let date;try{date=normalizeDate(ironPDDraft.fields.date||ironPDToday());}catch{return;}
+ const section=ironPDSection(ironPDDraft.fields.section);if(!section)return;
+ const row=ironPDRecords().find(r=>ironPDKey(r.date,ironPDTable(r.hourlyPD.fields))===ironPDKey(date,section));
+ if(row){if(row.id!==ironPDEditId){ironPDLoad(row);renderIronPD();}else ironPDDraft.fields.date=date;return;}
+ if(ironPDEditId){ironPDDraft.fields={date,section,tableNo:section};ironPDApplySupervisor();ironPDDraft.rows=ironPDHours.map(()=>Array(5).fill(''));for(const key of ['targets','differences','achievements'])ironPDDraft[key]=Array(5).fill('');ironPDEditId=null;ironPDPendingId=null;renderIronPD();}else{ironPDDraft.fields.date=date;ironPDDraft.fields.section=section;ironPDApplySupervisor();}
+}
+function ironPDApplyPrintDate(){try{const node=document.getElementById('iron-pd-print-date');ironPDPrintDate=normalizeDate(node.value.trim()||ironPDToday());ironPDSelectedId=null;renderIronPD();}catch(error){toast(error.message);}}
+
+function ironPDNumber(value){const text=String(value??'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).replaceAll(',','').trim();return text===''?null:Number(text);}
+function ironPDDisplay(value){return value===undefined||value===null||value===''?'':esc(value);}
+function ironPDSum(values){const numbers=values.map(ironPDNumber).filter(n=>n!==null&&Number.isFinite(n));return numbers.length?numbers.reduce((a,b)=>a+b,0):'';}
+function ironPDDefect(row){return row?.[4]??'';}
+function ironPDComputedRows(rows){return ironPDHours.map((_,r)=>ironPDColumns.map((_,c)=>rows?.[r]?.[c]??''));}
+function ironPDLoad(record){const data=structuredClone(record.hourlyPD);ironPDDraft.fields=data.fields||{};const fields=ironPDDraft.fields;if(!fields.line&&/^Line-|^Unit-/i.test(fields.section||''))fields.line=fields.section;fields.section=ironPDTable(fields);fields.tableNo=fields.section;fields.date=record.date;ironPDApplySupervisor(fields);ironPDDraft.rows=ironPDComputedRows(data.rows);for(const key of ['targets','differences','achievements'])ironPDDraft[key]=data[key]||Array(5).fill('');ironPDEditId=record.id;ironPDPendingId=null;}
+function ironPDInput(value,attributes,readonly=false){return '<input '+attributes+' value="'+esc(value??'')+'" '+(readonly?'readonly':'')+' autocomplete="off">';}
+function ironPDPaper(readonly=false){ironPDApplySupervisor();ironPDDraft.rows=ironPDComputedRows(ironPDDraft.rows);return '<section class="iron-pd-paper" aria-label="Iron Wise Hourly Production"><h2>IRON WISE HOURLY PRODUCTION</h2><div class="iron-pd-details"><div class="iron-pd-field"><label for="iron-pd-date">Date</label>'+ironPDInput(ironPDDraft.fields.date||ironPDToday(),'id="iron-pd-date" data-iron-pd-field="date" placeholder="DD/MM/YYYY" maxlength="10"',readonly)+'</div>'+ironPDFields.map(([key,label])=>'<div class="iron-pd-field"><label for="iron-pd-'+key+'">'+label+'</label>'+(key==='section'?ironPDSectionControl(readonly):ironPDInput(ironPDDraft.fields[key],'id="iron-pd-'+key+'" data-iron-pd-field="'+key+'" type="'+(['workingPlan','hourlyTarget'].includes(key)?'number':'text')+'" '+(['workingPlan','hourlyTarget'].includes(key)?'min="0" step="1"':'maxlength="300"')+(key==='buyer'?' list="iron-pd-buyer-options"':key==='style'?' list="iron-pd-style-options"':''),readonly))+'</div>').join('')+'</div><div class="iron-pd-table-wrap"><table class="iron-pd-table"><thead><tr><th scope="col">Hourly</th>'+ironPDEntryColumns.map(([label])=>'<th scope="col">'+label+'</th>').join('')+'</tr></thead><tbody>'+ironPDHours.map((hour,row)=>'<tr><th scope="row">'+hour+'</th>'+ironPDEntryColumns.map(([label,col])=>'<td>'+ironPDInput(ironPDDraft.rows[row][col],'type="number" min="0" step="1" data-iron-pd-row="'+row+'" data-iron-pd-col="'+col+'" aria-label="'+hour+' '+label+'"',readonly)+'</td>').join('')+'</tr>').join('')+'</tbody><tfoot><tr><th>Total</th>'+ironPDEntryColumns.map(([,col])=>'<td><output data-iron-pd-total="'+col+'">'+ironPDDisplay(ironPDSum(ironPDDraft.rows.map(row=>row[col])))+'</output></td>').join('')+'</tr></tfoot></table></div><datalist id="iron-pd-buyer-options"></datalist><datalist id="iron-pd-style-options"></datalist>'+(!readonly?'<div class="iron-pd-save-actions no-print"><button type="button" data-iron-pd-save data-page-action-required="edit" '+(ironPDBusy?'disabled':'')+'>'+(ironPDBusy?'Saving…':'Save')+'</button></div>':'')+'</section>';}
+function ironPDStyleField(readonly=false){return ironPDPairField('style','Style',readonly);}
+function ironPDPairField(key,title,readonly=false){return '<div class="iron-pd-field" role="group" aria-label="'+title+'"><span class="iron-pd-manpower-label">'+title+'</span><div class="iron-pd-manpower-pair">'+[[key,'1st Machine'],[key+'Last','Last Machine']].map(([field,label])=>'<label for="iron-pd-'+field+'"><span>'+label+'</span>'+ironPDInput(ironPDDraft.fields[field],'id="iron-pd-'+field+'" data-iron-pd-field="'+field+'" maxlength="200"'+(key==='style'?' list="iron-pd-style-options"':''),readonly)+'</label>').join('')+'</div></div>';}
+function ironPDSuggestionValues(kind){return [...new Set(ironPDRecords().flatMap(row=>(kind==='buyer'?['buyer']:['style','styleLast']).map(key=>String(row.hourlyPD.fields?.[key]||'').trim())).filter(Boolean))];}
+function ironPDSuggest(node){const kind=node.dataset.ironPdField==='buyer'?'buyer':['style','styleLast'].includes(node.dataset.ironPdField)?'style':null;if(!kind)return;const list=document.getElementById('iron-pd-'+kind+'-options'),query=node.value.trim().toLocaleLowerCase();if(list)list.innerHTML=query.length<2?'':ironPDSuggestionValues(kind).filter(value=>value.toLocaleLowerCase().includes(query)).map(value=>'<option value="'+esc(value)+'"></option>').join('');}
+function ironPDDeletePrompt(id){if(!FarnoorAccess.canAction('output','edit'))return;const record=ironPDRecords().find(row=>row.id===id);if(!record)return;document.getElementById('ironPDDeleteDialog')?.remove();const dialog=document.createElement('dialog');dialog.id='ironPDDeleteDialog';dialog.innerHTML='<h3>এই রো ডিলেক্ট করবেন?</h3><p>'+esc(record.date)+' · Table '+esc(ironPDTable(record.hourlyPD.fields))+'</p><div class="dialog-actions"><button type="button" class="iron-pd-delete" data-confirm>OK</button><button type="button" data-cancel>Cancel</button></div>';dialog.querySelector('[data-cancel]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.querySelector('[data-confirm]').onclick=async()=>{if(ironPDBusy)return;const next={...state,records:{...state.records,output:state.records.output.slice()}},target=next.records.output.find(row=>row.id===id&&row.hourlyProduction&&!row.deletedAt);if(!target)return dialog.close();next.records.output=next.records.output.filter(row=>row.id!==id);ironPDBusy=true;dialog.querySelectorAll('button').forEach(button=>button.disabled=true);dialog.querySelector('[data-confirm]').textContent='Deleting…';try{if(await commit(next,{hourlyDelete:id})){if(ironPDEditId===id){ironPDEditId=null;ironPDPendingId=null;ironPDDraft.fields={};ironPDDraft.rows=ironPDHours.map(()=>Array(5).fill(''));}if(ironPDSelectedId===id)ironPDSelectedId=null;dialog.close();renderIronPD();toast('ডাটা ডিলেক্ট হয়েছে।');}}finally{ironPDBusy=false;if(dialog.open){dialog.querySelectorAll('button').forEach(button=>button.disabled=false);dialog.querySelector('[data-confirm]').textContent='OK';}}};document.body.append(dialog);dialog.showModal();}
+function ironPDManpowerTotal(fields,prefix){const op=ironPDNumber(fields[prefix+'Op']),assistant=ironPDNumber(fields[prefix+'Hp']);if(op!==null||assistant!==null)return (Number.isFinite(op)?op:0)+(Number.isFinite(assistant)?assistant:0);const old=ironPDNumber(fields[prefix+'Manpower']);return old!==null&&Number.isFinite(old)?old:'';}
+function ironPDManpowerField(key,label,readonly=false){const prefix=key==='layoutManpower'?'layout':'present';return '<div class="iron-pd-field iron-pd-manpower-field" role="group" aria-label="'+label+'"><span class="iron-pd-manpower-label">'+label+'</span><div class="iron-pd-manpower-pair">'+[['Op','Operator'],['Hp','Ast. Operator']].map(([suffix,title])=>'<label for="iron-pd-'+prefix+suffix+'"><span>'+title+'</span>'+ironPDInput(ironPDDraft.fields[prefix+suffix],'id="iron-pd-'+prefix+suffix+'" data-iron-pd-field="'+prefix+suffix+'" type="number" min="0" step="1"',readonly)+'</label>').join('')+'<span class="iron-pd-manpower-sum">Total: <output id="iron-pd-'+prefix+'-total">'+ironPDDisplay(ironPDManpowerTotal(ironPDDraft.fields,prefix))+'</output></span></div></div>';}
+// Preserve the template COUNT ranges: P:Y for first/last, P:Z for QC Pass.
+function ironPDCalculate(data){
+ const f=data.fields||{},rows=ironPDComputedRows(data.rows),numbers=rows.map(row=>row.map(ironPDNumber));
+ const count=(c,end)=>numbers.slice(0,end).filter(r=>r[c]!==null&&Number.isFinite(r[c])).length;
+ const totals=ironPDColumns.map((_,c)=>numbers.reduce((sum,r)=>sum+(Number.isFinite(r[c])?r[c]:0),0));
+ const iron=ironPDNumber(f.hourlyTarget),target=count=>iron!==null&&Number.isFinite(iron)?count*iron:null;
+ const first=target(count(0,10)),last=target(count(1,10)),pass=target(count(3,11));
+ const targets=[first===null?null:Math.round(first*1.1*1e9)/1e9,last,null,pass,null];
+ const differences=totals.map((total,c)=>c===2?totals[1]-total:targets[0]===null?null:Math.round((total-targets[0])*1e9)/1e9);
+ const divide=(a,b)=>b!==null&&Number.isFinite(b)&&b!==0?a/b:null;
+ const rates=[divide(totals[0],targets[0]),divide(totals[1],targets[1]),null,divide(totals[3],targets[3]),divide(totals[4],totals[2])];
+ const op=ironPDNumber(f.presentOp),hp=ironPDNumber(f.presentHp),present=op!==null||hp!==null?(op||0)+(hp||0):ironPDNumber(f.presentManpower)??0;
+ return {totals,targets,differences,rates,present};
+}
+function ironPDRateClass(rate,c){if(rate===null)return c===2?'iron-rate-red':'';if(c===4)return 'iron-rate-cyan';return rate>(c===0?1.1:.9)?'iron-rate-green':rate>=(c===0?1:.8)?'iron-rate-yellow':'iron-rate-red';}
+function ironPDPrintSheet(records){
+ records=records.slice().sort(ironPDCompare);
+ const source=v=>'<span class="iron-pd-value">'+ironPDDisplay(v)+'</span>',number=v=>v===null||v===undefined||v===''?'':Math.round(v).toString(),rate=v=>v===null||v===undefined?'':Math.round(v*100)+'%';
+ const cell=(v,attrs='',input=true)=>'<td '+attrs+'>'+(input?source(v):ironPDDisplay(v))+'</td>';
+ const widths=[4.386,2.924,6.8756,9.2463,7.8632,2.6074,2.5285,2.133,2.5285,2.8051,2.5285,2.5285,2.5285,2.5285,4.8204,...ironPDHours.map(()=>2.5285),2.5285,2.5285,2.5285,5.7691];
+ const calculations=records.map(r=>ironPDCalculate(r.hourlyPD));
+ const groups=records.map((record,index)=>{const d=record.hourlyPD,f=d.fields||{},a=calculations[index],computed=ironPDComputedRows(d.rows);return ironPDColumns.map((label,c)=>'<tr>'+(!c?cell(f.incharge,'rowspan="5" class="iron-incharge"')+cell(f.section,'rowspan="5"'):'')+cell(c===0?f.buyer:c===1?(f.buyerLast||f.buyer):'','class="iron-buyer"')+cell(c===0?f.style:c===1?(f.styleLast===undefined?f.style:f.styleLast):'','class="iron-style"')+cell(c===0?f.item:c===1?(f.itemLast===undefined?f.item:f.itemLast):'','class="iron-item"')+['layoutOp','layoutHp','layoutManpower','presentOp','presentHp','presentManpower'].map(key=>cell(!c?(key==='presentManpower'?a.present:f[key]):'')).join('')+(!c?cell(f.workingPlan,'rowspan="5"'):'')+cell(!c?f.hourlyTarget:'')+cell(number(a.targets[c]))+'<th class="iron-status iron-status-'+c+(c===0&&index>0?' iron-first-later':'')+'">'+label+'</th>'+ironPDHours.map((_,r)=>cell(computed[r][c])).join('')+cell(number(a.totals[c]),'class="iron-calculated '+(c===2?'iron-qc-total':'')+'"',false)+cell(c===2&&a.differences[c]<0?'('+number(-a.differences[c])+')':number(a.differences[c]),'class="iron-difference '+(c===2?'iron-qc-total':'')+'"',false)+cell(rate(a.rates[c]),'class="iron-achievement '+ironPDRateClass(a.rates[c],c)+'"',false)+(!c?cell(f.remarks,'rowspan="5" class="iron-remarks"'):'')+'</tr>').join('');}).join('');
+ const sumField=key=>ironPDSum(records.map((r,i)=>key==='presentManpower'?calculations[i].present:r.hourlyPD.fields?.[key]));
+ const sumMetric=c=>records.length?calculations.reduce((sum,a)=>sum+a.totals[c],0):null;
+ const unitTarget=ironPDSum(calculations.map(a=>a.targets[3]));
+ const summaryRate=c=>{const denominator=c===4?sumMetric(2):unitTarget;return denominator!==''&&denominator!==null&&denominator!==0?sumMetric(c)/denominator:null;};
+ const totalRate=summaryRate(3);
+ const footer='<tr class="iron-pd-total"><th colspan="5">Total</th>'+['layoutOp','layoutHp','layoutManpower','presentOp','presentHp','presentManpower'].map(key=>cell(records.length?(sumField(key)||0):'')).join('')+'<td></td>'+cell(sumField('hourlyTarget'))+cell(number(unitTarget))+'<th class="iron-status-3">Total QC Pass<br>Production</th>'+ironPDHours.map((_,h)=>cell(records.length?(ironPDSum(records.map(r=>r.hourlyPD.rows?.[h]?.[3]))||0):'')).join('')+cell(number(sumMetric(3)),'class="iron-calculated"',false)+cell(number(ironPDSum(calculations.map(a=>a.differences[3]))),'class="iron-calculated"',false)+cell(rate(totalRate),'class="iron-achievement '+ironPDRateClass(totalRate,3)+'"',false)+'<td></td></tr>';
+ return '<article class="iron-pd-print-sheet"><header><h2>Farnoor Garments Ltd</h2><h3>Iron Wise Hourly 1st m/c,Last m/c &amp; QC Pass Report</h3><div><b>Date:- <span class="iron-pd-value">'+esc((records[0]?.date||ironPDPrintDate||'').replaceAll('/','.'))+'</span></b><strong>1st Machine: <span class="iron-key-red">&lt;100,</span> <span class="iron-key-yellow">100&gt;,</span> <span class="iron-key-green">110/</span> Last Machine &amp; QC Pass: <span class="iron-key-red">&lt;80,</span> <span class="iron-key-yellow">80&gt;,</span> <span class="iron-key-green">90/</span></strong></div></header><table class="iron-pd-print-table"><colgroup>'+widths.map(w=>'<col style="width:'+w+'%">').join('')+'</colgroup><thead><tr>'+['Line incharge','Line','Buyer','Style','Item'].map(t=>'<th rowspan="2">'+t+'</th>').join('')+'<th colspan="3">Lay Out Man Power</th><th colspan="3">Use Man Power</th>'+['W.<br>Plan','Hourly<br>Target','Total<br>Target','Production<br>Status',...ironPDHours.map(t=>t.replace('-','-<br>')),'Total','<span class="iron-difference">Difference</span>','Acv %','Remarks'].map(t=>'<th rowspan="2">'+t+'</th>').join('')+'</tr><tr>'+Array(2).fill(['Op','Hp','Total'].map(t=>'<th>'+t+'</th>').join('')).join('')+'</tr></thead><tbody>'+groups+(records.length?'':'<tr><td colspan="30">Input Report থেকে একটি সেভ করা ইনপুট নির্বাচন করুন।</td></tr>')+footer+'</tbody></table><table class="iron-pd-summary"><colgroup><col style="width:31%"><col style="width:40%"><col style="width:29%"></colgroup><tbody><tr><th colspan="3">Farnoor Garments Ltd</th></tr><tr><th colspan="3">Iron Wise 1st m/c,Last m/c &amp; QC Pass Summary</th></tr><tr><th colspan="3">Total Summary</th></tr><tr><th>Unit Target</th><td>'+number(unitTarget)+'</td><th>TARGET %</th></tr>'+ironPDColumns.map((label,c)=>'<tr class="iron-summary-'+c+'"><th>Total '+label+'</th><td>'+number(sumMetric(c))+'</td><td>'+rate(summaryRate(c))+'</td></tr>').join('')+'</tbody></table></article>';
+}
+function ironPDReport(){const rows=ironPDRecords(),columns=[['tableNo','Table'],['incharge','Supervisor Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['qcName','Checker Name']];return '<section class="iron-pd-report"><h2>Input Report</h2><div class="table-wrap"><table><thead><tr><th>Date</th>'+columns.map(([,label])=>'<th>'+label+'</th>').join('')+'<th>Action</th></tr></thead><tbody>'+rows.map(row=>{const fields=row.hourlyPD.fields||{};return '<tr><td>'+esc(row.date)+'</td>'+columns.map(([key])=>'<td>'+esc(key==='tableNo'?ironPDTable(fields):fields[key]||'')+'</td>').join('')+'<td><button type="button" data-iron-pd-open="'+esc(row.id)+'">Open</button> <button type="button" data-iron-pd-select="'+esc(row.id)+'">Print</button> <button type="button" class="iron-pd-delete" data-page-action-required="edit" data-iron-pd-delete="'+esc(row.id)+'">▣ Delete</button></td></tr>';}).join('')+(rows.length?'':'<tr><td colspan="8">কোনো সেভ করা ইনপুট নেই।</td></tr>')+'</tbody></table></div></section>';}
+function ironPDPrintRows(){const rows=ironPDRecords();if(ironPDSelectedId)return rows.filter(r=>r.id===ironPDSelectedId);return rows.filter(r=>!ironPDPrintDate||r.date===ironPDPrintDate);}
+function ironPDPrintView(){const rows=ironPDPrintRows(),pages=[];for(const date of [...new Set(rows.map(r=>r.date))]){const dated=rows.filter(r=>r.date===date);for(let i=0;i<dated.length;i+=5)pages.push(dated.slice(i,i+5));}if(!pages.length)pages.push([]);return '<div class="iron-pd-print-actions no-print"><label>Date '+ironPDInput(ironPDPrintDate||ironPDToday(),'id="iron-pd-print-date" placeholder="DD/MM/YYYY" maxlength="10"')+'</label><button type="button" data-iron-pd-filter>Search</button><button type="button" data-iron-pd-print data-page-action-required="print">▧ Print</button></div>'+'<div class="iron-pd-edit-links no-print">'+rows.map(row=>'<button type="button" data-iron-pd-open="'+esc(row.id)+'" data-page-action-required="edit">✎ Edit '+esc(row.hourlyPD.fields?.section||'')+'</button>').join('')+'</div><div class="iron-pd-print-pages">'+pages.map(ironPDPrintSheet).join('')+'</div>';}
+function ironPDPrintHTML(records){const pages=[];for(const date of [...new Set(records.map(r=>r.date))]){const dated=records.filter(r=>r.date===date);for(let i=0;i<dated.length;i+=5)pages.push(dated.slice(i,i+5));}if(!pages.length)pages.push([]);return '<!doctype html><html><head><meta charset="utf-8"><title>Iron Wise Hourly Production</title><style>'+".iron-pd-print-sheet{box-sizing:border-box;background:#fff;color:#000;width:281mm;min-height:194mm;padding:12mm 0;margin:0 auto 20px;font:7pt/1.15 Arial,sans-serif;box-shadow:0 7px 24px #061a343d}\n.iron-pd-print-sheet header{background:#9dc3e6;border:0.5px solid #555;padding:0;color:#000}.iron-pd-print-sheet header h2{font:bold 12pt/1.15 Arial,sans-serif;letter-spacing:normal;text-align:center;margin:1px 0;border-bottom:0.5px solid #555}.iron-pd-print-sheet header h3{font:bold 8pt/1.2 Arial,sans-serif;text-align:center;margin:1px 0}.iron-pd-print-sheet header>div{display:flex;align-items:center;gap:12mm;min-height:4mm;padding:1mm 3mm;font-size:6pt;color:red}.iron-pd-print-sheet header strong{flex:1;text-align:center}.iron-key-red{color:red}.iron-key-yellow{color:#fffb00}.iron-key-green{color:#00a830}.iron-pd-value{color:#7030a0;font-weight:700}\n.iron-pd-print-table,.iron-pd-summary{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed;margin:0;color:#000}.iron-pd-print-table th,.iron-pd-print-table td{border:.5px solid #000;padding:.3mm .2mm;text-align:center;vertical-align:middle;white-space:normal;overflow-wrap:anywhere;font-size:5.4pt;line-height:1.1;height:3.35mm}.iron-pd-print-table thead th{background:#a9d18e;color:#000;font-size:5.3pt;font-weight:700}.iron-pd-print-table tbody tr>td:nth-child(4){font-weight:700}.iron-pd-print-table .iron-status{font-size:5.2pt;color:#000;font-weight:700}.iron-status-0{background:#b9e3ae}.iron-status-1{background:#9dc3e6}.iron-status-2{background:#ffff00}.iron-status-3{background:#f4b183}.iron-status-4{background:#4472c4}.iron-pd-total{font-weight:700}.iron-pd-total td,.iron-pd-total th{height:4mm}\n.iron-pd-summary th,.iron-pd-summary td{border:.5px solid #444;text-align:center;font:bold 8pt/1.15 Arial,sans-serif;padding:.8mm 1mm;height:4.5mm;box-sizing:border-box;white-space:normal}.iron-pd-summary tr:nth-child(1),.iron-pd-summary tr:nth-child(2){background:#002060;color:#fff}.iron-pd-summary tr:nth-child(3),.iron-pd-summary tr:nth-child(4){background:#00b0f0;color:#fff}.iron-pd-summary .iron-summary-0{background:#a9d18e}.iron-pd-summary .iron-summary-1{background:#9dc3e6;color:#fff}.iron-pd-summary .iron-summary-2{background:#000;color:#fff}.iron-pd-summary .iron-summary-2 td:nth-child(2){background:#9dc3e6}.iron-pd-summary .iron-summary-3{background:#ed7d31;color:#fff}.iron-pd-summary .iron-summary-4{background:#5b9bd5}\n\n/* Match the supplied iron Excel template. */\n.iron-pd-print-sheet .iron-style .iron-pd-value,.iron-pd-print-sheet .iron-item .iron-pd-value{font:bold 8.2pt/1.05 Calibri,Arial,sans-serif}\n.iron-pd-print-sheet .iron-buyer .iron-pd-value,.iron-pd-print-sheet .iron-incharge .iron-pd-value{font-size:6pt}\n.iron-pd-print-sheet .iron-calculated{color:#000;font-weight:700}\n.iron-pd-print-sheet .iron-difference{color:#f00;font-weight:700}\n.iron-pd-print-sheet .iron-qc-total{background:#ff0!important}\n.iron-pd-print-sheet .iron-achievement{font-weight:700;color:#000;background:#00b0f0}\n.iron-pd-print-sheet .iron-rate-red{background:#ff5050!important}.iron-pd-print-sheet .iron-rate-yellow{background:#ff0!important}.iron-pd-print-sheet .iron-rate-green{background:#00b050!important}.iron-pd-print-sheet .iron-rate-cyan{background:#00b0f0!important}\n.iron-pd-print-sheet .iron-status-0{background:#fff}.iron-pd-print-sheet .iron-first-later{background:#f7caac}.iron-pd-print-sheet .iron-status-1{background:#9cc2e5}.iron-pd-print-sheet .iron-status-3{background:#f4b083}\n.iron-pd-print-sheet header strong span{color:red}.iron-pd-print-sheet header b .iron-pd-value{margin-left:8mm}\n.iron-pd-print-sheet .iron-summary-4{color:#fff}\n\n\n@page{size:A4 landscape;margin:8mm}html,body{margin:0;padding:0;background:#fff}body{font-family:Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}.iron-pd-print-sheet{width:100%;max-width:none;min-height:0;padding:6mm 0 0;margin:0;box-shadow:none;break-after:page;break-inside:avoid}.iron-pd-print-sheet:last-child{break-after:auto}tr{break-inside:avoid}.iron-pd-summary>tbody>tr>th,.iron-pd-summary>tbody>tr>td{background-color:inherit;color:inherit;font-weight:700}.iron-pd-summary .iron-summary-2>td:nth-child(2){background-color:#9dc3e6}\n"+ '</style></head><body>'+pages.map(ironPDPrintSheet).join('')+'</body></html>';}
+function printIronPD(){
+ if(!FarnoorAccess.canAction('output','print'))return;
+ document.querySelectorAll('iframe[data-iron-print-frame]').forEach(node=>node.remove());
+ const frame=document.createElement('iframe');frame.dataset.ironPrintFrame='true';frame.title='Iron Wise Hourly Production Print';frame.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;opacity:0;border:0';
+ frame.addEventListener('load',async()=>{try{await frame.contentDocument.fonts.ready;frame.contentWindow.addEventListener('afterprint',()=>{frame.dataset.printed='true';},{once:true});frame.contentWindow.focus();frame.contentWindow.print();}catch(error){frame.remove();toast(error.message);}},{once:true});
+ frame.srcdoc=ironPDPrintHTML(ironPDPrintRows());document.body.append(frame);
+}
+function renderIronPD(){
+ const nav=[['new-input','✚','New Input'],['print','▧','Print'],['input-report','▤','Input Report']];
+ $('#main').innerHTML='<div class="iron-pd-workspace"><nav class="iron-pd-nav no-print" aria-label="Iron Wise Hourly PD pages">'+nav.map(([key,icon,name])=>'<button type="button" data-iron-pd-view="'+key+'" class="iron-pd-'+key+'" aria-pressed="'+(ironPDView===key)+'"><span aria-hidden="true">'+icon+'</span> '+name+'</button>').join('')+'</nav>'+(ironPDView==='input-report'?ironPDReport():ironPDView==='print'?ironPDPrintView():ironPDPaper())+'</div>';
+ if(typeof applyActionControls==='function')applyActionControls();
+}
+async function saveIronPD(){
+ if(ironPDBusy)return;if(!FarnoorAccess.canAction('output','edit'))return toast('Edit permission is required.');
+ try{
+  const fields={...ironPDDraft.fields,date:normalizeDate(ironPDDraft.fields.date||ironPDToday())};
+  fields.section=ironPDSection(fields.section);if(!fields.section)throw Error('Table লিখুন।');if(fields.section.length>120)throw Error('Table-এর লেখা বেশি বড় হয়েছে।');fields.tableNo=fields.section;ironPDApplySupervisor(fields);fields.ironFormVersion='2';for(const key of ['styleLast','itemLast','buyerLast','qcNameLast'])fields[key]='';
+  if(Object.values(fields).some(v=>String(v).length>300))throw Error('ঘরের লেখা বেশি বড় হয়েছে।');
+  const number=(value,negative=false)=>{if(value==='')return '';const n=ironPDNumber(value);if(n===null)return '';if(!Number.isFinite(n)||(!negative&&n<0))throw Error('সংখ্যার ঘরে সঠিক সংখ্যা লিখুন।');return String(n);};
+  const data={fields,rows:ironPDComputedRows(ironPDDraft.rows).map(row=>row.map((v,col)=>col<2?'':number(v))),targets:ironPDDraft.targets.map(v=>number(v)),differences:ironPDDraft.differences.map(v=>number(v,true)),achievements:ironPDDraft.achievements.map(v=>number(v))};
+  for(const key of ['workingPlan','hourlyTarget','layoutManpower','presentManpower','layoutOp','layoutHp','presentOp','presentHp'])if(fields[key]!==undefined)fields[key]=number(fields[key]);
+  for(const prefix of ['layout','present']){const total=ironPDManpowerTotal(fields,prefix);fields[prefix+'Manpower']=total===''?'':String(total);}
+  const next=structuredClone(state),rows=next.records.output||[],key=ironPDKey(fields.date,fields.section),canonical=ironPDRecords().find(r=>ironPDKey(r.date,ironPDTable(r.hourlyPD.fields))===key),existing=canonical&&rows.find(r=>r.id===canonical.id);
+  if(ironPDEditId&&!rows.some(r=>r.id===ironPDEditId&&r.hourlyProduction))throw Error('এই ইনপুট পাওয়া যাচ্ছে না। Refresh করে দেখুন।');
+  const record={...existing,id:existing?.id||(ironPDPendingId||=crypto.randomUUID()),reference:String(fields.section).slice(0,120),name:[fields.buyer,fields.style].filter(Boolean).join(' / ').slice(0,200)||('Table '+fields.section).slice(0,200),date:fields.date,quantity:Number(ironPDSum(data.rows.map(r=>r[3]))||0),status:'Completed',hourlyProduction:true,hourlyPDKind:'iron',hourlyPD:data,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  if(existing)rows[rows.indexOf(existing)]=record;else rows.unshift(record);next.records.output=rows;
+  ironPDBusy=true;renderIronPD();
+  if(await commit(next,{hourlyOutput:record})){ironPDEditId=record.id;ironPDPendingId=null;ironPDSelectedId=record.id;ironPDPrintDate=record.date;ironPDView='input-report';toast('Iron Hourly Production saved online.');if(typeof ironPDAutoEmailSaved==='function')ironPDAutoEmailSaved(record,existing);}
+ }catch(error){toast(error.message);}finally{ironPDBusy=false;if(activePage===ironPDPage)renderIronPD();}
+}
+const ironPDPreviousRenderPage=renderPage;
+renderPage=function(...args){if(activePage===ironPDPage)return renderIronPD();return ironPDPreviousRenderPage.apply(this,args);};
+document.getElementById('main').addEventListener('click',event=>{
+ if(activePage!==ironPDPage)return;
+ const remove=event.target.closest('[data-iron-pd-delete]');if(remove){ironPDDeletePrompt(remove.dataset.ironPdDelete);return;}
+ const button=event.target.closest('[data-iron-pd-view]');
+ if(button){ironPDView=button.dataset.ironPdView;if(ironPDView==='new-input'&&ironPDEditId){ironPDDraft.fields={};ironPDDraft.rows=ironPDHours.map(()=>Array(5).fill(''));for(const key of ['targets','differences','achievements'])ironPDDraft[key]=Array(5).fill('');ironPDEditId=null;ironPDPendingId=null;}if(ironPDView==='print'){ironPDSelectedId=null;ironPDPrintDate||=ironPDToday();}renderIronPD();return;}
+ if(event.target.closest('[data-iron-pd-save]')){void saveIronPD();return;}
+ const open=event.target.closest('[data-iron-pd-open]'),select=event.target.closest('[data-iron-pd-select]');
+ if(open||select){const row=ironPDRecords().find(r=>r.id===(open?.dataset.ironPdOpen||select?.dataset.ironPdSelect));if(!row)return;if(open){ironPDLoad(row);ironPDView='new-input';}else{ironPDSelectedId=row.id;ironPDPrintDate=row.date;ironPDView='print';}renderIronPD();return;}
+ if(event.target.closest('[data-iron-pd-filter]')){ironPDApplyPrintDate();return;}
+ if(event.target.closest('[data-iron-pd-print]'))printIronPD();
+});
+document.getElementById('main').addEventListener('input',event=>{
+ if(activePage!==ironPDPage)return;
+ const node=event.target;ironPDSuggest(node);
+ if(node.dataset.ironPdField)ironPDDraft.fields[node.dataset.ironPdField]=node.value;
+ if(node.dataset.ironPdField==='section'){const name=ironPDApplySupervisor(ironPDDraft.fields,true),input=document.getElementById('iron-pd-incharge');if(input)input.value=name;}
+ if(['layoutOp','layoutHp','presentOp','presentHp'].includes(node.dataset.ironPdField)){const prefix=node.dataset.ironPdField.startsWith('layout')?'layout':'present',op=ironPDNumber(ironPDDraft.fields[prefix+'Op']),assistant=ironPDNumber(ironPDDraft.fields[prefix+'Hp']),total=op===null&&assistant===null?'':(op||0)+(assistant||0);ironPDDraft.fields[prefix+'Manpower']=total===''?'':String(total);document.getElementById('iron-pd-'+prefix+'-total').textContent=String(total);}
+
+ if(node.dataset.ironPdExtra)ironPDDraft[node.dataset.ironPdExtra][Number(node.dataset.ironPdMetric)]=node.value;
+ if(node.dataset.ironPdRow!==undefined){const row=Number(node.dataset.ironPdRow);ironPDDraft.rows[row][Number(node.dataset.ironPdCol)]=node.value;document.querySelectorAll('[data-iron-pd-total]').forEach(output=>output.textContent=String(ironPDSum(ironPDDraft.rows.map(row=>row[Number(output.dataset.ironPdTotal)]))));}
+});
+
+document.getElementById('main').addEventListener('change',event=>{
+ if(activePage!==ironPDPage)return;
+ if(event.target.id==='iron-pd-print-date'){ironPDApplyPrintDate();return;}
+ if(event.target.id==='iron-pd-date'){try{event.target.value=normalizeDate(event.target.value||ironPDToday());ironPDDraft.fields.date=event.target.value;ironPDLookupInput();}catch(error){toast(error.message);}return;}
+ if(event.target.id!=='iron-pd-section')return;
+ const section=ironPDSection(event.target.value);event.target.value=section;ironPDDraft.fields.section=section;ironPDDraft.fields.tableNo=section;ironPDLookupInput();
+});
+document.getElementById('main').addEventListener('keydown',event=>{if(activePage===ironPDPage&&event.target.id==='iron-pd-print-date'&&event.key==='Enter'){event.preventDefault();ironPDApplyPrintDate();}});
+
+// Enter moves through visible entry controls, then focuses Save before saving.
+document.getElementById('main').addEventListener('keydown',event=>{
+ if(activePage!==ironPDPage||ironPDView!=='new-input'||event.key!=='Enter'||event.isComposing||event.keyCode===229||event.ctrlKey||event.altKey||event.metaKey||event.shiftKey)return;
+ const target=event.target;if(!target.closest('.iron-pd-paper'))return;
+ const save=target.closest('[data-iron-pd-save]');
+ if(!save&&!target.matches('[data-iron-pd-field],[data-iron-pd-row]'))return;
+ event.preventDefault();if(event.repeat||ironPDBusy)return;
+ if(save){if(!save.disabled)save.click();return;}
+ const key=node=>node.id||'hour:'+node.dataset.ironPdRow+':'+node.dataset.ironPdCol,current=key(target);
+ if(target.id==='iron-pd-date'){try{target.value=normalizeDate(target.value||ironPDToday());ironPDDraft.fields.date=target.value;ironPDLookupInput();}catch(error){toast(error.message);target.focus();return;}}
+ else if(target.id==='iron-pd-section')ironPDLookupInput();
+ const fields=[...document.querySelectorAll('.iron-pd-paper [data-iron-pd-field],.iron-pd-paper [data-iron-pd-row]')].filter(node=>!node.disabled&&!node.readOnly&&node.type!=='hidden'),index=fields.findIndex(node=>key(node)===current);
+ if(index<0)return;
+ const next=fields[index+1]||document.querySelector('.iron-pd-paper [data-iron-pd-save]');
+ if(next&&!next.disabled){next.focus();if(next.tagName==='INPUT'&&next.type==='text')next.select();}
+});
+
+;
+;/* iron-report-export.js */
+'use strict';
+let ironExportBusy=false,ironEmailDraft=null;
+const ironExportPreviousView=ironPDPrintView;
+ironPDPrintView=function(){return ironExportPreviousView().replace('</div><div class="iron-pd-edit-links', '<button type="button" class="iron-image-button" data-iron-image data-page-action-required="pdf">▣ Copy Image</button><button type="button" class="iron-email-button" data-iron-email data-page-action-required="pdf">✉ ইমেইল পাঠান</button></div><div class="iron-pd-edit-links');};
+const ironExportStyle=document.createElement('style');ironExportStyle.textContent='.iron-image-button{background:#e0f2fe!important;color:#075985!important;border:1px solid #38bdf8!important}.iron-email-button{background:#f3e8ff!important;color:#6b21a8!important;border:1px solid #c084fc!important}#ironEmailDialog{width:min(740px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:14px;padding:24px;color:#172b42}#ironEmailDialog::backdrop{background:#071e3acc}#ironEmailDialog img{display:block;width:100%;height:auto;border:1px solid #cbd5e1;margin:12px 0}#ironEmailDialog input{box-sizing:border-box;width:100%;padding:10px;border:1px solid #94a3b8;border-radius:7px}#ironEmailDialog .dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}#ironEmailDialog button{padding:10px 16px}#ironEmailStatus{white-space:pre-wrap}';document.head.append(ironExportStyle);
+function ironExportRecords(){if(!FarnoorAccess.canAction('output','pdf'))throw Error('Report export permission is required.');const records=ironPDPrintRows();if(!records.length)throw Error('এই তারিখে সেভ করা ইনপুট নেই।');return structuredClone(records);}
+async function ironReportImages(records,copy=false){
+ const frame=document.createElement('iframe');frame.title='রিপোর্টের ছবি প্রস্তুত হচ্ছে';frame.style.cssText='position:fixed;left:-20000px;top:0;width:1123px;height:794px;border:0;pointer-events:none';
+ try{
+  const ready=new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=()=>reject(Error('রিপোর্ট প্রস্তুত করা যায়নি।'));});frame.srcdoc=ironPDPrintHTML(records);document.body.append(frame);await ready;
+  const doc=frame.contentDocument;const style=doc.createElement('style');style.textContent='html,body{width:1123px;margin:0;background:#fff}.iron-pd-print-sheet{width:1062px!important;min-height:0!important;margin:0 auto!important;padding:0!important;box-sizing:border-box!important;box-shadow:none!important}.iron-pd-print-sheet table th,.iron-pd-print-sheet table td,.iron-pd-print-sheet header,.iron-pd-print-sheet header h2{border-width:.35px!important}.iron-pd-print-sheet .qf-table th,.iron-pd-print-sheet .qf-table td{font-size:6.4pt!important;line-height:1.15!important}';doc.head.append(style);
+  await doc.fonts.ready;await personalLoadPdfLibrary(frame.contentWindow);
+  const images=[],sheets=[...doc.querySelectorAll('.iron-pd-print-sheet')];
+  for(let i=0;i<sheets.length;i++){
+   const rendered=await frame.contentWindow.html2pdf().set({margin:0,jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},html2canvas:{scale:6,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,scrollX:0,scrollY:0}}).from(sheets[i]).toCanvas().get('canvas');const canvas=ironTrimCanvas(rendered);
+   // Encode while the rendering document is alive; never pass its canvas out.
+   if(copy){if(!ironCanvasHasReport(canvas))throw Error('রিপোর্টের ছবি সাদা এসেছে। আবার Copy Image চাপুন।');images.push({png:canvas.toDataURL('image/png'),width:canvas.width,height:canvas.height});continue;}
+   const jpg=canvas.toDataURL('image/jpeg',1),name='Iron-Wise-Hourly-PD-'+records[0].date.replaceAll('/','-')+'-'+(i+1)+'.jpg';images.push({jpg,name});
+  }
+  return images;
+ }finally{frame.remove();}
+}
+function ironTrimCanvas(source){const context=source.getContext('2d'),pixels=context.getImageData(0,0,source.width,source.height).data;let left=source.width,right=-1,top=source.height,bottom=-1;for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++){const i=(y*source.width+x)*4;if(pixels[i+3]&&Math.min(pixels[i],pixels[i+1],pixels[i+2])<245){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}}if(right<left)return source;left=Math.max(0,left-2);top=Math.max(0,top-2);right=Math.min(source.width-1,right+2);bottom=Math.min(source.height-1,bottom+2);const canvas=document.createElement('canvas');canvas.width=right-left+1;canvas.height=bottom-top+1;canvas.getContext('2d').drawImage(source,left,top,canvas.width,canvas.height,0,0,canvas.width,canvas.height);return canvas;}
+function ironCanvasHasReport(canvas){const sample=document.createElement('canvas');sample.width=64;sample.height=64;const context=sample.getContext('2d');context.drawImage(canvas,0,0,64,64);const pixels=context.getImageData(0,0,64,64).data;let ink=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]>0&&Math.min(pixels[i],pixels[i+1],pixels[i+2])<235)ink++;return ink>20;}
+async function ironClipboardBlob(records){
+ const pages=await ironReportImages(records,true);
+ if(pages.length===1)return new Blob([Uint8Array.from(atob(pages[0].png.split(',')[1]),c=>c.charCodeAt(0))],{type:'image/png'});
+ const canvas=document.createElement('canvas');canvas.width=Math.max(...pages.map(p=>p.width));canvas.height=pages.reduce((sum,p)=>sum+p.height,0);if(canvas.height>16384)throw Error('কম পেইজ নির্বাচন করে Copy Image চাপুন।');
+ const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);let top=0;for(const page of pages){const image=new Image();image.src=page.png;await image.decode();context.drawImage(image,0,top);top+=page.height;}
+ if(!ironCanvasHasReport(canvas))throw Error('রিপোর্টের ছবি সাদা এসেছে। আবার Copy Image চাপুন।');
+ return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('ছবি কপি করার জন্য প্রস্তুত হয়নি।')),'image/png'));
+}
+async function ironCopyImage(records){let timer;const image=ironClipboardBlob(records);try{await Promise.race([navigator.clipboard.write([new ClipboardItem({'image/png':image})]),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('সফটওয়্যার পেইজ সামনে রেখে আবার Copy Image চাপুন।')),30000);})]);ironCopyPreview(await image);}finally{clearTimeout(timer);}}
+function ironCopyPreview(blob){document.getElementById('ironCopyPreview')?.remove();const dialog=document.createElement('dialog'),url=URL.createObjectURL(blob);dialog.id='ironCopyPreview';dialog.style.cssText='width:min(1000px,92vw);max-height:90vh;overflow:auto;border:0;border-radius:12px;padding:20px';dialog.innerHTML='<h2 style="margin-top:0">Image copied</h2><p>এই ছবিটি কপি হয়েছে। WhatsApp বা অন্য অ্যাপে Ctrl+V দিয়ে পেস্ট করুন।</p><img alt="Copied production report" style="width:100%;height:auto" src="'+url+'"><div class="dialog-actions"><button type="button">Close</button></div>';dialog.addEventListener('close',()=>{URL.revokeObjectURL(url);dialog.remove();},{once:true});dialog.querySelector('button').onclick=()=>dialog.close();document.body.append(dialog);dialog.showModal();}
+async function ironEmailRequest(route,payload){const response=await FarnoorAPI.request(route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await response.json();if(!response.ok)throw Object.assign(Error(result.error||'ইমেইল অনুরোধ সম্পন্ন হয়নি।'),{status:response.status});return result;}
+function ironCloseEmail(){const dialog=document.getElementById('ironEmailDialog');if(dialog?.dataset.sending==='true')return;dialog?.close();dialog?.remove();ironEmailDraft=null;}
+function ironShowEmail(records,images){
+ document.getElementById('ironEmailDialog')?.remove();ironEmailDraft={records,images,requestId:crypto.randomUUID()};
+ const dialog=document.createElement('dialog');dialog.id='ironEmailDialog';dialog.innerHTML='<form id="ironEmailForm"><h2>✉ রিপোর্টের ছবি ইমেইল করুন</h2><p>'+esc(records[0].date)+' · '+records.map(r=>esc(r.hourlyPD.fields.section)).join(', ')+'</p><label for="ironEmailTo">প্রাপকের ইমেইল (একাধিক হলে কমা দিন)</label><input id="ironEmailTo" type="email" multiple required maxlength="2600" placeholder="name@example.com"><p>নিচের '+images.length+'টি JPG ছবি সংযুক্ত হবে।</p>'+images.map(image=>'<img src="'+image.jpg+'" alt="'+esc(image.name)+'">').join('')+'<p id="ironEmailStatus" role="status"></p><div class="dialog-actions"><button type="button" data-iron-email-cancel>Cancel</button><button type="submit" class="primary">পাঠানো নিশ্চিত করুন</button></div></form>';
+ document.body.append(dialog);dialog.addEventListener('cancel',event=>{if(dialog.dataset.sending==='true')event.preventDefault();else ironEmailDraft=null;});dialog.querySelector('[data-iron-email-cancel]').onclick=ironCloseEmail;dialog.querySelector('form').onsubmit=ironSendEmail;dialog.showModal();
+}
+async function ironSendEmail(event){
+ event.preventDefault();const draft=ironEmailDraft,dialog=document.getElementById('ironEmailDialog');if(!draft||dialog.dataset.sending==='true')return;
+ const to=[...new Set(document.getElementById('ironEmailTo').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean))],status=document.getElementById('ironEmailStatus');if(!to.length||to.length>10){status.textContent='১–১০টি ইমেইল ঠিকানা দিন।';return;}
+ dialog.dataset.sending='true';dialog.querySelectorAll('button,input').forEach(node=>node.disabled=true);status.textContent='ইমেইল পাঠানো হচ্ছে…';
+ try{
+  const sent=await ironEmailRequest('/api/hourly-output/email',{reportKind:'iron',to,requestId:draft.requestId,reports:draft.records.map(r=>({id:r.id,version:r.updatedAt||r.createdAt})),images:draft.images.map(image=>({name:image.name,jpg:image.jpg.split(',')[1]}))});
+  let job;for(let i=0;i<40;i++){await new Promise(resolve=>setTimeout(resolve,1500));job=await ironEmailRequest('/api/hourly-output/email/job',{key:sent.jobKey});if(job.status!=='processing')break;}
+  if(job?.status==='accepted'){status.textContent='Gmail '+job.accepted+' জন প্রাপকের জন্য ইমেইল গ্রহণ করেছে।';dialog.querySelector('button[type=submit]').hidden=true;dialog.querySelector('[data-iron-email-cancel]').textContent='Close';}
+  else if(job?.status==='processing'){status.textContent='ইমেইল এখনও প্রক্রিয়াধীন। আবার পাঠালে একই অনুরোধের অবস্থা দেখা হবে।';}
+  else throw Error(job?.error||'ইমেইল পাঠানো যায়নি।');
+ }catch(error){status.textContent=error.message;}finally{dialog.dataset.sending='false';dialog.querySelectorAll('button,input').forEach(node=>node.disabled=false);}
+}
+document.getElementById('main').addEventListener('click',async event=>{
+ const button=event.target.closest('[data-iron-image],[data-iron-email]');if(!button||activePage!==ironPDPage||ironExportBusy)return;
+ ironExportBusy=true;button.disabled=true;const title=button.textContent;button.textContent='ছবি প্রস্তুত হচ্ছে…';
+ try{const records=ironExportRecords();if(button.hasAttribute('data-iron-email'))ironShowEmail(records,await ironReportImages(records));else{if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw Error('এই ব্রাউজারে ছবি কপি সমর্থিত নয়। Chrome বা Edge ব্যবহার করুন।');await ironCopyImage(records);toast('Image copied. এখন Ctrl+V দিয়ে পেস্ট করুন।');}}
+ catch(error){toast(error.name==='NotAllowedError'?'ছবি কপি করার অনুমতি পাওয়া যায়নি। ব্রাউজারে Clipboard অনুমতি দিয়ে আবার Copy Image চাপুন।':error.message);}finally{ironExportBusy=false;button.disabled=false;button.textContent=title;}
+});
+
+;
+;/* iron-finishing-print.js */
+'use strict';
+// The finishing workbook is a layout reference; all report values use saved inputs.
+function ironFinishingCalculate(data){
+ const rows=ironPDComputedRows(data.rows),target=ironPDNumber(data.fields?.hourlyTarget);
+ const totals=[2,3,4].map(col=>rows.reduce((sum,row)=>sum+(ironPDNumber(row[col])??0),0));
+ const targets=[2,3].map(col=>target===null||!Number.isFinite(target)?null:rows.filter(row=>{const n=ironPDNumber(row[col]);return n!==null&&Number.isFinite(n);}).length*target);
+ const divide=(a,b)=>b!==null&&Number.isFinite(b)&&b!==0?a/b:null;
+ return {rows,totals,targets,differences:[targets[0]===null?null:totals[0]-targets[0],targets[1]===null?null:totals[1]-targets[1],totals[2]],rates:[divide(totals[0],targets[0]),divide(totals[1],targets[1]),divide(totals[2],totals[0])]};
+}
+ironPDPrintSheet=function(records){
+ records=records.slice().sort(ironPDCompare);
+ const source=value=>'<span class="iron-pd-value">'+ironPDDisplay(value)+'</span>';
+ const number=value=>value===null||value===undefined||value===''?'':String(Math.round(value*1e9)/1e9);
+ const rate=value=>value===null||value===undefined?'':Math.round(value*100)+'%';
+ const cell=(value,attrs='',input=true)=>'<td '+attrs+'>'+(input?source(value):ironPDDisplay(value))+'</td>';
+ const columns=[15.85546875,24,22,30,25,20.28515625,9.140625,9.140625,9.140625,17.42578125,...ironPDHours.map(()=>9.140625),9.140625,15,9.140625,18.85546875];
+ const width=columns.reduce((a,b)=>a+b,0),calculations=records.map(record=>ironFinishingCalculate(record.hourlyPD));
+ const color=(value,defect=false)=>defect?'qf-rate-cyan':value===null?'':value>.9?'qf-rate-green':value>=.8?'qf-rate-yellow':'qf-rate-red';
+ const body=records.map((record,index)=>{const fields=record.hourlyPD.fields||{},a=calculations[index],tableNo=ironPDTable(fields)||String(index+1),supervisor=ironPDSupervisors[ironPDSection(tableNo)]??fields.incharge;return [2,3,4].map((col,row)=>'<tr class="qf-detail qf-detail-'+row+'">'+(!row?cell(tableNo,'rowspan="3" class="qf-table-no"'):'')+
+  cell(row===1?supervisor:'','class="qf-supervisor"')+cell(row===1?fields.buyer:'','class="qf-buyer"')+
+  cell(row===1?fields.style:row===2?(fields.styleLast===undefined?fields.style:fields.styleLast):'','class="qf-style"')+
+  cell(row===1?fields.item:row===2?(fields.itemLast===undefined?fields.item:fields.itemLast):'','class="qf-item"')+
+  cell(row===1?(fields.qcName||(fields.ironFormVersion==='2'?'':fields.incharge)):row===2?fields.qcNameLast:'','class="qf-name"')+
+  (!row?cell(fields.workingPlan,'rowspan="3"'):'')+cell(!row?fields.hourlyTarget:'')+cell(row<2?number(a.targets[row]):'')+
+  '<th class="qf-status qf-status-'+row+'">'+['QC Check','QC Pass','Defect'][row]+'</th>'+
+  ironPDHours.map((_,hour)=>cell(a.rows[hour][col])).join('')+
+  cell(number(a.totals[row]),'class="qf-calculated '+(!row?'qf-check-total':'')+'"',false)+
+  cell(number(a.differences[row]),'class="qf-difference"',false)+
+  cell(rate(a.rates[row]),'class="qf-achievement '+color(a.rates[row],row===2)+'"',false)+
+  (!row?cell(fields.remarks,'rowspan="3" class="qf-remarks"'):'')+'</tr>').join('');}).join('');
+ const sum=values=>records.length?ironPDSum(values):'';
+ const target=sum(calculations.map(a=>a.targets[1])),totals=[0,1,2].map(col=>sum(calculations.map(a=>a.totals[col])));
+ const divide=(a,b)=>b!==''&&b!==null&&b!==0?a/b:null;
+ const summaryRates=[divide(totals[0],target),divide(totals[1],target),divide(totals[2],totals[0])];
+ const footer='<tr class="iron-pd-total"><th colspan="5">Total</th><td></td><td></td>'+cell(sum(records.map(r=>r.hourlyPD.fields?.hourlyTarget)),'',false)+cell(number(target),'',false)+'<th class="qf-status-1">Total QC Pass<br>Production</th>'+ironPDHours.map((_,hour)=>cell(sum(calculations.map(a=>a.rows[hour][3])),'',false)).join('')+cell(number(totals[1]),'',false)+cell(target===''?'':number(totals[1]-target),'',false)+cell(rate(summaryRates[1]),'',false)+'<td></td></tr>';
+ const sumWidth=columns.slice(0,5).reduce((a,b)=>a+b,0)/width*100,midWidth=columns.slice(5,15).reduce((a,b)=>a+b,0)/width*100;
+ return '<article class="iron-pd-print-sheet iron-finishing-report"><header><h2>Farnoor Garments Ltd</h2><h3>Table Wise Hourly Iron Production Report</h3><div><b>Date:- <span class="qf-date">'+esc((records[0]?.date||ironPDPrintDate||'').replaceAll('/','.'))+'</span></b></div></header><table class="iron-pd-print-table qf-table"><colgroup>'+columns.map(value=>'<col style="width:'+(value/width*100)+'%">').join('')+'</colgroup><thead><tr>'+['Table No','Supervisor Name','Buyer','Style','Item','Name','W. Plan','Hourly<br>Target','Total<br>Target','Production<br>Status',...ironPDHours.map(hour=>hour.replace('-','-<br>')),'Total','Difference','Acv %','Remarks'].map((label,index)=>'<th scope="col"'+(index===22?' class="qf-difference"':'')+'>'+label+'</th>').join('')+'</tr></thead><tbody>'+body+(records.length?'':'<tr><td colspan="25">Input Report থেকে সেভ করা ডাটা নির্বাচন করুন।</td></tr>')+footer+'</tbody></table><table class="iron-pd-summary qf-summary"><colgroup><col style="width:'+sumWidth+'%"><col style="width:'+midWidth+'%"><col style="width:'+(100-sumWidth-midWidth)+'%"></colgroup><tbody><tr><th colspan="3">Farnoor Garments Ltd</th></tr><tr><th colspan="3">Table Wise Iron Production Summary</th></tr><tr><th colspan="3">Total Summary</th></tr><tr><th>Unit Target</th><td>'+number(target)+'</td><th>TARGET %</th></tr>'+['QC Check','QC Pass','Defect'].map((label,index)=>'<tr class="qf-summary-'+index+'"><th>Total '+label+'</th><td>'+number(totals[index])+'</td><td>'+rate(summaryRates[index])+'</td></tr>').join('')+'</tbody></table></article>';
+};
+const ironFinishingCSS=`
+.iron-finishing-report{font-family:Tahoma,Arial,sans-serif!important;min-height:0!important;padding:0!important}
+.iron-finishing-report header{background:#9cc2e5;border:.5px solid #000;color:#000}
+.iron-finishing-report header h2{font:bold 15pt/1.2 Tahoma,Arial,sans-serif;margin:0;padding:1mm;border-bottom:.5px solid #000}
+.iron-finishing-report header h3{font:bold 9.2pt/1.2 Tahoma,Arial,sans-serif;margin:0;padding:1.5mm 0;border:0}
+.iron-finishing-report header>div{min-height:5mm;padding:.6mm 3mm;font:bold 7.5pt/1.2 Tahoma,Arial,sans-serif;color:red}
+.iron-finishing-report .qf-date{margin-left:10mm;color:red}
+.iron-finishing-report .qf-table th,.iron-finishing-report .qf-table td{font-size:6.2pt!important;line-height:1.15!important;padding:.35mm .2mm!important;height:5.2mm;border:.5px solid #000!important;box-sizing:border-box;overflow-wrap:anywhere}
+.iron-finishing-report .qf-table thead th{background:#a8d08d;color:#000;font-size:5.8pt!important;height:10mm;font-weight:700}
+.iron-finishing-report .iron-pd-value{color:#7030a0;font-weight:700}
+.iron-finishing-report .qf-table-no .iron-pd-value{font-size:9pt}
+.iron-finishing-report .qf-style,.iron-finishing-report .qf-item,.iron-finishing-report .qf-buyer,.iron-finishing-report .qf-name{font-weight:700}
+.iron-finishing-report .qf-status{font-weight:700;color:#000}.iron-finishing-report .qf-status-0{background:#ff0!important}.iron-finishing-report .qf-status-1{background:#f4b083!important}.iron-finishing-report .qf-status-2{background:#4472c4!important}
+.iron-finishing-report .qf-calculated{color:#000;font-weight:700}.iron-finishing-report .qf-check-total{background:#ff0!important}
+.iron-finishing-report .qf-difference{color:red!important;font-weight:700}.iron-finishing-report .qf-achievement{color:#000;font-weight:700}
+.iron-finishing-report .qf-rate-green{background:#00b050!important}.iron-finishing-report .qf-rate-yellow{background:#ff0!important}.iron-finishing-report .qf-rate-red{background:#ff5050!important}.iron-finishing-report .qf-rate-cyan{background:#00b0f0!important}
+.iron-finishing-report .qf-table tbody tr.qf-detail-0>*{border-top-width:1px!important}.iron-finishing-report .iron-pd-total>*{font-weight:700;height:6mm}
+.iron-finishing-report .qf-summary th,.iron-finishing-report .qf-summary td{font:bold 9pt/1.15 Tahoma,Arial,sans-serif!important;height:6.5mm;padding:.8mm 1mm!important;border:.5px solid #000!important;box-sizing:border-box}
+.iron-finishing-report .qf-summary tr:nth-child(-n+2){background:#002060;color:#fff}.iron-finishing-report .qf-summary tr:nth-child(3),.iron-finishing-report .qf-summary tr:nth-child(4){background:#00b0f0;color:#fff}.iron-finishing-report .qf-summary tr:nth-child(4)>td{color:#000}
+.iron-finishing-report .qf-summary-0{background:#000!important;color:#fff!important}.iron-finishing-report .qf-summary .qf-summary-0>td:nth-child(2){background:#f4b083!important;color:#000!important}
+.iron-finishing-report .qf-summary-1{background:#ed7d31!important;color:#fff!important}.iron-finishing-report .qf-summary .qf-summary-1>td:nth-child(2){color:#000!important}
+.iron-finishing-report .qf-summary-2{background:#5b9bd5!important;color:#fff!important}.iron-finishing-report .qf-summary .qf-summary-2>td:nth-child(2){color:#000!important}
+@media screen{.iron-pd-print-pages{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.iron-pd-print-pages .iron-finishing-report{width:281mm;min-width:281mm;max-width:none;margin-left:auto;margin-right:auto}.iron-pd-print-pages .iron-finishing-report .qf-table th,.iron-pd-print-pages .iron-finishing-report .qf-table td{overflow-wrap:normal;word-break:normal}.iron-pd-print-pages .iron-finishing-report .qf-table tr>*:nth-child(n+11):nth-child(-n+24){white-space:nowrap}}
+@media print{.iron-finishing-report .qf-table th,.iron-finishing-report .qf-table td{font-size:6.2pt!important}.iron-finishing-report .qf-summary th,.iron-finishing-report .qf-summary td{font-size:9pt!important}.iron-finishing-report{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+`;
+const ironFinishingStyle=document.createElement('style');ironFinishingStyle.textContent=ironFinishingCSS;document.head.append(ironFinishingStyle);
+const ironFinishingPreviousPrintHTML=ironPDPrintHTML;
+ironPDPrintHTML=function(records){return ironFinishingPreviousPrintHTML(records).replace('</style>',ironFinishingCSS+'</style>');};
 
 ;
