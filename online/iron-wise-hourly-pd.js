@@ -102,8 +102,8 @@ async function saveIronPD(){
   const record={...existing,id:existing?.id||(ironPDPendingId||=crypto.randomUUID()),reference:String(fields.section).slice(0,120),name:[fields.buyer,fields.style].filter(Boolean).join(' / ').slice(0,200)||('Table '+fields.section).slice(0,200),date:fields.date,quantity:Number(ironPDSum(data.rows.map(r=>r[3]))||0),status:'Completed',hourlyProduction:true,hourlyPDKind:'iron',hourlyPD:data,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
   if(existing)rows[rows.indexOf(existing)]=record;else rows.unshift(record);next.records.output=rows;
   ironPDBusy=true;renderIronPD();
-  if(await commit(next,{hourlyOutput:record})){ironPDEditId=record.id;ironPDPendingId=null;ironPDSelectedId=record.id;ironPDPrintDate=record.date;ironPDView='input-report';toast('Iron Hourly Production saved online.');if(typeof ironPDAutoEmailSaved==='function')ironPDAutoEmailSaved(record,existing);}
- }catch(error){toast(error.message);}finally{ironPDBusy=false;if(activePage===ironPDPage)renderIronPD();}
+  if(await commit(next,{hourlyOutput:record})){ironPDEditId=record.id;ironPDPendingId=null;ironPDSelectedId=record.id;ironPDPrintDate=record.date;ironPDView='input-report';toast('Iron Hourly Production saved online.');if(typeof ironPDAutoEmailSaved==='function')ironPDAutoEmailSaved(record,existing);return true;}return false;
+ }catch(error){toast(error.message);return false;}finally{ironPDBusy=false;if(activePage===ironPDPage)renderIronPD();}
 }
 const ironPDPreviousRenderPage=renderPage;
 renderPage=function(...args){if(activePage===ironPDPage)return renderIronPD();return ironPDPreviousRenderPage.apply(this,args);};
