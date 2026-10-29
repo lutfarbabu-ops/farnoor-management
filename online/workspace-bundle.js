@@ -6431,16 +6431,16 @@ function sampleDailySection(fields){return /^sample[ ._-]*2$|^2$/i.test(String(f
 samplePDPrintSheet=function(records){
  records=records.slice().sort(samplePDCompare);
  const text=v=>samplePDDisplay(v),date=records[0]?.date||samplePDPrintDate||samplePDToday();
- const widths=[9.14,31,19.14,22.43,26.14,18.57,18.57,25.85,19.14,19.14,17.85,19.71,19.57],width=widths.reduce((a,b)=>a+b,0);
+ const widths=[9.14,31,19.14,19.14,22.43,26.14,18.57,18.57,25.85,19.14,17.85,19.71,19.57],width=widths.reduce((a,b)=>a+b,0);
  const cell=(value,cls='')=>'<td class="'+cls+'"><span class="sample-pd-value">'+text(value)+'</span></td>';
  const groups=['SAMPLE-1','SAMPLE-2'].map(section=>{
   const rows=records.filter(r=>sampleDailySection(r.hourlyPD.fields||{})===section),min=section==='SAMPLE-1'?8:7;
   const details=Array.from({length:Math.max(min,rows.length)},(_,i)=>{
    const r=rows[i],f=r?.hourlyPD.fields||{},a=r?sampleFinishingCalculate(r.hourlyPD):{};
-   return '<tr class="sd-detail">'+cell(r?f.sl||i+1:i+1)+cell(f.ironManName||f.qcName)+cell(r?f.sampleStartDate||r.date:'')+cell(f.buyer)+cell(f.style)+cell(a.qty,'sd-qty')+cell(a.sizeQty)+cell(f.item)+cell(f.sampleStartTime,'sd-start')+cell(f.sampleEndDate,'sd-end-date')+cell(f.sampleEndTime,'sd-end-time')+cell(a.complete)+cell(f.remarks)+'</tr>';
+   return '<tr class="sd-detail">'+cell(r?f.sl||i+1:i+1)+cell(f.ironManName||f.qcName)+cell(r?f.sampleStartDate||r.date:'')+cell(f.sampleStartTime,'sd-start')+cell(f.buyer)+cell(f.style)+cell(a.qty,'sd-qty')+cell(a.sizeQty)+cell(f.item)+cell(f.sampleEndDate,'sd-end-date')+cell(f.sampleEndTime,'sd-end-time')+cell(a.complete)+cell(f.remarks)+'</tr>';
   }).join('');
   const total=key=>rows.length?samplePDSum(rows.map(r=>sampleFinishingCalculate(r.hourlyPD)[key])):'';
-  return '<section class="sd-section"><header><h2>FARNOOR GARMENTS LTD.</h2><h3>DAILY SAMPLE PRODUCTION REPORT</h3><div class="sd-meta"><b>SECTION: '+section+'</b><b>DATE : <span class="sample-pd-value">'+text(date)+'</span></b></div></header><table class="sample-pd-print-table sd-table"><colgroup>'+widths.map(w=>'<col style="width:'+(w/width*100)+'%">').join('')+'</colgroup><thead><tr>'+['SL','SAMPLE MAN NAME','DATE','BUYER','STYLE','QTY','SIZE QTY','ITEM','START TIME','END DATE','END TIME','DAILY COMPLETE SAMPLE','REMARKS'].map(t=>'<th scope="col">'+t+'</th>').join('')+'</tr></thead><tbody>'+details+'<tr class="sd-total"><td colspan="4"></td><th>TOTAL</th>'+cell(total('qty'),'sd-qty')+cell(total('sizeQty'))+'<td colspan="4"></td>'+cell(total('complete'),'sd-complete')+'<td></td></tr></tbody></table></section>';
+  return '<section class="sd-section"><header><h2>FARNOOR GARMENTS LTD.</h2><h3>DAILY SAMPLE PRODUCTION REPORT</h3><div class="sd-meta"><b>SECTION: '+section+'</b><b>DATE : <span class="sample-pd-value">'+text(date)+'</span></b></div></header><table class="sample-pd-print-table sd-table"><colgroup>'+widths.map(w=>'<col style="width:'+(w/width*100)+'%">').join('')+'</colgroup><thead><tr>'+['SL','SAMPLE MAN NAME','DATE','START TIME','BUYER','STYLE','QTY','SIZE QTY','ITEM','END DATE','END TIME','DAILY COMPLETE SAMPLE','REMARK'].map(t=>'<th scope="col">'+t+'</th>').join('')+'</tr></thead><tbody>'+details+'<tr class="sd-total"><td colspan="5"></td><th>TOTAL</th>'+cell(total('qty'),'sd-qty')+cell(total('sizeQty'))+'<td colspan="3"></td>'+cell(total('complete'),'sd-complete')+'<td></td></tr></tbody></table></section>';
  }).join('');
  return '<article class="sample-pd-print-sheet sample-daily-report">'+groups+'</article>';
 };
