@@ -2291,7 +2291,7 @@ $('#main').addEventListener('mousedown',event=>{if(event.target.closest?.('[data
 $('#main').addEventListener('click',event=>{if(document.body.dataset.activeDepartment!=='requistion'||!window.FarnoorAccess?.canPage('requistion-new-input'))return;const choice=event.target.closest?.('[data-requistion-choice]');if(choice){requistionRequesterChoose(choice.dataset.requistionChoice,choice.dataset.requistionValue);return;}const toggle=event.target.closest?.('[data-requistion-dropdown]');if(toggle){const key=toggle.dataset.requistionDropdown,menu=document.getElementById('requistion-'+key+'-choices');if(menu&&!menu.hidden)requistionRequesterCloseChoices();else{requistionRequesterShowChoices(key,true);document.getElementById('requistion-request-'+key)?.focus();}return;}if(!event.target.closest?.('.requistion-combobox'))requistionRequesterCloseChoices();});
 $('#main').addEventListener('keydown',event=>{const input=event.target;if(!['requistion-request-company','requistion-request-department','requistion-request-name'].includes(input.id)||event.isComposing)return;const key=input.id.replace('requistion-request-',''),menu=document.getElementById('requistion-'+key+'-choices');if(!menu)return;if(event.key==='Escape'){requistionRequesterCloseChoices();return;}if(['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();if(menu.hidden)requistionRequesterShowChoices(key,true);const options=[...menu.querySelectorAll('[data-requistion-choice]')];if(!options.length)return;let index=Number(menu.dataset.activeIndex??-1);index=event.key==='ArrowDown'?Math.min(index+1,options.length-1):Math.max(index-1,0);menu.dataset.activeIndex=String(index);options.forEach((option,i)=>{option.setAttribute('aria-selected',String(i===index));option.classList.toggle('active',i===index);});input.setAttribute('aria-activedescendant',options[index].id);options[index].scrollIntoView({block:'nearest'});return;}if(event.key==='Enter'){event.preventDefault();const options=[...menu.querySelectorAll('[data-requistion-choice]')],selected=!menu.hidden?options[Number(menu.dataset.activeIndex)]:null;if(selected)requistionRequesterChoose(key,selected.dataset.requistionValue);else requistionRequesterChange(event,true);}});
 let requistionEntryWide=false;
-function requistionNewView(){const ready=requistionRequesterReady();return '<div class="requistion-entry-toolbar"><button type="button" data-requistion-full-page aria-pressed="'+requistionEntryWide+'">'+(requistionEntryWide?'↙ Exit Full Page':'⛶ Full Page')+'</button></div><details class="requistion-entry-selection" '+(ready?'':'open')+'><summary>Company / Department / Prepared by</summary>'+requistionRequesterPicker()+'</details>'+(ready?requistionNewPaper():'');}
+function requistionNewView(){const ready=requistionRequesterReady();return '<div class="requistion-entry-toolbar"><button type="button" data-requistion-full-page aria-pressed="'+requistionEntryWide+'">'+(requistionEntryWide?'↙ Exit Full Page':'⛶ Full Page')+'</button></div><details class="requistion-entry-selection" '+(ready?'':'open')+'><summary>Company / Department / Prepared by</summary>'+requistionRequesterPicker()+'</details>'+(ready?requistionNewPaper():'')+(typeof requistionElectricalMenu==='function'?requistionElectricalMenu():'');}
 function requistionRowHasData(row){return requistionNewColumns.some(([key])=>String(row[key]??'').trim());}
 function requistionApprovalView(){return requistionNewRows.some(requistionRowHasData)?requistionNewPaper(true):'<section class="requistion-home"><h2>Approval</h2><p>No requisition entries yet.</p></section>';}
 $('#main').addEventListener('click',event=>{if(event.target.closest?.('[data-requistion-full-page]')&&document.body.dataset.requistionView==='new-input'&&window.FarnoorAccess?.canPage('requistion-new-input')){requistionEntryWide=!requistionEntryWide;renderRequistion('new-input');$('#main').scrollIntoView?.({block:'start'});}});
@@ -2302,11 +2302,11 @@ $('#main').addEventListener('change',event=>requistionRequesterChange(event,true
 const requistionNewColumns=[['description','DESCRIPTION'],['location','LOCATION'],['size','SIZE'],['qty','QTY'],['unitPrice','UNIT PRICE'],['totalPrice','TOTAL PRICE'],['remarks','REMARKS']];
 let requistionNewRows=[{}];
 function requistionCurrentDate(){return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dhaka',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date());}
-function requistionNewRow(row,index,approval=false){const editable=!approval&&window.FarnoorAccess?.canAction('requistion-new-input','edit')===true,canApprove=approval&&window.FarnoorAccess?.canAction('requistion-approval','edit')===true;return '<tr><td class="requistion-sl">'+(index+1)+'</td>'+requistionNewColumns.map(([key,label])=>'<td><input type="text" data-requistion-new-row="'+index+'" data-requistion-new-field="'+key+'" aria-label="'+label+' row '+(index+1)+'" '+(['qty','unitPrice','totalPrice'].includes(key)?'inputmode="decimal" ':'')+'value="'+esc(row[key]||'')+'" '+(editable?'':'readonly')+'></td>').join('')+(approval?['accept','reject'].map(mark=>'<td class="requistion-mark-cell"><label class="requistion-mark requistion-mark-'+mark+'"><input type="checkbox" data-requistion-new-row="'+index+'" data-requistion-mark="'+mark+'" aria-label="'+(mark==='accept'?'Green tick':'Red cross')+' row '+(index+1)+'" '+(row.mark===mark?'checked ':'')+(canApprove?'':'disabled')+'><span aria-hidden="true">'+(mark==='accept'?'✓':'✕')+'</span></label></td>').join(''):'')+'</tr>';}
+function requistionNewRow(row,index,approval=false){const editable=!approval&&window.FarnoorAccess?.canAction('requistion-new-input','edit')===true,canApprove=approval&&window.FarnoorAccess?.canAction('requistion-approval','edit')===true;return '<tr><td class="requistion-sl">'+(index+1)+'</td>'+requistionNewColumns.map(([key,label])=>{const control='<input type="text" data-requistion-new-row="'+index+'" data-requistion-new-field="'+key+'" aria-label="'+label+' row '+(index+1)+'" '+(['qty','unitPrice','totalPrice'].includes(key)?'inputmode="decimal" ':'')+'value="'+esc(row[key]||'')+'" '+(editable?'':'readonly')+'>';return '<td>'+(!approval&&key==='description'&&typeof requistionElectricalInput==='function'?requistionElectricalInput(control,index,editable):control)+'</td>';}).join('')+(approval?['accept','reject'].map(mark=>'<td class="requistion-mark-cell"><label class="requistion-mark requistion-mark-'+mark+'"><input type="checkbox" data-requistion-new-row="'+index+'" data-requistion-mark="'+mark+'" aria-label="'+(mark==='accept'?'Green tick':'Red cross')+' row '+(index+1)+'" '+(row.mark===mark?'checked ':'')+(canApprove?'':'disabled')+'><span aria-hidden="true">'+(mark==='accept'?'✓':'✕')+'</span></label></td>').join(''):'')+'</tr>';}
 function requistionNewPaper(approval=false){return '<section class="requistion-list-paper requistion-new-paper"><header class="requistion-new-company"><img src="Farnoor_New_Logo.png" alt="Farnoor logo" width="80" height="80"><div><h1>'+esc(requistionCurrentCompany().name)+'</h1><p>'+esc(requistionCurrentCompany().address)+'</p></div></header><p class="requistion-new-date">Date: <time>'+requistionCurrentDate()+'</time></p><h2 class="requistion-new-title">REQUISTION</h2><div class="requistion-request-details"><span><strong>Department:</strong> '+esc(requistionRequester.department.trim())+'</span><span><strong>Prepared by:</strong> '+esc(requistionRequester.name)+'</span></div><div class="requistion-list-scroll"><table class="requistion-list-table requistion-new-table"><colgroup>'+(approval?[4,25,12,8,7,11,11,14,4,4]:[5,24,13,9,8,13,13,15]).map(width=>'<col style="width:'+width+'%">').join('')+'</colgroup><thead><tr><th rowspan="2" scope="col">SL</th><th rowspan="2" scope="col">DESCRIPTION</th><th rowspan="2" scope="col">LOCATION</th><th rowspan="2" scope="col">SIZE</th><th rowspan="2" scope="col">QTY</th><th colspan="2" scope="colgroup">APPRIX RATE</th><th rowspan="2" scope="col">REMARKS</th>'+(approval?'<th rowspan="2" scope="col" class="requistion-mark-accept" aria-label="Green tick">✓</th><th rowspan="2" scope="col" class="requistion-mark-reject" aria-label="Red cross">✕</th>':'')+'</tr><tr><th scope="col">UNIT PRICE</th><th scope="col">TOTAL PRICE</th></tr></thead><tbody id="'+(approval?'requistionApprovalBody':'requistionNewBody')+'">'+requistionNewRows.map((row,index)=>({row,index})).filter(item=>!approval||requistionRowHasData(item.row)).map(item=>requistionNewRow(item.row,item.index,approval)).join('')+'</tbody></table></div><footer class="requistion-signatures">'+['Prepared by','Checked by','Head of Production','General Manager','Managing Director'].map(label=>'<span>'+label+'</span>').join('')+'</footer></section>';}
 $('#main').addEventListener('input',event=>{const input=event.target;if(document.body.dataset.requistionView!=='new-input'||!input.matches?.('[data-requistion-new-field]')||!window.FarnoorAccess?.canAction('requistion-new-input','edit'))return;const row=requistionNewRows[Number(input.dataset.requistionNewRow)];if(row){if(row[input.dataset.requistionNewField]!==input.value)row.mark='';row[input.dataset.requistionNewField]=input.value;}});
 $('#main').addEventListener('change',event=>{const input=event.target;if(document.body.dataset.requistionView!=='approval'||!input.matches?.('[data-requistion-mark]')||!window.FarnoorAccess?.canAction('requistion-approval','edit'))return;const index=Number(input.dataset.requistionNewRow),row=requistionNewRows[index];if(!row)return;row.mark=input.checked?input.dataset.requistionMark:'';document.querySelectorAll('[data-requistion-new-row="'+index+'"][data-requistion-mark]').forEach(box=>box.checked=box.dataset.requistionMark===row.mark);});
-$('#main').addEventListener('keydown',event=>{const input=event.target;if(document.body.dataset.requistionView!=='new-input'||event.key!=='Enter'||event.isComposing||!input.matches?.('[data-requistion-new-field]')||!window.FarnoorAccess?.canAction('requistion-new-input','edit'))return;event.preventDefault();const index=Number(input.dataset.requistionNewRow),row=requistionNewRows[index];if(!row)return;if(row[input.dataset.requistionNewField]!==input.value)row.mark='';row[input.dataset.requistionNewField]=input.value;const next=index+1;if(!requistionNewRows[next]){requistionNewRows.push({});$('#requistionNewBody').insertAdjacentHTML('beforeend',requistionNewRow(requistionNewRows[next],next));}document.querySelector('[data-requistion-new-row="'+next+'"][data-requistion-new-field="description"]')?.focus();});
+$('#main').addEventListener('keydown',event=>{const input=event.target;if(event.defaultPrevented||document.body.dataset.requistionView!=='new-input'||event.key!=='Enter'||event.isComposing||!input.matches?.('[data-requistion-new-field]')||!window.FarnoorAccess?.canAction('requistion-new-input','edit'))return;event.preventDefault();const index=Number(input.dataset.requistionNewRow),row=requistionNewRows[index];if(!row)return;if(row[input.dataset.requistionNewField]!==input.value)row.mark='';row[input.dataset.requistionNewField]=input.value;const next=index+1;if(!requistionNewRows[next]){requistionNewRows.push({});$('#requistionNewBody').insertAdjacentHTML('beforeend',requistionNewRow(requistionNewRows[next],next));}document.querySelector('[data-requistion-new-row="'+next+'"][data-requistion-new-field="description"]')?.focus();});
 function renderRequistion(view=''){
  document.body.dataset.requistionView=view;
  const tabs=[['new-input','New Requistion','✚'],['input-report','Requistion List','▤'],['approval','Approval','✓'],['print','Print','▧']].filter(([key])=>window.FarnoorAccess?.canPage('requistion-'+key)),selected=tabs.find(t=>t[0]===view);
@@ -2360,6 +2360,115 @@ if(document.modelContext?.registerTool){
 
 
 function confirmBackupRestore(){return new Promise(resolve=>{const dialog=document.createElement('dialog');dialog.style.cssText='max-width:440px;padding:24px;border:1px solid #ccd7d0;border-radius:12px;color:#173d2f';dialog.innerHTML='<h3>Restore backup?</h3><p>This replaces the current workspace with the selected backup. Keep a download of your current data before continuing.</p><div style="display:flex;gap:12px;justify-content:flex-end"><button type="button" data-restore-cancel>Cancel</button><button type="button" data-restore-confirm>Restore selected backup</button></div>';const finish=value=>{dialog.close();dialog.remove();resolve(value);};dialog.querySelector('[data-restore-cancel]').onclick=()=>finish(false);dialog.querySelector('[data-restore-confirm]').onclick=()=>finish(true);dialog.oncancel=e=>{e.preventDefault();finish(false);};document.body.append(dialog);dialog.showModal();});}
+
+;
+;/* requistion-electrical-items.js */
+'use strict';
+const requistionElectricalItems=[
+ "Socket",
+ "Tube Light",
+ "Cable",
+ "Capacitor",
+ "Iron Termoster",
+ "Iron Termoster (Sewing)",
+ "Iron Kye",
+ "Iron Kye (Boiler)",
+ "Switch",
+ "Switch Machine",
+ "Micro Switch",
+ "Iron Switch",
+ "V Belt",
+ "A Belt",
+ "B Belt",
+ "M Belt",
+ "LED Light",
+ "Light",
+ "Light Holder",
+ "P/M Lifter Spring",
+ "Padel Clum",
+ "Padel Rod",
+ "Iron Pipe",
+ "Lifter Nut",
+ "Lifter Clum Nuka",
+ "Hit Gum",
+ "Ika Gum",
+ "Plug",
+ "Plug Male-Female (Industrial)",
+ "Ceiling Fan Replacement",
+ "Ica",
+ "Ic",
+ "Battery",
+ "Iron Tatal",
+ "Iron Tatal Bit",
+ "Multi Meter",
+ "Max",
+ "Tweezers",
+ "Iron Bit",
+ "Carbon",
+ "Snap Ring Pliers",
+ "Tester",
+ "Star Screw Driver",
+ "Star Screw",
+ "Fuse",
+ "Fan Demer",
+ "Fan Capacitor",
+ "Jack Cable",
+ "Jack",
+ "M/C Jack",
+ "Bearing",
+ "Motor Bearing",
+ "Doyer Channel",
+ "Display",
+ "Pasting",
+ "Basin Piler Coc",
+ "Basin Caniction Pipe",
+ "Basin Magic Pipe",
+ "Motor Cocsheet",
+ "Motor Cocsheet Base",
+ "Motor Cocsit",
+ "M/C Motor Poly",
+ "Motor Capacitor",
+ "Motor Tube",
+ "Lay Cutting Knife",
+ "Anty Cutter Knife",
+ "Iron Sonolight Bulb",
+ "Iron Back Cover",
+ "Magnet Contact",
+ "Magnet Contact (Iron Table)",
+ "Rubber",
+ "Liquid",
+ "SS Nut",
+ "Nut",
+ "Nut Washer",
+ "Guti Set",
+ "Grease",
+ "Electric PVC Tap",
+ "Capacitor (Fusing Machine)",
+ "Relay (Fusing Machine)",
+ "Base",
+ "Rifter Spring",
+ "Thread Stand",
+ "Tay Rod",
+ "Anchor Bolt",
+ "Water Tap",
+ "Water Filter Cartridge",
+ "Sunf Button MC Super Wire"
+];
+function requistionIsElectrical(){return requistionSuggestionKey(requistionRequester.department)==='electrical';}
+function requistionElectricalEditable(){return requistionIsElectrical()&&document.body.dataset.requistionView==='new-input'&&window.FarnoorAccess?.canAction('requistion-new-input','edit')===true;}
+function requistionElectricalSuggestions(value,all=false){const match=requistionSuggestionKey(value);return all?requistionElectricalItems: Array.from(match).length<2?[]:requistionElectricalItems.filter(item=>requistionSuggestionKey(item).includes(match));}
+function requistionElectricalInput(control,index,editable){if(!editable||!requistionIsElectrical())return control;return '<div class="requistion-electrical-input">'+control.replace('<input ','<input id="requistion-electrical-'+index+'" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="requistion-electrical-menu" data-requistion-electrical-input="'+index+'" autocomplete="off" ')+'<button type="button" class="requistion-electrical-toggle" data-requistion-electrical-toggle="'+index+'" aria-label="Show DESCRIPTION items row '+(index+1)+'"><span aria-hidden="true">▾</span></button></div>';}
+function requistionElectricalMenu(){return requistionIsElectrical()&&window.FarnoorAccess?.canAction('requistion-new-input','edit')?'<div id="requistion-electrical-menu" class="requistion-electrical-menu" role="listbox" aria-label="Electrical DESCRIPTION items" hidden></div>':'';}
+function requistionElectricalClose(){const menu=document.getElementById('requistion-electrical-menu');if(!menu)return;menu.hidden=true;document.querySelectorAll('[data-requistion-electrical-input]').forEach(input=>{input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');});}
+function requistionElectricalShow(index,all=false){if(!requistionElectricalEditable())return;const input=document.getElementById('requistion-electrical-'+index),menu=document.getElementById('requistion-electrical-menu');if(!input||!menu)return;requistionElectricalClose();const values=requistionElectricalSuggestions(input.value,all);menu.innerHTML=values.map((value,i)=>'<button type="button" role="option" tabindex="-1" id="requistion-electrical-choice-'+i+'" aria-selected="false" data-requistion-electrical-choice="'+esc(value)+'">'+esc(value)+'</button>').join('');menu.dataset.row=String(index);menu.dataset.activeIndex='-1';menu.hidden=!values.length;input.setAttribute('aria-expanded',String(!menu.hidden));if(menu.hidden)return;const rect=input.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=document.documentElement.clientHeight,width=Math.min(Math.max(rect.width,270),vw-16),below=vh-rect.bottom-12,above=rect.top-12,up=below<180&&above>below,height=Math.min(240,Math.max(60,up?above:below));menu.style.width=width+'px';menu.style.left=Math.max(8,Math.min(rect.left,vw-width-8))+'px';menu.style.maxHeight=height+'px';menu.style.top=(up?Math.max(8,rect.top-Math.min(height,values.length*38+8)-4):rect.bottom+4)+'px';}
+function requistionElectricalChoose(value,index){if(!requistionElectricalEditable()||!requistionElectricalItems.includes(value))return;const row=requistionNewRows[index],input=document.getElementById('requistion-electrical-'+index);if(!row||!input)return;if(row.description!==value)row.mark='';row.description=value;input.value=value;requistionElectricalClose();input.focus();}
+$('#main').addEventListener('input',event=>{const input=event.target;if(input.dataset.requistionElectricalInput!==undefined&&!event.isComposing)requistionElectricalShow(Number(input.dataset.requistionElectricalInput));});
+$('#main').addEventListener('mousedown',event=>{if(event.target.closest?.('[data-requistion-electrical-choice],[data-requistion-electrical-toggle]'))event.preventDefault();});
+$('#main').addEventListener('click',event=>{const option=event.target.closest?.('[data-requistion-electrical-choice]'),toggle=event.target.closest?.('[data-requistion-electrical-toggle]'),menu=document.getElementById('requistion-electrical-menu');if(option&&menu){requistionElectricalChoose(option.dataset.requistionElectricalChoice,Number(menu.dataset.row));return;}if(toggle){const index=Number(toggle.dataset.requistionElectricalToggle);if(menu&&!menu.hidden&&Number(menu.dataset.row)===index)requistionElectricalClose();else{requistionElectricalShow(index,true);document.getElementById('requistion-electrical-'+index)?.focus();}return;}if(!event.target.closest?.('.requistion-electrical-input,.requistion-electrical-menu'))requistionElectricalClose();});
+// Capture Enter before the entry table's next-row handler.
+$('#main').addEventListener('keydown',event=>{const input=event.target;if(input.dataset.requistionElectricalInput===undefined||event.isComposing||!requistionElectricalEditable())return;const index=Number(input.dataset.requistionElectricalInput),menu=document.getElementById('requistion-electrical-menu');if(!menu)return;if(event.key==='Escape'){event.preventDefault();requistionElectricalClose();return;}if(['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();if(menu.hidden||Number(menu.dataset.row)!==index)requistionElectricalShow(index,true);const options=[...menu.querySelectorAll('[data-requistion-electrical-choice]')];if(!options.length)return;let active=Number(menu.dataset.activeIndex??-1);active=event.key==='ArrowDown'?Math.min(active+1,options.length-1):Math.max(active-1,0);menu.dataset.activeIndex=String(active);options.forEach((option,i)=>{option.setAttribute('aria-selected',String(i===active));option.classList.toggle('active',i===active);});input.setAttribute('aria-activedescendant',options[active].id);options[active].scrollIntoView({block:'nearest'});return;}if(event.key==='Enter'&&!menu.hidden&&Number(menu.dataset.row)===index){const selected=menu.querySelectorAll('[data-requistion-electrical-choice]')[Number(menu.dataset.activeIndex)];if(selected){event.preventDefault();event.stopImmediatePropagation();requistionElectricalChoose(selected.dataset.requistionElectricalChoice,index);}else requistionElectricalClose();}},true);
+window.addEventListener?.('resize',requistionElectricalClose);
+document.addEventListener?.('scroll',event=>{const menu=document.getElementById('requistion-electrical-menu');if(menu&&!menu.hidden&&!menu.contains(event.target))requistionElectricalClose();},true);
 
 ;
 ;/* xlsx-export.js */
