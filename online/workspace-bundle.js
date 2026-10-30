@@ -2104,7 +2104,7 @@ window.DEPARTMENTS.find(d=>d.id==='admin').pages.push(...[['admin-warning-first-
 {const production=window.DEPARTMENTS.find(d=>d.id==='production');const index=production.pages.findIndex(p=>p.id==='production-quality-wise-hourly-pd');production.pages.splice(index+1,0,{id:'production-sample',name:'Sample',navPath:['Sample'],groupEntry:true,icon:'✂',shade:'#f9dfef',navigationOnly:true,permissionPage:'output'},{id:'production-sample-wise-hourly-pd',name:'Sample Wise Hourly PD',navPath:['Sample'],icon:'◴',shade:'#e0ecff',navigationOnly:true,permissionPage:'output'});}
 
 // Main Requistion department; child pages can be added without changing existing registers.
-{const pages=[['new-input','New Requistion','✚','#dff6ed'],['print','Print','▧','#fff1d8'],['input-report','Requistion List','▤','#eee4ff']].map(([key,name,icon,shade])=>({id:'requistion-'+key,name,icon,shade,navigationOnly:true}));window.DEPARTMENTS.push({id:'requistion',name:'Requistion',icon:'📋',color:'#534bc4',pages});window.FARNOOR_PAGE_CATALOG.push(...pages.map(p=>({id:p.id,name:p.name,module:'Requistion',moduleId:'requistion',parent:'',hidden:false,resources:[]})));}
+{const pages=[['new-input','New Requistion','✚','#dff6ed'],['print','Print','▧','#fff1d8'],['input-report','Requistion List','▤','#eee4ff'],['approval','Approval','✓','#dceeff']].map(([key,name,icon,shade])=>({id:'requistion-'+key,name,icon,shade,navigationOnly:true}));window.DEPARTMENTS.push({id:'requistion',name:'Requistion',icon:'📋',color:'#534bc4',pages});window.FARNOOR_PAGE_CATALOG.push(...pages.map(p=>({id:p.id,name:p.name,module:'Requistion',moduleId:'requistion',parent:'',hidden:false,resources:[]})));}
 
 ;
 ;/* payroll-core.js */
@@ -2274,7 +2274,7 @@ function requistionListEnter(event){const input=event.target;if(event.key!=='Ent
 $('#main').addEventListener('input',event=>{const input=event.target;if(!input.matches?.('[data-requistion-field]')||!window.FarnoorAccess?.canAction('requistion-input-report','edit'))return;const row=requistionListRows[Number(input.dataset.requistionRow)];if(row)row[input.dataset.requistionField]=input.value;});
 $('#main').addEventListener('keydown',requistionListEnter);
 function renderRequistion(view=''){
- const tabs=[['new-input','New Requistion','✚'],['input-report','Requistion List','▤']].filter(([key])=>window.FarnoorAccess?.canPage('requistion-'+key)),selected=tabs.find(t=>t[0]===view);
+ const tabs=[['new-input','New Requistion','✚'],['input-report','Requistion List','▤'],['approval','Approval','✓']].filter(([key])=>window.FarnoorAccess?.canPage('requistion-'+key)),selected=tabs.find(t=>t[0]===view);
  $('#main').innerHTML='<section class="requistion-workspace"><nav class="requistion-tabs" aria-label="Requistion pages">'+tabs.map(([key,label,icon])=>'<button type="button" class="requistion-tab requistion-tab-'+key+'" data-requistion-view="'+key+'" aria-pressed="'+(view===key)+'"><span aria-hidden="true">'+icon+'</span> '+label+'</button>').join('')+'</nav>'+(view==='input-report'?requistionListPaper():'<section class="requistion-home"><span aria-hidden="true">'+(selected?selected[2]:'📋')+'</span><h2>'+(selected?selected[1]:'Requistion')+'</h2></section>')+'</section>';
 }
 $('#main').addEventListener('click',event=>{const button=event.target.closest('[data-requistion-view]');if(button&&document.body.dataset.activeDepartment==='requistion')goPage('requistion-'+button.dataset.requistionView);});
