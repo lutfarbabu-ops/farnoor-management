@@ -9,14 +9,15 @@ function sampleBoardFieldValue(key,value){return ['sampleStartDate','sampleEndDa
 function sampleBoardFieldControl(key,label,edit){
  const value=sampleBoardForm[key]??'',attrs='id="sample-board-'+key+'" data-sample-board-field="'+key+'"';
  if(['sampleSection','sampleNewOld','ironManName'].includes(key)){
-  let options=key==='sampleSection'?['Sample-1','Sample-2']:key==='sampleNewOld'?['New','Old']:sampleBoardNamesForSection(sampleBoardForm.sampleSection);
+  let options=key==='sampleSection'?['Sample-1','Sample-2']:key==='sampleNewOld'?['New1','New2','New3']:sampleBoardNamesForSection(sampleBoardForm.sampleSection);
+  if(key==='sampleNewOld'&&['New','Old'].includes(value))options=[value,...options];
   if(key==='ironManName'&&sampleBoardEditingName===value&&!options.includes(value))options=[...options,value];
   return '<select '+attrs+' '+(!edit?'disabled':'')+'><option value="">Select '+label+'</option>'+options.map(v=>'<option value="'+esc(v)+'" '+(v.toLowerCase()===String(value).toLowerCase()?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select>';
  }
  const date=['sampleStartDate','sampleEndDate'].includes(key),time=['sampleStartTime','sampleEndTime'].includes(key);
  return sampleBoardInput(date?sampleBoardDateValue(value):time?sampleBoardTimeValue(value):value,attrs+' type="'+(date?'date':time?'time':'text')+'" maxlength="300"'+(['sampleQty','sampleSizeQty','sampleComplete'].includes(key)?' inputmode="decimal"':'')+(['buyer','style','item'].includes(key)?' list="sample-board-options-'+key+'"':''),!edit);
 }
-const sampleBoardFields=[['sampleSection','Section'],['sampleNewOld','New/ Old'],['ironManName','Sample Man Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
+const sampleBoardFields=[['sampleSection','Section'],['sampleNewOld','New'],['ironManName','Sample Man Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
 let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null,sampleBoardEditingRow=null;
 const sampleBoardHours=['8-9 AM','9-10AM','10-11AM','11-12 AM','12.-1 PM','2.-3 PM','3.-4 PM','4.-5 PM','5.-6 PM','6.-7 PM'];
 function sampleBoardSuggestions(key,query){
@@ -42,7 +43,7 @@ function sampleBoardAdd(){
  try{
   const f={ironManName:'',...sampleBoardForm};if(f.ironManName&&!sampleBoardNames.includes(f.ironManName)&&!sampleBoardRows.some(r=>r.fields.ironManName===f.ironManName))throw Error('Sample Man Name নির্বাচন করুন।');
   for(const key of ['sl','workingPlan','hourlyTarget']){const raw=f[key]??'';if(key!=='sl'&&String(raw).trim()===''){f[key]='';continue;}const n=samplePDNumber(key==='sl'&&String(raw).trim()===''?sampleBoardRows.length+1:raw);if(n===null||!Number.isFinite(n)||n<0||(key==='sl'&&(!Number.isInteger(n)||n<1)))throw Error(key==='sl'?'সঠিক SL লিখুন।':'Working Hour ও Target Hour-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
-  if(f.sampleNewOld&&!['New','Old'].includes(f.sampleNewOld))throw Error('New বা Old নির্বাচন করুন।');
+  if(f.sampleNewOld&&!['New1','New2','New3','New','Old'].includes(f.sampleNewOld))throw Error('New1, New2 বা New3 নির্বাচন করুন।');
   if(String(f.sampleSection||'').trim()){const section=String(f.sampleSection).trim().toUpperCase().replace(/^SAMPLE[ ._-]*/, '');if(!['1','2'].includes(section))throw Error('Sample Section-এ SAMPLE-1 বা SAMPLE-2 লিখুন।');f.sampleSection='SAMPLE-'+section;}
   for(const key of ['sampleStartDate','sampleEndDate'])if(String(f[key]||'').trim())f[key]=normalizeDate(f[key]);
   for(const key of ['sampleQty','sampleSizeQty','sampleComplete'])if(String(f[key]??'').trim()){const n=samplePDNumber(f[key]);if(n===null||!Number.isFinite(n)||n<0)throw Error('QTY, Size QTY ও Daily Complete Sample-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
