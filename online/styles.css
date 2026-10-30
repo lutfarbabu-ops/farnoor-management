@@ -562,3 +562,5 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 .requistion-new-company{justify-content:center}.requistion-new-company>div{text-align:center}
 
 .requistion-new-company>div{min-width:0}.requistion-new-company p{text-align:justify;text-align-last:justify;font-size:clamp(15px,2.1vw,24px)}@media(max-width:600px){.requistion-new-company p{font-size:13px;text-align-last:center}}
+
+.requistion-requester-picker{display:grid;gap:9px;max-width:540px;padding:24px;margin-bottom:22px;background:#fff;border:1px solid #b9c9de;border-radius:10px;color:#17334f}.requistion-requester-picker label{font-weight:700}.requistion-requester-picker input,.requistion-requester-picker select{width:100%;box-sizing:border-box;padding:10px;border:1px solid #adbed2;border-radius:6px;background:#f7faff;color:#17334f;font:inherit;min-height:42px}.requistion-requester-picker label:not(:first-child){margin-top:9px}.requistion-request-details{display:flex;justify-content:space-between;gap:10px 28px;flex-wrap:wrap;color:#111;font-size:14px;margin-bottom:18px}
