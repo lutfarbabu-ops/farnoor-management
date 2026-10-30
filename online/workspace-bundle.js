@@ -2274,7 +2274,7 @@ function requistionListEnter(event){const input=event.target;if(event.key!=='Ent
 $('#main').addEventListener('input',event=>{const input=event.target;if(!input.matches?.('[data-requistion-field]')||!window.FarnoorAccess?.canAction('requistion-input-report','edit'))return;const row=requistionListRows[Number(input.dataset.requistionRow)];if(row)row[input.dataset.requistionField]=input.value;});
 $('#main').addEventListener('keydown',requistionListEnter);
 function renderRequistion(view=''){
- const tabs=[['new-input','New Requistion','✚'],['input-report','Requistion List','▤'],['approval','Approval','✓']].filter(([key])=>window.FarnoorAccess?.canPage('requistion-'+key)),selected=tabs.find(t=>t[0]===view);
+ const tabs=[['new-input','New Requistion','✚'],['input-report','Requistion List','▤'],['approval','Approval','✓'],['print','Print','▧']].filter(([key])=>window.FarnoorAccess?.canPage('requistion-'+key)),selected=tabs.find(t=>t[0]===view);
  $('#main').innerHTML='<section class="requistion-workspace"><nav class="requistion-tabs" aria-label="Requistion pages">'+tabs.map(([key,label,icon])=>'<button type="button" class="requistion-tab requistion-tab-'+key+'" data-requistion-view="'+key+'" aria-pressed="'+(view===key)+'"><span aria-hidden="true">'+icon+'</span> '+label+'</button>').join('')+'</nav>'+(view==='input-report'?requistionListPaper():'<section class="requistion-home"><span aria-hidden="true">'+(selected?selected[2]:'📋')+'</span><h2>'+(selected?selected[1]:'Requistion')+'</h2></section>')+'</section>';
 }
 $('#main').addEventListener('click',event=>{const button=event.target.closest('[data-requistion-view]');if(button&&document.body.dataset.activeDepartment==='requistion')goPage('requistion-'+button.dataset.requistionView);});
