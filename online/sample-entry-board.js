@@ -6,10 +6,13 @@ function sampleBoardNamesForSection(section){const key=String(section||'').toUpp
 function sampleBoardDateValue(value){const v=String(value||'');return /^\d{2}\/\d{2}\/\d{4}$/.test(v)?v.split('/').reverse().join('-'):v;}
 function sampleBoardTimeValue(value){const v=String(value||'').trim(),m=v.match(/^(\d{1,2})[:.](\d{2})(?:\s*(AM|PM))?$/i);if(!m)return '';let h=Number(m[1]);if(m[3])h=h%12+(/PM/i.test(m[3])?12:0);return String(h).padStart(2,'0')+':'+m[2];}
 function sampleBoardFieldValue(key,value){return ['sampleStartDate','sampleEndDate'].includes(key)&&/^\d{4}-\d{2}-\d{2}$/.test(value)?value.split('-').reverse().join('/'):value;}
+function sampleBoardRowSlot(value){const match=String(value||'').trim().match(/^(?:Row|New)([1-5])$/i);return match?'Row'+match[1]:String(value||'');}
+function sampleBoardSameSlot(a,b){return String(a.ironManName||'').trim().toLowerCase()===String(b.ironManName||'').trim().toLowerCase()&&sampleBoardRowSlot(a.sampleNewOld)===sampleBoardRowSlot(b.sampleNewOld)&&(!a.sampleSection||!b.sampleSection||a.sampleSection.toUpperCase()===b.sampleSection.toUpperCase());}
+function sampleBoardStorageSection(fields){const slot=sampleBoardRowSlot(fields.sampleNewOld);return /^Row[1-5]$/.test(slot)?'Sample|'+fields.sampleSection+'|'+(fields.cardNo||fields.ironManName)+'|'+slot:fields.ironManName;}
 function sampleBoardFieldControl(key,label,edit){
- const value=sampleBoardForm[key]??'',attrs='id="sample-board-'+key+'" data-sample-board-field="'+key+'"';
+ const value=key==='sampleNewOld'?sampleBoardRowSlot(sampleBoardForm[key]):sampleBoardForm[key]??'',attrs='id="sample-board-'+key+'" data-sample-board-field="'+key+'"';
  if(['sampleSection','sampleNewOld','ironManName'].includes(key)){
-  let options=key==='sampleSection'?['Sample-1','Sample-2']:key==='sampleNewOld'?['New1','New2','New3']:sampleBoardNamesForSection(sampleBoardForm.sampleSection);
+  let options=key==='sampleSection'?['Sample-1','Sample-2']:key==='sampleNewOld'?['Row1','Row2','Row3','Row4','Row5']:sampleBoardNamesForSection(sampleBoardForm.sampleSection);
   if(key==='sampleNewOld'&&['New','Old'].includes(value))options=[value,...options];
   if(key==='ironManName'&&sampleBoardEditingName===value&&!options.includes(value))options=[...options,value];
   return '<select '+attrs+' '+(!edit?'disabled':'')+'><option value="">Select '+label+'</option>'+options.map(v=>'<option value="'+esc(v)+'" '+(v.toLowerCase()===String(value).toLowerCase()?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select>';
@@ -17,7 +20,7 @@ function sampleBoardFieldControl(key,label,edit){
  const date=['sampleStartDate','sampleEndDate'].includes(key),time=['sampleStartTime','sampleEndTime'].includes(key);
  return sampleBoardInput(date?sampleBoardDateValue(value):time?sampleBoardTimeValue(value):value,attrs+' type="'+(date?'date':time?'time':'text')+'" maxlength="300"'+(['sampleQty','sampleSizeQty','sampleComplete'].includes(key)?' inputmode="decimal"':'')+(['buyer','style','item'].includes(key)?' list="sample-board-options-'+key+'"':''),!edit);
 }
-const sampleBoardFields=[['sampleSection','Section'],['sampleNewOld','New'],['ironManName','Sample Man Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
+const sampleBoardFields=[['sampleSection','Section'],['sampleNewOld','Row'],['ironManName','Sample Man Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
 let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null,sampleBoardEditingRow=null;
 const sampleBoardHours=['8-9 AM','9-10AM','10-11AM','11-12 AM','12.-1 PM','2.-3 PM','3.-4 PM','4.-5 PM','5.-6 PM','6.-7 PM'];
 function sampleBoardSuggestions(key,query){
@@ -27,11 +30,11 @@ function sampleBoardSuggestions(key,query){
 function sampleBoardInput(value,attrs,readonly=false){return '<input '+attrs+' value="'+esc(value??'')+'" '+(readonly?'readonly':'')+' autocomplete="off">';}
 function sampleBoardTotal(row){const h=samplePDNumber(row.fields.workingPlan),t=samplePDNumber(row.fields.hourlyTarget);return h===null||t===null?'':h*t;}
 function sampleBoardTable(edit){
- const columns=['Section','SL','Sample Man Name','Buyer','Style','Item','QTY','Size QTY','Input Date','Start Time','End Date','End Time','Complete Sample','Remarks'];
+ const columns=['Section','Row','Sample Man Name','Buyer','Style','Item','QTY','Size QTY','Input Date','Start Time','End Date','End Time','Complete Sample','Remarks'];
  const cell=value=>'<td>'+esc(value??'')+'</td>';
  return '<div class="sample-pd-table-wrap"><table class="sample-pd-table sample-board-table"><thead><tr>'+columns.map(label=>'<th scope="col">'+label+'</th>').join('')+'</tr></thead><tbody>'+sampleBoardRows.map((row,i)=>{
   const f=row.fields,name=f.ironManName?'<button type="button" class="sample-worker-row-name" data-sample-worker-row="'+i+'">'+esc(f.ironManName)+'</button>':'<select data-sample-board-choose="'+i+'" aria-label="Sample Man Name row '+(i+1)+'" '+(!edit?'disabled':'')+'><option value="">Select Sample Man Name</option>'+sampleBoardNamesForSection(f.sampleSection).map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+'</select>';
-  return '<tr data-sample-board-index="'+i+'">'+cell(f.sampleSection)+cell(f.sampleNewOld||f.sl||i+1)+'<td>'+name+'</td>'+[f.buyer,f.style,f.item,f.sampleQty,f.sampleSizeQty,f.sampleStartDate,f.sampleStartTime,f.sampleEndDate,f.sampleEndTime,f.sampleComplete,f.remarks].map(cell).join('')+'</tr>';
+  return '<tr data-sample-board-index="'+i+'">'+cell(f.sampleSection)+cell(sampleBoardRowSlot(f.sampleNewOld)||f.sl||i+1)+'<td>'+name+'</td>'+[f.buyer,f.style,f.item,f.sampleQty,f.sampleSizeQty,f.sampleStartDate,f.sampleStartTime,f.sampleEndDate,f.sampleEndTime,f.sampleComplete,f.remarks].map(cell).join('')+'</tr>';
  }).join('')+(!sampleBoardRows.length?'<tr><td colspan="14">Input চাপলে এখানে রো যোগ হবে।</td></tr>':'')+'</tbody><tfoot><tr><th colspan="6">Total</th>'+cell(samplePDSum(sampleBoardRows.map(r=>r.fields.sampleQty)))+cell(samplePDSum(sampleBoardRows.map(r=>r.fields.sampleSizeQty)))+'<td colspan="4"></td>'+cell(samplePDSum(sampleBoardRows.map(r=>r.fields.sampleComplete)))+'<td></td></tr></tfoot></table></div>';
 }
 samplePDPaper=function(readonly=false){
@@ -43,15 +46,15 @@ function sampleBoardAdd(){
  try{
   const f={ironManName:'',...sampleBoardForm};if(f.ironManName&&!sampleBoardNames.includes(f.ironManName)&&!sampleBoardRows.some(r=>r.fields.ironManName===f.ironManName))throw Error('Sample Man Name নির্বাচন করুন।');
   for(const key of ['sl','workingPlan','hourlyTarget']){const raw=f[key]??'';if(key!=='sl'&&String(raw).trim()===''){f[key]='';continue;}const n=samplePDNumber(key==='sl'&&String(raw).trim()===''?sampleBoardRows.length+1:raw);if(n===null||!Number.isFinite(n)||n<0||(key==='sl'&&(!Number.isInteger(n)||n<1)))throw Error(key==='sl'?'সঠিক SL লিখুন।':'Working Hour ও Target Hour-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
-  if(f.sampleNewOld&&!['New1','New2','New3','New','Old'].includes(f.sampleNewOld))throw Error('New1, New2 বা New3 নির্বাচন করুন।');
+  f.sampleNewOld=sampleBoardRowSlot(f.sampleNewOld);if(f.sampleNewOld&&!['Row1','Row2','Row3','Row4','Row5','New','Old'].includes(f.sampleNewOld))throw Error('Row1 থেকে Row5 নির্বাচন করুন।');
   if(String(f.sampleSection||'').trim()){const section=String(f.sampleSection).trim().toUpperCase().replace(/^SAMPLE[ ._-]*/, '');if(!['1','2'].includes(section))throw Error('Sample Section-এ SAMPLE-1 বা SAMPLE-2 লিখুন।');f.sampleSection='SAMPLE-'+section;}
   for(const key of ['sampleStartDate','sampleEndDate'])if(String(f[key]||'').trim())f[key]=normalizeDate(f[key]);
   for(const key of ['sampleQty','sampleSizeQty','sampleComplete'])if(String(f[key]??'').trim()){const n=samplePDNumber(f[key]);if(n===null||!Number.isFinite(n)||n<0)throw Error('QTY, Size QTY ও Daily Complete Sample-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
-  const staged=sampleBoardEditingRow&&sampleBoardRows.includes(sampleBoardEditingRow)&&sampleBoardEditingRow.fields.ironManName===f.ironManName?sampleBoardEditingRow:f.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===f.ironManName):null,date=staged?.fields.date||samplePDDraft.fields.date||samplePDToday();
-  const saved=f.ironManName?samplePDRecords().find(r=>r.date===date&&r.hourlyPD.fields?.ironManName===f.ironManName):null;
-  if(staged&&sampleBoardEditingName!==f.ironManName)return toast('এই নামের এন্ট্রি ইতোমধ্যে আছে। একই নামে দ্বিতীয় রো যোগ করা যাবে না।');
+  const staged=sampleBoardEditingRow&&sampleBoardRows.includes(sampleBoardEditingRow)&&sampleBoardSameSlot(sampleBoardEditingRow.fields,f)?sampleBoardEditingRow:f.ironManName?sampleBoardRows.find(r=>sampleBoardSameSlot(r.fields,f)):null,date=staged?.fields.date||samplePDDraft.fields.date||samplePDToday();
+  const saved=f.ironManName?(typeof sampleDailySavedRecords==='function'?sampleDailySavedRecords():samplePDRecords()).find(r=>sampleBoardSameSlot(r.hourlyPD.fields||{},f)):null;
+  if(staged&&sampleBoardEditingName!==f.ironManName)return toast('এই নামের এই Row ইতোমধ্যে আছে। রোটি খুলে এডিট করুন।');
   const previous=staged||(saved?{id:saved.id,fields:saved.hourlyPD.fields,rows:saved.hourlyPD.rows}:null);
-  const row={id:previous?.id,fields:{...previous?.fields,...f,cardNo:sampleBoardCards[f.ironManName]??previous?.fields.cardNo??f.cardNo??'',date,section:previous?.fields.section||f.ironManName,tableNo:previous?.fields.section||f.ironManName},rows:samplePDComputedRows(previous?.rows)};
+  const row={id:previous?.id,fields:{...previous?.fields,...f,cardNo:sampleBoardCards[f.ironManName]??previous?.fields.cardNo??f.cardNo??'',date:previous?.fields.date||date,section:previous?.fields.section||sampleBoardStorageSection({...f,cardNo:sampleBoardCards[f.ironManName]||f.cardNo}),tableNo:previous?.fields.section||sampleBoardStorageSection({...f,cardNo:sampleBoardCards[f.ironManName]||f.cardNo})},rows:samplePDComputedRows(previous?.rows)};
   if(staged)sampleBoardRows[sampleBoardRows.indexOf(staged)]=row;else sampleBoardRows.push(row);
   sampleBoardEditingName=null;sampleBoardForm={sampleSection:f.sampleSection||''};renderSamplePD();return row;
  }catch(error){toast(error.message);}
