@@ -6469,7 +6469,7 @@ function sampleDailySection(fields){return /^sample[ ._-]*2$|^2$/i.test(String(f
 const samplePrintWorkerIds={'Md. Saidul Islam':'1139','Sha-Alam (Boro)':'1197','Md. Shahalam (Shoto)':'1217','Md. Hafiz':'1145','Sala Uddin':'1146','Md. Liton Hossain':'1251'};
 function samplePrintWorkerCell(name,span=1){const label=String(name||''),key=Object.keys(samplePrintWorkerIds).find(n=>n.toLowerCase()===label.trim().replace(/\s+/g,' ').toLowerCase()),id=key?samplePrintWorkerIds[key]:'';return '<td class="sd-worker-name" rowspan="'+span+'"><span class="sample-pd-value">'+samplePDDisplay(label)+'</span>'+(id?'<span class="sample-pd-value sample-worker-id">'+id+'</span>':'')+'</td>';}
 function sampleDailyWorkerKey(record){const f=record.hourlyPD.fields||{},name=String(f.ironManName||f.qcName||'').trim().replace(/\s+/g,' ').toLocaleLowerCase();return name||('unnamed:'+record.id);}
-function sampleDailyWorkerGroups(records){const groups=new Map();for(const record of records.slice().sort(samplePDCompare)){const key=sampleDailySection(record.hourlyPD.fields||{})+'|'+sampleDailyWorkerKey(record);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(record);}return [...groups.values()].map(group=>group.sort((a,b)=>{const rank=r=>Number(String(r.hourlyPD.fields?.sampleNewOld||'').match(/^(?:Row|New)([1-5])$/i)?.[1]||6);return rank(a)-rank(b)||samplePDCompare(a,b);}));}
+function sampleDailyWorkerGroups(records){const groups=new Map();for(const record of records.slice().sort(samplePDCompare)){const key=sampleDailySection(record.hourlyPD.fields||{})+'|'+sampleDailyWorkerKey(record);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(record);}return [...groups.values()].map(group=>group.sort((a,b)=>{const rank=r=>Number(String(r.hourlyPD.fields?.sampleNewOld||'').match(/^(?:Row|New)([1-5])$/i)?.[1]||(/^(New|Old)?$/i.test(String(r.hourlyPD.fields?.sampleNewOld||''))?1:6));return rank(a)-rank(b)||samplePDCompare(a,b);}));}
 function sampleDailyPrintPages(records){const pages=[],ordered=[],serials=new Map();for(const group of sampleDailyWorkerGroups(records)){const section=sampleDailySection(group[0].hourlyPD.fields||{}),serial=(serials.get(section)||0)+1;serials.set(section,serial);ordered.push(...group.map(r=>({...r,samplePrintSerial:serial})));}for(let i=0;i<ordered.length;i+=11)pages.push(ordered.slice(i,i+11));return pages.length?pages:[[]];}
 // Printing preserves every distinct saved entry, even when worker/date match.
 function sampleDailySavedRecords(){return (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind==='sample'&&!r.deletedAt).slice().sort(samplePDCompare);}
@@ -6524,14 +6524,13 @@ function sampleBoardNamesForSection(section){const key=String(section||'').toUpp
 function sampleBoardDateValue(value){const v=String(value||'');return /^\d{2}\/\d{2}\/\d{4}$/.test(v)?v.split('/').reverse().join('-'):v;}
 function sampleBoardTimeValue(value){const v=String(value||'').trim(),m=v.match(/^(\d{1,2})[:.](\d{2})(?:\s*(AM|PM))?$/i);if(!m)return '';let h=Number(m[1]);if(m[3])h=h%12+(/PM/i.test(m[3])?12:0);return String(h).padStart(2,'0')+':'+m[2];}
 function sampleBoardFieldValue(key,value){return ['sampleStartDate','sampleEndDate'].includes(key)&&/^\d{4}-\d{2}-\d{2}$/.test(value)?value.split('-').reverse().join('/'):value;}
-function sampleBoardRowSlot(value){const match=String(value||'').trim().match(/^(?:Row|New)([1-5])$/i);return match?'Row'+match[1]:String(value||'');}
-function sampleBoardSameSlot(a,b){return String(a.ironManName||'').trim().toLowerCase()===String(b.ironManName||'').trim().toLowerCase()&&sampleBoardRowSlot(a.sampleNewOld)===sampleBoardRowSlot(b.sampleNewOld)&&(!a.sampleSection||!b.sampleSection||a.sampleSection.toUpperCase()===b.sampleSection.toUpperCase());}
+function sampleBoardRowSlot(value){const match=String(value||'').trim().match(/^(?:Row|New)([1-5])$/i);return match?'Row'+match[1]:/^(New|Old)$/i.test(String(value||'').trim())?'Row1':String(value||'');}
+function sampleBoardSameSlot(a,b){return String(a.ironManName||'').trim().toLowerCase()===String(b.ironManName||'').trim().toLowerCase()&&(sampleBoardRowSlot(a.sampleNewOld)||'Row1')===(sampleBoardRowSlot(b.sampleNewOld)||'Row1')&&(!a.sampleSection||!b.sampleSection||a.sampleSection.toUpperCase()===b.sampleSection.toUpperCase());}
 function sampleBoardStorageSection(fields){const slot=sampleBoardRowSlot(fields.sampleNewOld);return /^Row[1-5]$/.test(slot)?'Sample|'+fields.sampleSection+'|'+(fields.cardNo||fields.ironManName)+'|'+slot:fields.ironManName;}
 function sampleBoardFieldControl(key,label,edit){
  const value=key==='sampleNewOld'?sampleBoardRowSlot(sampleBoardForm[key]):sampleBoardForm[key]??'',attrs='id="sample-board-'+key+'" data-sample-board-field="'+key+'"';
  if(['sampleSection','sampleNewOld','ironManName'].includes(key)){
   let options=key==='sampleSection'?['Sample-1','Sample-2']:key==='sampleNewOld'?['Row1','Row2','Row3','Row4','Row5']:sampleBoardNamesForSection(sampleBoardForm.sampleSection);
-  if(key==='sampleNewOld'&&['New','Old'].includes(value))options=[value,...options];
   if(key==='ironManName'&&sampleBoardEditingName===value&&!options.includes(value))options=[...options,value];
   return '<select '+attrs+' '+(!edit?'disabled':'')+'><option value="">Select '+label+'</option>'+options.map(v=>'<option value="'+esc(v)+'" '+(v.toLowerCase()===String(value).toLowerCase()?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select>';
  }
@@ -6644,16 +6643,16 @@ function sampleWorkerSync(source,form=sampleBoardForm){
 function sampleWorkerSelect(source,paint=true){
  sampleWorkerSync(source);
  const identity={sl:sampleBoardForm.sl||'',ironManName:sampleBoardForm.ironManName||'',cardNo:sampleBoardForm.cardNo||''};
- const saved=sampleBoardRows.find(row=>row.fields.ironManName===identity.ironManName&&(!sampleBoardForm.sampleNewOld||sampleBoardRowSlot(row.fields.sampleNewOld)===sampleBoardRowSlot(sampleBoardForm.sampleNewOld))&&(!sampleBoardForm.sampleSection||String(row.fields.sampleSection||'').toUpperCase()===String(sampleBoardForm.sampleSection).toUpperCase()));
+ const saved=sampleBoardRows.find(row=>sampleBoardSameSlot(row.fields,{...sampleBoardForm,...identity}));
  sampleBoardForm=saved?{...saved.fields,...identity}:{sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
  sampleBoardEditingName=saved?identity.ironManName:null;sampleBoardEditingRow=saved||null;
- if(paint)for(const [key]of sampleBoardFields){const input=document.getElementById('sample-board-'+key);if(input)input.value=sampleBoardForm[key]??'';}
+ if(paint)renderSamplePD();
  return sampleBoardForm;
 }
 function sampleWorkerHydrate(){
  if(sampleBoardRows.length||sampleBoardBusy)return;
  const records=typeof sampleDailySavedRecords==='function'?sampleDailySavedRecords():samplePDRecords();
- sampleBoardRows=records.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>({id:r.id,fields:{...r.hourlyPD.fields,date:r.date},rows:samplePDComputedRows(r.hourlyPD.rows)}));
+ sampleBoardRows=records.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>({id:r.id,fields:{...r.hourlyPD.fields,sampleNewOld:sampleBoardRowSlot(r.hourlyPD.fields.sampleNewOld)||'Row1',date:r.date},rows:samplePDComputedRows(r.hourlyPD.rows)}));
 }
 const sampleWorkerPreviousPaper=samplePDPaper;
 samplePDPaper=function(readonly=false){

@@ -22,16 +22,16 @@ function sampleWorkerSync(source,form=sampleBoardForm){
 function sampleWorkerSelect(source,paint=true){
  sampleWorkerSync(source);
  const identity={sl:sampleBoardForm.sl||'',ironManName:sampleBoardForm.ironManName||'',cardNo:sampleBoardForm.cardNo||''};
- const saved=sampleBoardRows.find(row=>row.fields.ironManName===identity.ironManName&&(!sampleBoardForm.sampleNewOld||sampleBoardRowSlot(row.fields.sampleNewOld)===sampleBoardRowSlot(sampleBoardForm.sampleNewOld))&&(!sampleBoardForm.sampleSection||String(row.fields.sampleSection||'').toUpperCase()===String(sampleBoardForm.sampleSection).toUpperCase()));
+ const saved=sampleBoardRows.find(row=>sampleBoardSameSlot(row.fields,{...sampleBoardForm,...identity}));
  sampleBoardForm=saved?{...saved.fields,...identity}:{sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
  sampleBoardEditingName=saved?identity.ironManName:null;sampleBoardEditingRow=saved||null;
- if(paint)for(const [key]of sampleBoardFields){const input=document.getElementById('sample-board-'+key);if(input)input.value=sampleBoardForm[key]??'';}
+ if(paint)renderSamplePD();
  return sampleBoardForm;
 }
 function sampleWorkerHydrate(){
  if(sampleBoardRows.length||sampleBoardBusy)return;
  const records=typeof sampleDailySavedRecords==='function'?sampleDailySavedRecords():samplePDRecords();
- sampleBoardRows=records.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>({id:r.id,fields:{...r.hourlyPD.fields,date:r.date},rows:samplePDComputedRows(r.hourlyPD.rows)}));
+ sampleBoardRows=records.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>({id:r.id,fields:{...r.hourlyPD.fields,sampleNewOld:sampleBoardRowSlot(r.hourlyPD.fields.sampleNewOld)||'Row1',date:r.date},rows:samplePDComputedRows(r.hourlyPD.rows)}));
 }
 const sampleWorkerPreviousPaper=samplePDPaper;
 samplePDPaper=function(readonly=false){

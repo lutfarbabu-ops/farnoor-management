@@ -6,14 +6,13 @@ function sampleBoardNamesForSection(section){const key=String(section||'').toUpp
 function sampleBoardDateValue(value){const v=String(value||'');return /^\d{2}\/\d{2}\/\d{4}$/.test(v)?v.split('/').reverse().join('-'):v;}
 function sampleBoardTimeValue(value){const v=String(value||'').trim(),m=v.match(/^(\d{1,2})[:.](\d{2})(?:\s*(AM|PM))?$/i);if(!m)return '';let h=Number(m[1]);if(m[3])h=h%12+(/PM/i.test(m[3])?12:0);return String(h).padStart(2,'0')+':'+m[2];}
 function sampleBoardFieldValue(key,value){return ['sampleStartDate','sampleEndDate'].includes(key)&&/^\d{4}-\d{2}-\d{2}$/.test(value)?value.split('-').reverse().join('/'):value;}
-function sampleBoardRowSlot(value){const match=String(value||'').trim().match(/^(?:Row|New)([1-5])$/i);return match?'Row'+match[1]:String(value||'');}
-function sampleBoardSameSlot(a,b){return String(a.ironManName||'').trim().toLowerCase()===String(b.ironManName||'').trim().toLowerCase()&&sampleBoardRowSlot(a.sampleNewOld)===sampleBoardRowSlot(b.sampleNewOld)&&(!a.sampleSection||!b.sampleSection||a.sampleSection.toUpperCase()===b.sampleSection.toUpperCase());}
+function sampleBoardRowSlot(value){const match=String(value||'').trim().match(/^(?:Row|New)([1-5])$/i);return match?'Row'+match[1]:/^(New|Old)$/i.test(String(value||'').trim())?'Row1':String(value||'');}
+function sampleBoardSameSlot(a,b){return String(a.ironManName||'').trim().toLowerCase()===String(b.ironManName||'').trim().toLowerCase()&&(sampleBoardRowSlot(a.sampleNewOld)||'Row1')===(sampleBoardRowSlot(b.sampleNewOld)||'Row1')&&(!a.sampleSection||!b.sampleSection||a.sampleSection.toUpperCase()===b.sampleSection.toUpperCase());}
 function sampleBoardStorageSection(fields){const slot=sampleBoardRowSlot(fields.sampleNewOld);return /^Row[1-5]$/.test(slot)?'Sample|'+fields.sampleSection+'|'+(fields.cardNo||fields.ironManName)+'|'+slot:fields.ironManName;}
 function sampleBoardFieldControl(key,label,edit){
  const value=key==='sampleNewOld'?sampleBoardRowSlot(sampleBoardForm[key]):sampleBoardForm[key]??'',attrs='id="sample-board-'+key+'" data-sample-board-field="'+key+'"';
  if(['sampleSection','sampleNewOld','ironManName'].includes(key)){
   let options=key==='sampleSection'?['Sample-1','Sample-2']:key==='sampleNewOld'?['Row1','Row2','Row3','Row4','Row5']:sampleBoardNamesForSection(sampleBoardForm.sampleSection);
-  if(key==='sampleNewOld'&&['New','Old'].includes(value))options=[value,...options];
   if(key==='ironManName'&&sampleBoardEditingName===value&&!options.includes(value))options=[...options,value];
   return '<select '+attrs+' '+(!edit?'disabled':'')+'><option value="">Select '+label+'</option>'+options.map(v=>'<option value="'+esc(v)+'" '+(v.toLowerCase()===String(value).toLowerCase()?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select>';
  }
