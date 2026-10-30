@@ -22,16 +22,16 @@ function sampleWorkerSync(source,form=sampleBoardForm){
 function sampleWorkerSelect(source,paint=true){
  sampleWorkerSync(source);
  const identity={sl:sampleBoardForm.sl||'',ironManName:sampleBoardForm.ironManName||'',cardNo:sampleBoardForm.cardNo||''};
- sampleBoardForm={sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
- sampleBoardEditingName=null;
+ const saved=sampleBoardRows.find(row=>row.fields.ironManName===identity.ironManName&&(!sampleBoardForm.sampleSection||String(row.fields.sampleSection||'').toUpperCase()===String(sampleBoardForm.sampleSection).toUpperCase()));
+ sampleBoardForm=saved?{...saved.fields,...identity}:{sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
+ sampleBoardEditingName=saved?identity.ironManName:null;sampleBoardEditingRow=saved||null;
  if(paint)for(const [key]of sampleBoardFields){const input=document.getElementById('sample-board-'+key);if(input)input.value=sampleBoardForm[key]??'';}
  return sampleBoardForm;
 }
 function sampleWorkerHydrate(){
  if(sampleBoardRows.length||sampleBoardBusy)return;
- const records=samplePDRecords(),date=samplePDDraft.fields.date||samplePDToday(),today=records.filter(r=>r.date===date);
- const source=today.length?today:[...new Map(records.map(r=>[r.hourlyPD.fields?.cardNo||r.hourlyPD.fields?.ironManName,r]).reverse()).values()];
- sampleBoardRows=source.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>{const fields={...r.hourlyPD.fields,date};const worker=sampleWorkerList().find(w=>w.card&&w.card===fields.cardNo||w.name===fields.ironManName);if(worker){fields.ironManName=worker.name;fields.sl=String(worker.sl);fields.cardNo=worker.card;if(sampleWorkerSection(worker))fields.sampleSection=sampleWorkerSection(worker);}return {id:today.length?r.id:undefined,fields,rows:today.length?samplePDComputedRows(r.hourlyPD.rows):samplePDComputedRows()};}).sort((a,b)=>Number(a.fields.sl)-Number(b.fields.sl));
+ const records=typeof sampleDailySavedRecords==='function'?sampleDailySavedRecords():samplePDRecords();
+ sampleBoardRows=records.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>({id:r.id,fields:{...r.hourlyPD.fields,date:r.date},rows:samplePDComputedRows(r.hourlyPD.rows)}));
 }
 const sampleWorkerPreviousPaper=samplePDPaper;
 samplePDPaper=function(readonly=false){
@@ -39,10 +39,10 @@ samplePDPaper=function(readonly=false){
  return sampleWorkerPreviousPaper(readonly).replace('<div class="sample-pd-details">','<div class="sample-worker-toolbar"><button type="button" data-sample-worker-manage '+(!FarnoorAccess.canAction('output','edit')?'disabled':'')+'>♙ Manage Names</button></div><div class="sample-pd-details">');
 };
 const sampleWorkerPreviousLoad=samplePDLoad;
-samplePDLoad=function(record){sampleWorkerPreviousLoad(record);sampleBoardRows=[];sampleWorkerHydrate();const current=sampleBoardRows.find(r=>r.id===record.id);sampleBoardForm={...(current?.fields||record.hourlyPD.fields)};sampleWorkerSync('name');sampleBoardEditingName=sampleBoardForm.ironManName;};
+samplePDLoad=function(record){sampleWorkerPreviousLoad(record);sampleBoardRows=[];sampleWorkerHydrate();const current=sampleBoardRows.find(r=>r.id===record.id);sampleBoardForm={...(current?.fields||record.hourlyPD.fields)};sampleWorkerSync('name');sampleBoardEditingName=sampleBoardForm.ironManName;sampleBoardEditingRow=current||null;};
 const sampleWorkerPreviousAdd=sampleBoardAdd;
 sampleBoardAdd=function(){if(sampleBoardForm.ironManName)sampleWorkerSync('name');const name=sampleBoardForm.ironManName,row=sampleWorkerPreviousAdd();if(row&&typeof row==='object'){row.fields.workerProfile='1';row.fields.workerPreviousCard=sampleWorkerList().find(w=>w.name===name)?.previousCard||'';}return row;};
-function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();document.getElementById('sample-board-buyer')?.focus();}
+function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;sampleBoardEditingRow=row;renderSamplePD();document.getElementById('sample-board-buyer')?.focus();}
 function sampleWorkerSaveProfile(profile,originalCard=''){
  const name=String(profile.name||'').trim(),card=String(profile.card||'').trim(),section=String(profile.section||'').toUpperCase();
  const workers=sampleWorkerList(),original=originalCard?workers.find(w=>w.card===originalCard||w.name===originalCard):null;

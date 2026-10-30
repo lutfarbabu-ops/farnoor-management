@@ -17,7 +17,7 @@ function sampleBoardFieldControl(key,label,edit){
  return sampleBoardInput(date?sampleBoardDateValue(value):time?sampleBoardTimeValue(value):value,attrs+' type="'+(date?'date':time?'time':'text')+'" maxlength="300"'+(['sampleQty','sampleSizeQty','sampleComplete'].includes(key)?' inputmode="decimal"':'')+(['buyer','style','item'].includes(key)?' list="sample-board-options-'+key+'"':''),!edit);
 }
 const sampleBoardFields=[['sampleSection','Section'],['sampleNewOld','New/ Old'],['ironManName','Sample Man Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
-let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null;
+let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null,sampleBoardEditingRow=null;
 const sampleBoardHours=['8-9 AM','9-10AM','10-11AM','11-12 AM','12.-1 PM','2.-3 PM','3.-4 PM','4.-5 PM','5.-6 PM','6.-7 PM'];
 function sampleBoardSuggestions(key,query){
  const q=String(query||'').trim().toLocaleLowerCase();if(q.length<2)return [];
@@ -46,7 +46,7 @@ function sampleBoardAdd(){
   if(String(f.sampleSection||'').trim()){const section=String(f.sampleSection).trim().toUpperCase().replace(/^SAMPLE[ ._-]*/, '');if(!['1','2'].includes(section))throw Error('Sample Section-এ SAMPLE-1 বা SAMPLE-2 লিখুন।');f.sampleSection='SAMPLE-'+section;}
   for(const key of ['sampleStartDate','sampleEndDate'])if(String(f[key]||'').trim())f[key]=normalizeDate(f[key]);
   for(const key of ['sampleQty','sampleSizeQty','sampleComplete'])if(String(f[key]??'').trim()){const n=samplePDNumber(f[key]);if(n===null||!Number.isFinite(n)||n<0)throw Error('QTY, Size QTY ও Daily Complete Sample-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
-  const staged=f.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===f.ironManName):null,date=staged?.fields.date||samplePDDraft.fields.date||samplePDToday();
+  const staged=sampleBoardEditingRow&&sampleBoardRows.includes(sampleBoardEditingRow)&&sampleBoardEditingRow.fields.ironManName===f.ironManName?sampleBoardEditingRow:f.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===f.ironManName):null,date=staged?.fields.date||samplePDDraft.fields.date||samplePDToday();
   const saved=f.ironManName?samplePDRecords().find(r=>r.date===date&&r.hourlyPD.fields?.ironManName===f.ironManName):null;
   if(staged&&sampleBoardEditingName!==f.ironManName)return toast('এই নামের এন্ট্রি ইতোমধ্যে আছে। একই নামে দ্বিতীয় রো যোগ করা যাবে না।');
   const previous=staged||(saved?{id:saved.id,fields:saved.hourlyPD.fields,rows:saved.hourlyPD.rows}:null);
@@ -60,7 +60,7 @@ samplePDLoad=function(record){sampleBoardOriginalLoad(record);samplePDDraft.fiel
 const sampleBoardOriginalSave=saveSamplePD;
 async function sampleBoardSave(rowsToSave=sampleBoardRows){
  if(sampleBoardBusy||!rowsToSave.length||!FarnoorAccess.canAction('output','edit'))return false;
- if(rowsToSave.some(row=>!row.fields.ironManName))return toast('সেভ করার আগে প্রতিটি রোতে Sample Man Name নির্বাচন করুন।');if(new Set(sampleBoardRows.map(row=>row.fields.ironManName)).size!==sampleBoardRows.length)return toast('একই নাম একাধিক রোতে আছে। নামগুলো আলাদা করুন।');
+ if(rowsToSave.some(row=>!row.fields.ironManName))return toast('সেভ করার আগে প্রতিটি রোতে Sample Man Name নির্বাচন করুন।');if(new Set(rowsToSave.map(row=>row.id||samplePDKey(row.fields.date,row.fields.section))).size!==rowsToSave.length)return toast('একই এন্ট্রি দুইবার সেভ করা যাবে না।');
  sampleBoardBusy=true;let complete=true;const formBefore=structuredClone(sampleBoardForm);
  try{for(const row of rowsToSave){row.fields.cardNo=sampleBoardCards[row.fields.ironManName]??row.fields.cardNo??'';samplePDDraft.fields={...row.fields};samplePDDraft.rows=samplePDComputedRows(row.rows);for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=row.id||null;samplePDPendingId=null;
    if(!await sampleBoardOriginalSave()){complete=false;break;}row.id=samplePDEditId;
@@ -74,7 +74,7 @@ async function sampleBoardSubmit(){
  if(!sampleBoardForm.ironManName){toast('Sample Man Name নির্বাচন করুন।');return false;}
  const row=sampleBoardAdd();if(!row||typeof row!=='object')return false;
  const saved=await sampleBoardSave([row]);
- if(!saved){sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();}
+ if(!saved){sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;sampleBoardEditingRow=row;renderSamplePD();}
  return saved===true;
 }
 const sampleBoardMain=document.getElementById('main');

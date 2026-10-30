@@ -11,10 +11,11 @@ function sampleDailyWorkerKey(record){const f=record.hourlyPD.fields||{},name=St
 function sampleDailyWorkerGroups(records){const groups=new Map();for(const record of records.slice().sort(samplePDCompare)){const key=record.date+'|'+sampleDailySection(record.hourlyPD.fields||{})+'|'+sampleDailyWorkerKey(record);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(record);}return [...groups.values()];}
 function sampleDailyPrintPages(records){const pages=[];for(const date of [...new Set(records.slice().sort(samplePDCompare).map(r=>r.date))]){const dated=[],serials=new Map();for(const group of sampleDailyWorkerGroups(records.filter(r=>r.date===date))){const section=sampleDailySection(group[0].hourlyPD.fields||{}),serial=(serials.get(section)||0)+1;serials.set(section,serial);dated.push(...group.map(r=>({...r,samplePrintSerial:serial})));}for(let i=0;i<dated.length;i+=11)pages.push(dated.slice(i,i+11));}return pages.length?pages:[[]];}
 // Printing preserves every distinct saved entry, even when worker/date match.
-samplePDPrintRows=function(){const rows=(state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind==='sample'&&!r.deletedAt).slice().sort(samplePDCompare);return samplePDSelectedId?rows.filter(r=>r.id===samplePDSelectedId):rows.filter(r=>!samplePDPrintDate||r.date===samplePDPrintDate);};
+function sampleDailySavedRecords(){return (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind==='sample'&&!r.deletedAt).slice().sort(samplePDCompare);}
+samplePDPrintRows=function(){const rows=sampleDailySavedRecords();return samplePDSelectedId?rows.filter(r=>r.id===samplePDSelectedId):rows;};
 samplePDPrintSheet=function(records){
  records=sampleDailyWorkerGroups(records).flat();
- const text=v=>samplePDDisplay(v),date=records[0]?.date||samplePDPrintDate||samplePDToday();
+ const text=v=>samplePDDisplay(v),date=samplePDPrintDate||samplePDToday();
  const widths=[9.14,31,19.14,19.14,22.43,26.14,18.57,18.57,25.85,19.14,17.85,19.71,19.57],width=widths.reduce((a,b)=>a+b,0);
  const cell=(value,cls='')=>'<td class="'+cls+'"><span class="sample-pd-value">'+text(value)+'</span></td>';
  const groups=['SAMPLE-1','SAMPLE-2'].map(section=>{

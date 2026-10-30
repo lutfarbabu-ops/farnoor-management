@@ -97,7 +97,7 @@ async function saveSamplePD(){
   const data={fields,rows:samplePDComputedRows(samplePDDraft.rows).map(row=>row.map((v,col)=>col<2?'':number(v))),targets:samplePDDraft.targets.map(v=>number(v)),differences:samplePDDraft.differences.map(v=>number(v,true)),achievements:samplePDDraft.achievements.map(v=>number(v))};
   for(const key of ['workingPlan','hourlyTarget','layoutManpower','presentManpower','layoutOp','layoutHp','presentOp','presentHp'])if(fields[key]!==undefined)fields[key]=number(fields[key]);
   for(const prefix of ['layout','present']){const total=samplePDManpowerTotal(fields,prefix);fields[prefix+'Manpower']=total===''?'':String(total);}
-  const next=structuredClone(state),rows=next.records.output||[],key=samplePDKey(fields.date,fields.section),canonical=samplePDRecords().find(r=>samplePDKey(r.date,samplePDTable(r.hourlyPD.fields))===key),existing=canonical&&rows.find(r=>r.id===canonical.id);
+  const next=structuredClone(state),rows=next.records.output||[],key=samplePDKey(fields.date,fields.section),canonical=samplePDRecords().find(r=>samplePDKey(r.date,samplePDTable(r.hourlyPD.fields))===key),existing=(samplePDEditId&&rows.find(r=>r.id===samplePDEditId&&r.hourlyPDKind==='sample'&&!r.deletedAt))||(canonical&&rows.find(r=>r.id===canonical.id));
   if(samplePDEditId&&!rows.some(r=>r.id===samplePDEditId&&r.hourlyProduction))throw Error('এই ইনপুট পাওয়া যাচ্ছে না। Refresh করে দেখুন।');
   const record={...existing,id:existing?.id||(samplePDPendingId||=crypto.randomUUID()),reference:String(fields.section).slice(0,120),name:[fields.buyer,fields.style].filter(Boolean).join(' / ').slice(0,200)||('Table '+fields.section).slice(0,200),date:fields.date,quantity:Number(samplePDSum(data.rows.map(r=>r[3]))||0),status:'Completed',hourlyProduction:true,hourlyPDKind:'sample',hourlyPD:data,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
   if(existing)rows[rows.indexOf(existing)]=record;else rows.unshift(record);next.records.output=rows;
@@ -114,7 +114,7 @@ document.getElementById('main').addEventListener('click',event=>{
  if(button){samplePDView=button.dataset.samplePdView;if(samplePDView==='new-input'&&samplePDEditId){samplePDDraft.fields={};samplePDDraft.rows=samplePDHours.map(()=>Array(5).fill(''));for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=null;samplePDPendingId=null;}if(samplePDView==='print'){samplePDSelectedId=null;samplePDPrintDate||=samplePDToday();}renderSamplePD();return;}
  if(event.target.closest('[data-sample-pd-save]')){void saveSamplePD();return;}
  const open=event.target.closest('[data-sample-pd-open]'),select=event.target.closest('[data-sample-pd-select]');
- if(open||select){const row=samplePDRecords().find(r=>r.id===(open?.dataset.samplePdOpen||select?.dataset.samplePdSelect));if(!row)return;if(open){samplePDLoad(row);samplePDView='new-input';}else{samplePDSelectedId=row.id;samplePDPrintDate=row.date;samplePDView='print';}renderSamplePD();return;}
+ if(open||select){const row=(typeof sampleDailySavedRecords==='function'?sampleDailySavedRecords():samplePDRecords()).find(r=>r.id===(open?.dataset.samplePdOpen||select?.dataset.samplePdSelect));if(!row)return;if(open){samplePDLoad(row);samplePDView='new-input';}else{samplePDSelectedId=row.id;samplePDPrintDate=row.date;samplePDView='print';}renderSamplePD();return;}
  if(event.target.closest('[data-sample-pd-filter]')){samplePDApplyPrintDate();return;}
  if(event.target.closest('[data-sample-pd-print]'))printSamplePD();
 });

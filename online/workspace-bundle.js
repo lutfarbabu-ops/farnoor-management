@@ -6303,7 +6303,7 @@ async function saveSamplePD(){
   const data={fields,rows:samplePDComputedRows(samplePDDraft.rows).map(row=>row.map((v,col)=>col<2?'':number(v))),targets:samplePDDraft.targets.map(v=>number(v)),differences:samplePDDraft.differences.map(v=>number(v,true)),achievements:samplePDDraft.achievements.map(v=>number(v))};
   for(const key of ['workingPlan','hourlyTarget','layoutManpower','presentManpower','layoutOp','layoutHp','presentOp','presentHp'])if(fields[key]!==undefined)fields[key]=number(fields[key]);
   for(const prefix of ['layout','present']){const total=samplePDManpowerTotal(fields,prefix);fields[prefix+'Manpower']=total===''?'':String(total);}
-  const next=structuredClone(state),rows=next.records.output||[],key=samplePDKey(fields.date,fields.section),canonical=samplePDRecords().find(r=>samplePDKey(r.date,samplePDTable(r.hourlyPD.fields))===key),existing=canonical&&rows.find(r=>r.id===canonical.id);
+  const next=structuredClone(state),rows=next.records.output||[],key=samplePDKey(fields.date,fields.section),canonical=samplePDRecords().find(r=>samplePDKey(r.date,samplePDTable(r.hourlyPD.fields))===key),existing=(samplePDEditId&&rows.find(r=>r.id===samplePDEditId&&r.hourlyPDKind==='sample'&&!r.deletedAt))||(canonical&&rows.find(r=>r.id===canonical.id));
   if(samplePDEditId&&!rows.some(r=>r.id===samplePDEditId&&r.hourlyProduction))throw Error('এই ইনপুট পাওয়া যাচ্ছে না। Refresh করে দেখুন।');
   const record={...existing,id:existing?.id||(samplePDPendingId||=crypto.randomUUID()),reference:String(fields.section).slice(0,120),name:[fields.buyer,fields.style].filter(Boolean).join(' / ').slice(0,200)||('Table '+fields.section).slice(0,200),date:fields.date,quantity:Number(samplePDSum(data.rows.map(r=>r[3]))||0),status:'Completed',hourlyProduction:true,hourlyPDKind:'sample',hourlyPD:data,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
   if(existing)rows[rows.indexOf(existing)]=record;else rows.unshift(record);next.records.output=rows;
@@ -6320,7 +6320,7 @@ document.getElementById('main').addEventListener('click',event=>{
  if(button){samplePDView=button.dataset.samplePdView;if(samplePDView==='new-input'&&samplePDEditId){samplePDDraft.fields={};samplePDDraft.rows=samplePDHours.map(()=>Array(5).fill(''));for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=null;samplePDPendingId=null;}if(samplePDView==='print'){samplePDSelectedId=null;samplePDPrintDate||=samplePDToday();}renderSamplePD();return;}
  if(event.target.closest('[data-sample-pd-save]')){void saveSamplePD();return;}
  const open=event.target.closest('[data-sample-pd-open]'),select=event.target.closest('[data-sample-pd-select]');
- if(open||select){const row=samplePDRecords().find(r=>r.id===(open?.dataset.samplePdOpen||select?.dataset.samplePdSelect));if(!row)return;if(open){samplePDLoad(row);samplePDView='new-input';}else{samplePDSelectedId=row.id;samplePDPrintDate=row.date;samplePDView='print';}renderSamplePD();return;}
+ if(open||select){const row=(typeof sampleDailySavedRecords==='function'?sampleDailySavedRecords():samplePDRecords()).find(r=>r.id===(open?.dataset.samplePdOpen||select?.dataset.samplePdSelect));if(!row)return;if(open){samplePDLoad(row);samplePDView='new-input';}else{samplePDSelectedId=row.id;samplePDPrintDate=row.date;samplePDView='print';}renderSamplePD();return;}
  if(event.target.closest('[data-sample-pd-filter]')){samplePDApplyPrintDate();return;}
  if(event.target.closest('[data-sample-pd-print]'))printSamplePD();
 });
@@ -6459,10 +6459,11 @@ function sampleDailyWorkerKey(record){const f=record.hourlyPD.fields||{},name=St
 function sampleDailyWorkerGroups(records){const groups=new Map();for(const record of records.slice().sort(samplePDCompare)){const key=record.date+'|'+sampleDailySection(record.hourlyPD.fields||{})+'|'+sampleDailyWorkerKey(record);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(record);}return [...groups.values()];}
 function sampleDailyPrintPages(records){const pages=[];for(const date of [...new Set(records.slice().sort(samplePDCompare).map(r=>r.date))]){const dated=[],serials=new Map();for(const group of sampleDailyWorkerGroups(records.filter(r=>r.date===date))){const section=sampleDailySection(group[0].hourlyPD.fields||{}),serial=(serials.get(section)||0)+1;serials.set(section,serial);dated.push(...group.map(r=>({...r,samplePrintSerial:serial})));}for(let i=0;i<dated.length;i+=11)pages.push(dated.slice(i,i+11));}return pages.length?pages:[[]];}
 // Printing preserves every distinct saved entry, even when worker/date match.
-samplePDPrintRows=function(){const rows=(state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind==='sample'&&!r.deletedAt).slice().sort(samplePDCompare);return samplePDSelectedId?rows.filter(r=>r.id===samplePDSelectedId):rows.filter(r=>!samplePDPrintDate||r.date===samplePDPrintDate);};
+function sampleDailySavedRecords(){return (state.records.output||[]).filter(r=>r.hourlyProduction===true&&r.hourlyPD&&r.hourlyPDKind==='sample'&&!r.deletedAt).slice().sort(samplePDCompare);}
+samplePDPrintRows=function(){const rows=sampleDailySavedRecords();return samplePDSelectedId?rows.filter(r=>r.id===samplePDSelectedId):rows;};
 samplePDPrintSheet=function(records){
  records=sampleDailyWorkerGroups(records).flat();
- const text=v=>samplePDDisplay(v),date=records[0]?.date||samplePDPrintDate||samplePDToday();
+ const text=v=>samplePDDisplay(v),date=samplePDPrintDate||samplePDToday();
  const widths=[9.14,31,19.14,19.14,22.43,26.14,18.57,18.57,25.85,19.14,17.85,19.71,19.57],width=widths.reduce((a,b)=>a+b,0);
  const cell=(value,cls='')=>'<td class="'+cls+'"><span class="sample-pd-value">'+text(value)+'</span></td>';
  const groups=['SAMPLE-1','SAMPLE-2'].map(section=>{
@@ -6520,7 +6521,7 @@ function sampleBoardFieldControl(key,label,edit){
  return sampleBoardInput(date?sampleBoardDateValue(value):time?sampleBoardTimeValue(value):value,attrs+' type="'+(date?'date':time?'time':'text')+'" maxlength="300"'+(['sampleQty','sampleSizeQty','sampleComplete'].includes(key)?' inputmode="decimal"':'')+(['buyer','style','item'].includes(key)?' list="sample-board-options-'+key+'"':''),!edit);
 }
 const sampleBoardFields=[['sampleSection','Section'],['sampleNewOld','New/ Old'],['ironManName','Sample Man Name'],['buyer','Buyer'],['style','Style'],['item','Item'],['sampleQty','QTY'],['sampleSizeQty','Size QTY'],['sampleStartDate','Input Date'],['sampleStartTime','Start Time'],['sampleEndDate','End Date'],['sampleEndTime','End Time'],['sampleComplete','Complete Sample'],['remarks','Remarks']];
-let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null;
+let sampleBoardRows=[],sampleBoardForm={},sampleBoardBusy=false,sampleBoardEditingName=null,sampleBoardEditingRow=null;
 const sampleBoardHours=['8-9 AM','9-10AM','10-11AM','11-12 AM','12.-1 PM','2.-3 PM','3.-4 PM','4.-5 PM','5.-6 PM','6.-7 PM'];
 function sampleBoardSuggestions(key,query){
  const q=String(query||'').trim().toLocaleLowerCase();if(q.length<2)return [];
@@ -6549,7 +6550,7 @@ function sampleBoardAdd(){
   if(String(f.sampleSection||'').trim()){const section=String(f.sampleSection).trim().toUpperCase().replace(/^SAMPLE[ ._-]*/, '');if(!['1','2'].includes(section))throw Error('Sample Section-এ SAMPLE-1 বা SAMPLE-2 লিখুন।');f.sampleSection='SAMPLE-'+section;}
   for(const key of ['sampleStartDate','sampleEndDate'])if(String(f[key]||'').trim())f[key]=normalizeDate(f[key]);
   for(const key of ['sampleQty','sampleSizeQty','sampleComplete'])if(String(f[key]??'').trim()){const n=samplePDNumber(f[key]);if(n===null||!Number.isFinite(n)||n<0)throw Error('QTY, Size QTY ও Daily Complete Sample-এ সঠিক সংখ্যা লিখুন।');f[key]=String(n);}
-  const staged=f.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===f.ironManName):null,date=staged?.fields.date||samplePDDraft.fields.date||samplePDToday();
+  const staged=sampleBoardEditingRow&&sampleBoardRows.includes(sampleBoardEditingRow)&&sampleBoardEditingRow.fields.ironManName===f.ironManName?sampleBoardEditingRow:f.ironManName?sampleBoardRows.find(r=>r.fields.ironManName===f.ironManName):null,date=staged?.fields.date||samplePDDraft.fields.date||samplePDToday();
   const saved=f.ironManName?samplePDRecords().find(r=>r.date===date&&r.hourlyPD.fields?.ironManName===f.ironManName):null;
   if(staged&&sampleBoardEditingName!==f.ironManName)return toast('এই নামের এন্ট্রি ইতোমধ্যে আছে। একই নামে দ্বিতীয় রো যোগ করা যাবে না।');
   const previous=staged||(saved?{id:saved.id,fields:saved.hourlyPD.fields,rows:saved.hourlyPD.rows}:null);
@@ -6563,7 +6564,7 @@ samplePDLoad=function(record){sampleBoardOriginalLoad(record);samplePDDraft.fiel
 const sampleBoardOriginalSave=saveSamplePD;
 async function sampleBoardSave(rowsToSave=sampleBoardRows){
  if(sampleBoardBusy||!rowsToSave.length||!FarnoorAccess.canAction('output','edit'))return false;
- if(rowsToSave.some(row=>!row.fields.ironManName))return toast('সেভ করার আগে প্রতিটি রোতে Sample Man Name নির্বাচন করুন।');if(new Set(sampleBoardRows.map(row=>row.fields.ironManName)).size!==sampleBoardRows.length)return toast('একই নাম একাধিক রোতে আছে। নামগুলো আলাদা করুন।');
+ if(rowsToSave.some(row=>!row.fields.ironManName))return toast('সেভ করার আগে প্রতিটি রোতে Sample Man Name নির্বাচন করুন।');if(new Set(rowsToSave.map(row=>row.id||samplePDKey(row.fields.date,row.fields.section))).size!==rowsToSave.length)return toast('একই এন্ট্রি দুইবার সেভ করা যাবে না।');
  sampleBoardBusy=true;let complete=true;const formBefore=structuredClone(sampleBoardForm);
  try{for(const row of rowsToSave){row.fields.cardNo=sampleBoardCards[row.fields.ironManName]??row.fields.cardNo??'';samplePDDraft.fields={...row.fields};samplePDDraft.rows=samplePDComputedRows(row.rows);for(const key of ['targets','differences','achievements'])samplePDDraft[key]=Array(5).fill('');samplePDEditId=row.id||null;samplePDPendingId=null;
    if(!await sampleBoardOriginalSave()){complete=false;break;}row.id=samplePDEditId;
@@ -6577,7 +6578,7 @@ async function sampleBoardSubmit(){
  if(!sampleBoardForm.ironManName){toast('Sample Man Name নির্বাচন করুন।');return false;}
  const row=sampleBoardAdd();if(!row||typeof row!=='object')return false;
  const saved=await sampleBoardSave([row]);
- if(!saved){sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();}
+ if(!saved){sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;sampleBoardEditingRow=row;renderSamplePD();}
  return saved===true;
 }
 const sampleBoardMain=document.getElementById('main');
@@ -6625,16 +6626,16 @@ function sampleWorkerSync(source,form=sampleBoardForm){
 function sampleWorkerSelect(source,paint=true){
  sampleWorkerSync(source);
  const identity={sl:sampleBoardForm.sl||'',ironManName:sampleBoardForm.ironManName||'',cardNo:sampleBoardForm.cardNo||''};
- sampleBoardForm={sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
- sampleBoardEditingName=null;
+ const saved=sampleBoardRows.find(row=>row.fields.ironManName===identity.ironManName&&(!sampleBoardForm.sampleSection||String(row.fields.sampleSection||'').toUpperCase()===String(sampleBoardForm.sampleSection).toUpperCase()));
+ sampleBoardForm=saved?{...saved.fields,...identity}:{sampleSection:sampleBoardForm.sampleSection||'',sampleNewOld:sampleBoardForm.sampleNewOld||'',...identity};
+ sampleBoardEditingName=saved?identity.ironManName:null;sampleBoardEditingRow=saved||null;
  if(paint)for(const [key]of sampleBoardFields){const input=document.getElementById('sample-board-'+key);if(input)input.value=sampleBoardForm[key]??'';}
  return sampleBoardForm;
 }
 function sampleWorkerHydrate(){
  if(sampleBoardRows.length||sampleBoardBusy)return;
- const records=samplePDRecords(),date=samplePDDraft.fields.date||samplePDToday(),today=records.filter(r=>r.date===date);
- const source=today.length?today:[...new Map(records.map(r=>[r.hourlyPD.fields?.cardNo||r.hourlyPD.fields?.ironManName,r]).reverse()).values()];
- sampleBoardRows=source.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>{const fields={...r.hourlyPD.fields,date};const worker=sampleWorkerList().find(w=>w.card&&w.card===fields.cardNo||w.name===fields.ironManName);if(worker){fields.ironManName=worker.name;fields.sl=String(worker.sl);fields.cardNo=worker.card;if(sampleWorkerSection(worker))fields.sampleSection=sampleWorkerSection(worker);}return {id:today.length?r.id:undefined,fields,rows:today.length?samplePDComputedRows(r.hourlyPD.rows):samplePDComputedRows()};}).sort((a,b)=>Number(a.fields.sl)-Number(b.fields.sl));
+ const records=typeof sampleDailySavedRecords==='function'?sampleDailySavedRecords():samplePDRecords();
+ sampleBoardRows=records.filter(r=>r.hourlyPD.fields?.ironManName).map(r=>({id:r.id,fields:{...r.hourlyPD.fields,date:r.date},rows:samplePDComputedRows(r.hourlyPD.rows)}));
 }
 const sampleWorkerPreviousPaper=samplePDPaper;
 samplePDPaper=function(readonly=false){
@@ -6642,10 +6643,10 @@ samplePDPaper=function(readonly=false){
  return sampleWorkerPreviousPaper(readonly).replace('<div class="sample-pd-details">','<div class="sample-worker-toolbar"><button type="button" data-sample-worker-manage '+(!FarnoorAccess.canAction('output','edit')?'disabled':'')+'>♙ Manage Names</button></div><div class="sample-pd-details">');
 };
 const sampleWorkerPreviousLoad=samplePDLoad;
-samplePDLoad=function(record){sampleWorkerPreviousLoad(record);sampleBoardRows=[];sampleWorkerHydrate();const current=sampleBoardRows.find(r=>r.id===record.id);sampleBoardForm={...(current?.fields||record.hourlyPD.fields)};sampleWorkerSync('name');sampleBoardEditingName=sampleBoardForm.ironManName;};
+samplePDLoad=function(record){sampleWorkerPreviousLoad(record);sampleBoardRows=[];sampleWorkerHydrate();const current=sampleBoardRows.find(r=>r.id===record.id);sampleBoardForm={...(current?.fields||record.hourlyPD.fields)};sampleWorkerSync('name');sampleBoardEditingName=sampleBoardForm.ironManName;sampleBoardEditingRow=current||null;};
 const sampleWorkerPreviousAdd=sampleBoardAdd;
 sampleBoardAdd=function(){if(sampleBoardForm.ironManName)sampleWorkerSync('name');const name=sampleBoardForm.ironManName,row=sampleWorkerPreviousAdd();if(row&&typeof row==='object'){row.fields.workerProfile='1';row.fields.workerPreviousCard=sampleWorkerList().find(w=>w.name===name)?.previousCard||'';}return row;};
-function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;renderSamplePD();document.getElementById('sample-board-buyer')?.focus();}
+function sampleWorkerEditRow(index){const row=sampleBoardRows[index];if(!row||sampleBoardBusy)return;sampleBoardForm={...row.fields};sampleBoardEditingName=row.fields.ironManName;sampleBoardEditingRow=row;renderSamplePD();document.getElementById('sample-board-buyer')?.focus();}
 function sampleWorkerSaveProfile(profile,originalCard=''){
  const name=String(profile.name||'').trim(),card=String(profile.card||'').trim(),section=String(profile.section||'').toUpperCase();
  const workers=sampleWorkerList(),original=originalCard?workers.find(w=>w.card===originalCard||w.name===originalCard):null;
