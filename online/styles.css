@@ -580,3 +580,26 @@ body[data-active-department="merch"] #recordDialog input,body[data-active-depart
 #adminSign{background:linear-gradient(120deg,#f1defa,#e6e5ff);color:#633094;border-color:#ba8ed0}.admin-sign-panel{max-width:940px;background:linear-gradient(135deg,#fbf6ff,#eff8fc);border-color:#cfb7e0}.admin-sign-panel h3{color:#663292}.admin-sign-panel form{max-width:620px}.admin-sign-panel fieldset{border:0;padding:0;margin:0;min-width:0}.admin-sign-panel label{display:block;font-weight:700;margin:16px 0 7px}.admin-sign-name{position:relative}.admin-sign-name>input{padding-right:40px}.admin-sign-name>button{position:absolute;right:3px;top:3px;border:0;padding:8px;background:#eee3fa;color:#61358a}#adminSignNames{position:absolute;top:100%;left:0;right:0;max-height:260px;overflow:auto;background:#fff;border:1px solid #b79acb;border-radius:7px;z-index:10;box-shadow:0 8px 20px #30204025}#adminSignNames button{display:block;width:100%;text-align:left;border:0;border-radius:0;font-weight:400}#adminSignNames [aria-selected=true]{background:#ede5fb}.admin-sign-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.admin-sign-photo-button{background:#def3ff;border-color:#83bbd7;color:#145c7e}.admin-sign-photos{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px}.admin-sign-photos figure{position:relative;background:#fff;border:1px solid #ccd6df;border-radius:8px;padding:12px;margin:0}.admin-sign-photos img{width:100%;height:110px;object-fit:contain}.admin-sign-photos figcaption{font-size:12px;overflow-wrap:anywhere;margin-top:5px}.admin-sign-photos figure>button{position:absolute;right:3px;top:3px;padding:2px 7px;color:#a32d43}.admin-sign-saved{margin-top:25px;display:flex;gap:10px;flex-wrap:wrap}.admin-sign-saved h4{width:100%;margin:0}.admin-sign-saved>button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:#fff}.admin-sign-saved small{font-weight:400}
 
 .admin-sign-table-wrap{width:100%;margin-top:4px}.admin-sign-table{width:100%;min-width:580px;border-collapse:collapse}.admin-sign-table th,.admin-sign-table td{border:1px solid #d4c9df;padding:10px 12px;vertical-align:middle}.admin-sign-table thead th{background:#eee3f8;color:#513576;text-align:left}.admin-sign-table th:first-child,.admin-sign-table td:first-child{width:55px;text-align:center}.admin-sign-table td{background:#fff}.admin-sign-table .admin-sign-selected td{background:#f8f2fc}.admin-sign-table .admin-sign-open{border:0;background:transparent;padding:3px 0;text-align:left;color:#5b2c8c;text-decoration:underline;font-weight:700}.admin-sign-table-photos{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.admin-sign-table-photos img{width:150px;height:65px;object-fit:contain;background:#fff;border:1px solid #e3dce8;border-radius:4px}.admin-sign-saved .admin-sign-table-wrap{flex-basis:100%}
+
+/* Print only the requisition document from the main workspace. */
+@page farnoorRequistion{size:A4 portrait;margin:8mm}
+@media print{
+ body[data-active-department="requistion"]{background:#fff!important;color:#000!important;min-height:0!important;height:auto!important}
+ body[data-active-department="requistion"]>.header,
+ body[data-active-department="requistion"] #workspace>aside,
+ body[data-active-department="requistion"] #main>:not(.requistion-workspace),
+ body[data-active-department="requistion"] .requistion-workspace>:not(.requistion-list-paper),
+ body[data-active-department="requistion"] .requistion-list-paper button,
+ body[data-active-department="requistion"] .requistion-electrical-menu{display:none!important}
+ body[data-active-department="requistion"] #workspace,
+ body[data-active-department="requistion"] #main,
+ body[data-active-department="requistion"] .requistion-workspace{display:block!important;width:100%!important;max-width:none!important;min-width:0!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;background:#fff!important;box-shadow:none!important;overflow:visible!important}
+ body[data-active-department="requistion"] .requistion-list-paper{page:farnoorRequistion;width:100%!important;max-width:none!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important;box-sizing:border-box}
+ body[data-active-department="requistion"] .requistion-list-scroll{overflow:visible!important}
+ body[data-active-department="requistion"] .requistion-list-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+ body[data-active-department="requistion"] .requistion-list-table input{min-width:0!important;width:100%!important;border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;color:#000!important;padding:2px!important;font-size:10px!important}
+ body[data-active-department="requistion"] .requistion-electrical-input input{padding-right:0!important}
+ body[data-active-department="requistion"] .requistion-list-table thead{display:table-header-group}
+ body[data-active-department="requistion"] .requistion-list-table tr,
+ body[data-active-department="requistion"] .requistion-signatures{break-inside:avoid}
+}
