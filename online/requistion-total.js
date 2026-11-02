@@ -1,0 +1,8 @@
+'use strict';
+function requistionGrandTotal(rows){let sum=0n,scale=0,found=false;for(const row of rows){const amount=requistionDecimal(row.totalPrice);if(!amount)continue;found=true;if(amount.scale>scale){sum*=10n**BigInt(amount.scale-scale);scale=amount.scale;}sum+=amount.integer*10n**BigInt(scale-amount.scale);}return found?requistionFormatDecimal(sum,scale):'';}
+function requistionTotalFooter(){const columns=requistionEntryColumns(),before=1+columns.findIndex(([key])=>key==='totalPrice'),after=columns.length-before;return '<tfoot data-requistion-total-footer style="display:table-row-group"><tr style="font-weight:700;background:#edf4ef"><th colspan="'+before+'" scope="row" style="text-align:right">TOTAL</th><td data-requistion-total-price style="font-weight:700;text-align:right">'+esc(requistionGrandTotal(requistionNewRows))+'</td>'+(after?'<td colspan="'+after+'"></td>':'')+'</tr></tfoot>';}
+const requistionTotalPreviousPaper=requistionNewPaper;
+requistionNewPaper=function(approval=false){const html=requistionTotalPreviousPaper(approval);return !approval&&html.includes('id="requistionNewBody"')?html.replace('</tbody></table>','</tbody>'+requistionTotalFooter()+'</table>'):html;};
+function requistionRefreshGrandTotal(event){if(document.body.dataset.requistionView!=='new-input'||!event.target.matches?.('[data-requistion-new-field]'))return;document.querySelectorAll('[data-requistion-total-price]').forEach(cell=>cell.textContent=requistionGrandTotal(requistionNewRows));}
+$('#main').addEventListener('input',requistionRefreshGrandTotal);
+$('#main').addEventListener('change',requistionRefreshGrandTotal);
