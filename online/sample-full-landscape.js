@@ -1,4 +1,11 @@
 'use strict';
-// Use the A4 landscape printable area with equal, printer-safe margins.
+// Fill the printable A4 landscape area while preserving every saved Sample row.
 const sampleFullLandscapePreviousHTML=samplePDPrintHTML;
-samplePDPrintHTML=function(records){return sampleFullLandscapePreviousHTML(records).replace('@page{size:A4 landscape;margin:8mm}','@page{size:A4 landscape;margin:5mm}').replaceAll('281mm','287mm').replaceAll('194mm','200mm');};
+samplePDPrintHTML=function(records){
+ let html=sampleFullLandscapePreviousHTML(records).replace('@page{size:A4 landscape;margin:8mm}','@page{size:A4 landscape;margin:5mm}').replaceAll('281mm','287mm').replaceAll('194mm','200mm');
+ const css='@media print{.sample-daily-report .sd-table tbody td,.sample-daily-report .sd-table tbody th{height:var(--sample-full-row-height,6mm)!important;font-size:var(--sample-full-font-size,7pt)!important}.sample-daily-report header h2{font-size:16pt}.sample-daily-report header h3{font-size:10pt}}';
+ html=html.replace('</style>',css+'</style>');
+ const fitScript=`<script>(function(){function fit(){const sheet=document.querySelector('.sample-daily-report');if(!sheet)return;const rows=[...sheet.querySelectorAll('.sd-table tbody tr')];sheet.style.setProperty('--sample-print-scale','1');sheet.style.setProperty('--sample-full-row-height','6mm');sheet.style.setProperty('--sample-full-font-size',rows.length<=18?'9pt':rows.length<=26?'8pt':'7pt');const probe=document.createElement('div');probe.style.cssText='position:absolute;visibility:hidden;width:287mm;height:200mm';document.body.append(probe);const availableHeight=probe.offsetHeight-4,availableWidth=probe.offsetWidth-2;if(rows.length){const bodyHeight=rows.reduce((sum,row)=>sum+row.getBoundingClientRect().height,0),overhead=sheet.getBoundingClientRect().height-bodyHeight;if(sheet.getBoundingClientRect().height<availableHeight)sheet.style.setProperty('--sample-full-row-height',((availableHeight-overhead)/rows.length)+'px');}const scale=Math.min(1,availableWidth/Math.max(sheet.scrollWidth,sheet.offsetWidth,1),availableHeight/Math.max(sheet.scrollHeight,sheet.offsetHeight,1));sheet.style.setProperty('--sample-print-scale',String(scale));probe.remove();}window.addEventListener('beforeprint',fit);window.addEventListener('load',()=>Promise.resolve(document.fonts?.ready).then(fit));})();</script>`;
+ const start=html.indexOf('<script>'),end=html.indexOf('</script>',start);
+ return start>=0&&end>=0?html.slice(0,start)+fitScript+html.slice(end+9):html.replace('</body>',fitScript+'</body>');
+};
