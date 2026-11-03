@@ -11,7 +11,9 @@
   if(!head||[...head.cells].some(c=>c.textContent===key))return;
   const th=document.createElement('th');th.textContent=key;head.insertBefore(th,head.lastElementChild);
   [...table.tBodies[0].rows].forEach((tr,i)=>{
-   const td=document.createElement('td');td.textContent=String(profileSearchResults[profileSearchOffset+i]?.hrDetails?.[key]??'');
+   const row=profileSearchResults[profileSearchOffset+i],details=row?.hrDetails||{};
+   for(const [field,index] of [['Designation',3],['Department',4]])if(!String(details[field]??'').trim()&&details[field+' (Bn)'])tr.cells[index].textContent=String(details[field+' (Bn)']);
+   const td=document.createElement('td');td.textContent=String(details[key]??'');
    tr.insertBefore(td,tr.lastElementChild);
   });
  };
