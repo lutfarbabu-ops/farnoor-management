@@ -22,7 +22,8 @@ const idCardCSS=`
 .ic-brand strong,.ic-brand small{text-align:center;text-align-last:auto;word-spacing:normal;letter-spacing:normal;white-space:nowrap}.ic-photo{width:34mm;border:0}.ic-photo img{width:34mm;height:34mm;object-fit:contain}.ic-back .ic-permanent-address .ic-line{grid-template-columns:21.5mm 1mm minmax(0,1fr)}.ic-company-inline .ic-company-address-row>span:last-child{white-space:nowrap;overflow-wrap:normal}
 .ic-back .ic-company-address-row,.ic-back .ic-permanent-address .ic-line{grid-template-columns:19mm 1mm minmax(0,1fr)}.ic-company-address-row>b{font-size:.89em}
 .ic-signs>div:first-child{align-items:flex-start}.ic-signs>div:first-child img{width:12mm;max-width:100%;margin:0;object-position:left bottom}
-.ic-back .ic-permanent-address .ic-line>b{text-align:right}.ic-brand strong,.ic-brand small{text-align:right}
+.ic-back .ic-permanent-address .ic-line>b{text-align:right}.ic-brand strong,.ic-brand small{text-align:left}.ic-card .ic-brand{gap:2mm}
+.ic-company-inline .ic-line:first-child>span:last-child{white-space:nowrap;overflow-wrap:normal}
 .ic-card .ic-brand img{transform:translateX(1mm)}
 @media(max-width:700px){.ic-workspace{padding:12px}.ic-form-grid,.ic-upload-grid{grid-template-columns:1fr}.ic-panel{padding:14px}.ic-tabs button{font-size:12px;padding:8px}}
 @page idcard{size:A4 portrait;margin:10mm}
@@ -43,7 +44,7 @@ const icCompanies={
 };
 let icCompany='FARNOOR GARMENTS LTD.';
 const icSelectedCompany=()=>icCompanies[icCompany]||icCompanies['FARNOOR GARMENTS LTD.'];
-function icCompanyDetails(){const c=icSelectedCompany();return '<div class="ic-company-inline">'+icLine('প্রতিষ্ঠানের নাম',c.bnName)+icLine('প্রতিষ্ঠানের ঠিকানা',c.bnAddress).replace('<div class="ic-line">','<div class="ic-line ic-company-address-row">').replace('<span class="ic-red">','<span class="ic-red" data-ic-fit-line>')+'</div>';}
+function icCompanyDetails(){const c=icSelectedCompany();return '<div class="ic-company-inline">'+icLine('প্রতিষ্ঠানের নাম',c.bnName).replace('<span class="ic-red">','<span class="ic-red" data-ic-fit-line>')+icLine('প্রতিষ্ঠানের ঠিকানা',c.bnAddress).replace('<div class="ic-line">','<div class="ic-line ic-company-address-row">').replace('<span class="ic-red">','<span class="ic-red" data-ic-fit-line>')+'</div>';}
 function icFitCompanyLines(root=document){for(const line of root.querySelectorAll('[data-ic-fit-line]')){line.style.fontSize='';for(let n=0;n<8&&line.scrollWidth>line.clientWidth+1;n++){const font=parseFloat((line.ownerDocument.defaultView||window).getComputedStyle(line).fontSize);line.style.fontSize=(font*Math.min(.98,line.clientWidth/line.scrollWidth))+'px';}}}
 const icBatchQueues={photo:[],signature:[]};let icBatchBusy=false,icBatchStop=false,icBatchLastSave=0;
 const icBatchKind=()=>icView()==='id-photo'?'photo':'signature';
