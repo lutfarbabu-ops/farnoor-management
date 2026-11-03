@@ -61,6 +61,7 @@ const idCardCSS=`
 .ic-card .ic-brand img{transform:translateX(1mm)}
 .ic-card .ic-brand strong{font-size:9pt;font-weight:700;line-height:1}.ic-card .ic-brand small{line-height:1}
 .ic-back-details>.ic-fit>.ic-line,.ic-back-details .ic-company-inline>.ic-line{min-height:3.6mm;align-items:center;line-height:1}.ic-back-details .ic-company-inline{margin:0}
+.ic-card .ic-brand{padding-left:3.3mm;padding-right:3.3mm}.ic-front-details,.ic-back-details,.ic-signs,.ic-back .ic-card-notice{padding-left:3.8mm;padding-right:3.8mm}.ic-photo,.ic-photo img{width:36mm}.ic-photo img{height:36mm}
 @media(max-width:700px){.ic-workspace{padding:12px}.ic-form-grid,.ic-upload-grid{grid-template-columns:1fr}.ic-panel{padding:14px}.ic-tabs button{font-size:12px;padding:8px}}
 @page idcard{size:A4 portrait;margin:10mm}
 @media print{html,body{margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.ic-pair{break-inside:avoid}.ic-card-results{display:block;overflow:visible;padding:0}.ic-card-results>.ic-pair{margin-bottom:4mm}.ic-tabs,.ic-search,.ic-status,.ic-missing{display:none!important}body:has(.ic-workspace) .header,body:has(.ic-workspace) aside,body:has(.ic-workspace) .ic-workspace>h2{display:none!important}body:has(.ic-workspace) #workspace{display:block}body:has(.ic-workspace) main,body:has(.ic-workspace) .ic-workspace{padding:0;margin:0;background:#fff;border:0}.ic-print-page{overflow:visible}}
