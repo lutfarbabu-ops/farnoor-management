@@ -1,10 +1,11 @@
 'use strict';
 let maternityReportDeleteObserver=null;
+function maternityReportCanDelete(){return accessInfo.role==='super_admin'&&FarnoorAccess.canAction('admin-documents','edit');}
 async function maternityReportDeleteRecord(id){
  if(!dataReady){toast('Wait for saved data to load.');return false;}
  if(dataSaving){toast('A save is already in progress.');return false;}
  if(dataChanged){toast('Data changed. Refresh and review before deleting.');return false;}
- if(!FarnoorAccess.canAction('admin-documents','edit')){toast('Documents edit permission is required.');return false;}
+ if(!maternityReportCanDelete()){toast('Super Admin permission is required.');return false;}
  if(!maternityBenefitRows().some(row=>row.id===id))return true;
  dataSaving=true;$('#workspace').inert=true;dataStatus('Deleting…');
  try{
@@ -26,18 +27,18 @@ function maternityReportAlignDelete(){
 const maternityReportDeletePreviousRender=renderMaternityBenefitReport;
 renderMaternityBenefitReport=function(...args){
  maternityReportDeleteObserver?.disconnect();const result=maternityReportDeletePreviousRender.apply(this,args);
- const table=document.getElementById('maternityBenefitReport'),panel=table?.closest('.panel');if(!table||!panel)return result;
+ const table=document.getElementById('maternityBenefitReport'),panel=table?.closest('.panel');if(!table||!panel||!maternityReportCanDelete()){document.getElementById('maternityReportDeleteDialog')?.remove();return result;}
  const rows=maternityBenefitRows();[...table.tBodies[0].rows].forEach((tr,index)=>{if(rows[index])tr.dataset.maternityRow=rows[index].id;});
  const layout=document.createElement('div');layout.className='maternity-report-layout';panel.before(layout);layout.append(panel);
- const rail=document.createElement('div');rail.id='maternityReportDeleteRail';rail.className='maternity-report-delete-rail no-print';rail.setAttribute('aria-label','Delete Maternity entries');rail.innerHTML=rows.map(row=>'<button type="button" class="danger" data-page-action-required="edit" data-maternity-report-delete="'+esc(row.id)+'" '+(!FarnoorAccess.canAction('admin-documents','edit')?'disabled':'')+'>🗑 Delete</button>').join('');layout.append(rail);
+ const rail=document.createElement('div');rail.id='maternityReportDeleteRail';rail.className='maternity-report-delete-rail no-print';rail.setAttribute('aria-label','Delete Maternity entries');rail.innerHTML=rows.map(row=>'<button type="button" class="danger" data-page-action-required="edit" data-maternity-report-delete="'+esc(row.id)+'" '+(!maternityReportCanDelete()?'disabled':'')+'>🗑 Delete</button>').join('');layout.append(rail);
  maternityReportDeleteObserver=new ResizeObserver(maternityReportAlignDelete);maternityReportDeleteObserver.observe(table);requestAnimationFrame(maternityReportAlignDelete);return result;
 };
 function maternityReportConfirmDelete(id,trigger){
- if(!FarnoorAccess.canAction('admin-documents','edit'))return toast('Documents edit permission is required.');const row=maternityBenefitRows().find(row=>row.id===id);if(!row)return;
+ if(!maternityReportCanDelete())return toast('Super Admin permission is required.');const row=maternityBenefitRows().find(row=>row.id===id);if(!row)return;
  document.getElementById('maternityReportDeleteDialog')?.remove();const dialog=document.createElement('dialog');dialog.id='maternityReportDeleteDialog';dialog.innerHTML='<h3>Delete this entry?</h3><p>'+esc(row.reference)+' · '+esc(row.name)+'</p><p role="alert"></p><div class="dialog-actions"><button type="button" class="danger" data-maternity-confirm-delete>Delete</button><button type="button" data-maternity-cancel-delete autofocus>Cancel</button></div>';
  let busy=false;const close=()=>{if(busy)return;dialog.close();dialog.remove();if(trigger?.isConnected)trigger.focus();};dialog.querySelector('[data-maternity-cancel-delete]').onclick=close;dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
  dialog.querySelector('[data-maternity-confirm-delete]').onclick=async()=>{
-  if(busy||!FarnoorAccess.canAction('admin-documents','edit'))return;const current=maternityBenefitRows().find(row=>row.id===id);if(!current){close();renderMaternityBenefitReport();return;}
+  if(busy||!maternityReportCanDelete())return;const current=maternityBenefitRows().find(row=>row.id===id);if(!current){close();renderMaternityBenefitReport();return;}
   busy=true;dialog.querySelectorAll('button').forEach(button=>button.disabled=true);dialog.querySelector('[data-maternity-confirm-delete]').textContent='Deleting…';
   try{if(await maternityReportDeleteRecord(id)){if(maternityBenefitId===id){maternityBenefitId=null;maternityBenefitPending=null;maternityBenefitDraft={};}busy=false;close();if(activePage==='admin-maternity-entry-report')renderMaternityBenefitReport();toast('Maternity entry deleted.');}else dialog.querySelector('[role="alert"]').textContent='Delete failed. The entry is unchanged. Please try again.';}
   catch(error){dialog.querySelector('[role="alert"]').textContent=error.message;}
