@@ -23,10 +23,10 @@ function maternityScheduleCalculate(edd,company,manualStart){
  const values=manualStart?{mlTo:'',firstVoucherDate:'',calculationFrom:'',calculationTo:''}:{mlFrom:'',mlTo:'',firstVoucherDate:'',secondVoucherDate:'',calculationFrom:'',calculationTo:''},warnings=[];const attempt=fn=>{try{fn();}catch(error){warnings.push(error.message);}};
  const expected=edd?maternityScheduleDay(edd):null;
  if(expected){
-  const base=maternityScheduleShift(expected,-60),month=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth()-1,1));
+  const base=maternityScheduleShift(expected,-61),lastMonthBase=maternityScheduleShift(expected,-60),month=new Date(Date.UTC(lastMonthBase.getUTCFullYear(),lastMonthBase.getUTCMonth()-1,1));
   values.lastMonth=String(month.getUTCMonth()+1).padStart(2,'0')+'/'+month.getUTCFullYear();
   if(!manualStart)attempt(()=>{values.mlFrom=maternityScheduleText(maternityScheduleWorkingDay(base,-1,company));});
-  attempt(()=>{values.secondVoucherDate=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(expected,3),1,company));});
+  attempt(()=>{values.secondVoucherDate=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(expected,4),1,company));});
  }
  const start=manualStart||values.mlFrom;
  if(start){
@@ -66,7 +66,7 @@ const maternitySchedulePreviousRender=renderMaternityBenefitEntry;
 renderMaternityBenefitEntry=function(...args){
  const result=maternitySchedulePreviousRender.apply(this,args);if(activePage!=='admin-maternity-new-entry')return result;
  const form=document.getElementById('maternityBenefitForm');if(!form)return result;
- const company=document.createElement('div');company.className='maternity-entry-field';company.innerHTML='<label for="maternity-benefit-company">Company</label><select id="maternity-benefit-company" data-maternity-benefit="company">'+['FARNOOR GARMENTS LTD','FARNOOR GARMENTS LTD. UNIT-2'].map(value=>'<option'+(value===maternityBenefitDraft.company?' selected':'')+'>'+esc(value)+'</option>').join('')+'</select>';form.prepend(company);
+ // Keep the saved/current company context for holidays without a Company field.
  const status=document.createElement('p');status.id='maternityScheduleStatus';status.className='maternity-entry-full';status.setAttribute('role','status');form.querySelector('.maternity-entry-save')?.before(status);
  for(const input of form.querySelectorAll('[data-maternity-benefit]')){
   input.readOnly=false;
@@ -95,3 +95,5 @@ document.getElementById('main').addEventListener('input',maternityScheduleInput,
 document.getElementById('main').addEventListener('change',maternityScheduleInput,true);
 document.getElementById('main').addEventListener('focusout',maternityScheduleInput,true);
 const maternityScheduleStyle=document.createElement('style');maternityScheduleStyle.textContent='.maternity-schedule-date{display:flex;position:relative;min-width:0;align-items:center;gap:4px}.maternity-schedule-date>input:first-child{flex:1;min-width:0}.maternity-schedule-date>button{padding:5px 9px}.maternity-schedule-picker{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;padding:0!important;bottom:0;right:0;pointer-events:none}#maternity-benefit-company{width:100%;padding:8px;border:1px solid #b8cde0;border-radius:6px}#maternityScheduleStatus{color:#a1361a;font-size:13px}';document.head.append(maternityScheduleStyle);
+
+const maternityCompactStyle=document.createElement('style');maternityCompactStyle.textContent="@media screen{#main:has(.maternity-entry-layout) .page-heading{margin-bottom:10px}#main:has(.maternity-entry-layout) .page-heading h2{font-size:22px;margin:0}.maternity-entry-layout{width:100%;max-width:1100px;margin:auto}.maternity-entry-card{min-height:0;padding:12px 18px;border-radius:8px}.maternity-entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px;row-gap:0}.maternity-entry-field{display:grid;grid-template-columns:125px minmax(0,1fr);gap:8px;padding:4px 0;font-size:13px}.maternity-entry-field:has(.maternity-entry-period),.maternity-entry-field:has(#maternity-benefit-eddDate),.maternity-entry-field:has(#maternity-benefit-lastMonth){grid-column:1/-1}.maternity-entry-field input{min-height:29px!important;height:29px;margin:0;padding:4px 7px;font-size:13px;box-sizing:border-box}.maternity-schedule-date>button{min-height:27px;padding:2px 7px;font-size:15px}.maternity-entry-period{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:7px}.maternity-entry-full{grid-column:1/-1}.maternity-entry-save{margin-top:8px}.maternity-entry-save button{padding:7px 18px;min-height:32px}#maternityScheduleStatus:empty{display:none}#maternityScheduleStatus{margin:4px 0}@media(max-width:800px){.maternity-entry-grid{grid-template-columns:minmax(0,1fr)}.maternity-entry-card{padding:10px}.maternity-entry-field{grid-template-columns:112px minmax(0,1fr)}.maternity-entry-period{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}}}";document.head.append(maternityCompactStyle);
