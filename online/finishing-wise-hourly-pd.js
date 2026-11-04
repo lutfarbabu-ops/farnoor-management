@@ -2,6 +2,8 @@
 'use strict';
 {const d=DEPARTMENTS.find(d=>d.id==='production');if(d&&!d.pages.some(p=>p.id==='production-finishing-wise-hourly-pd')){const i=d.pages.findIndex(p=>p.id==='production-iron-wise-hourly-pd');d.pages.splice(i<0?d.pages.length:i,0,{id:'production-finishing-wise-hourly-pd',name:'Finishing Wise Hourly PD',navPath:['Finishing'],icon:'▥',shade:'#d7f3e5',navigationOnly:true,permissionPage:'output'});}}
 
+if(typeof submenuLooks!=='undefined'&&!submenuLooks.has('page:production-finishing-wise-hourly-pd'))submenuLooks.set('page:production-finishing-wise-hourly-pd',{hue:155,saturation:62,lightness:92,shape:'rail'});
+
 // Source: sample-wise-hourly-pd.js
 'use strict';
 const finishingPDPage='production-finishing-wise-hourly-pd';
