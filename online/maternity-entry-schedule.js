@@ -5,6 +5,10 @@ function maternityScheduleCompany(value){return /UNIT\s*-?\s*2/i.test(value||'')
 function maternityScheduleDay(value){return new Date(maternityEntryDateISO(value)+'T00:00:00Z');}
 function maternityScheduleText(date){return date.toISOString().slice(0,10).split('-').reverse().join('/');}
 function maternityScheduleShift(date,days){const copy=new Date(date);copy.setUTCDate(copy.getUTCDate()+days);return copy;}
+function maternitySchedulePreviousMonth(start){
+ const date=maternityScheduleDay(start),year=date.getUTCFullYear(),month=date.getUTCMonth();
+ return {calculationFrom:maternityScheduleText(new Date(Date.UTC(year,month-1,1))),calculationTo:maternityScheduleText(new Date(Date.UTC(year,month,0)))};
+}
 function maternityScheduleWorkingDay(date,direction,company){
  const extra=typeof warningInputExtraHolidays==='function'?warningInputExtraHolidays():new Set();
  const weekly=/UNIT-2/.test(maternityScheduleCompany(company))?5:0;
@@ -16,7 +20,7 @@ function maternityScheduleWorkingDay(date,direction,company){
  throw Error('খোলা দিনের তারিখ পাওয়া যায়নি।');
 }
 function maternityScheduleCalculate(edd,company,manualStart){
- const values=manualStart?{mlTo:'',firstVoucherDate:''}:{mlFrom:'',mlTo:'',firstVoucherDate:'',secondVoucherDate:''},warnings=[];const attempt=fn=>{try{fn();}catch(error){warnings.push(error.message);}};
+ const values=manualStart?{mlTo:'',firstVoucherDate:'',calculationFrom:'',calculationTo:''}:{mlFrom:'',mlTo:'',firstVoucherDate:'',secondVoucherDate:'',calculationFrom:'',calculationTo:''},warnings=[];const attempt=fn=>{try{fn();}catch(error){warnings.push(error.message);}};
  const expected=edd?maternityScheduleDay(edd):null;
  if(expected){
   const base=maternityScheduleShift(expected,-60),month=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth()-1,1));
@@ -26,6 +30,7 @@ function maternityScheduleCalculate(edd,company,manualStart){
  }
  const start=manualStart||values.mlFrom;
  if(start){
+  Object.assign(values,maternitySchedulePreviousMonth(start));
   attempt(()=>{values.mlTo=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(maternityScheduleDay(start),120),1,company));});
   attempt(()=>{values.firstVoucherDate=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(maternityScheduleDay(start),-3),-1,company));});
  }
