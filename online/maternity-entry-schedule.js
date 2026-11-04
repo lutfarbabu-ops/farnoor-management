@@ -9,13 +9,15 @@ function maternitySchedulePreviousMonth(start){
  const date=maternityScheduleDay(start),year=date.getUTCFullYear(),month=date.getUTCMonth();
  return {calculationFrom:maternityScheduleText(new Date(Date.UTC(year,month-1,1))),calculationTo:maternityScheduleText(new Date(Date.UTC(year,month,0)))};
 }
-function maternityScheduleWorkingDay(date,direction,company){
+function maternityScheduleWorkingDay(date,direction,company,warnings=[]){
  const extra=typeof warningInputExtraHolidays==='function'?warningInputExtraHolidays():new Set();
  const weekly=/UNIT-2/.test(maternityScheduleCompany(company))?5:0;
  for(let i=0;i<366;i++,date=maternityScheduleShift(date,direction)){
   const holidays=typeof warningGovernmentHolidays!=='undefined'?warningGovernmentHolidays[date.getUTCFullYear()]:null;
-  if(!holidays)throw Error(date.getUTCFullYear()+' সালের সরকারি ছুটির তালিকা নেই। সংশ্লিষ্ট তারিখ হাতে লিখুন।');
-  if(date.getUTCDay()!==weekly&&!holidays.has(date.toISOString().slice(0,10))&&!extra.has(date.toISOString().slice(0,10)))return date;
+  // Missing annual data must not suppress the 120-day calculation. Show the
+  // known-calendar result, explicitly marked for public-holiday review.
+  if(!holidays)warnings.push(date.getUTCFullYear()+' সালের সরকারি ছুটির পূর্ণ তালিকা যুক্ত নেই। সাপ্তাহিক ও সংরক্ষিত ছুটি অনুযায়ী তারিখ দেখানো হয়েছে; সরকারি ছুটি মিলিয়ে নিশ্চিত করুন।');
+  if(date.getUTCDay()!==weekly&&!holidays?.has(date.toISOString().slice(0,10))&&!extra.has(date.toISOString().slice(0,10)))return date;
  }
  throw Error('খোলা দিনের তারিখ পাওয়া যায়নি।');
 }
@@ -25,14 +27,14 @@ function maternityScheduleCalculate(edd,company,manualStart){
  if(expected){
   const base=maternityScheduleShift(expected,-61),lastMonthBase=maternityScheduleShift(expected,-60),month=new Date(Date.UTC(lastMonthBase.getUTCFullYear(),lastMonthBase.getUTCMonth()-1,1));
   values.lastMonth=String(month.getUTCMonth()+1).padStart(2,'0')+'/'+month.getUTCFullYear();
-  if(!manualStart)attempt(()=>{values.mlFrom=maternityScheduleText(maternityScheduleWorkingDay(base,-1,company));});
-  attempt(()=>{values.secondVoucherDate=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(expected,4),1,company));});
+  if(!manualStart)attempt(()=>{values.mlFrom=maternityScheduleText(maternityScheduleWorkingDay(base,-1,company,warnings));});
+  attempt(()=>{values.secondVoucherDate=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(expected,4),1,company,warnings));});
  }
  const start=manualStart||values.mlFrom;
  if(start){
   Object.assign(values,maternitySchedulePreviousMonth(start));
-  attempt(()=>{values.mlTo=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(maternityScheduleDay(start),120),1,company));});
-  attempt(()=>{values.firstVoucherDate=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(maternityScheduleDay(start),-3),-1,company));});
+  attempt(()=>{values.mlTo=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(maternityScheduleDay(start),120),1,company,warnings));});
+  attempt(()=>{values.firstVoucherDate=maternityScheduleText(maternityScheduleWorkingDay(maternityScheduleShift(maternityScheduleDay(start),-3),-1,company,warnings));});
  }
  return {values,warnings:[...new Set(warnings)]};
 }
@@ -51,6 +53,7 @@ maternityEntryView=function(entry){
  if(!values.firstVoucherDate&&values.payment&&maternityEntryDateISO(values.payment))values.firstVoucherDate=maternityEntryDate(values.payment);
  if(!maternityBenefitId){values.paymentMode||='Cash';values.daysDividedBy||='26';}
  values.company=maternityScheduleCompany(values.company||maternityCompanyChoice);
+ if(values.mlFrom&&!values.mlTo){try{values.mlTo=maternityScheduleCalculate(values.eddDate,values.company,values.mlFrom).values.mlTo;}catch{}}
  return values;
 };
 function maternityScheduleStatus(message){const node=document.getElementById('maternityScheduleStatus');if(node)node.textContent=message;}
@@ -67,7 +70,10 @@ renderMaternityBenefitEntry=function(...args){
  const result=maternitySchedulePreviousRender.apply(this,args);if(activePage!=='admin-maternity-new-entry')return result;
  const form=document.getElementById('maternityBenefitForm');if(!form)return result;
  // Keep the saved/current company context for holidays without a Company field.
- const status=document.createElement('p');status.id='maternityScheduleStatus';status.className='maternity-entry-full';status.setAttribute('role','status');form.querySelector('.maternity-entry-save')?.before(status);
+ const status=document.createElement('p');status.id='maternityScheduleStatus';status.className='maternity-entry-full';status.setAttribute('role','status');
+ const pendingYears=[...new Set(['eddDate','mlFrom','mlTo','firstVoucherDate','secondVoucherDate'].map(key=>maternityEntryDateISO(maternityBenefitDraft[key])).filter(Boolean).map(date=>Number(date.slice(0,4))).filter(year=>typeof warningGovernmentHolidays==='undefined'||!warningGovernmentHolidays[year]))];
+ if(pendingYears.length)status.textContent=pendingYears.join(', ')+' সালের সরকারি ছুটির পূর্ণ তালিকা যুক্ত নেই। সাপ্তাহিক ও সংরক্ষিত ছুটি অনুযায়ী তারিখ দেখানো হয়েছে; সরকারি ছুটি মিলিয়ে নিশ্চিত করুন।';
+ form.querySelector('.maternity-entry-save')?.before(status);
  for(const input of form.querySelectorAll('[data-maternity-benefit]')){
   input.readOnly=false;
   input.dataset.scheduleSource=input.value;
