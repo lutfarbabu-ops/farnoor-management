@@ -56,7 +56,7 @@ maternityEntryView=function(entry){
  if(values.mlFrom&&!values.mlTo){try{values.mlTo=maternityScheduleCalculate(values.eddDate,values.company,values.mlFrom).values.mlTo;}catch{}}
  return values;
 };
-function maternityScheduleStatus(message){const node=document.getElementById('maternityScheduleStatus');if(node)node.textContent=message;}
+function maternityScheduleStatus(message){const node=document.getElementById('maternityScheduleStatus');if(node){node.hidden=accessInfo.role!=='super_admin';node.textContent=node.hidden?'':message;}}
 function maternityScheduleApply(source){
  try{
   const draft=maternityBenefitDraft;if(!draft.eddDate&&source!=='mlFrom')return;
@@ -72,7 +72,8 @@ renderMaternityBenefitEntry=function(...args){
  // Keep the saved/current company context for holidays without a Company field.
  const status=document.createElement('p');status.id='maternityScheduleStatus';status.className='maternity-entry-full';status.setAttribute('role','status');
  const pendingYears=[...new Set(['eddDate','mlFrom','mlTo','firstVoucherDate','secondVoucherDate'].map(key=>maternityEntryDateISO(maternityBenefitDraft[key])).filter(Boolean).map(date=>Number(date.slice(0,4))).filter(year=>typeof warningGovernmentHolidays==='undefined'||!warningGovernmentHolidays[year]))];
- if(pendingYears.length)status.textContent=pendingYears.join(', ')+' সালের সরকারি ছুটির পূর্ণ তালিকা যুক্ত নেই। সাপ্তাহিক ও সংরক্ষিত ছুটি অনুযায়ী তারিখ দেখানো হয়েছে; সরকারি ছুটি মিলিয়ে নিশ্চিত করুন।';
+ status.hidden=accessInfo.role!=='super_admin';
+ if(pendingYears.length&&!status.hidden)status.textContent=pendingYears.join(', ')+' সালের সরকারি ছুটির পূর্ণ তালিকা যুক্ত নেই। সাপ্তাহিক ও সংরক্ষিত ছুটি অনুযায়ী তারিখ দেখানো হয়েছে; সরকারি ছুটি মিলিয়ে নিশ্চিত করুন।';
  form.querySelector('.maternity-entry-save')?.before(status);
  for(const input of form.querySelectorAll('[data-maternity-benefit]')){
   input.readOnly=false;
