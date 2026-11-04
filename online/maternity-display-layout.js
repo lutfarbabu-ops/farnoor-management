@@ -18,8 +18,8 @@ applyActionControls=function(...args){
  return maternityDisplayPreviousActions.apply(this,args);
 };
 const maternityDisplayStyle=document.createElement('style');maternityDisplayStyle.textContent=`
-.mta-calculation .mta-details{margin-bottom:3mm}
-.mta-calculation .mta-period{display:grid;grid-template-columns:38mm 12px max-content 20px max-content;column-gap:0;row-gap:0;align-items:start;justify-content:start;font-size:10.5pt;line-height:1.25;margin:2.5mm 0}
+.mta-calculation .mta-details{margin-bottom:1mm}
+.mta-calculation .mta-period{display:grid;grid-template-columns:38mm 12px max-content 20px max-content;column-gap:0;row-gap:0;align-items:center;justify-content:start;font-size:10.5pt;line-height:1.25;margin:1mm 0}
 .mta-calculation .mta-period-caption{white-space:nowrap}
 .mta-calculation .mta-period>b{font-weight:700!important;white-space:nowrap}
 .mta-calculation .mta-period>span:not(.mta-period-caption):not(.mta-period-colon){text-align:center}
