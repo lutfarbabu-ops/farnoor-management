@@ -1,5 +1,24 @@
 'use strict';
 let maternityReportDeleteObserver=null;
+async function maternityReportDeleteRecord(id){
+ if(!dataReady){toast('Wait for saved data to load.');return false;}
+ if(dataSaving){toast('A save is already in progress.');return false;}
+ if(dataChanged){toast('Data changed. Refresh and review before deleting.');return false;}
+ if(!FarnoorAccess.canAction('admin-documents','edit')){toast('Documents edit permission is required.');return false;}
+ if(!maternityBenefitRows().some(row=>row.id===id))return true;
+ dataSaving=true;$('#workspace').inert=true;dataStatus('Deleting…');
+ try{
+  const revision=dataRevision;
+  const result=await dataRequest({route:'/api/maternity-benefit/delete',method:'POST',payload:{id,revision,accessRevision:accessInfo.revision}});
+  if(result.deletedId!==id||!Number.isSafeInteger(result.revision)||result.revision<revision||result.revision>revision+1)throw Error('Delete was not confirmed. Refresh and retry.');
+  // Apply only the confirmed deletion; unrelated form data is never replaced.
+  state={...state,records:{...state.records,'admin-documents':(state.records['admin-documents']||[]).filter(row=>row.id!==id)}};
+  if(dataSavedState)dataSavedState={...dataSavedState,records:{...dataSavedState.records,'admin-documents':(dataSavedState.records['admin-documents']||[]).filter(row=>row.id!==id)}};
+  dataRevision=result.revision;dataChanged=false;
+  void FarnoorWorkspaceCache.write(dataCacheUserId,{state,access:accessInfo,revision:dataRevision});dataStatus('Saved online');return true;
+ }catch(error){if(error.status===409)dataChanged=true;dataStatus('Not deleted · Retry');toast(error.message);return false;}
+ finally{dataSaving=false;$('#workspace').inert=false;}
+}
 function maternityReportAlignDelete(){
  const table=document.getElementById('maternityBenefitReport'),rail=document.getElementById('maternityReportDeleteRail');if(!table||!rail)return;
  const bounds=rail.getBoundingClientRect();for(const button of rail.querySelectorAll('[data-maternity-report-delete]')){const row=[...table.tBodies[0].rows].find(row=>row.dataset.maternityRow===button.dataset.maternityReportDelete);if(row)button.style.top=(row.getBoundingClientRect().top-bounds.top+(row.offsetHeight-button.offsetHeight)/2)+'px';}
@@ -20,8 +39,7 @@ function maternityReportConfirmDelete(id,trigger){
  dialog.querySelector('[data-maternity-confirm-delete]').onclick=async()=>{
   if(busy||!FarnoorAccess.canAction('admin-documents','edit'))return;const current=maternityBenefitRows().find(row=>row.id===id);if(!current){close();renderMaternityBenefitReport();return;}
   busy=true;dialog.querySelectorAll('button').forEach(button=>button.disabled=true);dialog.querySelector('[data-maternity-confirm-delete]').textContent='Deleting…';
-  const next={...state,records:{...state.records,'admin-documents':(state.records['admin-documents']||[]).filter(row=>row.id!==id)}};
-  try{if(await commit(next)){if(maternityBenefitId===id){maternityBenefitId=null;maternityBenefitPending=null;maternityBenefitDraft={};}busy=false;close();if(activePage==='admin-maternity-entry-report')renderMaternityBenefitReport();toast('Maternity entry deleted.');}else dialog.querySelector('[role="alert"]').textContent='Delete failed. The entry is unchanged. Please try again.';}
+  try{if(await maternityReportDeleteRecord(id)){if(maternityBenefitId===id){maternityBenefitId=null;maternityBenefitPending=null;maternityBenefitDraft={};}busy=false;close();if(activePage==='admin-maternity-entry-report')renderMaternityBenefitReport();toast('Maternity entry deleted.');}else dialog.querySelector('[role="alert"]').textContent='Delete failed. The entry is unchanged. Please try again.';}
   catch(error){dialog.querySelector('[role="alert"]').textContent=error.message;}
   finally{busy=false;if(dialog.isConnected){dialog.querySelectorAll('button').forEach(button=>button.disabled=false);dialog.querySelector('[data-maternity-confirm-delete]').textContent='Delete';}}
  };
