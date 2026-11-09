@@ -163,8 +163,10 @@ function servicePaidDateKey(value){
 
 function servicePaidResults(range){
  const inRange=payment=>{
+  if(servicePaymentCents(payment.amount)<=0)return false;
+  if(range.all)return true;
   const date=servicePaidDateKey(payment.paymentDate||payment.date);
-  return date>=range.start&&date<=range.end&&servicePaymentCents(payment.amount)>0;
+  return date>=range.start&&date<=range.end;
  };
  return servicePaymentResultsTable(serviceBenefitRows().filter(row=>row.serviceBenefitEntry),
   summary=>summary.history.some(inRange),inRange);
@@ -176,8 +178,9 @@ function renderServicePaid(){
  const results=servicePaidRange?servicePaidResults(servicePaidRange):null;
  $('#main').innerHTML=serviceBenefitNavigation()+'<div class="service-payment-controls no-print">'+
   '<form id="servicePaidSearchForm"><label>Start Date<input type="date" name="start" value="'+esc(start)+'" required></label>'+
-  '<label>End Date<input type="date" name="end" value="'+esc(end)+'" required></label><button type="submit">⌕ Search</button></form></div>'+
-  (results?.hasRows?results.html:results?'<p role="status">No paid payments found for this date range.</p>':'');
+  '<label>End Date<input type="date" name="end" value="'+esc(end)+'" required></label><button type="submit">⌕ Search</button>'+
+  '<button type="button" data-service-paid-all aria-pressed="'+(servicePaidRange?.all===true)+'">ALL</button></form></div>'+
+  (results?.hasRows?results.html:results?'<p role="status">'+(servicePaidRange.all?'No paid payments found.':'No paid payments found for this date range.')+'</p>':'');
  applyActionControls();
 }
 
@@ -382,6 +385,11 @@ $('#main').addEventListener('click',event=>{
  }
 },true);
 $('#main').addEventListener('click',event=>{
+ if(event.target.closest('[data-service-paid-all]')&&activePage===servicePaidPage&&pagePermission('view',servicePaidPage)){
+  servicePaidRange={all:true};
+  renderServicePaid();
+  document.querySelector('[data-service-paid-all]')?.focus();
+ }
  if(event.target.closest('[data-service-payment-entry]')){
   servicePaymentMode='entry';
   renderServicePayment();
@@ -397,6 +405,8 @@ servicePaymentStyle.textContent=`
 .service-payment-controls form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;width:min(100%,520px);margin:0}
 .service-payment-controls #servicePaidSearchForm{display:flex;flex-wrap:wrap;align-items:end;width:auto}
 #servicePaidSearchForm label{display:grid;gap:4px;min-width:0;margin:0}
+#servicePaidSearchForm [data-service-paid-all]{background:#d9f4eb;color:#175c49}
+#servicePaidSearchForm [data-service-paid-all][aria-pressed="true"]{border-color:#175c49}
 .service-payment-controls input{width:100%;min-width:0}
 .service-payment-controls [data-service-payment-entry]{background:#d9f4eb;color:#175c49}
 .service-payment-controls button[type=submit]{background:#fff0d8;color:#80501a}
