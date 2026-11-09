@@ -160,15 +160,11 @@ function servicePaymentEntry(){
  const record=servicePaymentRecord(servicePaymentCard),summary=record?servicePaymentSummary(record):null;
  const history=summary?.history??[];
  const editable=summary?.total!=null&&(summary.total>0||history.length>0)&&pagePermission('edit',servicePaymentPage)&&!servicePaymentBusy;
- const targets=history.map((_,index)=>[String(index),servicePaymentLabels[index]]);
- if(history.length<servicePaymentLabels.length)targets.push(['new','New installment']);
- const selected=targets.some(([key])=>key===servicePaymentDraft.detailsFor)?servicePaymentDraft.detailsFor:
-  summary?.due>0&&history.length<servicePaymentLabels.length?'new':targets[0]?.[0]??'new';
+ const selected=history.length&&(!(summary.due>0)||history.length>=servicePaymentLabels.length)
+  ?String(history.length-1):'new';
  const savedDetails=history[Number(selected)];
  const method=servicePaymentDraft['method-'+selected]??(savedDetails?.method==='bKash'?'Bkash':savedDetails?.method??'');
  const account=servicePaymentDraft['account-'+selected]??savedDetails?.account??'';
- const detailsSelect=history.length&&targets.length>1?'<label><span>Payment details for</span><select name="detailsFor" '+(!editable?'disabled':'')+'>'+
-  targets.map(([key,label])=>'<option value="'+key+'" '+(key===selected?'selected':'')+'>'+label+'</option>').join('')+'</select></label>':'';
  const field=(key,label,value='',readonly=false,attrs='')=>'<label><span>'+label+'</span><input name="'+key+'" value="'+esc(value)+'" '+(readonly?'readonly ':'')+attrs+'></label>';
  const fields=field('card','ID NO',servicePaymentCard,false,'required autocomplete="off" maxlength="120"')+
   field('name','NAME',record?.serviceBenefitEntry.name||'',true)+
@@ -182,7 +178,6 @@ function servicePaymentEntry(){
    return field(dateKey,label+' Date',date??'',readonly,'placeholder="DD/MM/YYYY"')+
     field('amount'+index,label,amount,readonly,'inputmode="decimal"');
   }).join('')+
-  detailsSelect+
   '<label><span>Payment</span><select name="method-'+selected+'" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
   servicePaymentMethods.map(option=>'<option '+(option===method?'selected':'')+'>'+option+'</option>').join('')+'</select></label>'+
   field('account-'+selected,'Bkash/Bank Ac No',account,!editable,'maxlength="120"');
@@ -296,11 +291,6 @@ $('#main').addEventListener('input',event=>{
 });
 $('#main').addEventListener('change',event=>{
  const input=event.target;
- if(input.form?.id==='servicePaymentEntryForm'&&input.name==='detailsFor'){
-  servicePaymentDraft.detailsFor=input.value;
-  renderServicePayment();
-  document.querySelector('#servicePaymentEntryForm select[name="detailsFor"]')?.focus();
- }
  if(input.form?.id==='servicePaymentEntryForm'&&input.name==='card'&&input.value.trim()!==servicePaymentCard){
   setTimeout(()=>{if(activePage===servicePaymentPage&&input.isConnected)servicePaymentLoadCard(input.value);},0);
  }
@@ -363,16 +353,21 @@ servicePaymentStyle.textContent=`
 .service-payment-history h4{margin:0 0 3mm;font-weight:700}
 body:has(.service-payment-controls) #main>.page-action-toolbar{display:none!important}
 @media print{
- body:has(#servicePaymentResults)>:not(#workspace),
- body:has(#servicePaymentResults) #workspace>:not(#main),
- body:has(#servicePaymentResults) #main>:not(#servicePaymentResults){display:none!important}
- body:has(#servicePaymentResults),
- body:has(#servicePaymentResults) :is(#workspace,#main,#servicePaymentResults){
+ body:has(:is(#servicePaymentResults,#serviceBenefitPrintContent))>:not(#workspace),
+ #workspace:has(:is(#servicePaymentResults,#serviceBenefitPrintContent))>:not(#main),
+ #main:has(:is(#servicePaymentResults,#serviceBenefitPrintContent))>:not(#servicePaymentResults,#serviceBenefitPrintContent){display:none!important}
+ html:has(:is(#servicePaymentResults,#serviceBenefitPrintContent)),
+ body:has(:is(#servicePaymentResults,#serviceBenefitPrintContent)),
+ :is(#workspace,#main):has(:is(#servicePaymentResults,#serviceBenefitPrintContent)),
+ :is(#servicePaymentResults,#serviceBenefitPrintContent){
   background:#fff!important;border:0!important;box-shadow:none!important;
   margin:0!important;padding:0!important;overflow:visible!important
  }
- #servicePaymentResults :is(table,th,td){background:#fff!important;color:#000!important;box-shadow:none!important}
- #servicePaymentResults :is(th,td){border:1px solid #000!important}
+ :is(#servicePaymentResults,#serviceBenefitPrintContent) *{
+  background:transparent!important;color:#000!important;-webkit-text-fill-color:#000!important;
+  box-shadow:none!important;text-shadow:none!important
+ }
+ .service-payment-table :is(th,td){border:1px solid #000!important}
  .service-benefit-paper:not(.service-benefit-empty){padding:5mm 3mm 0 8mm}
  .service-benefit-paper-heading div{font-size:12pt}
  .service-payment-table thead{display:table-header-group}
