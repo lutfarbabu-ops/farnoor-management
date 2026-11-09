@@ -20,6 +20,60 @@ function servicePaymentRecord(card){
  return serviceBenefitSearchKey(card)?serviceBenefitResolveExisting({cardNo:card},null):null;
 }
 
+function serviceBenefitCanonicalDate(value){
+ const text=serviceBenefitSearchKey(value);
+ const iso=text.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:t.*)?$/);
+ return normalizeDate(iso?iso[3]+'/'+iso[2]+'/'+iso[1]:text);
+}
+
+function serviceBenefitDisplayDate(value){
+ if(!value)return '';
+ try{return serviceBenefitCanonicalDate(value).replaceAll('/','-');}catch{return String(value);}
+}
+
+function serviceBenefitFormatEntryDates(){
+ for(const key of ['joiningDate','release']){
+  const input=document.getElementById('service-benefit-'+key);
+  if(!input)continue;
+  const original=input.value;
+  input.placeholder='DD-MM-YYYY';
+  input.value=serviceBenefitDisplayDate(original);
+  if(serviceProfileLastValues[key]===original)serviceProfileLastValues[key]=input.value;
+ }
+}
+
+const serviceBenefitOriginalDateEntry=renderServiceBenefitEntry;
+renderServiceBenefitEntry=function(...args){
+ const result=serviceBenefitOriginalDateEntry.apply(this,args);
+ serviceBenefitFormatEntryDates();
+ return result;
+};
+
+const serviceBenefitOriginalDateProfile=serviceFillProfile;
+serviceFillProfile=function(...args){
+ const result=serviceBenefitOriginalDateProfile.apply(this,args);
+ serviceBenefitFormatEntryDates();
+ return result;
+};
+
+const serviceBenefitOriginalDateSearch=serviceBenefitNormalizeSearch;
+serviceBenefitNormalizeSearch=function(value){
+ return serviceBenefitOriginalDateSearch(String(value).replace(/[^\s,，]+/g,token=>{
+  if(!/^\d{1,4}[-/.]\d{1,2}[-/.]\d{2,4}$/.test(serviceBenefitSearchKey(token)))return token;
+  try{return serviceBenefitCanonicalDate(token);}catch{return token.replace(/[.-]/g,'/');}
+ }));
+};
+
+const serviceBenefitOriginalSearchDate=serviceBenefitSearchDate;
+serviceBenefitSearchDate=function(value){return serviceBenefitOriginalSearchDate(serviceBenefitCanonicalDate(value));};
+
+const serviceBenefitOriginalPrintDate=servicePrintDate;
+servicePrintDate=function(value){return serviceBenefitOriginalPrintDate(serviceBenefitCanonicalDate(value));};
+
+function serviceBenefitDisplaySearch(value){
+ return value.replace(/[^\s,，]+/g,token=>token.includes('/')?serviceBenefitDisplayDate(token):token);
+}
+
 function servicePaymentCents(value){
  const number=serviceBenefitSearchKey(value).replaceAll(',','');
  if(!/^\d+(?:\.\d{1,2})?$/.test(number))throw Error('সঠিক টাকার পরিমাণ দিন।');
@@ -57,7 +111,7 @@ function servicePaymentStatus(summary){
 
 function servicePaymentHistory(payments){
  return '<table class="service-payment-table"><thead><tr><th>SL</th><th>Payment Date</th><th>Payment</th><th>Bkash/Bank Ac No</th><th>Amount</th></tr></thead><tbody>'+
-  payments.map((payment,index)=>'<tr>'+[index+1,payment.paymentDate,payment.method,payment.account,servicePaymentMoney(servicePaymentCents(payment.amount))].map(value=>'<td>'+esc(value??'')+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+  payments.map((payment,index)=>'<tr>'+[index+1,serviceBenefitDisplayDate(payment.paymentDate),payment.method,payment.account,servicePaymentMoney(servicePaymentCents(payment.amount))].map(value=>'<td>'+esc(value??'')+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
 }
 
 const servicePaymentOriginalNavigation=serviceBenefitNavigation;
@@ -70,14 +124,18 @@ serviceBenefitNavigation=function(){
 const servicePaymentOriginalPaper=servicePrintBuildPaper;
 servicePrintBuildPaper=function(row,company){
  const template=document.createElement('template');
- template.innerHTML=servicePaymentOriginalPaper(row,company);
+ const entry=row.serviceBenefitEntry;
+ template.innerHTML=servicePaymentOriginalPaper(entry?{...row,serviceBenefitEntry:{...entry,joiningDate:serviceBenefitDisplayDate(entry.joiningDate)}}:row,company);
  const paper=template.content.firstElementChild;
  const details=paper.querySelector('.service-benefit-print-details');
  if(details){
   const salary=[...details.querySelectorAll('dt')].find(label=>label.textContent==='Salary');
   const label=document.createElement('dt'),value=document.createElement('dd');
   label.textContent='Date Of Resign';
-  value.innerHTML='<span aria-hidden="true">:</span> <b>'+esc(normalizeDate(row.serviceBenefitEntry.release))+'</b>';
+  value.innerHTML='<span aria-hidden="true">:</span> <b>'+esc(serviceBenefitDisplayDate(row.serviceBenefitEntry.release))+'</b>';
+  const joining=[...details.querySelectorAll('dt')].find(label=>label.textContent==='Date Of Joining');
+  const joiningValue=joining?.nextElementSibling?.querySelector('b');
+  if(joiningValue)joiningValue.textContent=serviceBenefitDisplayDate(row.serviceBenefitEntry.joiningDate);
   salary.before(label,value);
   const signatures=paper.querySelector('.service-benefit-signatures');
   const checked=document.createElement('strong');
@@ -93,13 +151,18 @@ function servicePaymentCellValues(row){
  const summary=servicePaymentSummary(row),last=summary.history.at(-1);
  return [servicePaymentMoney(summary.total),servicePaymentMoney(summary.due),
   ...servicePaymentLabels.map((_,index)=>servicePaymentMoney(summary.history[index]?servicePaymentCents(summary.history[index].amount):null)),
-  last?.date,last?.paymentDate,last?.method,last?.account,servicePaymentStatus(summary)];
+  serviceBenefitDisplayDate(last?.date),serviceBenefitDisplayDate(last?.paymentDate),last?.method,last?.account,servicePaymentStatus(summary)];
 }
 
 const servicePaymentOriginalReport=renderServiceBenefitReport;
 renderServiceBenefitReport=function(){
  servicePaymentOriginalReport();
  const table=document.getElementById('serviceBenefitReport');
+ const search=document.getElementById('serviceBenefitSearch');
+ if(search){
+  search.value=serviceBenefitDisplaySearch(search.value);
+  search.placeholder='01-10-2026 30-10-2026 1,5,7';
+ }
  const rows=new Map(serviceBenefitRows().map(row=>[row.id,row]));
  const headings=['Total','Due',...servicePaymentLabels,'Date','Payment Date','Payment','Bkash/Bank Ac No','Remarks'];
  const header=table.tHead.rows[0];
@@ -111,6 +174,9 @@ renderServiceBenefitReport=function(){
  for(const tr of table.tBodies[0].rows){
   const row=rows.get(tr.dataset.serviceReportRow);
   if(!row){tr.cells[0].colSpan=header.cells.length;continue;}
+  serviceBenefitReportFields.forEach(([key],index)=>{
+   if(['joiningDate','release'].includes(key))tr.cells[index+1].textContent=serviceBenefitDisplayDate(row.serviceBenefitEntry?.[key]);
+  });
   for(const value of servicePaymentCellValues(row)){
    const cell=document.createElement('td');
    cell.textContent=value??'';
@@ -152,13 +218,7 @@ function servicePaymentResultsTable(rows,includeRow,includeInstallment=()=>true)
 }
 
 function servicePaidDateKey(value){
- const date=serviceBenefitSearchKey(value);
- const iso=date.match(/^([0-9]{4}-[0-9]{2}-[0-9]{2})(?:t|$)/);
- if(iso)return iso[1];
- const local=date.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
- if(!local)return '';
- const [,day,month,year]=local;
- return year+'-'+month.padStart(2,'0')+'-'+day.padStart(2,'0');
+ try{return serviceBenefitCanonicalDate(value).split('/').reverse().join('-');}catch{return '';}
 }
 
 function servicePaidResults(range){
@@ -176,9 +236,11 @@ function renderServicePaid(){
  if(!pagePermission('view',servicePaidPage))return;
  const start=servicePaidRange?.start??'',end=servicePaidRange?.end??'';
  const results=servicePaidResults(servicePaidRange);
+ const dateField=(name,label,date)=>'<div class="service-paid-date"><label for="servicePaid-'+name+'">'+label+'</label>'+
+  '<div><input id="servicePaid-'+name+'" name="'+name+'" placeholder="DD-MM-YYYY" value="'+esc(serviceBenefitDisplayDate(date))+'" required autocomplete="off">'+
+  '<span class="service-paid-calendar"><span aria-hidden="true">▦</span><input type="date" data-service-paid-picker="'+name+'" aria-label="Choose '+label+'" value="'+esc(date)+'"></span></div></div>';
  $('#main').innerHTML=serviceBenefitNavigation()+'<div class="service-payment-controls no-print">'+
-  '<form id="servicePaidSearchForm"><label>Start Date<input type="date" name="start" value="'+esc(start)+'" required></label>'+
-  '<label>End Date<input type="date" name="end" value="'+esc(end)+'" required></label><button type="submit">⌕ Search</button>'+
+  '<form id="servicePaidSearchForm">'+dateField('start','Start Date',start)+dateField('end','End Date',end)+'<button type="submit">⌕ Search</button>'+
   '<button type="button" data-service-paid-all aria-pressed="'+(!servicePaidRange)+'">ALL</button></form></div>'+
   (results.hasRows?results.html:'<p role="status">'+(servicePaidRange?'No paid payments found for this date range.':'No paid payments found.')+'</p>');
  applyActionControls();
@@ -218,7 +280,7 @@ function servicePaymentEntry(){
    const date=servicePaymentDraft[dateKey]??saved?.paymentDate??servicePaymentToday();
    const amount=servicePaymentDraft['amount'+index]??(saved?servicePaymentMoney(servicePaymentCents(saved.amount)):'');
    return '<fieldset class="service-payment-installment" aria-label="'+label+'">'+
-    field(dateKey,label+' Date',date??'',readonly,'placeholder="DD/MM/YYYY"')+
+    field(dateKey,label+' Date',serviceBenefitDisplayDate(date),readonly,'placeholder="DD-MM-YYYY"')+
     field('amount'+index,label,amount,readonly,'inputmode="decimal"')+'</fieldset>';
   }).join('')+
   '<label><span>Payment</span><select name="method-'+selected+'" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
@@ -265,7 +327,7 @@ function servicePaymentPrepare(row,draft){
   const cents=servicePaymentCents(amount);
   if(!cents)throw Error('পেমেন্ট শূন্যের বেশি হতে হবে।');
   const dateInput=draft['paymentDate'+index];
-  const paymentDate=dateInput!==undefined?(dateInput.trim()?normalizeDate(dateInput):''):saved?.paymentDate??date;
+  const paymentDate=dateInput!==undefined?(dateInput.trim()?serviceBenefitCanonicalDate(dateInput):''):saved?.paymentDate??date;
   let details={};
   if(!saved||draft['method-'+key]!==undefined||draft['account-'+key]!==undefined){
    const choice=draft['method-'+key]??saved?.method??'';
@@ -287,7 +349,7 @@ function servicePaymentPrepare(row,draft){
  const pending={};
  for(let index=payments.length;index<servicePaymentLabels.length;index++){
   const key='paymentDate'+index;
-  if(draft[key]!==undefined)pending[key]=draft[key].trim()?normalizeDate(draft[key]):'';
+  if(draft[key]!==undefined)pending[key]=draft[key].trim()?serviceBenefitCanonicalDate(draft[key]):'';
  }
  if(payments.length===history.length&&payments.length<servicePaymentLabels.length){
   for(const key of ['method-new','account-new']){
@@ -339,6 +401,7 @@ renderPage=function(...args){
 
 $('#main').addEventListener('input',event=>{
  const input=event.target;
+ if(['joiningDate','release'].includes(input.dataset?.serviceBenefit)||input.form?.id==='servicePaidSearchForm')input.setCustomValidity('');
  if(input.id==='servicePaymentSearch')servicePaymentSearch=input.value;
  if(input.form?.id==='servicePaymentEntryForm'&&input.name!=='card'){
   servicePaymentDraft[input.name]=input.value;
@@ -348,8 +411,26 @@ $('#main').addEventListener('input',event=>{
   }
  }
 });
+$('#main').addEventListener('focusout',event=>{
+ const input=event.target;
+ if(['joiningDate','release'].includes(input.dataset?.serviceBenefit))input.value=serviceBenefitDisplayDate(input.value);
+},true);
+$('#main').addEventListener('focusout',event=>{
+ const input=event.target;
+ if(input.id==='serviceBenefitSearch')input.value=serviceBenefitDisplaySearch(input.value);
+ if(['joiningDate','release'].includes(input.dataset?.serviceBenefit)||
+    (input.form?.id==='servicePaymentEntryForm'&&/^paymentDate[0-2]$/.test(input.name))||
+    (input.form?.id==='servicePaidSearchForm'&&['start','end'].includes(input.name))){
+  input.value=serviceBenefitDisplayDate(input.value);
+ }
+});
 $('#main').addEventListener('change',event=>{
  const input=event.target;
+ if(input.dataset?.servicePaidPicker){
+  const field=input.form.elements[input.dataset.servicePaidPicker];
+  field.value=serviceBenefitDisplayDate(input.value);
+  field.setCustomValidity('');
+ }
  if(input.form?.id==='servicePaymentEntryForm'&&input.name==='card'&&input.value.trim()!==servicePaymentCard){
   setTimeout(()=>{if(activePage===servicePaymentPage&&input.isConnected)servicePaymentLoadCard(input.value);},0);
  }
@@ -361,10 +442,13 @@ $('#main').addEventListener('keydown',event=>{
  servicePaymentLoadCard(input.value);
 });
 $('#main').addEventListener('submit',event=>{
+ if(event.target.id==='serviceBenefitForm')serviceBenefitFormatEntryDates();
+},true);
+$('#main').addEventListener('submit',event=>{
  if(event.target.id==='servicePaidSearchForm'){
   event.preventDefault();
   if(activePage!==servicePaidPage||!pagePermission('view',servicePaidPage))return;
-  const start=event.target.elements.start.value,end=event.target.elements.end.value;
+  const start=servicePaidDateKey(event.target.elements.start.value),end=servicePaidDateKey(event.target.elements.end.value);
   if(!start||!end||start>end)return toast('Select a valid start and end date.');
   servicePaidRange={start,end};
   renderServicePaid();
@@ -407,6 +491,12 @@ servicePaymentStyle.textContent=`
 .service-payment-controls form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;width:min(100%,520px);margin:0}
 .service-payment-controls #servicePaidSearchForm{display:flex;flex-wrap:wrap;align-items:end;width:auto}
 #servicePaidSearchForm label{display:grid;gap:4px;min-width:0;margin:0}
+.service-paid-date{width:min(100%,175px)}
+.service-paid-date>div{display:flex;align-items:stretch;gap:4px;margin-top:4px}
+.service-paid-calendar{position:relative;display:grid;place-items:center;flex:0 0 34px;border:1px solid #9ebfe4;border-radius:6px;background:#edf5ff}
+.service-paid-calendar:focus-within{outline:2px solid #174c7a}
+.service-paid-calendar input{position:absolute;inset:0;height:100%;opacity:0;cursor:pointer}
+.service-paid-calendar input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
 #servicePaidSearchForm [data-service-paid-all]{background:#d9f4eb;color:#175c49}
 #servicePaidSearchForm [data-service-paid-all][aria-pressed="true"]{border-color:#175c49}
 .service-payment-controls input{width:100%;min-width:0}
