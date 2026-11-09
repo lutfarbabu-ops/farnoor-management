@@ -521,6 +521,9 @@ servicePaymentStyle.textContent=`
 .service-payment-history{margin-top:8mm}
 .service-payment-history h4{margin:0 0 3mm;font-weight:700}
 body:has(.service-payment-controls) #main>.page-action-toolbar{display:none!important}
+@media screen{
+ #main:has(#servicePaymentSearchForm){background:#102b50}
+}
 @media print{
  body:has(:is(#servicePaymentResults,#serviceBenefitPrintContent))>:not(#workspace),
  #workspace:has(:is(#servicePaymentResults,#serviceBenefitPrintContent))>:not(#main),
