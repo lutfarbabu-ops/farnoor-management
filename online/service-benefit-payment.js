@@ -50,8 +50,7 @@ function servicePaymentStatus(summary){
  return summary.paid?'Partial Payment':'Due';
 }
 
-function servicePaymentHistory(row){
- const payments=servicePaymentSummary(row).history;
+function servicePaymentHistory(payments){
  return '<table class="service-payment-table"><thead><tr><th>SL</th><th>Payment Date</th><th>Payment</th><th>Bkash/Bank</th><th>Amount</th></tr></thead><tbody>'+
   payments.map((payment,index)=>'<tr>'+[index+1,payment.paymentDate,payment.method,payment.account,servicePaymentMoney(servicePaymentCents(payment.amount))].map(value=>'<td>'+esc(value??'')+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
 }
@@ -78,7 +77,8 @@ servicePrintBuildPaper=function(row,company){
   const checked=document.createElement('strong');
   checked.textContent='Checked by';
   signatures.lastElementChild.before(checked);
-  paper.insertAdjacentHTML('beforeend','<section class="service-payment-history"><h4>Payment history</h4>'+servicePaymentHistory(row)+'</section>');
+  const payments=servicePaymentSummary(row).history;
+  if(payments.length)paper.insertAdjacentHTML('beforeend','<section class="service-payment-history"><h4>Payment history</h4>'+servicePaymentHistory(payments)+'</section>');
  }
  return paper.outerHTML;
 };
@@ -292,7 +292,7 @@ body:has(.service-payment-controls) #main>.page-action-toolbar{display:none!impo
  body:has(.service-payment-controls) #main>:not(#servicePaymentResults){display:none!important}
  body:has(.service-payment-controls) #main,#servicePaymentResults{margin:0!important;padding:0!important;overflow:visible}
  body:has(.service-payment-controls) .footer-note,body:has(.service-payment-controls) #workspaceRefreshNotice{display:none!important}
- .service-benefit-paper:not(.service-benefit-empty){padding-top:5mm;padding-left:3mm}
+ .service-benefit-paper:not(.service-benefit-empty){padding:5mm 3mm 0 8mm}
  .service-benefit-paper-heading div{font-size:12pt}
  .service-payment-table thead{display:table-header-group}
  .service-payment-table tr{break-inside:avoid}
