@@ -274,8 +274,8 @@ servicePaymentStyle.textContent=`
 .service-payment-controls input{min-width:220px}
 .service-payment-controls [data-service-payment-entry]{background:#d9f4eb;color:#175c49}
 .service-payment-controls button[type=submit]{background:#fff0d8;color:#80501a}
-.service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;max-width:820px;padding:14px;margin:0 0 18px;background:#fff;border-radius:10px}
-.service-payment-entry label{display:grid;grid-template-columns:clamp(95px,24%,150px) minmax(0,1fr);align-items:center;gap:8px;margin:0}
+.service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;max-width:580px;padding:14px;margin:0 0 18px;background:#fff;border-radius:10px}
+.service-payment-entry label{display:grid;grid-template-columns:clamp(95px,28%,150px) minmax(0,1fr);align-items:center;gap:8px;margin:0}
 .service-payment-entry label :is(input,select){box-sizing:border-box;width:100%;min-width:0;margin:0;padding:5px 8px}
 .service-payment-entry button{justify-self:end;align-self:center}
 #servicePaymentResults{overflow-x:auto;background:#fff}
