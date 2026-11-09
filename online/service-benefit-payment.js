@@ -274,7 +274,7 @@ servicePaymentStyle.textContent=`
 .service-payment-controls input{min-width:220px}
 .service-payment-controls [data-service-payment-entry]{background:#d9f4eb;color:#175c49}
 .service-payment-controls button[type=submit]{background:#fff0d8;color:#80501a}
-.service-payment-entry{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:820px;padding:18px;margin:0 0 18px;background:#fff;border-radius:10px}
+.service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-width:820px;padding:18px;margin:0 0 18px;background:#fff;border-radius:10px}
 .service-payment-entry label{display:grid;gap:4px}
 .service-payment-entry button{justify-self:end;align-self:center}
 #servicePaymentResults{overflow-x:auto;background:#fff}
@@ -287,7 +287,6 @@ servicePaymentStyle.textContent=`
 .service-payment-history{margin-top:8mm}
 .service-payment-history h4{margin:0 0 3mm;font-weight:700}
 body:has(.service-payment-controls) #main>.page-action-toolbar{display:none!important}
-@media(max-width:520px){.service-payment-entry{grid-template-columns:1fr}}
 @media print{
  body:has(.service-payment-controls) #main>:not(#servicePaymentResults){display:none!important}
  body:has(.service-payment-controls) #main,#servicePaymentResults{margin:0!important;padding:0!important;overflow:visible}
