@@ -523,6 +523,11 @@ servicePaymentStyle.textContent=`
 body:has(.service-payment-controls) #main>.page-action-toolbar{display:none!important}
 @media screen{
  #main:has(#servicePaymentSearchForm){background:#102b50}
+ #servicePaymentEntryForm{background:#102b50;border:1px solid #52729a;color:#fff}
+ #servicePaymentEntryForm :is(label,[role="status"]){color:#fff}
+ #servicePaymentEntryForm .service-payment-installment{background:#1a3962}
+ #servicePaymentEntryForm .service-payment-installment:nth-of-type(2){background:#173f50}
+ #servicePaymentEntryForm .service-payment-installment:nth-of-type(3){background:#2d345c}
 }
 @media print{
  body:has(:is(#servicePaymentResults,#serviceBenefitPrintContent))>:not(#workspace),
