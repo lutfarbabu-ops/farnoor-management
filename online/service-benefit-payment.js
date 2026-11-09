@@ -134,10 +134,10 @@ function servicePaymentSearchResults(){
    return payment?servicePaymentMoney(servicePaymentCents(payment.amount)):'';
   });
   return '<tr>'+[entry.cardNo||row.reference,entry.name,servicePaymentMoney(summary.total),
-   servicePaymentMoney(summary.due),...installments].map(value=>'<td>'+esc(value??'')+'</td>').join('')+'</tr>';
+   ...installments,servicePaymentMoney(summary.due)].map(value=>'<td>'+esc(value??'')+'</td>').join('')+'</tr>';
  }).join('');
- const headings=['ID NO','NAME','TOTAL','DUE',...servicePaymentLabels];
- const footer=body?'<tfoot><tr><th colspan="2">Total</th><td>'+servicePaymentMoney(total)+'</td><td>'+servicePaymentMoney(due)+'</td><td colspan="3"></td></tr></tfoot>':'';
+ const headings=['ID NO','NAME','TOTAL',...servicePaymentLabels,'DUE'];
+ const footer=body?'<tfoot><tr><th colspan="2">Total</th><td>'+servicePaymentMoney(total)+'</td><td colspan="3"></td><td>'+servicePaymentMoney(due)+'</td></tr></tfoot>':'';
  return {hasRows:!!body,html:'<div id="servicePaymentResults"><table class="service-payment-table"><thead><tr>'+
   headings.map(label=>'<th>'+label+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody>'+footer+'</table></div>'};
 }
@@ -150,11 +150,11 @@ function servicePaymentEntry(){
  const fields=field('card','ID NO',servicePaymentCard,false,'required autocomplete="off" maxlength="120"')+
   field('name','NAME',record?.serviceBenefitEntry.name||'',true)+
   field('total','TOTAL',servicePaymentMoney(summary?.total??null),true)+
-  field('due','DUE',servicePaymentMoney(summary?.due??null),true)+
   servicePaymentLabels.map((label,index)=>{
    const saved=summary?.history[index];
    return field('amount'+index,label,saved?servicePaymentMoney(servicePaymentCents(saved.amount)):servicePaymentDraft['amount'+index]||'',!!saved||!editable,'inputmode="decimal"');
   }).join('')+
+  field('due','DUE',servicePaymentMoney(summary?.due??null),true)+
   field('date','DATE',servicePaymentDraft.date??servicePaymentToday(),!editable,'placeholder="DD/MM/YYYY"')+
   field('paymentDate','Payment Date',servicePaymentDraft.paymentDate??servicePaymentToday(),!editable,'placeholder="DD/MM/YYYY"')+
   '<label><span>Payment</span><select name="method" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
@@ -314,9 +314,16 @@ servicePaymentStyle.textContent=`
 .service-payment-history h4{margin:0 0 3mm;font-weight:700}
 body:has(.service-payment-controls) #main>.page-action-toolbar{display:none!important}
 @media print{
- body:has(.service-payment-controls) #main>:not(#servicePaymentResults){display:none!important}
- body:has(.service-payment-controls) #main,#servicePaymentResults{margin:0!important;padding:0!important;overflow:visible}
- body:has(.service-payment-controls) .footer-note,body:has(.service-payment-controls) #workspaceRefreshNotice{display:none!important}
+ body:has(#servicePaymentResults)>:not(#workspace),
+ body:has(#servicePaymentResults) #workspace>:not(#main),
+ body:has(#servicePaymentResults) #main>:not(#servicePaymentResults){display:none!important}
+ body:has(#servicePaymentResults),
+ body:has(#servicePaymentResults) :is(#workspace,#main,#servicePaymentResults){
+  background:#fff!important;border:0!important;box-shadow:none!important;
+  margin:0!important;padding:0!important;overflow:visible!important
+ }
+ #servicePaymentResults :is(table,th,td){background:#fff!important;color:#000!important;box-shadow:none!important}
+ #servicePaymentResults :is(th,td){border:1px solid #000!important}
  .service-benefit-paper:not(.service-benefit-empty){padding:5mm 3mm 0 8mm}
  .service-benefit-paper-heading div{font-size:12pt}
  .service-payment-table thead{display:table-header-group}
