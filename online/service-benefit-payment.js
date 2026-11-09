@@ -1,7 +1,7 @@
 'use strict';
 
 const servicePaymentPage='admin-service-payment';
-const servicePaymentMethods=['Cash','bKash','Bank'];
+const servicePaymentMethods=['Bkash','Bank','DutchBanglaBank PLC'];
 const servicePaymentLabels=['1st Payment','2nd Payment','3rd Payment'];
 const servicePaymentToday=()=>new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'});
 let servicePaymentMode='',servicePaymentSearch='',servicePaymentIds=[],servicePaymentCard='',servicePaymentDraft={},servicePaymentBaseline=null,servicePaymentBusy=false;
@@ -51,7 +51,7 @@ function servicePaymentStatus(summary){
 }
 
 function servicePaymentHistory(payments){
- return '<table class="service-payment-table"><thead><tr><th>SL</th><th>Payment Date</th><th>Payment</th><th>Bkash/Bank</th><th>Amount</th></tr></thead><tbody>'+
+ return '<table class="service-payment-table"><thead><tr><th>SL</th><th>Payment Date</th><th>Payment</th><th>Bkash/Bank Ac No</th><th>Amount</th></tr></thead><tbody>'+
   payments.map((payment,index)=>'<tr>'+[index+1,payment.paymentDate,payment.method,payment.account,servicePaymentMoney(servicePaymentCents(payment.amount))].map(value=>'<td>'+esc(value??'')+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
 }
 
@@ -95,7 +95,7 @@ renderServiceBenefitReport=function(){
  servicePaymentOriginalReport();
  const table=document.getElementById('serviceBenefitReport');
  const rows=new Map(serviceBenefitRows().map(row=>[row.id,row]));
- const headings=['Total','Due',...servicePaymentLabels,'Date','Payment Date','Payment','Bkash/Bank','Remarks'];
+ const headings=['Total','Due',...servicePaymentLabels,'Date','Payment Date','Payment','Bkash/Bank Ac No','Remarks'];
  const header=table.tHead.rows[0];
  for(const label of headings){
   const cell=document.createElement('th');
@@ -170,7 +170,7 @@ function servicePaymentEntry(){
   }).join('')+
   '<label><span>Payment</span><select name="method" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
   servicePaymentMethods.map(method=>'<option '+(method===servicePaymentDraft.method?'selected':'')+'>'+method+'</option>').join('')+'</select></label>'+
-  field('account','Bkash/Bank',servicePaymentDraft.account||'',!editable,'maxlength="120"');
+  field('account','Bkash/Bank Ac No',servicePaymentDraft.account||'',!editable,'maxlength="120"');
  const notice=servicePaymentCard?(record?(summary.due===null?'Input Report-এ Salary, Joining Date ও Release যাচাই করুন।':servicePaymentStatus(summary)):'এই আইডির রেকর্ড Input Report-এ পাওয়া যায়নি।'):'';
  return '<form id="servicePaymentEntryForm" class="service-payment-entry no-print">'+fields+
   '<p role="status">'+esc(notice)+'</p><button type="submit" class="primary" '+(!editable?'disabled':'')+'>'+(servicePaymentBusy?'Saving…':'Save')+'</button></form>';
@@ -206,8 +206,8 @@ function servicePaymentPrepare(row,draft){
  const date=servicePaymentToday();
  const method=draft.method,account=String(draft.account||'').trim();
  if(!servicePaymentMethods.includes(method))throw Error('পেমেন্টের ধরন নির্বাচন করুন।');
- if(method!=='Cash'&&!account)throw Error('Bkash/Bank তথ্য দিন।');
- if(account.length>120)throw Error('Bkash/Bank তথ্য বেশি বড় হয়েছে।');
+ if(!account)throw Error('Bkash/Bank Ac No তথ্য দিন।');
+ if(account.length>120)throw Error('Bkash/Bank Ac No তথ্য বেশি বড় হয়েছে।');
  const added=[];
  for(let index=history.length;index<servicePaymentLabels.length;index++){
   const amount=String(draft['amount'+index]||'').trim();
@@ -216,7 +216,7 @@ function servicePaymentPrepare(row,draft){
   const cents=servicePaymentCents(amount);
   if(!cents)throw Error('পেমেন্ট শূন্যের বেশি হতে হবে।');
   const paymentDate=normalizeDate(draft['paymentDate'+index]??date);
-  added.push({amount:(cents/100).toFixed(2),date,paymentDate,method,account:method==='Cash'?'':account});
+  added.push({amount:(cents/100).toFixed(2),date,paymentDate,method,account});
  }
  if(!added.length)throw Error('কমপক্ষে একটি কিস্তির পরিমাণ দিন।');
  if(added.reduce((sum,payment)=>sum+servicePaymentCents(payment.amount),0)>due)throw Error('পেমেন্টের পরিমাণ বাকি টাকার চেয়ে বেশি।');
