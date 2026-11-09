@@ -159,7 +159,7 @@ function servicePaymentEntry(){
  if(servicePaymentMode!=='entry')return '';
  const record=servicePaymentRecord(servicePaymentCard),summary=record?servicePaymentSummary(record):null;
  const history=summary?.history??[];
- const editable=summary?.total!=null&&(summary.total>0||history.length>0)&&pagePermission('edit',servicePaymentPage)&&!servicePaymentBusy;
+ const editable=!!record&&pagePermission('edit',servicePaymentPage)&&!servicePaymentBusy;
  const selected=history.length&&(!(summary.due>0)||history.length>=servicePaymentLabels.length)
   ?String(history.length-1):'new';
  const savedDetails=history[Number(selected)];
@@ -197,8 +197,8 @@ function renderServicePayment(){
 
 function servicePaymentLoadCard(value){
  servicePaymentCard=value.trim();
- servicePaymentDraft={};
  const row=servicePaymentRecord(servicePaymentCard);
+ servicePaymentDraft={...row?.serviceBenefitPaymentDraft};
  servicePaymentBaseline=row?structuredClone(row):null;
  renderServicePayment();
  if(row&&servicePaymentSummary(row).due===0){
@@ -212,35 +212,46 @@ function servicePaymentLoadCard(value){
 
 function servicePaymentPrepare(row,draft){
  const {history,total}=servicePaymentSummary(row);
- if(total===null)throw Error('Input Report-এ Salary, Joining Date ও Release যাচাই করুন।');
  const date=servicePaymentToday();
  const payments=[];
  for(let index=0;index<servicePaymentLabels.length;index++){
   const saved=history[index],key=saved?String(index):'new';
-  const amount=String(draft['amount'+index]??saved?.amount??'').trim();
-  if(!amount&&saved)throw Error(servicePaymentLabels[index]+'-এর টাকার পরিমাণ দিন।');
+  const amount=String(draft['amount'+index]??'').trim()||saved?.amount;
   if(!amount)continue;
   if(index!==payments.length)throw Error('আগের কিস্তির ঘর আগে পূরণ করুন।');
   const cents=servicePaymentCents(amount);
   if(!cents)throw Error('পেমেন্ট শূন্যের বেশি হতে হবে।');
-  const paymentDate=draft['paymentDate'+index]!==undefined?normalizeDate(draft['paymentDate'+index]):saved?.paymentDate??date;
+  const dateInput=draft['paymentDate'+index];
+  const paymentDate=dateInput!==undefined?(dateInput.trim()?normalizeDate(dateInput):''):saved?.paymentDate??date;
   let details={};
   if(!saved||draft['method-'+key]!==undefined||draft['account-'+key]!==undefined){
-   const choice=draft['method-'+key]??saved?.method;
+   const choice=draft['method-'+key]??saved?.method??'';
    const method=choice==='bKash'?'Bkash':choice;
    const account=String(draft['account-'+key]??saved?.account??'').trim();
-   if(!servicePaymentMethods.includes(method))throw Error('পেমেন্টের ধরন নির্বাচন করুন।');
-   if(method!=='Cash'&&!account)throw Error('Bkash/Bank Ac No তথ্য দিন।');
+   if(method&&!servicePaymentMethods.includes(method))throw Error('সঠিক পেমেন্টের ধরন নির্বাচন করুন।');
    if(account.length>120)throw Error('Bkash/Bank Ac No তথ্য বেশি বড় হয়েছে।');
    details={method,account:method==='Cash'?'':account};
   }
   const amountToSave=saved&&servicePaymentCents(saved.amount)===cents?saved.amount:(cents/100).toFixed(2);
   payments.push({...saved,...details,date:saved?.date??date,paymentDate,amount:amountToSave});
  }
- if(!payments.length)throw Error('কমপক্ষে একটি কিস্তির পরিমাণ দিন।');
- if(payments.reduce((sum,payment)=>sum+servicePaymentCents(payment.amount),0)>total)throw Error('কিস্তির যোগফল মোট টাকার চেয়ে বেশি।');
- if(personalSaveSame(payments,history))throw Error('সেভ করার মতো কোনো পরিবর্তন নেই।');
- return payments;
+ const paid=payments.reduce((sum,payment)=>sum+servicePaymentCents(payment.amount),0);
+ const amountsChanged=payments.length!==history.length||payments.some((payment,index)=>servicePaymentCents(payment.amount)!==servicePaymentCents(history[index].amount));
+ if(amountsChanged){
+  if(total===null)throw Error('Input Report-এ Salary, Joining Date ও Release যাচাই করুন।');
+  if(paid>total)throw Error('কিস্তির যোগফল মোট টাকার চেয়ে বেশি।');
+ }
+ const pending={};
+ for(let index=payments.length;index<servicePaymentLabels.length;index++){
+  const key='paymentDate'+index;
+  if(draft[key]!==undefined)pending[key]=draft[key].trim()?normalizeDate(draft[key]):'';
+ }
+ if(payments.length===history.length&&payments.length<servicePaymentLabels.length){
+  for(const key of ['method-new','account-new']){
+   if(draft[key]!==undefined)pending[key]=draft[key].trim();
+  }
+ }
+ return {payments,pending};
 }
 
 async function servicePaymentSave(){
@@ -248,23 +259,25 @@ async function servicePaymentSave(){
  const row=servicePaymentRecord(servicePaymentCard);
  if(!row)return toast('Input Report থেকে একটি আইডি নির্বাচন করুন।');
  if(!personalSaveSame(row,servicePaymentBaseline))return toast('রেকর্ডটি অন্য জায়গা থেকে বদলেছে। আইডি আবার লোড করে বাকি টাকা মিলিয়ে নিন।');
- let payments;
- try{payments=servicePaymentPrepare(row,servicePaymentDraft);}catch(error){return toast(error.message);}
- const record={...row,serviceBenefitPayments:payments,updatedAt:new Date().toISOString()};
+ let prepared;
+ try{prepared=servicePaymentPrepare(row,servicePaymentDraft);}catch(error){return toast(error.message);}
+ const {payments,pending}=prepared;
+ const record={...row,serviceBenefitPayments:payments,serviceBenefitPaymentDraft:pending,updatedAt:new Date().toISOString()};
  const next={...state,records:{...state.records,'admin-documents':state.records['admin-documents'].map(item=>item.id===row.id?record:item)}};
  servicePaymentBusy=true;
  renderServicePayment();
  try{
   if(await commit(next,{personalFile:record})){
-   servicePaymentDraft={};
+   servicePaymentDraft={...pending};
    servicePaymentBaseline=structuredClone(record);
-   const complete=servicePaymentSummary(record).due===0;
+   const previous=servicePaymentSummary(row);
+   const complete=servicePaymentSummary(record).due===0&&!personalSaveSame(payments,previous.history);
    if(complete){
     servicePaymentMode='';
     servicePaymentCard='';
     servicePaymentBaseline=null;
    }
-   toast(complete?'Payment Complete':'Payment saved.');
+   toast(complete?'Payment Complete':'Payment entry saved.');
   }
  }finally{
   servicePaymentBusy=false;
