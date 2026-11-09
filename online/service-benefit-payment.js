@@ -134,7 +134,7 @@ function servicePaymentEntry(){
  if(servicePaymentMode!=='entry')return '';
  const record=servicePaymentRecord(servicePaymentCard),summary=record?servicePaymentSummary(record):null;
  const editable=summary?.due>0&&pagePermission('edit',servicePaymentPage)&&!servicePaymentBusy;
- const field=(key,label,value='',readonly=false,attrs='')=>'<label>'+label+'<input name="'+key+'" value="'+esc(value)+'" '+(readonly?'readonly ':'')+attrs+'></label>';
+ const field=(key,label,value='',readonly=false,attrs='')=>'<label><span>'+label+'</span><input name="'+key+'" value="'+esc(value)+'" '+(readonly?'readonly ':'')+attrs+'></label>';
  const fields=field('card','ID NO',servicePaymentCard,false,'required autocomplete="off" maxlength="120"')+
   field('name','NAME',record?.serviceBenefitEntry.name||'',true)+
   field('total','TOTAL',servicePaymentMoney(summary?.total??null),true)+
@@ -145,7 +145,7 @@ function servicePaymentEntry(){
   }).join('')+
   field('date','DATE',servicePaymentDraft.date??servicePaymentToday(),!editable,'placeholder="DD/MM/YYYY"')+
   field('paymentDate','Payment Date',servicePaymentDraft.paymentDate??servicePaymentToday(),!editable,'placeholder="DD/MM/YYYY"')+
-  '<label>Payment<select name="method" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
+  '<label><span>Payment</span><select name="method" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
   servicePaymentMethods.map(method=>'<option '+(method===servicePaymentDraft.method?'selected':'')+'>'+method+'</option>').join('')+'</select></label>'+
   field('account','Bkash/Bank',servicePaymentDraft.account||'',!editable,'maxlength="120"');
  const notice=servicePaymentCard?(record?(summary.due===null?'Input Report-এ Salary, Joining Date ও Release যাচাই করুন।':servicePaymentStatus(summary)):'এই আইডির রেকর্ড Input Report-এ পাওয়া যায়নি।'):'';
@@ -274,8 +274,9 @@ servicePaymentStyle.textContent=`
 .service-payment-controls input{min-width:220px}
 .service-payment-controls [data-service-payment-entry]{background:#d9f4eb;color:#175c49}
 .service-payment-controls button[type=submit]{background:#fff0d8;color:#80501a}
-.service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-width:820px;padding:18px;margin:0 0 18px;background:#fff;border-radius:10px}
-.service-payment-entry label{display:grid;gap:4px}
+.service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;max-width:820px;padding:14px;margin:0 0 18px;background:#fff;border-radius:10px}
+.service-payment-entry label{display:grid;grid-template-columns:clamp(95px,24%,150px) minmax(0,1fr);align-items:center;gap:8px;margin:0}
+.service-payment-entry label :is(input,select){box-sizing:border-box;width:100%;min-width:0;margin:0;padding:5px 8px}
 .service-payment-entry button{justify-self:end;align-self:center}
 #servicePaymentResults{overflow-x:auto;background:#fff}
 .service-payment-table{border-collapse:collapse;width:100%;color:#111}
