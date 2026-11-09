@@ -277,13 +277,13 @@ function servicePaymentEntry(){
   servicePaymentLabels.map((label,index)=>{
    const saved=summary?.history[index];
    const dateKey='paymentDate'+index,readonly=!editable;
-   const date=servicePaymentDraft[dateKey]??saved?.paymentDate??servicePaymentToday();
+   const date=servicePaymentDraft[dateKey]??saved?.paymentDate??'';
    const amount=servicePaymentDraft['amount'+index]??(saved?servicePaymentMoney(servicePaymentCents(saved.amount)):'');
    return '<fieldset class="service-payment-installment" aria-label="'+label+'">'+
-    field(dateKey,label+' Date',serviceBenefitDisplayDate(date),readonly,'placeholder="DD-MM-YYYY"')+
+    field(dateKey,label+' Date',serviceBenefitDisplayDate(date),readonly)+
     field('amount'+index,label,amount,readonly,'inputmode="decimal"')+'</fieldset>';
   }).join('')+
-  '<label><span>Payment</span><select name="method-'+selected+'" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
+  '<label><span>Payment</span><select name="method-'+selected+'" '+(!editable?'disabled':'')+'><option value="" aria-label="No payment type selected"></option>'+
   servicePaymentMethods.map(option=>'<option '+(option===method?'selected':'')+'>'+option+'</option>').join('')+'</select></label>'+
   field('account-'+selected,'Bkash/Bank Ac No',account,!editable,'maxlength="120"');
  const notice=servicePaymentCard?(record?(summary.due===null?'Input Report-এ Salary, Joining Date ও Release যাচাই করুন।':servicePaymentStatus(summary)):'এই আইডির রেকর্ড Input Report-এ পাওয়া যায়নি।'):'';
@@ -327,7 +327,7 @@ function servicePaymentPrepare(row,draft){
   const cents=servicePaymentCents(amount);
   if(!cents)throw Error('পেমেন্ট শূন্যের বেশি হতে হবে।');
   const dateInput=draft['paymentDate'+index];
-  const paymentDate=dateInput!==undefined?(dateInput.trim()?serviceBenefitCanonicalDate(dateInput):''):saved?.paymentDate??date;
+  const paymentDate=dateInput!==undefined?(dateInput.trim()?serviceBenefitCanonicalDate(dateInput):''):saved?.paymentDate??'';
   let details={};
   if(!saved||draft['method-'+key]!==undefined||draft['account-'+key]!==undefined){
    const choice=draft['method-'+key]??saved?.method??'';
