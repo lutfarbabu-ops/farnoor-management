@@ -1,7 +1,7 @@
 'use strict';
 
 const servicePaymentPage='admin-service-payment';
-const servicePaymentMethods=['Bkash','Bank','DutchBanglaBank PLC'];
+const servicePaymentMethods=['Cash','Bkash','Bank','DutchBanglaBank PLC'];
 const servicePaymentLabels=['1st Payment','2nd Payment','3rd Payment'];
 const servicePaymentToday=()=>new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'});
 let servicePaymentMode='',servicePaymentSearch='',servicePaymentIds=[],servicePaymentCard='',servicePaymentDraft={},servicePaymentBaseline=null,servicePaymentBusy=false;
@@ -145,9 +145,12 @@ function servicePaymentSearchResults(){
 function servicePaymentDraftDue(summary){
  if(summary?.due==null)return null;
  let due=summary.due;
- for(let index=summary.history.length;index<servicePaymentLabels.length;index++){
+ for(let index=0;index<servicePaymentLabels.length;index++){
   const amount=servicePaymentDraft['amount'+index];
-  if(amount)try{due-=servicePaymentCents(amount);}catch{/* Wait for a complete amount. */}
+  if(amount)try{
+   const saved=summary.history[index];
+   due+=(saved?servicePaymentCents(saved.amount):0)-servicePaymentCents(amount);
+  }catch{/* Wait for a complete amount. */}
  }
  return due;
 }
@@ -155,7 +158,17 @@ function servicePaymentDraftDue(summary){
 function servicePaymentEntry(){
  if(servicePaymentMode!=='entry')return '';
  const record=servicePaymentRecord(servicePaymentCard),summary=record?servicePaymentSummary(record):null;
- const editable=summary?.due>0&&pagePermission('edit',servicePaymentPage)&&!servicePaymentBusy;
+ const history=summary?.history??[];
+ const editable=summary?.total!=null&&(summary.total>0||history.length>0)&&pagePermission('edit',servicePaymentPage)&&!servicePaymentBusy;
+ const targets=history.map((_,index)=>[String(index),servicePaymentLabels[index]]);
+ if(history.length<servicePaymentLabels.length)targets.push(['new','New installment']);
+ const selected=targets.some(([key])=>key===servicePaymentDraft.detailsFor)?servicePaymentDraft.detailsFor:
+  summary?.due>0&&history.length<servicePaymentLabels.length?'new':targets[0]?.[0]??'new';
+ const savedDetails=history[Number(selected)];
+ const method=servicePaymentDraft['method-'+selected]??(savedDetails?.method==='bKash'?'Bkash':savedDetails?.method??'');
+ const account=servicePaymentDraft['account-'+selected]??savedDetails?.account??'';
+ const detailsSelect=history.length&&targets.length>1?'<label><span>Payment details for</span><select name="detailsFor" '+(!editable?'disabled':'')+'>'+
+  targets.map(([key,label])=>'<option value="'+key+'" '+(key===selected?'selected':'')+'>'+label+'</option>').join('')+'</select></label>':'';
  const field=(key,label,value='',readonly=false,attrs='')=>'<label><span>'+label+'</span><input name="'+key+'" value="'+esc(value)+'" '+(readonly?'readonly ':'')+attrs+'></label>';
  const fields=field('card','ID NO',servicePaymentCard,false,'required autocomplete="off" maxlength="120"')+
   field('name','NAME',record?.serviceBenefitEntry.name||'',true)+
@@ -163,14 +176,16 @@ function servicePaymentEntry(){
   field('due','DUE',servicePaymentMoney(servicePaymentDraftDue(summary)),true)+
   servicePaymentLabels.map((label,index)=>{
    const saved=summary?.history[index];
-   const dateKey='paymentDate'+index,readonly=!!saved||!editable;
-   const date=saved?saved.paymentDate:servicePaymentDraft[dateKey]??servicePaymentToday();
+   const dateKey='paymentDate'+index,readonly=!editable;
+   const date=servicePaymentDraft[dateKey]??saved?.paymentDate??servicePaymentToday();
+   const amount=servicePaymentDraft['amount'+index]??(saved?servicePaymentMoney(servicePaymentCents(saved.amount)):'');
    return field(dateKey,label+' Date',date??'',readonly,'placeholder="DD/MM/YYYY"')+
-    field('amount'+index,label,saved?servicePaymentMoney(servicePaymentCents(saved.amount)):servicePaymentDraft['amount'+index]||'',readonly,'inputmode="decimal"');
+    field('amount'+index,label,amount,readonly,'inputmode="decimal"');
   }).join('')+
-  '<label><span>Payment</span><select name="method" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
-  servicePaymentMethods.map(method=>'<option '+(method===servicePaymentDraft.method?'selected':'')+'>'+method+'</option>').join('')+'</select></label>'+
-  field('account','Bkash/Bank Ac No',servicePaymentDraft.account||'',!editable,'maxlength="120"');
+  detailsSelect+
+  '<label><span>Payment</span><select name="method-'+selected+'" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
+  servicePaymentMethods.map(option=>'<option '+(option===method?'selected':'')+'>'+option+'</option>').join('')+'</select></label>'+
+  field('account-'+selected,'Bkash/Bank Ac No',account,!editable,'maxlength="120"');
  const notice=servicePaymentCard?(record?(summary.due===null?'Input Report-এ Salary, Joining Date ও Release যাচাই করুন।':servicePaymentStatus(summary)):'এই আইডির রেকর্ড Input Report-এ পাওয়া যায়নি।'):'';
  return '<form id="servicePaymentEntryForm" class="service-payment-entry no-print">'+fields+
   '<p role="status">'+esc(notice)+'</p><button type="submit" class="primary" '+(!editable?'disabled':'')+'>'+(servicePaymentBusy?'Saving…':'Save')+'</button></form>';
@@ -201,26 +216,36 @@ function servicePaymentLoadCard(value){
 }
 
 function servicePaymentPrepare(row,draft){
- const {history,due}=servicePaymentSummary(row);
- if(due===null||due<=0)throw Error('এই আইডির পরিশোধযোগ্য বাকি নেই।');
+ const {history,total}=servicePaymentSummary(row);
+ if(total===null)throw Error('Input Report-এ Salary, Joining Date ও Release যাচাই করুন।');
  const date=servicePaymentToday();
- const method=draft.method,account=String(draft.account||'').trim();
- if(!servicePaymentMethods.includes(method))throw Error('পেমেন্টের ধরন নির্বাচন করুন।');
- if(!account)throw Error('Bkash/Bank Ac No তথ্য দিন।');
- if(account.length>120)throw Error('Bkash/Bank Ac No তথ্য বেশি বড় হয়েছে।');
- const added=[];
- for(let index=history.length;index<servicePaymentLabels.length;index++){
-  const amount=String(draft['amount'+index]||'').trim();
+ const payments=[];
+ for(let index=0;index<servicePaymentLabels.length;index++){
+  const saved=history[index],key=saved?String(index):'new';
+  const amount=String(draft['amount'+index]??saved?.amount??'').trim();
+  if(!amount&&saved)throw Error(servicePaymentLabels[index]+'-এর টাকার পরিমাণ দিন।');
   if(!amount)continue;
-  if(index!==history.length+added.length)throw Error('আগের কিস্তির ঘর আগে পূরণ করুন।');
+  if(index!==payments.length)throw Error('আগের কিস্তির ঘর আগে পূরণ করুন।');
   const cents=servicePaymentCents(amount);
   if(!cents)throw Error('পেমেন্ট শূন্যের বেশি হতে হবে।');
-  const paymentDate=normalizeDate(draft['paymentDate'+index]??date);
-  added.push({amount:(cents/100).toFixed(2),date,paymentDate,method,account});
+  const paymentDate=draft['paymentDate'+index]!==undefined?normalizeDate(draft['paymentDate'+index]):saved?.paymentDate??date;
+  let details={};
+  if(!saved||draft['method-'+key]!==undefined||draft['account-'+key]!==undefined){
+   const choice=draft['method-'+key]??saved?.method;
+   const method=choice==='bKash'?'Bkash':choice;
+   const account=String(draft['account-'+key]??saved?.account??'').trim();
+   if(!servicePaymentMethods.includes(method))throw Error('পেমেন্টের ধরন নির্বাচন করুন।');
+   if(method!=='Cash'&&!account)throw Error('Bkash/Bank Ac No তথ্য দিন।');
+   if(account.length>120)throw Error('Bkash/Bank Ac No তথ্য বেশি বড় হয়েছে।');
+   details={method,account:method==='Cash'?'':account};
+  }
+  const amountToSave=saved&&servicePaymentCents(saved.amount)===cents?saved.amount:(cents/100).toFixed(2);
+  payments.push({...saved,...details,date:saved?.date??date,paymentDate,amount:amountToSave});
  }
- if(!added.length)throw Error('কমপক্ষে একটি কিস্তির পরিমাণ দিন।');
- if(added.reduce((sum,payment)=>sum+servicePaymentCents(payment.amount),0)>due)throw Error('পেমেন্টের পরিমাণ বাকি টাকার চেয়ে বেশি।');
- return [...history,...added];
+ if(!payments.length)throw Error('কমপক্ষে একটি কিস্তির পরিমাণ দিন।');
+ if(payments.reduce((sum,payment)=>sum+servicePaymentCents(payment.amount),0)>total)throw Error('কিস্তির যোগফল মোট টাকার চেয়ে বেশি।');
+ if(personalSaveSame(payments,history))throw Error('সেভ করার মতো কোনো পরিবর্তন নেই।');
+ return payments;
 }
 
 async function servicePaymentSave(){
@@ -271,7 +296,11 @@ $('#main').addEventListener('input',event=>{
 });
 $('#main').addEventListener('change',event=>{
  const input=event.target;
- if(input.form?.id==='servicePaymentEntryForm'&&input.name==='method')servicePaymentDraft.method=input.value;
+ if(input.form?.id==='servicePaymentEntryForm'&&input.name==='detailsFor'){
+  servicePaymentDraft.detailsFor=input.value;
+  renderServicePayment();
+  document.querySelector('#servicePaymentEntryForm select[name="detailsFor"]')?.focus();
+ }
  if(input.form?.id==='servicePaymentEntryForm'&&input.name==='card'&&input.value.trim()!==servicePaymentCard){
   setTimeout(()=>{if(activePage===servicePaymentPage&&input.isConnected)servicePaymentLoadCard(input.value);},0);
  }
@@ -320,6 +349,8 @@ servicePaymentStyle.textContent=`
 .service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;max-width:580px;padding:14px;margin:0 0 18px;background:#fff;border-radius:10px}
 .service-payment-entry label{display:grid;grid-template-columns:clamp(95px,28%,150px) minmax(0,1fr);align-items:center;gap:8px;margin:0}
 .service-payment-entry label :is(input,select){box-sizing:border-box;width:100%;min-width:0;margin:0;padding:5px 8px}
+.service-payment-entry :is(label,input,select,p),#servicePaymentSearch,#servicePaymentResults :is(th,td){text-align:center}
+.service-payment-entry select{text-align-last:center}
 .service-payment-entry button{justify-self:end;align-self:center}
 #servicePaymentResults{overflow-x:auto;background:#fff}
 .service-payment-table{border-collapse:collapse;width:100%;color:#111}
