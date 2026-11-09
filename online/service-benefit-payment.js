@@ -1,13 +1,18 @@
 'use strict';
 
 const servicePaymentPage='admin-service-payment';
+const servicePaidPage='admin-service-paid';
 const servicePaymentMethods=['Cash','Bkash','Bank','DutchBanglaBank PLC'];
 const servicePaymentLabels=['1st Payment','2nd Payment','3rd Payment'];
 const servicePaymentToday=()=>new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Dhaka'});
 let servicePaymentMode='',servicePaymentSearch='',servicePaymentIds=[],servicePaymentCard='',servicePaymentDraft={},servicePaymentBaseline=null,servicePaymentBusy=false;
+let servicePaidRange=null;
 
 pageInfo('admin-service-file').department.pages.push({
  id:servicePaymentPage,name:'Payment',icon:'৳',hidden:true,navigationOnly:true,
+ navPath:['Service Benefit'],permissionPage:'admin-documents'
+},{
+ id:servicePaidPage,name:'Paid',icon:'✓',hidden:true,navigationOnly:true,
  navPath:['Service Benefit'],permissionPage:'admin-documents'
 });
 
@@ -58,7 +63,8 @@ function servicePaymentHistory(payments){
 const servicePaymentOriginalNavigation=serviceBenefitNavigation;
 serviceBenefitNavigation=function(){
  const button='<button type="button" data-service-nav="'+servicePaymentPage+'" aria-pressed="'+(activePage===servicePaymentPage)+'"><span aria-hidden="true">৳</span> Payment</button>';
- return servicePaymentOriginalNavigation().replace('<button type="button" data-service-nav="admin-service-entry-report"',button+'<button type="button" data-service-nav="admin-service-entry-report"');
+ const paid='<button type="button" data-service-nav="'+servicePaidPage+'" aria-pressed="'+(activePage===servicePaidPage)+'"><span aria-hidden="true">✓</span> Paid</button>';
+ return servicePaymentOriginalNavigation().replace(/<button type="button" data-service-nav="admin-service-entry-report"[^>]*>.*?<\/button>/,report=>button+report+paid);
 };
 
 const servicePaymentOriginalPaper=servicePrintBuildPaper;
@@ -122,24 +128,57 @@ function servicePaymentSearchResults(){
   if(!previous||String(row.updatedAt||row.createdAt||'')>String(previous.updatedAt||previous.createdAt||''))rowsById.set(id,row);
  }
  const rows=(servicePaymentIds.length?servicePaymentIds.map(id=>rowsById.get(id)):Array.from(rowsById.values())).filter(Boolean);
- let total=0,due=0;
+ return servicePaymentResultsTable(rows,summary=>summary.due>0);
+}
+
+function servicePaymentResultsTable(rows,includeRow,includeInstallment=()=>true){
+ const totals=[0,0,0,0,0];
  const body=rows.map(row=>{
   const summary=servicePaymentSummary(row);
-  if(!(summary.due>0))return '';
-  total+=summary.total;
-  due+=summary.due;
+  if(!includeRow(summary))return '';
   const entry=row.serviceBenefitEntry;
   const installments=servicePaymentLabels.map((_,index)=>{
    const payment=summary.history[index];
-   return payment?servicePaymentMoney(servicePaymentCents(payment.amount)):'';
+   return payment&&includeInstallment(payment)?servicePaymentCents(payment.amount):null;
   });
-  return '<tr>'+[entry.cardNo||row.reference,entry.name,servicePaymentMoney(summary.total),
-   ...installments,servicePaymentMoney(summary.due)].map(value=>'<td>'+esc(value??'')+'</td>').join('')+'</tr>';
+  const amounts=[summary.total,...installments,summary.due];
+  amounts.forEach((amount,index)=>{totals[index]+=amount??0;});
+  return '<tr>'+[entry.cardNo||row.reference,entry.name,...amounts.map(servicePaymentMoney)].map(value=>'<td>'+esc(value??'')+'</td>').join('')+'</tr>';
  }).join('');
  const headings=['ID NO','NAME','TOTAL',...servicePaymentLabels,'DUE'];
- const footer=body?'<tfoot><tr><th colspan="2">Total</th><td>'+servicePaymentMoney(total)+'</td><td colspan="3"></td><td>'+servicePaymentMoney(due)+'</td></tr></tfoot>':'';
+ const footer=body?'<tfoot><tr><th colspan="2" scope="row">Total</th>'+totals.map(amount=>'<td>'+servicePaymentMoney(amount)+'</td>').join('')+'</tr></tfoot>':'';
  return {hasRows:!!body,html:'<div id="servicePaymentResults"><table class="service-payment-table"><thead><tr>'+
   headings.map(label=>'<th>'+label+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody>'+footer+'</table></div>'};
+}
+
+function servicePaidDateKey(value){
+ const date=serviceBenefitSearchKey(value);
+ const iso=date.match(/^([0-9]{4}-[0-9]{2}-[0-9]{2})(?:t|$)/);
+ if(iso)return iso[1];
+ const local=date.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+ if(!local)return '';
+ const [,day,month,year]=local;
+ return year+'-'+month.padStart(2,'0')+'-'+day.padStart(2,'0');
+}
+
+function servicePaidResults(range){
+ const inRange=payment=>{
+  const date=servicePaidDateKey(payment.paymentDate||payment.date);
+  return date>=range.start&&date<=range.end&&servicePaymentCents(payment.amount)>0;
+ };
+ return servicePaymentResultsTable(serviceBenefitRows().filter(row=>row.serviceBenefitEntry),
+  summary=>summary.history.some(inRange),inRange);
+}
+
+function renderServicePaid(){
+ if(!pagePermission('view',servicePaidPage))return;
+ const start=servicePaidRange?.start??'',end=servicePaidRange?.end??'';
+ const results=servicePaidRange?servicePaidResults(servicePaidRange):null;
+ $('#main').innerHTML=serviceBenefitNavigation()+'<div class="service-payment-controls no-print">'+
+  '<form id="servicePaidSearchForm"><label>Start Date<input type="date" name="start" value="'+esc(start)+'" required></label>'+
+  '<label>End Date<input type="date" name="end" value="'+esc(end)+'" required></label><button type="submit">⌕ Search</button></form></div>'+
+  (results?.hasRows?results.html:results?'<p role="status">No paid payments found for this date range.</p>':'');
+ applyActionControls();
 }
 
 function servicePaymentDraftDue(summary){
@@ -288,6 +327,7 @@ async function servicePaymentSave(){
 const servicePaymentOriginalRender=renderPage;
 renderPage=function(...args){
  if(activePage===servicePaymentPage&&pagePermission('view',servicePaymentPage))return renderServicePayment();
+ if(activePage===servicePaidPage&&pagePermission('view',servicePaidPage))return renderServicePaid();
  return servicePaymentOriginalRender.apply(this,args);
 };
 
@@ -315,7 +355,14 @@ $('#main').addEventListener('keydown',event=>{
  servicePaymentLoadCard(input.value);
 });
 $('#main').addEventListener('submit',event=>{
- if(event.target.id==='servicePaymentSearchForm'){
+ if(event.target.id==='servicePaidSearchForm'){
+  event.preventDefault();
+  if(activePage!==servicePaidPage||!pagePermission('view',servicePaidPage))return;
+  const start=event.target.elements.start.value,end=event.target.elements.end.value;
+  if(!start||!end||start>end)return toast('Select a valid start and end date.');
+  servicePaidRange={start,end};
+  renderServicePaid();
+ }else if(event.target.id==='servicePaymentSearchForm'){
   event.preventDefault();
   servicePaymentIds=[...new Set(servicePaymentSearch.split(/[,，]+/).map(serviceBenefitSearchKey).filter(Boolean))];
   renderServicePayment();
@@ -344,8 +391,11 @@ $('#main').addEventListener('click',event=>{
 const servicePaymentStyle=document.createElement('style');
 servicePaymentStyle.textContent=`
 .service-benefit-navigation [data-service-nav="admin-service-payment"]{background:#dceeff;border:1px solid #88b9ea;color:#174c7a}
+.service-benefit-navigation [data-service-nav="admin-service-paid"]{background:#d9f4eb;border:1px solid #8fcdb4;color:#175c49}
 .service-payment-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0}
 .service-payment-controls form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;width:min(100%,520px);margin:0}
+.service-payment-controls #servicePaidSearchForm{display:flex;flex-wrap:wrap;align-items:end;width:auto}
+#servicePaidSearchForm label{display:grid;gap:4px;min-width:0;margin:0}
 .service-payment-controls input{width:100%;min-width:0}
 .service-payment-controls [data-service-payment-entry]{background:#d9f4eb;color:#175c49}
 .service-payment-controls button[type=submit]{background:#fff0d8;color:#80501a}
