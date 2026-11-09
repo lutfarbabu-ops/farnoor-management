@@ -157,6 +157,7 @@ function servicePaymentCellValues(row){
 const servicePaymentOriginalReport=renderServiceBenefitReport;
 renderServiceBenefitReport=function(){
  servicePaymentOriginalReport();
+ if(accessInfo.role!=='super_admin')document.getElementById('serviceBenefitDeleteRail')?.remove();
  const table=document.getElementById('serviceBenefitReport');
  const search=document.getElementById('serviceBenefitSearch');
  if(search){
@@ -183,6 +184,11 @@ renderServiceBenefitReport=function(){
    tr.lastElementChild.before(cell);
   }
  }
+};
+
+const serviceBenefitOriginalConfirmDelete=serviceBenefitConfirmDelete;
+serviceBenefitConfirmDelete=function(...args){
+ if(accessInfo.role==='super_admin')return serviceBenefitOriginalConfirmDelete.apply(this,args);
 };
 
 function servicePaymentSearchResults(){
@@ -487,6 +493,7 @@ const servicePaymentStyle=document.createElement('style');
 servicePaymentStyle.textContent=`
 .service-benefit-navigation [data-service-nav="admin-service-payment"]{background:#dceeff;border:1px solid #88b9ea;color:#174c7a}
 .service-benefit-navigation [data-service-nav="admin-service-paid"]{background:#d9f4eb;border:1px solid #8fcdb4;color:#175c49}
+.service-benefit-report-layout:not(:has(> #serviceBenefitDeleteRail)){grid-template-columns:minmax(0,1fr)}
 .service-payment-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0}
 .service-payment-controls form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;width:min(100%,520px);margin:0}
 .service-payment-controls #servicePaidSearchForm{display:flex;flex-wrap:wrap;align-items:end;width:auto}
