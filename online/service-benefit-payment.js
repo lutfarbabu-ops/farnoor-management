@@ -445,8 +445,10 @@ body:has(.service-payment-controls) #main>.page-action-toolbar{display:none!impo
   box-shadow:none!important;text-shadow:none!important
  }
  .service-payment-table :is(th,td){border:1px solid #000!important}
+ .service-payment-history th:first-child{width:7%;box-sizing:border-box}
  .service-benefit-paper:not(.service-benefit-empty){padding:5mm 3mm 0 8mm}
  .service-benefit-paper-heading div{font-size:12pt}
+ .service-benefit-signatures strong{width:max-content}
  .service-payment-table thead{display:table-header-group}
  .service-payment-table tr{break-inside:avoid}
 }
