@@ -164,7 +164,7 @@ function servicePaidDateKey(value){
 function servicePaidResults(range){
  const inRange=payment=>{
   if(servicePaymentCents(payment.amount)<=0)return false;
-  if(range.all)return true;
+  if(!range)return true;
   const date=servicePaidDateKey(payment.paymentDate||payment.date);
   return date>=range.start&&date<=range.end;
  };
@@ -175,12 +175,12 @@ function servicePaidResults(range){
 function renderServicePaid(){
  if(!pagePermission('view',servicePaidPage))return;
  const start=servicePaidRange?.start??'',end=servicePaidRange?.end??'';
- const results=servicePaidRange?servicePaidResults(servicePaidRange):null;
+ const results=servicePaidResults(servicePaidRange);
  $('#main').innerHTML=serviceBenefitNavigation()+'<div class="service-payment-controls no-print">'+
   '<form id="servicePaidSearchForm"><label>Start Date<input type="date" name="start" value="'+esc(start)+'" required></label>'+
   '<label>End Date<input type="date" name="end" value="'+esc(end)+'" required></label><button type="submit">⌕ Search</button>'+
-  '<button type="button" data-service-paid-all aria-pressed="'+(servicePaidRange?.all===true)+'">ALL</button></form></div>'+
-  (results?.hasRows?results.html:results?'<p role="status">'+(servicePaidRange.all?'No paid payments found.':'No paid payments found for this date range.')+'</p>':'');
+  '<button type="button" data-service-paid-all aria-pressed="'+(!servicePaidRange)+'">ALL</button></form></div>'+
+  (results.hasRows?results.html:'<p role="status">'+(servicePaidRange?'No paid payments found for this date range.':'No paid payments found.')+'</p>');
  applyActionControls();
 }
 
@@ -314,7 +314,9 @@ async function servicePaymentSave(){
    servicePaymentDraft={...pending};
    servicePaymentBaseline=structuredClone(record);
    const previous=servicePaymentSummary(row);
-   const complete=servicePaymentSummary(record).due===0&&!personalSaveSame(payments,previous.history);
+   const paymentChanged=!personalSaveSame(payments,previous.history);
+   if(paymentChanged)servicePaidRange=null;
+   const complete=servicePaymentSummary(record).due===0&&paymentChanged;
    if(complete){
     servicePaymentMode='';
     servicePaymentCard='';
@@ -386,7 +388,7 @@ $('#main').addEventListener('click',event=>{
 },true);
 $('#main').addEventListener('click',event=>{
  if(event.target.closest('[data-service-paid-all]')&&activePage===servicePaidPage&&pagePermission('view',servicePaidPage)){
-  servicePaidRange={all:true};
+  servicePaidRange=null;
   renderServicePaid();
   document.querySelector('[data-service-paid-all]')?.focus();
  }
