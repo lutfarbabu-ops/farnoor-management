@@ -214,8 +214,9 @@ function servicePaymentEntry(){
    const dateKey='paymentDate'+index,readonly=!editable;
    const date=servicePaymentDraft[dateKey]??saved?.paymentDate??servicePaymentToday();
    const amount=servicePaymentDraft['amount'+index]??(saved?servicePaymentMoney(servicePaymentCents(saved.amount)):'');
-   return field(dateKey,label+' Date',date??'',readonly,'placeholder="DD/MM/YYYY"')+
-    field('amount'+index,label,amount,readonly,'inputmode="decimal"');
+   return '<fieldset class="service-payment-installment" aria-label="'+label+'">'+
+    field(dateKey,label+' Date',date??'',readonly,'placeholder="DD/MM/YYYY"')+
+    field('amount'+index,label,amount,readonly,'inputmode="decimal"')+'</fieldset>';
   }).join('')+
   '<label><span>Payment</span><select name="method-'+selected+'" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
   servicePaymentMethods.map(option=>'<option '+(option===method?'selected':'')+'>'+option+'</option>').join('')+'</select></label>'+
@@ -400,6 +401,9 @@ servicePaymentStyle.textContent=`
 .service-payment-controls [data-service-payment-entry]{background:#d9f4eb;color:#175c49}
 .service-payment-controls button[type=submit]{background:#fff0d8;color:#80501a}
 .service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;max-width:580px;padding:14px;margin:0 0 18px;background:#fff;border-radius:10px}
+.service-payment-installment{display:grid;gap:5px;min-inline-size:0;margin:3px 0;padding:7px 6px;border:1px solid #9ebfe4;border-inline-start-width:4px;border-radius:7px;background:#edf5ff}
+.service-payment-installment:nth-of-type(2){border-color:#8fcdb4;background:#edf9f3}
+.service-payment-installment:nth-of-type(3){border-color:#c2ace7;background:#f6f0ff}
 .service-payment-entry label{display:grid;grid-template-columns:clamp(95px,28%,150px) minmax(0,1fr);align-items:center;gap:8px;margin:0}
 .service-payment-entry label :is(input,select){box-sizing:border-box;width:100%;min-width:0;margin:0;padding:5px 8px}
 .service-payment-entry :is(label,input,select,p),#servicePaymentSearch,#servicePaymentResults :is(th,td){text-align:center}
