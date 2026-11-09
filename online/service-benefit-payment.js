@@ -142,6 +142,16 @@ function servicePaymentSearchResults(){
   headings.map(label=>'<th>'+label+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody>'+footer+'</table></div>'};
 }
 
+function servicePaymentDraftDue(summary){
+ if(summary?.due==null)return null;
+ let due=summary.due;
+ for(let index=summary.history.length;index<servicePaymentLabels.length;index++){
+  const amount=servicePaymentDraft['amount'+index];
+  if(amount)try{due-=servicePaymentCents(amount);}catch{/* Wait for a complete amount. */}
+ }
+ return due;
+}
+
 function servicePaymentEntry(){
  if(servicePaymentMode!=='entry')return '';
  const record=servicePaymentRecord(servicePaymentCard),summary=record?servicePaymentSummary(record):null;
@@ -150,13 +160,14 @@ function servicePaymentEntry(){
  const fields=field('card','ID NO',servicePaymentCard,false,'required autocomplete="off" maxlength="120"')+
   field('name','NAME',record?.serviceBenefitEntry.name||'',true)+
   field('total','TOTAL',servicePaymentMoney(summary?.total??null),true)+
+  field('due','DUE',servicePaymentMoney(servicePaymentDraftDue(summary)),true)+
   servicePaymentLabels.map((label,index)=>{
    const saved=summary?.history[index];
-   return field('amount'+index,label,saved?servicePaymentMoney(servicePaymentCents(saved.amount)):servicePaymentDraft['amount'+index]||'',!!saved||!editable,'inputmode="decimal"');
+   const dateKey='paymentDate'+index,readonly=!!saved||!editable;
+   const date=saved?saved.paymentDate:servicePaymentDraft[dateKey]??servicePaymentToday();
+   return field(dateKey,label+' Date',date??'',readonly,'placeholder="DD/MM/YYYY"')+
+    field('amount'+index,label,saved?servicePaymentMoney(servicePaymentCents(saved.amount)):servicePaymentDraft['amount'+index]||'',readonly,'inputmode="decimal"');
   }).join('')+
-  field('due','DUE',servicePaymentMoney(summary?.due??null),true)+
-  field('date','DATE',servicePaymentDraft.date??servicePaymentToday(),!editable,'placeholder="DD/MM/YYYY"')+
-  field('paymentDate','Payment Date',servicePaymentDraft.paymentDate??servicePaymentToday(),!editable,'placeholder="DD/MM/YYYY"')+
   '<label><span>Payment</span><select name="method" '+(!editable?'disabled':'')+'><option value="">Select payment type</option>'+
   servicePaymentMethods.map(method=>'<option '+(method===servicePaymentDraft.method?'selected':'')+'>'+method+'</option>').join('')+'</select></label>'+
   field('account','Bkash/Bank',servicePaymentDraft.account||'',!editable,'maxlength="120"');
@@ -192,7 +203,7 @@ function servicePaymentLoadCard(value){
 function servicePaymentPrepare(row,draft){
  const {history,due}=servicePaymentSummary(row);
  if(due===null||due<=0)throw Error('এই আইডির পরিশোধযোগ্য বাকি নেই।');
- const date=normalizeDate(draft.date??servicePaymentToday()),paymentDate=normalizeDate(draft.paymentDate??servicePaymentToday());
+ const date=servicePaymentToday();
  const method=draft.method,account=String(draft.account||'').trim();
  if(!servicePaymentMethods.includes(method))throw Error('পেমেন্টের ধরন নির্বাচন করুন।');
  if(method!=='Cash'&&!account)throw Error('Bkash/Bank তথ্য দিন।');
@@ -204,6 +215,7 @@ function servicePaymentPrepare(row,draft){
   if(index!==history.length+added.length)throw Error('আগের কিস্তির ঘর আগে পূরণ করুন।');
   const cents=servicePaymentCents(amount);
   if(!cents)throw Error('পেমেন্ট শূন্যের বেশি হতে হবে।');
+  const paymentDate=normalizeDate(draft['paymentDate'+index]??date);
   added.push({amount:(cents/100).toFixed(2),date,paymentDate,method,account:method==='Cash'?'':account});
  }
  if(!added.length)throw Error('কমপক্ষে একটি কিস্তির পরিমাণ দিন।');
@@ -249,7 +261,13 @@ renderPage=function(...args){
 $('#main').addEventListener('input',event=>{
  const input=event.target;
  if(input.id==='servicePaymentSearch')servicePaymentSearch=input.value;
- if(input.form?.id==='servicePaymentEntryForm'&&input.name!=='card')servicePaymentDraft[input.name]=input.value;
+ if(input.form?.id==='servicePaymentEntryForm'&&input.name!=='card'){
+  servicePaymentDraft[input.name]=input.value;
+  if(/^amount[0-2]$/.test(input.name)){
+   const row=servicePaymentRecord(servicePaymentCard);
+   input.form.elements.due.value=servicePaymentMoney(servicePaymentDraftDue(row?servicePaymentSummary(row):null));
+  }
+ }
 });
 $('#main').addEventListener('change',event=>{
  const input=event.target;
