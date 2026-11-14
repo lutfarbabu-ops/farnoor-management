@@ -121,6 +121,25 @@ serviceBenefitNavigation=function(){
  return servicePaymentOriginalNavigation().replace(/<button type="button" data-service-nav="admin-service-entry-report"[^>]*>.*?<\/button>/,report=>button+report+paid);
 };
 
+// Use the same credited months on the statement and in payment balances.
+servicePrintYearRows=function(joining,release){
+ const start=servicePrintDate(joining),end=servicePrintDate(release);
+ if(end.key<start.key)throw Error('Release তারিখ যোগদানের তারিখের আগে হতে পারবে না।');
+ const rate=servicePrintBenefitRate(start,end),rows=[];
+ if(!rate)return rows;
+ const daysInMonth=(year,month)=>new Date(Date.UTC(year,month,0)).getUTCDate();
+ const joiningDays=daysInMonth(start.year,start.month)-start.day+1;
+ const countJoiningMonth=start.day===1||(start.month<=10&&joiningDays>10);
+ for(let year=start.year;year<=end.year;year++){
+  const firstMonth=year===start.year?start.month+(countJoiningMonth?0:1):1;
+  const last=year===end.year;
+  const months=(last?end.month-firstMonth:13-firstMonth)+(last?end.day/daysInMonth(end.year,end.month):0);
+  if(months<=0)continue;
+  rows.push({year,months,days:Number((rate*months/12).toFixed(2))});
+ }
+ return rows;
+};
+
 const servicePaymentOriginalPaper=servicePrintBuildPaper;
 servicePrintBuildPaper=function(row,company){
  const template=document.createElement('template');
@@ -141,6 +160,8 @@ servicePrintBuildPaper=function(row,company){
   const checked=document.createElement('strong');
   checked.textContent='Checked by';
   signatures.lastElementChild.before(checked);
+  const formatMonths=cell=>{const amount=Number.parseFloat(cell.textContent);if(Number.isFinite(amount))cell.textContent=Number(amount.toFixed(2))+' Month';};
+  paper.querySelectorAll('.service-benefit-year-table tbody td:nth-child(3),.service-benefit-year-table tfoot td:first-of-type').forEach(formatMonths);
   const payments=servicePaymentSummary(row).history;
   if(payments.length)paper.insertAdjacentHTML('beforeend','<section class="service-payment-history"><h4>Payment history</h4>'+servicePaymentHistory(payments)+'</section>');
  }
