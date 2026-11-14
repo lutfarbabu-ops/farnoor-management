@@ -129,7 +129,7 @@ servicePrintYearRows=function(joining,release){
  if(!rate)return rows;
  const daysInMonth=(year,month)=>new Date(Date.UTC(year,month,0)).getUTCDate();
  const joiningDays=daysInMonth(start.year,start.month)-start.day+1;
- const countJoiningMonth=start.day===1||(start.month<=10&&joiningDays>10);
+ const countJoiningMonth=start.day<8||(start.month<=10&&joiningDays>10);
  for(let year=start.year;year<=end.year;year++){
   const firstMonth=year===start.year?start.month+(countJoiningMonth?0:1):1;
   const last=year===end.year;
