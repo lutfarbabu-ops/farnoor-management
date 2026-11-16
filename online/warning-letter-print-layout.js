@@ -37,7 +37,7 @@
  main.addEventListener('submit',event=>{
   if(event.target.id!=='warningHomeSelection')return;
   const row=warningSavedRowForCard(warningHomeCard);
-  if(!row)return;
+  if(!row||!warningHomeCompany)return;
   selectionSaved=true;
   if(activePage==='admin-warning-letter')renderWarningHome();
  });
