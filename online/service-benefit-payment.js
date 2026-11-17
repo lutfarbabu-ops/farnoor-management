@@ -514,7 +514,7 @@ document.addEventListener('click',event=>{
   renderServicePayment();
   document.querySelector('#servicePaymentEntryForm input[name="card"]')?.focus();
  }
-});
+},true);
 
 const servicePaymentStyle=document.createElement('style');
 servicePaymentStyle.textContent=`
