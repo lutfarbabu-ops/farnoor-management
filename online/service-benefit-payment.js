@@ -503,7 +503,7 @@ $('#main').addEventListener('click',event=>{
   servicePaymentIds=[];
  }
 },true);
-$('#main').addEventListener('click',event=>{
+document.addEventListener('click',event=>{
  if(event.target.closest('[data-service-paid-all]')&&activePage===servicePaidPage&&pagePermission('view',servicePaidPage)){
   servicePaidRange=null;
   renderServicePaid();
