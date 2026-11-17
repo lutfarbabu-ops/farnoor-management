@@ -486,9 +486,14 @@ $('#main').addEventListener('submit',event=>{
   renderServicePayment();
  }else if(event.target.id==='servicePaymentEntryForm'){
   event.preventDefault();
-  const card=event.target.elements.card.value;
+  const form=event.target,card=form.elements.card.value;
   if(card.trim()!==servicePaymentCard)servicePaymentLoadCard(card);
-  else void servicePaymentSave();
+  else{
+   for(const control of form.elements){
+    if(control.name&&control.name!=='card'&&!control.readOnly&&!control.disabled)servicePaymentDraft[control.name]=control.value;
+   }
+   void servicePaymentSave();
+  }
  }
 });
 $('#main').addEventListener('click',event=>{
