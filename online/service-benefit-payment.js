@@ -293,8 +293,6 @@ function servicePaymentEntry(){
  const editable=!!record&&pagePermission('edit',servicePaymentPage)&&!servicePaymentBusy;
  const selected=history.length&&(!(summary.due>0)||history.length>=servicePaymentLabels.length)
   ?String(history.length-1):'new';
- const savedDetails=history[Number(selected)];
- const method=servicePaymentDraft['method-'+selected]??(savedDetails?.method==='bKash'?'Bkash':savedDetails?.method??'');
  const field=(key,label,value='',readonly=false,attrs='')=>'<label><span>'+label+'</span><input name="'+key+'" value="'+esc(value)+'" '+(readonly?'readonly ':'')+attrs+'></label>';
  const fields=field('card','ID NO',servicePaymentCard,false,'required autocomplete="off" maxlength="120"')+
   field('name','NAME',record?.serviceBenefitEntry.name||'',true)+
@@ -305,9 +303,13 @@ function servicePaymentEntry(){
    const dateKey='paymentDate'+index,readonly=!editable;
    const date=servicePaymentDraft[dateKey]??saved?.paymentDate??'';
    const amount=servicePaymentDraft['amount'+index]??(saved?servicePaymentMoney(servicePaymentCents(saved.amount)):'');
+   const methodKey='method-'+index;
+   const method=servicePaymentDraft[methodKey]??servicePaymentDraft['method-'+(saved?String(index):'new')]??(saved?.method==='bKash'?'Bkash':saved?.method??'');
    return '<fieldset class="service-payment-installment" aria-label="'+label+'">'+
     field(dateKey,label+' Date',serviceBenefitDisplayDate(date),readonly)+
     field('amount'+index,label,amount,readonly,'inputmode="decimal"')+
+    '<label><span>Payment</span><select name="'+methodKey+'" '+(!editable?'disabled':'')+'><option value="" aria-label="No payment type selected"></option>'+
+    ['Cash','Bkash','DutchBanglaBank PLC'].map(option=>'<option '+(option===method?'selected':'')+'>'+option+'</option>').join('')+'</select></label>'+
     field('account'+index,'Bkash/Bank Ac No',servicePaymentDraft['account'+index]??saved?.account??servicePaymentDraft['account-'+(saved?String(index):'new')]??'',readonly,'maxlength="120"')+'</fieldset>';
   }).join('')+
   '<label><span>Payment</span><select name="method-'+selected+'" '+(!editable?'disabled':'')+'><option value="" aria-label="No payment type selected"></option>'+
@@ -356,9 +358,9 @@ function servicePaymentPrepare(row,draft){
   const paymentDate=dateInput!==undefined?(dateInput.trim()?serviceBenefitCanonicalDate(dateInput):''):saved?.paymentDate??'';
   let details={};
   const accountKey='account'+index;
-  const legacyAccountKey='account-'+key;
-  if(!saved||draft['method-'+key]!==undefined||draft[accountKey]!==undefined||draft[legacyAccountKey]!==undefined){
-   const choice=draft['method-'+key]??saved?.method??'';
+  const legacyAccountKey='account-'+key,methodKey='method-'+index,legacyMethodKey='method-'+key;
+  if(!saved||draft[methodKey]!==undefined||draft[legacyMethodKey]!==undefined||draft[accountKey]!==undefined||draft[legacyAccountKey]!==undefined){
+   const choice=draft[methodKey]??draft[legacyMethodKey]??saved?.method??'';
    const method=choice==='bKash'?'Bkash':choice;
    const account=String(draft[accountKey]??draft[legacyAccountKey]??saved?.account??'').trim();
    if(method&&!servicePaymentMethods.includes(method))throw Error('সঠিক পেমেন্টের ধরন নির্বাচন করুন।');
@@ -376,12 +378,11 @@ function servicePaymentPrepare(row,draft){
  }
  const pending={};
  for(let index=payments.length;index<servicePaymentLabels.length;index++){
-  const key='paymentDate'+index,accountKey='account'+index;
+  const key='paymentDate'+index,accountKey='account'+index,methodKey='method-'+index;
   if(draft[key]!==undefined)pending[key]=draft[key].trim()?serviceBenefitCanonicalDate(draft[key]):'';
   if(draft[accountKey]!==undefined)pending[accountKey]=draft[accountKey].trim();
- }
- if(payments.length===history.length&&payments.length<servicePaymentLabels.length&&draft['method-new']!==undefined){
-  pending['method-new']=draft['method-new'].trim();
+  if(draft[methodKey]!==undefined)pending[methodKey]=draft[methodKey].trim();
+  else if(index===payments.length&&draft['method-new']!==undefined)pending[methodKey]=draft['method-new'].trim();
  }
  return {payments,pending};
 }
