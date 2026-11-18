@@ -324,7 +324,7 @@ function renderServicePayment(){
  $('#main').innerHTML=serviceBenefitNavigation()+'<div class="service-payment-controls no-print">'+
   '<form id="servicePaymentSearchForm"><input id="servicePaymentSearch" aria-label="Search ID No" value="'+esc(servicePaymentSearch)+'" placeholder="ID No, ID No…" autocomplete="off">'+
   '<button type="submit">⌕ Search</button></form>'+(results.hasRows?'<button type="button" data-page-action="print">🖨 Print</button>':'')+'</div>'+
-  '<details class="service-payment-entry-panel" '+(servicePaymentMode==='entry'?'open':'')+'><summary>✎ Payment Entry</summary>'+servicePaymentEntry()+'</details>'+results.html;
+  '<details class="service-payment-entry-panel" open><summary>✎ Payment Entry</summary>'+servicePaymentEntry()+'</details>'+results.html;
  const entryPanel=$('#main').querySelector('.service-payment-entry-panel');
  entryPanel?.addEventListener('toggle',()=>{servicePaymentMode=entryPanel.open?'entry':'';});
  applyActionControls();
