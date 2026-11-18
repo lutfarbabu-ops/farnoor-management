@@ -506,6 +506,16 @@ $('#main').addEventListener('click',event=>{
  }
 },true);
 document.addEventListener('click',event=>{
+ const paymentTab=event.target.closest('[data-service-nav="'+servicePaymentPage+'"]');
+ if(paymentTab){
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  servicePaymentMode='';
+  servicePaymentSearch='';
+  servicePaymentIds=[];
+  goPage(servicePaymentPage);
+  return;
+ }
  if(event.target.closest('[data-service-paid-all]')&&activePage===servicePaidPage&&pagePermission('view',servicePaidPage)){
   servicePaidRange=null;
   renderServicePaid();
