@@ -311,8 +311,7 @@ function servicePaymentEntry(){
     ['Cash','Bkash','DutchBanglaBank PLC'].map(option=>'<option '+(option===method?'selected':'')+'>'+option+'</option>').join('')+'</select></label>'+
     field('account'+index,'Bkash/Bank Ac No',servicePaymentDraft['account'+index]??saved?.account??servicePaymentDraft['account-'+(saved?String(index):'new')]??'',readonly,'maxlength="120"')+'</fieldset>';
   }).join('')+
-  '<label><span>Payment</span><select name="method-'+selected+'" '+(!editable?'disabled':'')+'><option value="" aria-label="No payment type selected"></option>'+
-  servicePaymentMethods.map(option=>'<option '+(option===method?'selected':'')+'>'+option+'</option>').join('')+'</select></label>';
+  '';
  const notice=servicePaymentCard?(record?(summary.due===null?'Input Report-এ Salary, Joining Date ও Release যাচাই করুন।':servicePaymentStatus(summary)):'এই আইডির রেকর্ড Input Report-এ পাওয়া যায়নি।'):'';
  return '<form id="servicePaymentEntryForm" class="service-payment-entry no-print">'+fields+
   '<p role="status">'+esc(notice)+'</p><button type="submit" class="primary" '+(!editable?'disabled':'')+'>'+(servicePaymentBusy?'Saving…':'Save')+'</button></form>';
