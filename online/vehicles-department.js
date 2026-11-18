@@ -14,6 +14,8 @@
   {id:'driving-license',label:'Driving License',icon:'🪪',color:'#5540a1'}
  ];
  const getPage=id=>[...vehicleMainPages,...vehicleSections].find(page=>page.id===id);
+ const canEditVehicles=()=>accessInfo?.role==='super_admin'||FarnoorAccess?.canAction('vehicles','edit')===true;
+ const vehicleRows=()=>Array.isArray(state?.records?.vehicles)?state.records.vehicles:[];
  const addStyles=()=>{
   if(document.getElementById('vehiclesDepartmentStyles'))return;
   const style=document.createElement('style');
@@ -30,6 +32,14 @@
    .vehicles-content .vehicles-action:hover{filter:brightness(1.08)}
    .vehicles-content .vehicles-action[aria-current="page"]{outline:2px solid #234f40}
    .vehicles-content .vehicles-note{margin-top:16px;padding:18px;border:1px solid #d5e0e7;border-radius:10px;background:#fff;color:#536979}
+   .vehicles-form{max-width:700px;margin:18px 0;padding:20px;border:1px solid #d5e0e7;border-radius:10px;background:#fff;display:grid;gap:12px}
+   .vehicles-form label{display:grid;grid-template-columns:minmax(180px,34%) minmax(0,1fr);align-items:center;gap:12px}
+   .vehicles-form input{width:100%;box-sizing:border-box}
+   .vehicles-form button{justify-self:end}
+   .vehicles-records{margin-top:22px;overflow-x:auto}
+   .vehicles-records table{width:100%;border-collapse:collapse;background:#fff}
+   .vehicles-records th,.vehicles-records td{padding:9px;border:1px solid #ccd8df;text-align:center}
+   @media(max-width:620px){.vehicles-form label{grid-template-columns:1fr;gap:4px}}
   `;
   document.head.append(style);
  };
@@ -43,6 +53,19 @@
   wrapper.innerHTML='<button type="button" class="department-button" data-vehicles-department aria-label="Open Vehicles"><span class="icon" aria-hidden="true">🚘</span><span>Vehicles</span></button>';
   reference.before(wrapper);
  };
+ const renderVehicleForm=()=>{
+  const rows=vehicleRows();
+  const editable=canEditVehicles();
+  const form='<form id="vehiclesNewEntryForm" class="vehicles-form no-print">'+
+   '<label for="vehiclesNo"><span>Vehicles No:</span><input id="vehiclesNo" name="vehicleNo" required maxlength="80" autocomplete="off"></label>'+
+   '<label for="blueBookNo"><span>Blue Book No:</span><input id="blueBookNo" name="blueBookNo" maxlength="120" autocomplete="off"></label>'+
+   '<label for="taxTokenNo"><span>Tax Token No:</span><input id="taxTokenNo" name="taxTokenNo" maxlength="120" autocomplete="off"></label>'+
+   '<label for="fitnessCertificateNo"><span>Fitness Certificate:</span><input id="fitnessCertificateNo" name="fitnessCertificateNo" maxlength="120" autocomplete="off"></label>'+
+   '<button type="submit" class="primary" '+(!editable?'disabled':'')+'>Save</button></form>';
+  const table=rows.length?'<div class="vehicles-records"><table><thead><tr><th>Vehicles No</th><th>Blue Book No</th><th>Tax Token No</th><th>Fitness Certificate</th></tr></thead><tbody>'+
+   rows.map(row=>'<tr>'+[row.vehicleNo,row.blueBookNo,row.taxTokenNo,row.fitnessCertificateNo].map(value=>'<td>'+esc(value||'')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>':'<div class="vehicles-note" role="status">No vehicles saved yet.</div>';
+  return form+(!editable?'<p role="status">Vehicles edit permission is required to save.</p>':'')+table;
+ };
  const renderMain=()=>{
   const main=document.getElementById('main');
   if(!main)return;
@@ -55,9 +78,27 @@
     sectionButtons='<div class="vehicles-sections">'+vehicleSections.map(page=>'<button type="button" class="vehicles-action" style="background:'+page.color+'" data-vehicles-page="'+page.id+'" aria-current="'+(currentPage===page.id?'page':'false')+'"><span aria-hidden="true">'+page.icon+'</span>'+page.label+'</button>').join('')+'</div>';
    }
    if(currentPage==='vehicles-list')note='Choose a vehicle record section above.';
-   else if(currentPage==='driving-license'||vehicleSections.some(page=>page.id===currentPage))note='No information has been added to this page yet.';
+   else if(currentPage==='driving-license')note='No information has been added to this page yet.';
   }
-  main.innerHTML='<section class="vehicles-content"><span class="eyebrow">VEHICLES</span><h2><span aria-hidden="true">'+icon+'</span> '+heading+'</h2><div class="vehicles-main-pages">'+mainButtons+'</div>'+sectionButtons+'<div class="vehicles-note" role="status">'+note+'</div></section>';
+  const body=currentPage==='new-vehicles'?renderVehicleForm():'<div class="vehicles-note" role="status">'+note+'</div>';
+  main.innerHTML='<section class="vehicles-content"><span class="eyebrow">VEHICLES</span><h2><span aria-hidden="true">'+icon+'</span> '+heading+'</h2><div class="vehicles-main-pages">'+mainButtons+'</div>'+sectionButtons+body+'</section>';
+ };
+ const saveVehicle=async form=>{
+  if(!canEditVehicles())return toast('Vehicles edit permission is required.');
+  if(!dataReady)return toast('Wait for saved data to load.');
+  const data=new FormData(form);
+  const vehicleNo=String(data.get('vehicleNo')||'').trim();
+  if(!vehicleNo)return toast('Vehicles No লিখুন।');
+  const row={id:crypto.randomUUID(),vehicleNo,blueBookNo:String(data.get('blueBookNo')||'').trim(),taxTokenNo:String(data.get('taxTokenNo')||'').trim(),fitnessCertificateNo:String(data.get('fitnessCertificateNo')||'').trim(),createdAt:new Date().toISOString()};
+  const next=structuredClone(state);
+  next.records={...next.records,vehicles:[row,...vehicleRows()]};
+  const button=form.querySelector('[type="submit]');
+  if(button){button.disabled=true;button.textContent='Saving…';}
+  if(await commit(next)){
+   currentPage='new-vehicles';
+   renderMain();
+   toast('Vehicle saved online.');
+  }else if(button){button.disabled=false;button.textContent='Save';}
  };
  document.addEventListener('click',event=>{
   const department=event.target.closest('[data-vehicles-department]');
@@ -66,6 +107,10 @@
   if(mainPage){event.preventDefault();event.stopImmediatePropagation();currentPage=mainPage.dataset.vehicleMainPage;renderMain();return;}
   const section=event.target.closest('[data-vehicles-page]');
   if(section){event.preventDefault();event.stopImmediatePropagation();currentPage=section.dataset.vehiclesPage;renderMain();}
+ },true);
+ document.addEventListener('submit',event=>{
+  if(event.target?.id!=='vehiclesNewEntryForm')return;
+  event.preventDefault();event.stopImmediatePropagation();void saveVehicle(event.target);
  },true);
  new MutationObserver(inject).observe(nav,{childList:true,subtree:true});
  inject();
