@@ -529,7 +529,7 @@ servicePaymentStyle.textContent=`
 #servicePaidSearchForm [data-service-paid-all]{background:#d9f4eb;color:#175c49}
 #servicePaidSearchForm [data-service-paid-all][aria-pressed="true"]{border-color:#175c49}
 .service-payment-controls input{width:100%;min-width:0}
-.service-payment-controls [data-service-payment-entry]{background:#d9f4eb;color:#175c49}
+.service-payment-controls [data-service-payment-entry]{display:inline-flex;align-items:center;padding:10px 15px;border:1px solid #8fcdb4;border-radius:8px;background:#d9f4eb;color:#175c49;font:inherit;font-weight:600;text-decoration:none;cursor:pointer}
 .service-payment-controls button[type=submit]{background:#fff0d8;color:#80501a}
 .service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;max-width:580px;padding:14px;margin:0 0 18px;background:#fff;border-radius:10px};#servicePaymentEntryForm:not(:target){display:none!important}
 .service-payment-installment{display:grid;gap:5px;min-inline-size:0;margin:3px 0;padding:7px 6px;border:1px solid #9ebfe4;border-inline-start-width:4px;border-radius:7px;background:#edf5ff}
