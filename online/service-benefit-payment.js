@@ -325,6 +325,14 @@ function renderServicePayment(){
  $('#main').innerHTML=serviceBenefitNavigation()+'<div class="service-payment-controls no-print"><button type="button" data-service-payment-entry>✎ Payment Entry</button>'+
   '<form id="servicePaymentSearchForm"><input id="servicePaymentSearch" aria-label="Search ID No" value="'+esc(servicePaymentSearch)+'" placeholder="ID No, ID No…" autocomplete="off">'+
   '<button type="submit">⌕ Search</button></form>'+(results.hasRows?'<button type="button" data-page-action="print">🖨 Print</button>':'')+'</div>'+servicePaymentEntry()+results.html;
+ const entryButton=$('#main').querySelector('[data-service-payment-entry]');
+ entryButton?.addEventListener('click',event=>{
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  servicePaymentMode='entry';
+  renderServicePayment();
+  document.querySelector('#servicePaymentEntryForm input[name="card"]')?.focus();
+ },true);
  applyActionControls();
 }
 
@@ -509,11 +517,7 @@ document.addEventListener('click',event=>{
   renderServicePaid();
   document.querySelector('[data-service-paid-all]')?.focus();
  }
- if(event.target.closest('[data-service-payment-entry]')){
-  servicePaymentMode='entry';
-  renderServicePayment();
-  document.querySelector('#servicePaymentEntryForm input[name="card"]')?.focus();
- }
+
 },true);
 
 const servicePaymentStyle=document.createElement('style');
