@@ -287,7 +287,6 @@ function servicePaymentDraftDue(summary){
 }
 
 function servicePaymentEntry(){
- if(servicePaymentMode!=='entry')return '';
  const record=servicePaymentRecord(servicePaymentCard),summary=record?servicePaymentSummary(record):null;
  const history=summary?.history??[];
  const editable=!!record&&pagePermission('edit',servicePaymentPage)&&!servicePaymentBusy;
@@ -322,17 +321,9 @@ function servicePaymentEntry(){
 function renderServicePayment(){
  if(!pagePermission('view',servicePaymentPage))return;
  const results=servicePaymentSearchResults();
- $('#main').innerHTML=serviceBenefitNavigation()+'<div class="service-payment-controls no-print"><button type="button" data-service-payment-entry>✎ Payment Entry</button>'+
+ $('#main').innerHTML=serviceBenefitNavigation()+'<div class="service-payment-controls no-print"><a href="#servicePaymentEntryForm" data-service-payment-entry role="button">✎ Payment Entry</a>'+
   '<form id="servicePaymentSearchForm"><input id="servicePaymentSearch" aria-label="Search ID No" value="'+esc(servicePaymentSearch)+'" placeholder="ID No, ID No…" autocomplete="off">'+
   '<button type="submit">⌕ Search</button></form>'+(results.hasRows?'<button type="button" data-page-action="print">🖨 Print</button>':'')+'</div>'+servicePaymentEntry()+results.html;
- const entryButton=$('#main').querySelector('[data-service-payment-entry]');
- entryButton?.addEventListener('click',event=>{
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  servicePaymentMode='entry';
-  renderServicePayment();
-  document.querySelector('#servicePaymentEntryForm input[name="card"]')?.focus();
- },true);
  applyActionControls();
 }
 
@@ -540,7 +531,7 @@ servicePaymentStyle.textContent=`
 .service-payment-controls input{width:100%;min-width:0}
 .service-payment-controls [data-service-payment-entry]{background:#d9f4eb;color:#175c49}
 .service-payment-controls button[type=submit]{background:#fff0d8;color:#80501a}
-.service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;max-width:580px;padding:14px;margin:0 0 18px;background:#fff;border-radius:10px}
+.service-payment-entry{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;max-width:580px;padding:14px;margin:0 0 18px;background:#fff;border-radius:10px};#servicePaymentEntryForm:not(:target){display:none!important}
 .service-payment-installment{display:grid;gap:5px;min-inline-size:0;margin:3px 0;padding:7px 6px;border:1px solid #9ebfe4;border-inline-start-width:4px;border-radius:7px;background:#edf5ff}
 .service-payment-installment:nth-of-type(2){border-color:#8fcdb4;background:#edf9f3}
 .service-payment-installment:nth-of-type(3){border-color:#c2ace7;background:#f6f0ff}
