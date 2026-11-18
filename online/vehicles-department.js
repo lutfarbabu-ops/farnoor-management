@@ -89,10 +89,11 @@
   const data=new FormData(form);
   const vehicleNo=String(data.get('vehicleNo')||'').trim();
   if(!vehicleNo)return toast('Vehicles No লিখুন।');
+  if(vehicleRows().some(item=>String(item.vehicleNo||'').trim().toLowerCase()===vehicleNo.toLowerCase()))return toast('This Vehicles No is already saved.');
   const row={id:crypto.randomUUID(),vehicleNo,blueBookNo:String(data.get('blueBookNo')||'').trim(),taxTokenNo:String(data.get('taxTokenNo')||'').trim(),fitnessCertificateNo:String(data.get('fitnessCertificateNo')||'').trim(),createdAt:new Date().toISOString()};
   const next=structuredClone(state);
   next.records={...next.records,vehicles:[row,...vehicleRows()]};
-  const button=form.querySelector('[type="submit]');
+  const button=form.querySelector('[type="submit"]');
   if(button){button.disabled=true;button.textContent='Saving…';}
   if(await commit(next)){
    currentPage='new-vehicles';
