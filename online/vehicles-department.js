@@ -74,7 +74,7 @@
   const toggle=event.target.closest('[data-vehicles-department]');
   if(toggle){event.preventDefault();event.stopImmediatePropagation();open=!open;inject();syncMenu();return;}
   const button=event.target.closest('[data-vehicles-page]');
-  if(!button||!nav.contains(button))return;
+  if(!button||(!nav.contains(button)&&!document.getElementById('main')?.contains(button)))return;
   event.preventDefault();event.stopImmediatePropagation();
   const id=button.dataset.vehiclesPage;
   open=true;
