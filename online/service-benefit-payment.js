@@ -524,6 +524,11 @@ document.addEventListener('click',event=>{
 
 },true);
 
+if(new URLSearchParams(location.search).get('codexPage')==='service-payment'){
+ history.replaceState(null,'',location.pathname+location.hash);
+ goPage(servicePaymentPage);
+}
+
 const servicePaymentStyle=document.createElement('style');
 servicePaymentStyle.textContent=`
 .service-benefit-navigation [data-service-nav="admin-service-payment"]{background:#dceeff;border:1px solid #88b9ea;color:#174c7a}
