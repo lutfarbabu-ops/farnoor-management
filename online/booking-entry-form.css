@@ -24,3 +24,5 @@
 .booking-entry-suggestion{display:block;width:100%;padding:9px 11px;border:0;border-radius:6px;background:#fff;color:#173b55;text-align:left;font-size:14px;cursor:pointer}
 .booking-entry-suggestion:hover,.booking-entry-suggestion:focus{background:#e0f3ef;outline:none}
 @media(max-width:650px){.booking-entry-suggestions{left:9px;right:9px}}
+
+.booking-entry-field:focus-within .booking-entry-suggestions:not(:empty){display:block!important}
