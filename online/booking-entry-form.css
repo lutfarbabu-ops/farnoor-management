@@ -5,12 +5,12 @@
 .booking-entry-list{max-width:760px;margin:18px auto 0;display:grid;gap:16px}
 .booking-entry-card{overflow:hidden;border:1px solid #a8d4d5;border-radius:16px;background:linear-gradient(140deg,#f8fcff,#e4f5f2);box-shadow:0 7px 20px #173f5b18}
 .booking-entry-fields{padding:15px 16px;display:grid;gap:0}
-.booking-entry-field{display:grid;grid-template-columns:minmax(150px,205px) minmax(0,1fr);gap:14px;align-items:center;padding:6px 9px;border-radius:0;background:linear-gradient(100deg,#eff8ff,#f5fffb);border:1px solid #d2e6e8;border-bottom:0}
+.booking-entry-field{display:grid;grid-template-columns:minmax(150px,205px) minmax(0,1fr);gap:14px;align-items:center;padding:0 9px;border-radius:0;background:linear-gradient(100deg,#eff8ff,#f5fffb);border:1px solid #d2e6e8;border-bottom:0}
 .booking-entry-field:last-child{border-bottom:1px solid #d2e6e8}.booking-entry-field>span{display:flex;align-items:center;gap:9px;color:#28495f;font-size:13px;font-weight:750}
 .booking-entry-field>span i{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:#dcecff;color:#24689a;font-size:10px;font-style:normal}
 .booking-entry-field:nth-child(3n+2)>span i{background:#d8f3e7;color:#14775e}
 .booking-entry-field:nth-child(3n)>span i{background:#ffedcf;color:#a86015}
-.booking-entry-field input{width:100%;min-width:0;height:38px;border:1px solid #b9d5df;border-radius:9px;padding:7px 11px;background:#fff;color:#17334a;font-size:14px;box-shadow:inset 0 1px 2px #123b5510}
+.booking-entry-field input{width:100%;min-width:0;height:42px;border:1px solid #b9d5df;border-radius:9px;padding:7px 11px;background:#fff;color:#17334a;font-size:14px;box-shadow:inset 0 1px 2px #123b5510}
 .booking-entry-field input:focus{outline:3px solid #47a6a04d;border-color:#238879;background:white}
 .booking-entry-controls{max-width:760px;margin:16px auto 0;gap:10px}
 .booking-add-item{background:linear-gradient(110deg,#e0efff,#d9f7ec)!important;border-color:#a8d7d3!important;color:#14586c!important;font-weight:750}
