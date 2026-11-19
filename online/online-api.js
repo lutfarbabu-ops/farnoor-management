@@ -19,7 +19,7 @@ window.FarnoorAPI = (() => {
     const registration = read(registrationKey);
     if (registration) headers['X-Registration-Token'] = registration;
     // Keep startup reads and existing scoped writes next to the Tokyo database.
-    const endpoint = config.url + '/functions/v1/' + (route==='/api/id-cards/media'?'farnoor-id-media':route==='/api/finishing-reports/delete'?'farnoor-finishing-report-delete':config.functionName) + (['/api/finishing-reports/delete','/api/personal/save','/api/service-benefit/delete','/api/maternity-benefit/delete','/api/workspace','/api/auth/status','/api/auth/refresh'].includes(route) ? '?forceFunctionRegion=ap-northeast-1' : '');
+    const endpoint = config.url + '/functions/v1/' + (route==='/api/id-cards/media'?'farnoor-id-media':route==='/api/finishing-reports/delete'?'farnoor-finishing-report-delete':config.functionName) + (['/api/finishing-reports/delete','/api/personal/save','/api/service-benefit/delete','/api/maternity-benefit/delete','/api/workspace','/api/workspace/item','/api/auth/status','/api/auth/refresh'].includes(route) ? '?forceFunctionRegion=ap-northeast-1' : '');
     return fetch(endpoint, {
       method:'POST', keepalive, mode:'cors', credentials:'omit', cache:'no-store', headers,
       body:JSON.stringify({route, method, payload:payload || {}}), signal:requestSignal || AbortSignal.timeout((route==='/api/workspace'||route==='/api/booking/save')?60000:30000)
@@ -37,7 +37,7 @@ window.FarnoorAPI = (() => {
   }
   async function request(route, options = {}) {
     const method = options.method || 'GET';
-    const requestSignal = (route==='/api/workspace'||route==='/api/booking/save') ? AbortSignal.timeout(60000) : undefined;
+    const requestSignal = (route==='/api/workspace'||route==='/api/workspace/item'||route==='/api/booking/save') ? AbortSignal.timeout(60000) : undefined;
     const payload = options.payload ?? (options.body ? JSON.parse(options.body) : {});
     let session = read(storageKey);
     if (session && session.expires_at * 1000 <= Date.now() + 60000) session = await refresh(session);
