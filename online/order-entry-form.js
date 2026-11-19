@@ -1,0 +1,30 @@
+'use strict';
+(() => {
+ const suggestionFields=new Set(['buyer','style','item']);
+ const formatDate=value=>{const text=String(value??'').trim();let m=text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return m[3].padStart(2,'0')+'-'+m[2].padStart(2,'0')+'-'+m[1];m=text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})$/);if(!m)return text;let year=m[3];if(year.length===2)year=(Number(year)<70?'20':'19')+year;return m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0')+'-'+year;};
+ const orderDateTime=value=>{const date=new Date(value||Date.now());if(Number.isNaN(date.getTime()))return '';const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dhaka',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(date);const get=t=>parts.find(p=>p.type===t)?.value||'';return get('hour')+':'+get('minute')+':'+get('second')+' '+get('day')+'-'+get('month')+'-'+get('year');};
+ const previousRender=renderPage;
+ renderPage=function(){if(activePage==='order-entry'&&!orderDraft)orderDraft={id:null,rows:[newOrderRow()]};previousRender();};
+ const oldOrderTable=orderTable;
+ orderTable=function(rows,editable=false){return oldOrderTable(rows.map(row=>({...row,orderDate:formatDate(row.orderDate),shipmentDate:formatDate(row.shipmentDate)})),editable);};
+ const oldOrderIdentity=orderIdentity;
+ orderIdentity=function(title,file){return oldOrderIdentity(title,file).replace(/(\d{2})\/(\d{2})\/(\d{4})/g,'$1-$2-$3');};
+ const oldDrawOrderReport=drawOrderReport;
+ drawOrderReport=function(){oldDrawOrderReport();document.querySelectorAll('.file-controls small').forEach(node=>{node.textContent=node.textContent.replace(/(\d{2})\/(\d{2})\/(\d{4})/g,'$1-$2-$3');});};
+ drawOrderEntry=function(){
+  orderDraft||={id:null,rows:[newOrderRow()]};
+  const file=orderDraft.id?orderFiles().find(item=>item.id===orderDraft.id):null;
+  const timestamp=orderDateTime(file?.updatedAt||file?.createdAt||Date.now()).split(' ');
+  const choices=Object.fromEntries([...suggestionFields].map(key=>[key,[...new Set(orderFiles().flatMap(item=>item.rows||[]).map(row=>String(row[key]??'').trim()).filter(Boolean))]]));
+  const rows=orderDraft.rows.map((row,index)=>'<section class="booking-entry-card"><div class="booking-entry-fields">'+orderColumns.map(([key,label],col)=>'<label class="booking-entry-field"><span><i>'+String(col+1).padStart(2,'0')+'</i>'+esc(label)+'</span><input data-order-row="'+index+'" data-order-col="'+col+'" aria-label="'+esc(label)+'" '+(suggestionFields.has(key)?'data-order-suggest="'+key+'"':'')+' '+(key==='qty'?'inputmode="numeric" placeholder="Enter quantity"':'')+' '+(key.endsWith('Date')?'placeholder="DD-MM-YYYY"':'')+' value="'+esc(key.endsWith('Date')?formatDate(row[key]):row[key]??'')+'">'+(suggestionFields.has(key)?'<div class="booking-entry-suggestions" role="listbox" hidden></div>':'')+'</label>').join('')+'</div></section>').join('');
+  $('#main').innerHTML='<section class="account-paper booking-paper booking-entry order-entry-form"><h2 class="booking-title">ORDER</h2><p class="booking-date"><span class="booking-time-part">'+esc(timestamp[0]||'')+'</span><span class="booking-date-part">'+esc(timestamp.slice(1).join(' ')||'')+'</span></p><div class="booking-entry-list">'+rows+'</div><p id="entrySaveStatus" role="status"></p><div class="booking-controls booking-entry-controls no-print"><button type="button" class="booking-add-item" data-order-action="row">＋ Add Order Item</button><button type="button" id="orderSave" class="primary booking-save-entry" data-order-action="save">Save Order</button></div></section>';
+  $('#main').querySelectorAll('[data-order-suggest]').forEach(input=>{
+   const panel=input.parentElement.querySelector('.booking-entry-suggestions'),field=input.dataset.orderSuggest,values=choices[field]||[];
+   const update=()=>{panel.replaceChildren();const query=input.value.trim().toLocaleLowerCase();if(query.length<2){panel.hidden=true;return;}const matches=values.filter(value=>value.toLocaleLowerCase().includes(query)).slice(0,20);if(!matches.length){panel.hidden=true;return;}matches.forEach(value=>{const option=document.createElement('button');option.type='button';option.className='booking-entry-suggestion';option.setAttribute('role','option');option.textContent=value;option.addEventListener('mousedown',event=>event.preventDefault());option.addEventListener('click',()=>{input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));panel.hidden=true;input.focus();});panel.append(option);});panel.hidden=false;};
+   input.addEventListener('input',update);input.addEventListener('focus',update);input.addEventListener('keydown',event=>{if(event.key==='Escape')panel.hidden=true;else if(event.key==='Enter'&&!panel.hidden){const first=panel.querySelector('.booking-entry-suggestion');if(first){event.preventDefault();first.click();}}});input.addEventListener('blur',()=>window.setTimeout(()=>{if(!input.matches(':focus'))panel.hidden=true;},140));
+  });
+  applyActionControls();
+ };
+ $('#main').addEventListener('input',event=>{const input=event.target;if(!input.matches('[data-order-row][data-order-col="4"],[data-order-row][data-order-col="5"]'))return;const index=Number(input.dataset.orderRow),key=orderColumns[Number(input.dataset.orderCol)][0];if(orderDraft?.rows[index])orderDraft.rows[index][key]=input.value.replaceAll('-','/');});
+ $('#main').addEventListener('focusout',event=>{const input=event.target;if(!input.matches('[data-order-row][data-order-col="4"],[data-order-row][data-order-col="5"]')||!input.value.trim())return;event.stopImmediatePropagation();const index=Number(input.dataset.orderRow),key=orderColumns[Number(input.dataset.orderCol)][0];try{const normalized=normalizeDate(input.value.replaceAll('-','/'));if(orderDraft?.rows[index])orderDraft.rows[index][key]=normalized;input.value=formatDate(normalized);}catch(error){toast(error.message);}},true);
+})();
