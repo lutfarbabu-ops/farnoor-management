@@ -35,7 +35,7 @@
   }else if(store){
    id=button.dataset.storeId;
    const category=pageInfo(page)?.page?.storeCategory;
-   collection=category&&window.StoreCore?.key?StoreCore.key(category):recordCollection(page,id);
+   collection=category&&typeof StoreCore!=='undefined'?StoreCore.key(category):recordCollection(page,id);
   }else if(booking){collection='booking';id=button.dataset.bookingId;}
   else {collection=page;id=button.dataset.delete;}
   if(!id)return toast('Select a saved file first.');
