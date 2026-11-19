@@ -46,7 +46,7 @@
    input.addEventListener('input',update);
    input.addEventListener('focus',update);
    input.addEventListener('keydown',event=>{if(event.key==='Escape')panel.hidden=true;else if(event.key==='Enter'&&!panel.hidden){const first=panel.querySelector('.booking-entry-suggestion');if(first){event.preventDefault();first.click();}}});
-   input.addEventListener('blur',()=>window.setTimeout(()=>{panel.hidden=true;},140));
+   input.addEventListener('blur',()=>window.setTimeout(()=>{if(!input.matches(':focus'))panel.hidden=true;},140));
   });
  };
 })();
