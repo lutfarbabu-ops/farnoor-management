@@ -26,3 +26,5 @@
 @media(max-width:650px){.booking-entry-suggestions{left:9px;right:9px}}
 
 .booking-entry-field:focus-within .booking-entry-suggestions:not(:empty){display:block!important}
+.booking-entry .booking-title{margin-top:8px}
+.booking-entry .booking-date-part{top:52px;right:18px}
