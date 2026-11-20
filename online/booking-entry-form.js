@@ -51,4 +51,6 @@
    input.addEventListener('blur',()=>window.setTimeout(()=>{if(!input.matches(':focus'))panel.hidden=true;},140));
   });
  };
+
+ $('#main').addEventListener('click',event=>{const button=event.target.closest('[data-booking-action="row"]');if(!button||activePage!=='booking-entry'||!FarnoorAccess.canAction(activePage,'edit'))return;event.preventDefault();event.stopImmediatePropagation();if(bookingDraft.rows.length>=1000)return toast('Maximum 1000 rows.');const previous=bookingDraft.rows[bookingDraft.rows.length-1]||blankBookingRow();bookingDraft.rows.push({...previous});renderBookingEntry();},true);
 })();
