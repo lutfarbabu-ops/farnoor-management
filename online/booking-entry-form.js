@@ -46,7 +46,7 @@ const itemMaterialOptions=["Woven Main Label","Woven Size Label","Printed Care L
    const update=()=>{
     panel.replaceChildren();
     const query=input.value.trim().toLocaleLowerCase();
-    if(query&&query.length<2&&!(input.dataset.bookingSuggest==='colour'&&!query)){panel.hidden=true;return;}
+    if(query.length<2){panel.hidden=true;return;}
     const matches=choices.filter(value=>!query||value.toLocaleLowerCase().includes(query)).slice(0,40);
     if(!matches.length){panel.hidden=true;return;}
     matches.forEach(value=>{const option=document.createElement('button');option.type='button';option.className='booking-entry-suggestion';option.setAttribute('role','option');option.textContent=value;option.addEventListener('mousedown',event=>event.preventDefault());option.addEventListener('click',()=>{input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));panel.hidden=true;input.focus();});panel.append(option);});
