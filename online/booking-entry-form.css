@@ -67,7 +67,7 @@
 .booking-paper .booking-serial-meta>span,.order-document .order-serial-meta>span,.order-entry-form .order-serial-meta>span,.booking-entry .booking-serial-meta>span{display:block!important;flex:0 0 auto!important;margin-left:auto!important;text-align:right!important;white-space:nowrap!important}
 
 @media print{
- body:has(.booking-print-selected) .booking-paper .booking-title{margin:0 0 2mm!important;line-height:1.1!important}
- body:has(.booking-print-selected) .booking-paper .booking-serial-meta{margin:0 auto 2mm!important;padding:0!important;min-height:0!important;line-height:1.15!important}
+ body:has(.booking-print-selected) .booking-paper .booking-title{margin:0!important;padding:0!important;line-height:1!important}
+ body:has(.booking-print-selected) .booking-paper .booking-serial-meta{margin:0 auto!important;padding:0!important;min-height:0!important;line-height:1!important}
  body:has(.booking-print-selected) .booking-paper .booking-table{margin-top:0!important}
 }
