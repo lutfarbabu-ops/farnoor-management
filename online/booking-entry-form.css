@@ -28,3 +28,7 @@
 .booking-entry-field:focus-within .booking-entry-suggestions:not(:empty){display:block!important}
 .booking-entry .booking-title{margin-top:8px}
 .booking-entry .booking-date-part{top:52px;right:18px}
+
+.booking-paper .booking-table th,.booking-paper .booking-table td{white-space:normal!important;overflow-wrap:anywhere!important;word-break:break-word;line-height:1.25;padding:4px 3px;font-size:10px}
+.booking-paper .booking-table{table-layout:fixed;width:100%;min-width:0}
+.booking-paper .booking-table th:first-child,.booking-paper .booking-table td:first-child{width:35px}
