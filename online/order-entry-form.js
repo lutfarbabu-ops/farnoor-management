@@ -27,4 +27,6 @@
  };
  $('#main').addEventListener('input',event=>{const input=event.target;if(!input.matches('[data-order-row][data-order-col="4"],[data-order-row][data-order-col="5"]'))return;const index=Number(input.dataset.orderRow),key=orderColumns[Number(input.dataset.orderCol)][0];if(orderDraft?.rows[index])orderDraft.rows[index][key]=input.value.replaceAll('-','/');});
  $('#main').addEventListener('focusout',event=>{const input=event.target;if(!input.matches('[data-order-row][data-order-col="4"],[data-order-row][data-order-col="5"]')||!input.value.trim())return;event.stopImmediatePropagation();const index=Number(input.dataset.orderRow),key=orderColumns[Number(input.dataset.orderCol)][0];try{const normalized=normalizeDate(input.value.replaceAll('-','/'));if(orderDraft?.rows[index])orderDraft.rows[index][key]=normalized;input.value=formatDate(normalized);}catch(error){toast(error.message);}},true);
+
+ $('#main').addEventListener('click',event=>{const button=event.target.closest('[data-order-action="row"]');if(!button||activePage!=='order-entry'||!FarnoorAccess.canAction(activePage,'edit'))return;event.preventDefault();event.stopImmediatePropagation();if(orderDraft.rows.length>=1000)return toast('Maximum 1000 rows.');const previous=orderDraft.rows[orderDraft.rows.length-1]||newOrderRow();orderDraft.rows.push({...previous});drawOrderEntry();},true);
 })();
