@@ -12,9 +12,9 @@
  const oldOrderTable=orderTable;
  orderTable=function(rows,editable=false){return oldOrderTable(rows.map(row=>({...row,orderDate:formatDate(row.orderDate),shipmentDate:formatDate(row.shipmentDate)})),editable);};
  const oldOrderIdentity=orderIdentity;
- orderIdentity=function(title,file){const html=oldOrderIdentity(title,file);return html.replace(/<div class="order-saved-clock">[\\s\\S]*?<\\/div>/,'<div class="order-serial-meta"><label><strong>SL No</strong><input readonly value="'+esc(orderSLNo(file))+'"></label><span><strong>Date</strong> '+esc(orderDateOnly(file?.updatedAt||file?.createdAt||Date.now()))+'</span></div>');};
+ orderIdentity=function(title,file){const html=oldOrderIdentity(title,file);return html.replace(/<div class="order-saved-clock">[\s\S]*?<\/div>/,'<div class="order-serial-meta"><label><strong>SL No</strong><input readonly value="'+esc(orderSLNo(file))+'"></label><span><strong>Date</strong> '+esc(orderDateOnly(file?.updatedAt||file?.createdAt||Date.now()))+'</span></div>');};
  const oldDrawOrderReport=drawOrderReport;
- drawOrderReport=function(){oldDrawOrderReport();document.querySelectorAll('.file-controls small').forEach(node=>{node.textContent=node.textContent.replace(/(\\d{2})\\/(\\d{2})\\/(\\d{4})/g,'$1-$2-$3');});document.querySelectorAll('.order-document .file-caption').forEach(node=>node.remove());};
+ drawOrderReport=function(){oldDrawOrderReport();document.querySelectorAll('.file-controls small').forEach(node=>{node.textContent=node.textContent.replace(/(\d{2})\/(\d{2})\/(\d{4})/g,'$1-$2-$3');});document.querySelectorAll('.order-document .file-caption').forEach(node=>node.remove());};
  drawOrderEntry=function(){
   orderDraft||={id:null,rows:[newOrderRow()]};
   const file=orderDraft.id?orderFiles().find(item=>item.id===orderDraft.id):null;
