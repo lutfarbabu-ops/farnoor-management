@@ -65,3 +65,9 @@
 .booking-paper .booking-serial-meta label,.order-document .order-serial-meta label,.order-entry-form .order-serial-meta label,.booking-entry .booking-serial-meta label{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;flex:0 0 auto!important;width:auto!important;min-width:0!important;white-space:nowrap!important}
 .booking-paper .booking-serial-meta input,.order-document .order-serial-meta input,.order-entry-form .order-serial-meta input,.booking-entry .booking-serial-meta input{display:inline-block!important;flex:0 0 190px!important;width:190px!important;max-width:190px!important;box-sizing:border-box!important}
 .booking-paper .booking-serial-meta>span,.order-document .order-serial-meta>span,.order-entry-form .order-serial-meta>span,.booking-entry .booking-serial-meta>span{display:block!important;flex:0 0 auto!important;margin-left:auto!important;text-align:right!important;white-space:nowrap!important}
+
+@media print{
+ body:has(.booking-print-selected) .booking-paper .booking-title{margin:0 0 2mm!important;line-height:1.1!important}
+ body:has(.booking-print-selected) .booking-paper .booking-serial-meta{margin:0 auto 2mm!important;padding:0!important;min-height:0!important;line-height:1.15!important}
+ body:has(.booking-print-selected) .booking-paper .booking-table{margin-top:0!important}
+}
