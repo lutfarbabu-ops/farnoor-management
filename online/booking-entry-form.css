@@ -71,3 +71,6 @@
  body:has(.booking-print-selected) .booking-paper .booking-serial-meta{margin:0 auto!important;padding:0!important;min-height:0!important;line-height:1!important}
  body:has(.booking-print-selected) .booking-paper .booking-table{margin-top:0!important}
 }
+
+.booking-entry .booking-item-row{align-items:center!important}
+.booking-entry .booking-remove-item{align-self:center!important;justify-self:center!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;text-align:center!important;line-height:1!important}
