@@ -37,3 +37,25 @@
 .booking-remove-item{display:grid;place-items:center;width:34px;height:34px;border:1px solid #e6a8b2;border-radius:9px;background:#fff0f2;color:#ba263b;font-size:24px;font-weight:800;line-height:1;cursor:pointer;box-shadow:0 2px 5px #8e233015}
 .booking-remove-item:hover{background:#c92d43;color:#fff;border-color:#c92d43}
 @media(max-width:650px){.booking-item-row{grid-template-columns:minmax(0,1fr)30px;gap:6px}.booking-remove-item{width:30px;height:32px}}
+
+.booking-serial-meta,.order-serial-meta{max-width:760px;margin:4px auto 14px;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:14px;color:#123a5a;font-size:14px;font-weight:700}
+.booking-serial-meta label,.order-serial-meta label{display:flex;align-items:center;gap:10px}
+.booking-serial-meta input,.order-serial-meta input{width:190px;height:34px;border:1px solid #9fc7d4;border-radius:7px;padding:4px 9px;background:#fff;color:#153e5b;font-size:14px;font-weight:700}
+.booking-serial-meta>span,.order-serial-meta>span{margin-left:auto;text-align:right;white-space:nowrap}
+.booking-report-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 14px;color:#173b55;font-weight:700}
+.booking-report-meta input{width:190px;border:0;background:transparent;color:inherit;font:inherit}
+.order-serial-meta{max-width:none;margin:8px 0 14px}
+.order-serial-meta input{background:#fff}
+@media(max-width:650px){.booking-serial-meta,.order-serial-meta{padding:5px 0;font-size:12px}.booking-serial-meta input,.order-serial-meta input{width:150px;font-size:12px}}
+@page{size:A4 portrait;margin:8mm}
+@media print{
+ html,body{background:#fff!important;background-color:#fff!important;color:#000!important}
+ body:has(.booking-print-selected),body:has(.order-document.selected-order){margin:0!important;padding:0!important;background:#fff!important}
+ body:has(.booking-print-selected) header,body:has(.booking-print-selected) aside,body:has(.booking-print-selected) #navigation,body:has(.booking-print-selected) .sidebar,body:has(.booking-print-selected) .no-print,body:has(.booking-print-selected) .page-action-toolbar,
+ body:has(.order-document.selected-order) header,body:has(.order-document.selected-order) aside,body:has(.order-document.selected-order) #navigation,body:has(.order-document.selected-order) .sidebar,body:has(.order-document.selected-order) .no-print,body:has(.order-document.selected-order) .page-action-toolbar{display:none!important}
+ body:has(.booking-print-selected) #workspace,body:has(.booking-print-selected) .workspace,body:has(.booking-print-selected) #main,body:has(.order-document.selected-order) #workspace,body:has(.order-document.selected-order) .workspace,body:has(.order-document.selected-order) #main{display:block!important;width:auto!important;max-width:none!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important;background:#fff!important;background-color:#fff!important}
+ body:has(.booking-print-selected) .booking-paper,body:has(.booking-print-selected) .booking-paper *,body:has(.order-document.selected-order) .order-document,body:has(.order-document.selected-order) .order-document *{box-shadow:none!important}
+ body:has(.booking-print-selected) .booking-paper,body:has(.order-document.selected-order) .order-document{max-width:194mm!important;margin:0 auto!important;padding:0!important;border:0!important;border-radius:0!important;background:#fff!important;background-color:#fff!important;color:#000!important}
+ body:has(.booking-print-selected) .booking-serial-meta,body:has(.booking-print-selected) .booking-serial-meta *,body:has(.order-document.selected-order) .order-serial-meta,body:has(.order-document.selected-order) .order-serial-meta *{background:#fff!important;color:#000!important}
+ body:has(.booking-print-selected) .booking-serial-meta input,body:has(.order-document.selected-order) .order-serial-meta input{border:0!important;padding:0!important}
+}
