@@ -70,10 +70,10 @@ const idCardCSS=`
 `;
 const idCardStyle=document.createElement('style');idCardStyle.textContent=idCardCSS;document.head.append(idCardStyle);
 'use strict';
-const idCardPages=[['new-input','New Inpurt','✚','#dff6ed'],['format','ID Card Formet','🪪','#fff0d2'],['name-list','Name List','☷','#eee4ff'],['id-photo','ID Photo','📷','#dff3ff'],['id-sign','ID Sign','✍','#ffe3ed']];
+const idCardPages=[['new-input','New Inpurt','✚','#dff6ed'],['format','ID Card Formet','🪪','#fff0d2'],['name-list','Name List','☷','#eee4ff'],['id-photo','ID Photo','📷','#dff3ff'],['id-sign','ID Sign','✍','#ffe3ed'],['excel-input','Excel Input','▦','#e3f5df']];
 const idCardColumns=[['idNo','আই ডি নং'],['joinDate','যোগদানের তারিখ'],['name','নাম'],['designation','পদবী'],['department','সেকশন'],['bloodGroup','ব্লাড গ্রুপ'],['mobileNo','পরিবারের সদস্যের মোবাইল নং'],['nid','জাতীয় পরিচয় নাম্বার'],['village','গ্রাম'],['postOffice','পোষ্ট অফিস'],['policeStation','থানা'],['district','জেলা'],['workType','কাজের ধরন']];
 for(const [view,name,icon,shade]of idCardPages){const id='admin-id-card-'+view,admin=DEPARTMENTS.find(d=>d.id==='admin');const existing=admin.pages.find(p=>p.id===id);if(existing)Object.assign(existing,{hidden:true});else admin.pages.push({id,name,icon,shade,hidden:true,navigationOnly:true});}window.FARNOOR_PAGE_CATALOG=window.FARNOOR_PAGE_CATALOG.filter(p=>!p.id.startsWith('admin-id-card-'));
-if(typeof submenuLooks!=='undefined'){[['group:admin:ID Card',278],...idCardPages.map(([view],i)=>['page:admin-id-card-'+view,[160,38,270,200,335][i]])].forEach(([key,hue])=>{if(!submenuLooks.has(key))submenuLooks.set(key,{hue,saturation:65,lightness:93,shape:'rounded'});});}
+if(typeof submenuLooks!=='undefined'){[['group:admin:ID Card',278],...idCardPages.map(([view],i)=>['page:admin-id-card-'+view,[160,38,270,200,335,145][i]])].forEach(([key,hue])=>{if(!submenuLooks.has(key))submenuLooks.set(key,{hue,saturation:65,lightness:93,shape:'rounded'});});}
 let icHRQuery='',icFormReady=false;
 let icDraft={},icRevision=0,icBusy=false,icError='',icList=[],icTotal=0,icListLoaded=false,icListLoading=false,icCards=[],icMissing=[],icQuery='',icSearching=false,icSearchSerial=0,icImportRows=[],icImportRevisions={},icImportReady=false,icImportLoading=false,icImportError='',icImportFile='',icImportSerial=0,icImportJob=null;
 let icMediaQuery='',icMediaDraft=null,icMediaRevision=0;
