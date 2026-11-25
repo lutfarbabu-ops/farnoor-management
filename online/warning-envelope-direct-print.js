@@ -6,7 +6,7 @@
   function printEnvelope(event){
     const target = event.target instanceof Element ? event.target : null;
     if (!target || !target.closest('[data-warning-document-print]')) return;
-    if (!envelopePages.has(window.activePage)) return;
+    if (!envelopePages.has(activePage)) return;
 
     const paper = document.querySelector('.wd-preview .wd-envelope');
     if (!paper) return;
@@ -20,7 +20,7 @@
     frame.setAttribute('aria-hidden','true');
     frame.setAttribute('allow','');
     frame.style.cssText = 'position:fixed;left:-10000px;top:0;width:1px;height:1px;border:0;visibility:hidden';
-    const title = window.activePage === 'admin-warning-envelope-1' ? 'Envelope1' : 'Envelope2';
+    const title = activePage === 'admin-warning-envelope-1' ? 'Envelope1' : 'Envelope2';
     const content = paper.outerHTML;
     const css = `
       @page { size: 6.25in 3.625in; margin: 0; }
