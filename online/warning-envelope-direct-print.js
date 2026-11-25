@@ -6,7 +6,7 @@
   function printEnvelope(event){
     const target = event.target instanceof Element ? event.target : null;
     if (!target || !target.closest('[data-warning-document-print]')) return;
-    if (!envelopePages.has(activePage)) return;
+    if (!document.querySelector('.wd-preview .wd-envelope')) return;
 
     const paper = document.querySelector('.wd-preview .wd-envelope');
     if (!paper) return;
@@ -23,12 +23,12 @@
     const title = activePage === 'admin-warning-envelope-1' ? 'Envelope1' : 'Envelope2';
     const content = paper.outerHTML;
     const css = `
-      @page { size: 6.25in 3.625in; margin: 0; }
+      @page { size: 9.5in 4.125in; margin: 0; }
       * { box-sizing: border-box; }
-      html, body { width: 6.25in; height: 3.625in; margin: 0; padding: 0; overflow: hidden; background: #fff; color: #000; }
+      html, body { width: 9.5in; height: 4.125in; margin: 0; padding: 0; overflow: hidden; background: #fff; color: #000; }
       body { font-family: 'Nirmala UI','Noto Sans Bengali',serif; font-size: 10pt; font-weight: 400; line-height: 1.6; letter-spacing: 0; }
-      .warning-doc-paper { display: block; width: 6.25in; height: 3.625in; min-height: 0; margin: 0; padding: 15mm 8mm 10mm; overflow: hidden; background: #fff; color: #000; font-family: 'Nirmala UI','Noto Sans Bengali',serif; font-size: 10pt; font-weight: 400; line-height: 1.6; overflow-wrap: anywhere; break-inside: avoid; page-break-inside: avoid; }
-      .wd-envelope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; align-items: start; }
+      .warning-doc-paper { display: block; width: 9.5in; height: 4.125in; min-height: 0; margin: 0; display: flex; align-items: center; padding: 8mm 10mm; overflow: hidden; background: #fff; color: #000; font-family: 'Nirmala UI','Noto Sans Bengali',serif; font-size: 10pt; font-weight: 400; line-height: 1.6; overflow-wrap: anywhere; break-inside: avoid; page-break-inside: avoid; }
+      .wd-envelope-grid { display: grid; width: 100%; grid-template-columns: 1fr 1fr; gap: 8mm; align-items: center; }
       .wd-envelope-grid > section + section { min-height: 36mm; padding-left: 7mm; border-left: 1px solid #000; }
       .wd-pairs { display: grid; grid-template-columns: max-content 1mm minmax(0,1fr); gap: 0 1mm; align-items: start; }
       .wd-pairs > div { min-width: 0; }
@@ -36,8 +36,8 @@
       .wd-sender-name { font-size: 11pt; }
       .wd-sender-address { font-size: 8.5pt; }
       @media print {
-        html, body { width: 6.25in !important; height: 3.625in !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
-        .warning-doc-paper { width: 6.25in !important; height: 3.625in !important; margin: 0 !important; }
+        html, body { width: 9.5in !important; height: 4.125in !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
+        .warning-doc-paper { width: 9.5in !important; height: 4.125in !important; margin: 0 !important; }
       }`;
     frame.onload = async function(){
       try {
