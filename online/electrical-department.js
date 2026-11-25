@@ -19,7 +19,44 @@
  const canEdit=()=>window.FarnoorAccess?.canAction("electrical-jobs","edit")===true||accessInfo?.role==="super_admin";
  const stockMap=()=>{const m=new Map();for(const r of arr(lists.receive)){const k=(r.item||"").trim().toLowerCase()+"|"+(r.unit||"");m.set(k,(m.get(k)||0)+num(r.qty));}for(const r of arr(lists.issue)){const k=(r.item||"").trim().toLowerCase()+"|"+(r.unit||"");m.set(k,(m.get(k)||0)-num(r.qty));}return m;};
  const stockFor=(item,unit)=>stockMap().get(String(item||"").trim().toLowerCase()+"|"+String(unit||""))||0;
- const style=()=>{if(document.getElementById("electricalDepartmentStyles"))return;const s=document.createElement("style");s.id="electricalDepartmentStyles";s.textContent='.electrical-wrap{max-width:1180px;padding:8px 2px 28px}.electrical-wrap h2{color:#153b5b}.electrical-nav{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}.electrical-btn{border:1px solid transparent;border-radius:9px;padding:10px 16px;font-weight:700;cursor:pointer;color:#fff;box-shadow:0 3px 9px #17344a22}.electrical-btn:hover{filter:brightness(1.08)}.electrical-btn[aria-pressed=true]{outline:2px solid #213f4f;outline-offset:2px}.electrical-card{background:#fff;border:1px solid #d6e3eb;border-radius:13px;padding:20px;box-shadow:0 8px 24px #18374a0c}.electrical-form{display:grid;gap:10px;max-width:760px}.electrical-form label{display:grid;grid-template-columns:minmax(150px,32%) minmax(0,1fr);align-items:center;gap:12px;font-weight:600}.electrical-form input,.electrical-form select{width:100%;box-sizing:border-box}.electrical-form .electrical-save{justify-self:end;background:#116447;color:#fff}.electrical-search{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:14px 0}.electrical-search label{display:grid;gap:5px;min-width:min(280px,100%);flex:1}.electrical-search button{padding:10px 16px;border:1px solid transparent;border-radius:8px;font-weight:700;cursor:pointer}.electrical-search .search{background:#fff0d9;color:#784515;border-color:#ebc28a}.electrical-search .all{background:#dff0ff;color:#18578a;border-color:#a8c8e9}.electrical-table-wrap{overflow:auto;margin-top:16px}.electrical-table{border-collapse:collapse;width:100%;background:#fff}.electrical-table th,.electrical-table td{border:1px solid #cbd9e1;padding:8px 10px;text-align:center;white-space:nowrap}.electrical-table th{background:#e7f2f4;color:#23485b}.electrical-empty{color:#607482;padding:18px 4px}@media(max-width:620px){.electrical-form label{grid-template-columns:1fr;gap:4px}.electrical-card{padding:14px}}';document.head.append(s);};
+ const style=()=>{if(document.getElementById("electricalDepartmentStyles"))return;const s=document.createElement("style");s.id="electricalDepartmentStyles";s.textContent=\`
+.electrical-wrap{max-width:1200px;padding:14px 10px 34px;color:#183a52}
+.electrical-wrap>.eyebrow{display:inline-flex;align-items:center;padding:6px 11px;border:1px solid #a4d9d3;border-radius:999px;background:linear-gradient(135deg,#e0f6f1,#e6f0ff);color:#12655f;font-size:11px;font-weight:800;letter-spacing:1.2px}
+.electrical-wrap h2{display:flex;align-items:center;gap:12px;margin:10px 0 18px;color:#123855;font-size:30px;line-height:1.2;font-weight:800}
+.electrical-wrap h2:before{content:"";width:6px;height:32px;border-radius:8px;background:linear-gradient(180deg,#18a88f,#3687d8);box-shadow:0 4px 12px #15897d35}
+.electrical-nav{display:flex;flex-wrap:wrap;gap:11px;margin:16px 0}
+.electrical-btn{position:relative;min-height:44px;border:1px solid #ffffff48;border-radius:12px;padding:10px 17px;font-weight:800;letter-spacing:.1px;cursor:pointer;color:#fff;box-shadow:0 5px 13px #17344a20, inset 0 1px #ffffff35;transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.electrical-btn:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 8px 18px #17344a2b,inset 0 1px #ffffff45}
+.electrical-btn:active{transform:translateY(0)}
+.electrical-btn:focus-visible,.electrical-search button:focus-visible{outline:3px solid #f2c45f;outline-offset:2px}
+.electrical-btn[aria-pressed=true]{outline:3px solid #183d59;outline-offset:2px;box-shadow:0 0 0 5px #ffffffb0,0 8px 18px #17344a26}
+.electrical-card{position:relative;overflow:hidden;background:linear-gradient(135deg,#fff 0%,#f8fcff 55%,#f1fbf8 100%);border:1px solid #c9e0e7;border-radius:18px;padding:22px;box-shadow:0 12px 30px #18374a12}
+.electrical-card:before{content:"";display:block;height:4px;margin:-22px -22px 19px;background:linear-gradient(90deg,#168b83,#3985d1 55%,#a57ad6)}
+.electrical-form{display:grid;gap:9px;max-width:800px}
+.electrical-form label{display:grid;grid-template-columns:minmax(150px,32%) minmax(0,1fr);align-items:center;gap:12px;padding:7px 10px;border:1px solid #dfebef;border-radius:11px;background:#f5fafc;color:#24465d;font-weight:700;transition:border-color .15s ease,background .15s ease}
+.electrical-form input,.electrical-form select,.electrical-search input{width:100%;min-height:42px;box-sizing:border-box;border:1px solid #c7dce2;border-radius:9px;background:#fff;color:#183a52;padding:9px 12px;box-shadow:inset 0 1px 2px #12334a09}
+.electrical-form input:focus,.electrical-form select:focus,.electrical-search input:focus{outline:3px solid #168b8326;border-color:#198e87}
+.electrical-form input[readonly]{background:#edf3f6;color:#5d7180}
+.electrical-form .electrical-save{justify-self:end;min-width:120px;margin-top:4px;background:linear-gradient(135deg,#117a67,#148d78);color:#fff;border:0;border-radius:11px;padding:11px 19px;font-size:15px;font-weight:800;box-shadow:0 6px 14px #11644732;cursor:pointer}
+.electrical-form .electrical-save:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.electrical-form .electrical-save:disabled{opacity:.72;cursor:wait;transform:none}
+.electrical-search{display:flex;flex-wrap:wrap;align-items:end;gap:11px;margin:16px 0;padding:15px;border:1px solid #d4e6ec;border-radius:15px;background:linear-gradient(110deg,#f7fbff,#f1faf7);box-shadow:0 6px 18px #18374a0a}
+.electrical-search label{display:grid;gap:6px;min-width:min(280px,100%);flex:1;color:#24465d;font-weight:700}
+.electrical-search button{min-height:42px;padding:9px 17px;border:1px solid transparent;border-radius:10px;font-weight:800;cursor:pointer;transition:transform .15s ease,filter .15s ease}
+.electrical-search button:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.electrical-search .search{background:linear-gradient(135deg,#fff0d9,#ffe4bd);color:#784515;border-color:#ebc28a}
+.electrical-search .all{background:linear-gradient(135deg,#e2f0ff,#d7e7ff);color:#18578a;border-color:#a8c8e9}
+.electrical-table-wrap{overflow:auto;margin-top:16px;border:1px solid #cbdfe6;border-radius:14px;background:#fff;box-shadow:0 8px 22px #18374a0c}
+.electrical-table{border-collapse:separate;border-spacing:0;width:100%;min-width:620px;background:#fff}
+.electrical-table th,.electrical-table td{border-right:1px solid #d9e6eb;border-bottom:1px solid #d9e6eb;padding:10px 12px;text-align:center;white-space:nowrap}
+.electrical-table th:first-child,.electrical-table td:first-child{border-left:1px solid #d9e6eb}
+.electrical-table thead th{position:sticky;top:0;background:linear-gradient(135deg,#e5f2f4,#e8f0ff);color:#23485b;font-size:12px;font-weight:800}
+.electrical-table tbody tr:nth-child(even){background:#f7fbfd}
+.electrical-table tbody tr:hover{background:#eaf8f5}
+.electrical-table tbody tr:last-child td{border-bottom:0}
+.electrical-empty{color:#5b7180;padding:18px 20px;border:1px dashed #b9d2dc;border-radius:12px;background:linear-gradient(110deg,#f7fbff,#f1faf7)}
+@media(max-width:620px){.electrical-wrap{padding:10px 4px 24px}.electrical-wrap h2{font-size:25px}.electrical-nav{gap:8px}.electrical-btn{padding:9px 12px;min-height:40px}.electrical-card{padding:15px;border-radius:14px}.electrical-card:before{margin:-15px -15px 14px}.electrical-form label{grid-template-columns:1fr;gap:5px;padding:8px}.electrical-search{padding:11px}.electrical-search label{min-width:100%}.electrical-table th,.electrical-table td{padding:8px 9px}}
+\`;document.head.append(s);};
  const btn=(label,icon,color,attrs)=>'<button type="button" class="electrical-btn" style="background:'+color+'" '+(attrs||"")+'><span aria-hidden="true">'+icon+'</span> '+label+'</button>';
  const dateInput=()=>'<label>Date<input name="date" type="date" value="'+today()+'"></label>';
  const qtyInput=()=>'<label>QTY<input name="qty" type="text" inputmode="decimal" list="electrical-units" placeholder="e.g. 12 Pc" autocomplete="off"></label>'+dl("electrical-units",["Pc","Unit","Kg","Lbs","Yard","Meter","CM"]);
