@@ -19,7 +19,7 @@
  const canEdit=()=>window.FarnoorAccess?.canAction("electrical-jobs","edit")===true||accessInfo?.role==="super_admin";
  const stockMap=()=>{const m=new Map();for(const r of arr(lists.receive)){const k=(r.item||"").trim().toLowerCase()+"|"+(r.unit||"");m.set(k,(m.get(k)||0)+num(r.qty));}for(const r of arr(lists.issue)){const k=(r.item||"").trim().toLowerCase()+"|"+(r.unit||"");m.set(k,(m.get(k)||0)-num(r.qty));}return m;};
  const stockFor=(item,unit)=>stockMap().get(String(item||"").trim().toLowerCase()+"|"+String(unit||""))||0;
- const style=()=>{if(document.getElementById("electricalDepartmentStyles"))return;const s=document.createElement("style");s.id="electricalDepartmentStyles";s.textContent=\`
+ const style=()=>{if(document.getElementById("electricalDepartmentStyles"))return;const s=document.createElement("style");s.id="electricalDepartmentStyles";s.textContent=`
 .electrical-wrap{max-width:1200px;padding:14px 10px 34px;color:#183a52}
 .electrical-wrap>.eyebrow{display:inline-flex;align-items:center;padding:6px 11px;border:1px solid #a4d9d3;border-radius:999px;background:linear-gradient(135deg,#e0f6f1,#e6f0ff);color:#12655f;font-size:11px;font-weight:800;letter-spacing:1.2px}
 .electrical-wrap h2{display:flex;align-items:center;gap:12px;margin:10px 0 18px;color:#123855;font-size:30px;line-height:1.2;font-weight:800}
@@ -56,7 +56,7 @@
 .electrical-table tbody tr:last-child td{border-bottom:0}
 .electrical-empty{color:#5b7180;padding:18px 20px;border:1px dashed #b9d2dc;border-radius:12px;background:linear-gradient(110deg,#f7fbff,#f1faf7)}
 @media(max-width:620px){.electrical-wrap{padding:10px 4px 24px}.electrical-wrap h2{font-size:25px}.electrical-nav{gap:8px}.electrical-btn{padding:9px 12px;min-height:40px}.electrical-card{padding:15px;border-radius:14px}.electrical-card:before{margin:-15px -15px 14px}.electrical-form label{grid-template-columns:1fr;gap:5px;padding:8px}.electrical-search{padding:11px}.electrical-search label{min-width:100%}.electrical-table th,.electrical-table td{padding:8px 9px}}
-\`;document.head.append(s);};
+`;document.head.append(s);};
  const btn=(label,icon,color,attrs)=>'<button type="button" class="electrical-btn" style="background:'+color+'" '+(attrs||"")+'><span aria-hidden="true">'+icon+'</span> '+label+'</button>';
  const dateInput=()=>'<label>Date<input name="date" type="date" value="'+today()+'"></label>';
  const qtyInput=()=>'<label>QTY<input name="qty" type="text" inputmode="decimal" list="electrical-units" placeholder="e.g. 12 Pc" autocomplete="off"></label>'+dl("electrical-units",["Pc","Unit","Kg","Lbs","Yard","Meter","CM"]);
