@@ -51,11 +51,13 @@
         activeFrame = null;
       }
     };
-    frame.addEventListener('afterprint', function(){
+    const cleanup = function(){
       frame.remove();
       if (activeFrame === frame) activeFrame = null;
-    }, {once:true});
+    };
     document.body.append(frame);
+    frame.contentWindow.addEventListener('afterprint', cleanup, {once:true});
+    window.setTimeout(cleanup, 120000);
     const doc = frame.contentDocument;
     doc.open();
     doc.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+'</title><style>'+css+'</style></head><body>'+content+'</body></html>');
