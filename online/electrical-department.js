@@ -10,7 +10,7 @@
  const today=()=>{const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Dhaka",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()),v=t=>p.find(x=>x.type===t)?.value;return v("year")+"-"+v("month")+"-"+v("day");};
  const dateText=s=>{const [y,m,d]=String(s||"").slice(0,10).split("-");return y&&m&&d?d+"-"+m+"-"+y:String(s||"");};
  const num=x=>{const n=Number(String(x||"").replaceAll(",",""));return Number.isFinite(n)?n:0;},money=n=>Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2});
- const qtyUnit=(q,u)=>[String(q||"").trim(),String(u||"").trim()].filter(Boolean).join(" ");
+ const qtyUnit=(q,u)=>[(q!==undefined&&q!==null&&String(q).trim()!==""?String(q).trim():""),String(u||"").trim()].filter(Boolean).join(" ");
  const parseQty=s=>{s=String(s||"").trim().replaceAll(",","");if(!s)return {qty:"",unit:""};const m=s.match(/^(\d+(?:\.\d+)?)(?:\s*(.*))?$/);if(!m)return null;const raw=String(m[2]||"").trim(),c=raw.toUpperCase();return {qty:m[1],unit:units[c]||({PC:"Pc",UNIT:"Unit",KG:"Kg",LBS:"Lbs",YARD:"Yard",METER:"Meter",CM:"CM"}[c]||raw)};};
  const setQtySuggestions=input=>{const list=document.getElementById("electrical-units");if(!list)return;const aliases={P:"Pc",U:"Unit",K:"Kg",L:"Lbs",Y:"Yard",M:"Meter",C:"CM"},match=String(input.value||"").trim().match(/^(\d+(?:\.\d+)?)\s+([A-Za-z])$/);list.innerHTML=["Pc","Unit","Kg","Lbs","Yard","Meter","CM"].map(x=>'<option value="'+x+'"></option>').join("")+(match&&aliases[match[2].toUpperCase()]?'<option value="'+match[1]+' '+aliases[match[2].toUpperCase()]+'"></option>':"");};
  const combined=[...arr(lists.purchases),...arr(lists.receive),...arr(lists.issue)];
