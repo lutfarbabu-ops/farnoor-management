@@ -161,8 +161,8 @@
    const reports=await collectReports(day);if(!reports.length)throw Error('এই তারিখে কোনো সেভ করা Production রিপোর্ট পাওয়া যায়নি।');
    const files=[];for(let index=0;index<reports.length;index++){button.textContent='Preparing JPG '+(index+1)+'/'+reports.length+'…';const report=reports[index],stem=safeName(report.name)+'-'+day,images=report.printHTML?await makeCurrentPrintImages(report.name+' · '+day,report.printHTML):await makeGenericImage(report.name+' · '+day,report.rows);images.forEach((data,page)=>files.push({name:stem+(images.length>1?'-page-'+String(page+1).padStart(2,'0'):'')+'.jpg',data}));}
    button.textContent='Preparing download…';const blob=zipFiles(files),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download='FARNOOR-Production-JPGs-'+day+'.zip';document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);notify(day+' তারিখের '+files.length+'টি JPG ফাইল ZIP ফাইলে ডাউনলোড হয়েছে।');
-  }catch(error){notify(error.message||'Production PDF তৈরি করা যায়নি.');}
-  finally{button.disabled=false;button.textContent='▤ Download Production PDFs';if(search)search.disabled=false;}
+  }catch(error){notify(error.message||'Production JPG তৈরি করা যায়নি.');}
+  finally{button.disabled=false;button.textContent='▤ Download Production JPGs';if(search)search.disabled=false;}
  }
  function syncButton(){
   const production=document.body.dataset.activeDepartment==='production';
