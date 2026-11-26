@@ -86,3 +86,5 @@ document.getElementById('main').addEventListener('contextmenu',toggleServiceBene
 const serviceBenefitRuleStyle=document.createElement('style');
 serviceBenefitRuleStyle.textContent='#servicePrintCountRule{box-sizing:border-box;width:42px;min-width:42px;height:42px;min-height:42px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid #95bbd2;border-radius:9px;background:#eff7ff;color:#164c78;font-weight:700;cursor:pointer}#servicePrintCountRule[aria-checked=true]{background:#e0f5e8;border-color:#15936b;color:#116244}#servicePrintCountRule span{box-sizing:border-box;width:17px;height:17px;border:1px solid currentColor;border-radius:4px;display:inline-flex;align-items:center;justify-content:center}';
 document.head.append(serviceBenefitRuleStyle);
+const serviceBenefit360RuleObserver=new MutationObserver(()=>serviceBenefitAdjustRenderedRule());
+serviceBenefit360RuleObserver.observe(document.getElementById('main'),{childList:true,subtree:true});
