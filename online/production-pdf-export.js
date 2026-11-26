@@ -2,7 +2,7 @@
 (()=>{
  const buttonId='productionPdfBundleButton';
  const style=document.createElement('style');
- style.textContent='#'+buttonId+'{display:flex;align-items:center;gap:8px;width:calc(100% - 32px);margin:4px 8px 6px 24px;padding:9px 11px;border:1px solid #87add7;border-radius:10px;background:#dcecff;color:#154b80;font:700 12px system-ui;box-shadow:0 2px 7px #102b5020;cursor:pointer;text-align:left}#'+buttonId+':hover{background:#c9e0ff}#'+buttonId+':disabled{opacity:.65;cursor:wait}#'+buttonId+'[hidden]{display:none!important}';
+ style.textContent='#'+buttonId+'{display:flex;align-items:center;gap:7px;box-sizing:border-box;width:calc(100% - 16px);margin:4px 6px 6px 8px;padding:8px 7px;border:1px solid #87add7;border-radius:10px;background:#dcecff;color:#154b80;font:700 11px system-ui;box-shadow:0 2px 7px #102b5020;cursor:pointer;text-align:left;white-space:nowrap}#'+buttonId+':hover{background:#c9e0ff}#'+buttonId+':disabled{opacity:.65;cursor:wait}#'+buttonId+'[hidden]{display:none!important}#productionPdfDatePanel{box-sizing:border-box;width:calc(100% - 16px);margin:0 6px 8px 8px;padding:8px;background:#f6faff;border:1px solid #b7cde7;border-radius:9px}#productionPdfDatePanel[hidden]{display:none!important}#productionPdfDatePanel label{display:block;margin:0 0 5px;color:#154b80;font:600 11px system-ui}#productionPdfDatePanel input{box-sizing:border-box;width:100%;min-width:0;margin:0 0 6px;padding:7px;border:1px solid #aac3e0;border-radius:6px;background:#fff;color:#123;font:12px system-ui}#productionPdfSearch{width:100%;padding:7px;border:0;border-radius:6px;background:#185a98;color:#fff;font:700 12px system-ui;cursor:pointer}#productionPdfSearch:disabled{opacity:.65;cursor:wait}';
  document.head.append(style);
  function notify(message){if(typeof toast==='function')toast(message);else window.alert(message);}
  function safeName(value){return String(value||'Report').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90)||'Report';}
@@ -38,10 +38,40 @@
   }
   const centralOffset=offset,centralSize=central.reduce((sum,item)=>sum+item.length,0),end=new Uint8Array(22),ev=new DataView(end.buffer);ev.setUint32(0,0x06054b50,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);ev.setUint32(12,centralSize,true);ev.setUint32(16,centralOffset,true);ev.setUint16(20,0,true);return new Blob([...parts,...central,end],{type:'application/zip'});
  }
+ function normalizeDay(value){
+  if(value===null||value===undefined||value==='')return '';
+  const text=String(value).trim();
+  let match=text.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if(match)return match[1]+'-'+String(match[2]).padStart(2,'0')+'-'+String(match[3]).padStart(2,'0');
+  match=text.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
+  if(match){let first=Number(match[1]),second=Number(match[2]),month,day;if(first>12){day=first;month=second;}else if(second>12){month=first;day=second;}else if(text.includes('-')||text.includes('.')){day=first;month=second;}else{month=first;day=second;}return match[3]+'-'+String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0');}
+  return '';
+ }
+ function recordMatchesDay(row,day){
+  let found=false;
+  const dateKeys=/^(date|reportdate|productiondate|entrydate|workdate|dailydate|transactiondate|dateofproduction)$/i;
+  function visit(value){
+   if(found||!value||typeof value!=='object')return;
+   for(const [key,item] of Object.entries(value)){
+    if(/^(created|updated|deleted|modified)at$/i.test(key))continue;
+    if(dateKeys.test(key)&&normalizeDay(item)===day){found=true;return;}
+    if(item&&typeof item==='object')visit(item);
+   }
+  }
+  visit(row);return found;
+ }
+ function scheduleMatchesDay(file,day){
+  const start=normalizeDay(file.startDate),end=normalizeDay(file.endDate);
+  return Boolean(start&&end&&start<=day&&day<=end);
+ }
+ function dhakaDay(){
+  const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dhaka',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+  const value=Object.fromEntries(parts.map(part=>[part.type,part.value]));return value.year+'-'+value.month+'-'+value.day;
+ }
  function outputKind(row){const kind=String(row.hourlyPDKind||'').toLowerCase();return kind==='quality'?'quality':kind==='iron'?'iron':kind==='sample'?'sample':'line';}
  function outputRow(row){const fields=row.hourlyPD?.fields||{};return {Date:row.date||'',Section:fields.section||'',Incharge:fields.incharge||'',Buyer:[fields.buyer,fields.buyerLast].filter(Boolean).join(' / '),Style:[fields.style,fields.styleLast].filter(Boolean).join(' / '),Item:[fields.item,fields.itemLast].filter(Boolean).join(' / '),WorkingPlan:fields.workingPlan??'',HourlyTarget:fields.hourlyTarget??'',LayoutManpower:fields.layoutManpower??'',PresentManpower:fields.presentManpower??'',Remarks:fields.remarks||'',HourlyData:JSON.stringify({hours:row.hourlyPD?.rows||[],targets:row.hourlyPD?.targets||[],differences:row.hourlyPD?.differences||[],achievements:row.hourlyPD?.achievements||[]})};}
  function scheduleRow(file){return {Section:file.section||'',Month:file.month||'',WeeklyOff:file.weekly||'',ExtraDays:file.extra||[],StartDate:file.startDate||'',EndDate:file.endDate||'',Rows:file.rows||[],DailyJournal:file.journal||{},CreatedAt:file.createdAt||''};}
- async function collectReports(){
+ async function collectReports(day){
   if(typeof state==='undefined'||typeof DEPARTMENTS==='undefined')throw Error('Production data is not ready. Refresh data and retry.');
   const department=DEPARTMENTS.find(item=>item.id==='production');if(!department)throw Error('Production department was not found.');
   const pages=department.pages.filter(page=>!page.hidden&&!page.navigationOnly&&(!window.FarnoorAccess?.canPage||window.FarnoorAccess.canPage(page.permissionPage||page.id)));
@@ -49,33 +79,36 @@
   for(const group of largeGroups){if(!(window.FarnoorLoadedLargeGroups||[]).includes(group)){if(typeof ensureWorkspacePageData!=='function')throw Error('Saved Production records could not be loaded.');await ensureWorkspacePageData(group);}}
   const reports=[];
   const add=(name,rows)=>{if(Array.isArray(rows)&&rows.length)reports.push({name,rows});};
-  for(const page of pages){const rows=state.records?.[page.id]||[];add(page.name,rows);}
+  for(const page of pages){const rows=(state.records?.[page.id]||[]).filter(row=>recordMatchesDay(row,day));add(page.name,rows);}
   const hourly=state.records?.output||[];
   const kinds=[['line','Line Wise Hourly PD','production-line-wise-hourly-pd'],['quality','Quality Wise Hourly PD','production-quality-wise-hourly-pd'],['iron','Iron Wise Hourly PD','production-iron-wise-hourly-pd'],['sample','Sample Wise Hourly PD','production-sample-wise-hourly-pd']];
-  for(const [kind,label,permission] of kinds){if(window.FarnoorAccess?.canPage&&!window.FarnoorAccess.canPage(permission))continue;add(label,hourly.filter(row=>row.hourlyProduction===true&&row.hourlyPD&&!row.deletedAt&&outputKind(row)===kind).map(outputRow));}
-  if(window.FarnoorAccess?.canPage?.('schedule-report')!==false)add('Production Plan and Schedule Reports',(state.productionSchedules||[]).map(scheduleRow));
+  for(const [kind,label,permission] of kinds){if(window.FarnoorAccess?.canPage&&!window.FarnoorAccess.canPage(permission))continue;add(label,hourly.filter(row=>row.hourlyProduction===true&&row.hourlyPD&&!row.deletedAt&&outputKind(row)===kind&&normalizeDay(row.date)===day).map(outputRow));}
+  if(window.FarnoorAccess?.canPage?.('schedule-report')!==false)add('Production Plan and Schedule Reports',(state.productionSchedules||[]).filter(file=>scheduleMatchesDay(file,day)).map(scheduleRow));
   return reports;
  }
- async function exportAll(){
-  const button=document.getElementById(buttonId);if(!button||button.disabled)return;button.disabled=true;button.textContent='Preparing Production PDFs…';
+ async function exportForDay(day){
+  const button=document.getElementById(buttonId),search=document.getElementById('productionPdfSearch');
+  if(!button||button.disabled||!day)return;
+  button.disabled=true;if(search)search.disabled=true;
   try{
    if(!window.html2pdf){const script=document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';script.crossOrigin='anonymous';document.head.append(script);await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=()=>reject(Error('PDF tool could not be loaded. Check the internet connection and retry.'));});}
-   const reports=await collectReports();if(!reports.length)throw Error('No saved Production reports were found.');
-   const files=[];for(let index=0;index<reports.length;index++){button.textContent='Preparing PDF '+(index+1)+'/'+reports.length+'…';const report=reports[index];files.push({name:safeName(report.name)+'.pdf',data:await makePdf(report.name,report.rows)});}
-   button.textContent='Preparing download…';const blob=zipFiles(files),url=URL.createObjectURL(blob),anchor=document.createElement('a'),day=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Dhaka'});anchor.href=url;anchor.download='FARNOOR-Production-PDFs-'+day+'.zip';document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);notify(files.length+' আলাদা PDF তৈরি হয়েছে। ZIP ফাইলটি Downloads-এ সেভ হয়েছে।');
+   const reports=await collectReports(day);if(!reports.length)throw Error('এই তারিখে কোনো সেভ করা Production রিপোর্ট পাওয়া যায়নি।');
+   const files=[];for(let index=0;index<reports.length;index++){button.textContent='Preparing PDF '+(index+1)+'/'+reports.length+'…';const report=reports[index];files.push({name:safeName(report.name)+'-'+day+'.pdf',data:await makePdf(report.name+' · '+day,report.rows)});}
+   button.textContent='Preparing download…';const blob=zipFiles(files),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download='FARNOOR-Production-PDFs-'+day+'.zip';document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);notify(day+' তারিখের '+files.length+'টি আলাদা PDF ZIP ফাইলে ডাউনলোড হয়েছে।');
   }catch(error){notify(error.message||'Production PDF তৈরি করা যায়নি.');}
-  finally{button.disabled=false;button.textContent='▤ Download Production PDFs';}
+  finally{button.disabled=false;button.textContent='▤ Download Production PDFs';if(search)search.disabled=false;}
  }
  function syncButton(){
   const production=document.body.dataset.activeDepartment==='production';
   let button=document.getElementById(buttonId);
-  if(production&&!button){button=document.createElement('button');button.type='button';button.id=buttonId;button.textContent='▤ Download Production PDFs';button.addEventListener('click',exportAll);button.title='Download each saved Production report as a separate PDF in one ZIP';}
+  if(production&&!button){button=document.createElement('button');button.type='button';button.id=buttonId;button.textContent='▤ Download Production PDFs';button.title='Choose a date and download its saved Production reports as separate PDFs';button.setAttribute('aria-expanded','false');button.addEventListener('click',()=>{const panel=document.getElementById('productionPdfDatePanel');if(panel){panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)document.getElementById('productionPdfDate')?.focus();}});const panel=document.createElement('div');panel.id='productionPdfDatePanel';panel.hidden=true;panel.innerHTML='<label for="productionPdfDate">Report date</label><input id="productionPdfDate" type="date" value="'+dhakaDay()+'"><button type="button" id="productionPdfSearch">Search</button>';panel.querySelector('#productionPdfSearch').addEventListener('click',()=>exportForDay(panel.querySelector('#productionPdfDate').value));button._datePanel=panel;}
   if(button){
    button.hidden=!production;
    const labels=[...document.querySelectorAll('#navigation .submenu-label')],label=labels.find(node=>node.textContent.trim()==='Production Records');
    const anchor=label?.closest('button'),pages=anchor?.parentElement;
-   if(production&&anchor&&pages&&button.parentElement!==pages)anchor.after(button);
-   else if(production&&anchor&&button.previousElementSibling!==anchor)anchor.after(button);
+   if(production&&anchor&&pages&&button.parentElement!==pages){anchor.after(button);if(button._datePanel)button.after(button._datePanel);}
+   else if(production&&anchor&&button.previousElementSibling!==anchor){anchor.after(button);if(button._datePanel)button.after(button._datePanel);}
+   else if(production&&button.parentElement===pages&&button._datePanel&&button.nextElementSibling!==button._datePanel)button.after(button._datePanel);
   }
  }
  const previousGoPage=window.goPage;if(typeof previousGoPage==='function'){window.goPage=function(id){const result=previousGoPage(id);setTimeout(syncButton,0);return result;};}
