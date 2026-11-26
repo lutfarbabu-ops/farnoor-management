@@ -20,13 +20,28 @@
   host.append(sheet);
   return host;
  }
- async function makePdf(title,rows){
+ async function makePdf(title,rows,printHTML){
+  if(printHTML)return makeCurrentPrintPdf(title,printHTML);
   const node=pdfDocument(title,rows);
   document.body.append(node);
   try{
    const worker=window.html2pdf().set({margin:0,image:{type:'jpeg',quality:.94},html2canvas:{scale:1.5,backgroundColor:'#ffffff',logging:false},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}}).from(node);
    return await worker.outputPdf('arraybuffer');
   }finally{node.remove();}
+ }
+ async function makeCurrentPrintPdf(title,html){
+  const frame=document.createElement('iframe');frame.title=title+' PDF';frame.style.cssText='position:fixed;left:-20000px;top:0;width:1123px;height:794px;border:0;pointer-events:none';
+  const ready=new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=()=>reject(Error('Current report format could not load.'));});
+  const source=html.replace('</head>','<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script></head>');
+  document.body.append(frame);
+  try{
+   frame.srcdoc=source;await ready;await frame.contentDocument.fonts.ready;
+   await Promise.all([...frame.contentDocument.images].map(image=>image.complete?Promise.resolve():new Promise(resolve=>{image.onload=resolve;image.onerror=resolve;})));
+   const win=frame.contentWindow;if(!win.html2pdf)throw Error('PDF tool could not be loaded. Check the internet connection and retry.');
+   const root=frame.contentDocument.body;
+   const worker=win.html2pdf().set({margin:0,image:{type:'jpeg',quality:1},html2canvas:{scale:2,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,windowHeight:794,scrollX:0,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}}).from(root);
+   return await worker.outputPdf('arraybuffer');
+  }finally{frame.remove();}
  }
  function crc32(bytes){let crc=-1;for(let i=0;i<bytes.length;i++){crc^=bytes[i];for(let j=0;j<8;j++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}return (crc^-1)>>>0;}
  function zipFiles(files){
@@ -78,7 +93,7 @@
   const value=Object.fromEntries(parts.map(part=>[part.type,part.value]));return value.year+'-'+value.month+'-'+value.day;
  }
  function runningDayDisplay(){return dhakaDay().split('-').reverse().join('-');}
- function outputKind(row){const kind=String(row.hourlyPDKind||'').toLowerCase();return kind==='quality'?'quality':kind==='iron'?'iron':kind==='sample'?'sample':'line';}
+ function outputKind(row){const kind=String(row.hourlyPDKind||'').toLowerCase();return ['quality','iron','sample','finishing'].includes(kind)?kind:'line';}
  function outputRow(row){const fields=row.hourlyPD?.fields||{};return {Date:row.date||'',Section:fields.section||'',Incharge:fields.incharge||'',Buyer:[fields.buyer,fields.buyerLast].filter(Boolean).join(' / '),Style:[fields.style,fields.styleLast].filter(Boolean).join(' / '),Item:[fields.item,fields.itemLast].filter(Boolean).join(' / '),WorkingPlan:fields.workingPlan??'',HourlyTarget:fields.hourlyTarget??'',LayoutManpower:fields.layoutManpower??'',PresentManpower:fields.presentManpower??'',Remarks:fields.remarks||'',HourlyData:JSON.stringify({hours:row.hourlyPD?.rows||[],targets:row.hourlyPD?.targets||[],differences:row.hourlyPD?.differences||[],achievements:row.hourlyPD?.achievements||[]})};}
  function scheduleRow(file){return {Section:file.section||'',Month:file.month||'',WeeklyOff:file.weekly||'',ExtraDays:file.extra||[],StartDate:file.startDate||'',EndDate:file.endDate||'',Rows:file.rows||[],DailyJournal:file.journal||{},CreatedAt:file.createdAt||''};}
  async function collectReports(day){
@@ -88,11 +103,23 @@
   const largeGroups=(window.FarnoorLargeGroups||[]).filter(group=>group==='output'||pages.some(page=>page.id===group));
   for(const group of largeGroups){if(!(window.FarnoorLoadedLargeGroups||[]).includes(group)){if(typeof ensureWorkspacePageData!=='function')throw Error('Saved Production records could not be loaded.');await ensureWorkspacePageData(group);}}
   const reports=[];
-  const add=(name,rows)=>{if(Array.isArray(rows)&&rows.length)reports.push({name,rows});};
-  for(const page of pages){const rows=(state.records?.[page.id]||[]).filter(row=>recordMatchesDay(row,day));add(page.name,rows);}
+  const add=(name,rows,printHTML='')=>{if(Array.isArray(rows)&&rows.length)reports.push({name,rows,printHTML});};
+  for(const page of pages){if(page.id==='output')continue;const rows=(state.records?.[page.id]||[]).filter(row=>recordMatchesDay(row,day));add(page.name,rows);}
   const hourly=state.records?.output||[];
-  const kinds=[['line','Line Wise Hourly PD','production-line-wise-hourly-pd'],['quality','Quality Wise Hourly PD','production-quality-wise-hourly-pd'],['iron','Iron Wise Hourly PD','production-iron-wise-hourly-pd'],['sample','Sample Wise Hourly PD','production-sample-wise-hourly-pd']];
-  for(const [kind,label,permission] of kinds){if(window.FarnoorAccess?.canPage&&!window.FarnoorAccess.canPage(permission))continue;add(label,hourly.filter(row=>row.hourlyProduction===true&&row.hourlyPD&&!row.deletedAt&&outputKind(row)===kind&&normalizeDay(row.date)===day).map(outputRow));}
+  const kinds=[
+   ['line','Line Wise Hourly PD','production-line-wise-hourly-pd',()=>window.hourlyPDPrintHTML],
+   ['quality','Quality Wise Hourly PD','production-quality-wise-hourly-pd',()=>window.qualityPDPrintHTML],
+   ['iron','Iron Wise Hourly PD','production-iron-wise-hourly-pd',()=>window.ironPDPrintHTML],
+   ['sample','Sample Wise Hourly PD','production-sample-wise-hourly-pd',()=>window.samplePDPrintHTML],
+   ['finishing','Finishing Wise Hourly PD','output',()=>window.finishingPDPrintHTML]
+  ];
+  for(const [kind,label,permission,getPrint] of kinds){
+   if(window.FarnoorAccess?.canPage&&!window.FarnoorAccess.canPage(permission))continue;
+   const saved=hourly.filter(row=>row.hourlyProduction===true&&row.hourlyPD&&!row.deletedAt&&outputKind(row)===kind&&normalizeDay(row.date)===day);
+   if(!saved.length)continue;
+   const printFn=getPrint(),printHTML=typeof printFn==='function'?printFn(saved):'';
+   add(label,saved.map(outputRow),printHTML);
+  }
   if(window.FarnoorAccess?.canPage?.('schedule-report')!==false)add('Production Plan and Schedule Reports',(state.productionSchedules||[]).filter(file=>scheduleMatchesDay(file,day)).map(scheduleRow));
   return reports;
  }
@@ -103,7 +130,7 @@
   try{
    if(!window.html2pdf){const script=document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';script.crossOrigin='anonymous';document.head.append(script);await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=()=>reject(Error('PDF tool could not be loaded. Check the internet connection and retry.'));});}
    const reports=await collectReports(day);if(!reports.length)throw Error('এই তারিখে কোনো সেভ করা Production রিপোর্ট পাওয়া যায়নি।');
-   const files=[];for(let index=0;index<reports.length;index++){button.textContent='Preparing PDF '+(index+1)+'/'+reports.length+'…';const report=reports[index];files.push({name:safeName(report.name)+'-'+day+'.pdf',data:await makePdf(report.name+' · '+day,report.rows)});}
+   const files=[];for(let index=0;index<reports.length;index++){button.textContent='Preparing PDF '+(index+1)+'/'+reports.length+'…';const report=reports[index];files.push({name:safeName(report.name)+'-'+day+'.pdf',data:await makePdf(report.name+' · '+day,report.rows,report.printHTML)});}
    button.textContent='Preparing download…';const blob=zipFiles(files),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download='FARNOOR-Production-PDFs-'+day+'.zip';document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);notify(day+' তারিখের '+files.length+'টি আলাদা PDF ZIP ফাইলে ডাউনলোড হয়েছে।');
   }catch(error){notify(error.message||'Production PDF তৈরি করা যায়নি.');}
   finally{button.disabled=false;button.textContent='▤ Download Production PDFs';if(search)search.disabled=false;}
