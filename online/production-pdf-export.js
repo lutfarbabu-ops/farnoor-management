@@ -42,10 +42,19 @@
   if(value===null||value===undefined||value==='')return '';
   const text=String(value).trim();
   let match=text.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-  if(match)return match[1]+'-'+String(match[2]).padStart(2,'0')+'-'+String(match[3]).padStart(2,'0');
-  match=text.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
-  if(match){let first=Number(match[1]),second=Number(match[2]),month,day;if(first>12){day=first;month=second;}else if(second>12){month=first;day=second;}else if(text.includes('-')||text.includes('.')){day=first;month=second;}else{month=first;day=second;}return match[3]+'-'+String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0');}
-  return '';
+  let year,month,day;
+  if(match){year=Number(match[1]);month=Number(match[2]);day=Number(match[3]);}
+  else{
+   match=text.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
+   if(!match)return '';
+   const first=Number(match[1]),second=Number(match[2]);
+   if(first>12){day=first;month=second;}else if(second>12){month=first;day=second;}else if(text.includes('-')||text.includes('.')){day=first;month=second;}else{month=first;day=second;}
+   year=Number(match[3]);
+  }
+  if(month<1||month>12||day<1||day>31||year<1900)return '';
+  const check=new Date(0);check.setUTCHours(0,0,0,0);check.setUTCFullYear(year,month-1,day);
+  if(check.getUTCFullYear()!==year||check.getUTCMonth()!==month-1||check.getUTCDate()!==day)return '';
+  return String(year).padStart(4,'0')+'-'+String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0');
  }
  function recordMatchesDay(row,day){
   let found=false;
@@ -68,6 +77,7 @@
   const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dhaka',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
   const value=Object.fromEntries(parts.map(part=>[part.type,part.value]));return value.year+'-'+value.month+'-'+value.day;
  }
+ function runningDayDisplay(){return dhakaDay().split('-').reverse().join('-');}
  function outputKind(row){const kind=String(row.hourlyPDKind||'').toLowerCase();return kind==='quality'?'quality':kind==='iron'?'iron':kind==='sample'?'sample':'line';}
  function outputRow(row){const fields=row.hourlyPD?.fields||{};return {Date:row.date||'',Section:fields.section||'',Incharge:fields.incharge||'',Buyer:[fields.buyer,fields.buyerLast].filter(Boolean).join(' / '),Style:[fields.style,fields.styleLast].filter(Boolean).join(' / '),Item:[fields.item,fields.itemLast].filter(Boolean).join(' / '),WorkingPlan:fields.workingPlan??'',HourlyTarget:fields.hourlyTarget??'',LayoutManpower:fields.layoutManpower??'',PresentManpower:fields.presentManpower??'',Remarks:fields.remarks||'',HourlyData:JSON.stringify({hours:row.hourlyPD?.rows||[],targets:row.hourlyPD?.targets||[],differences:row.hourlyPD?.differences||[],achievements:row.hourlyPD?.achievements||[]})};}
  function scheduleRow(file){return {Section:file.section||'',Month:file.month||'',WeeklyOff:file.weekly||'',ExtraDays:file.extra||[],StartDate:file.startDate||'',EndDate:file.endDate||'',Rows:file.rows||[],DailyJournal:file.journal||{},CreatedAt:file.createdAt||''};}
@@ -101,7 +111,7 @@
  function syncButton(){
   const production=document.body.dataset.activeDepartment==='production';
   let button=document.getElementById(buttonId);
-  if(production&&!button){button=document.createElement('button');button.type='button';button.id=buttonId;button.textContent='▤ Download Production PDFs';button.title='Choose a date and download its saved Production reports as separate PDFs';button.setAttribute('aria-expanded','false');button.addEventListener('click',()=>{const panel=document.getElementById('productionPdfDatePanel');if(panel){panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)document.getElementById('productionPdfDate')?.focus();}});const panel=document.createElement('div');panel.id='productionPdfDatePanel';panel.hidden=true;panel.innerHTML='<label for="productionPdfDate">Report date</label><input id="productionPdfDate" type="date" value="'+dhakaDay()+'"><button type="button" id="productionPdfSearch">Search</button>';panel.querySelector('#productionPdfSearch').addEventListener('click',()=>exportForDay(panel.querySelector('#productionPdfDate').value));button._datePanel=panel;}
+  if(production&&!button){button=document.createElement('button');button.type='button';button.id=buttonId;button.textContent='▤ Download Production PDFs';button.title='Choose a date and download its saved Production reports as separate PDFs';button.setAttribute('aria-expanded','false');button.addEventListener('click',()=>{const panel=document.getElementById('productionPdfDatePanel');if(panel){panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)document.getElementById('productionPdfDate')?.focus();}});const panel=document.createElement('div');panel.id='productionPdfDatePanel';panel.hidden=true;panel.innerHTML='<label for="productionPdfDate">Report date (DD-MM-YYYY)</label><input id="productionPdfDate" type="text" inputmode="numeric" autocomplete="off" placeholder="DD-MM-YYYY" value="'+runningDayDisplay()+'"><button type="button" id="productionPdfSearch">Search</button>';panel.querySelector('#productionPdfSearch').addEventListener('click',()=>{const input=panel.querySelector('#productionPdfDate'),value=input.value.trim();if(!/^\\d{2}-\\d{2}-\\d{4}$/.test(value)){notify('তারিখ DD-MM-YYYY ফরমেটে দিন।');input.focus();return;}const day=normalizeDay(value);if(!day){notify('সঠিক তারিখ DD-MM-YYYY ফরমেটে দিন।');input.focus();return;}input.value=day.split('-').reverse().join('-');exportForDay(day);});button._datePanel=panel;}
   if(button){
    button.hidden=!production;
    const labels=[...document.querySelectorAll('#navigation .submenu-label')],label=labels.find(node=>node.textContent.trim()==='Production Records');
