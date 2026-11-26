@@ -127,7 +127,7 @@
    const saved=hourly.filter(row=>row.hourlyProduction===true&&row.hourlyPD&&!row.deletedAt&&outputKind(row)===kind&&normalizeDay(row.date)===day);
    if(!saved.length)continue;
    const printFn=typeof getPrint()==='function'?getPrint():await ensurePrintFunction(kind);if(typeof printFn!=='function')throw Error(label+'-এর আসল Print ফরম্যাট পাওয়া যায়নি। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।');
-   const printHTML=printFn(saved);if(!printHTML||!printHTML.includes('hourly-pd-print-sheet'))throw Error(label+'-এর Print ফরম্যাট তৈরি করা যায়নি।');
+   const printHTML=printFn(saved),sheetClass={line:'hourly-pd-print-sheet',quality:'quality-pd-print-sheet',iron:'iron-pd-print-sheet',sample:'sample-pd-print-sheet',finishing:'finishing-pd-print-sheet'}[kind];if(!printHTML||!printHTML.includes(sheetClass))throw Error(label+'-এর Print ফরম্যাট তৈরি করা যায়নি।');
    add(label,saved.map(outputRow),printHTML);
   }
   if(window.FarnoorAccess?.canPage?.('schedule-report')!==false)add('Production Plan and Schedule Reports',(state.productionSchedules||[]).filter(file=>scheduleMatchesDay(file,day)).map(scheduleRow));
