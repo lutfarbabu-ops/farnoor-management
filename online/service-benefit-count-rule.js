@@ -1,6 +1,5 @@
 'use strict';
 let serviceBenefitUse360DayStartRule=false;
-const serviceBenefitBaseYearRows=servicePrintYearRows;
 function serviceBenefitYearRowsWithStartRule(joining,release,useRule){
  const originalStart=servicePrintDate(joining),end=servicePrintDate(release);
  if(end.key<originalStart.key)throw Error('Release তারিখ যোগদানের তারিখের আগে হতে পারবে না।');
@@ -41,8 +40,9 @@ renderServiceBenefitPrint=function(...args){
  control.className='service-print-count-rule';
  control.setAttribute('role','checkbox');
  control.setAttribute('aria-checked',String(serviceBenefitUse360DayStartRule));
- control.title='Right-click to apply the 360-day start-year rule. Without it, calculation starts from Date Of Joining.';
- control.innerHTML='<span aria-hidden="true">'+(serviceBenefitUse360DayStartRule?'✓':'')+'</span> 360-Day Rule';
+ control.setAttribute('aria-label','360-Day Rule');
+ control.title='Click or right-click to apply the 360-day start-year rule.';
+ control.innerHTML='<span aria-hidden="true">'+(serviceBenefitUse360DayStartRule?'✓':'')+'</span>';
  search.after(control);
 };
 function toggleServiceBenefit360Rule(event){
@@ -55,8 +55,8 @@ function toggleServiceBenefit360Rule(event){
 }
 document.getElementById('main').addEventListener('contextmenu',toggleServiceBenefit360Rule);
 document.getElementById('main').addEventListener('click',event=>{
- if(event.target.closest('#servicePrintCountRule')&&event.detail===0)toggleServiceBenefit360Rule(event);
+ if(event.button===0&&event.target.closest('#servicePrintCountRule'))toggleServiceBenefit360Rule(event);
 });
 const serviceBenefitRuleStyle=document.createElement('style');
-serviceBenefitRuleStyle.textContent='#servicePrintCountRule{min-height:42px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border:1px solid #95bbd2;border-radius:9px;background:#eff7ff;color:#164c78;font-weight:700;cursor:pointer}#servicePrintCountRule[aria-checked=true]{background:#e0f5e8;border-color:#15936b;color:#116244}#servicePrintCountRule span{box-sizing:border-box;width:17px;height:17px;border:1px solid currentColor;border-radius:4px;display:inline-flex;align-items:center;justify-content:center}';
+serviceBenefitRuleStyle.textContent='#servicePrintCountRule{box-sizing:border-box;width:42px;min-width:42px;height:42px;min-height:42px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid #95bbd2;border-radius:9px;background:#eff7ff;color:#164c78;font-weight:700;cursor:pointer}#servicePrintCountRule[aria-checked=true]{background:#e0f5e8;border-color:#15936b;color:#116244}#servicePrintCountRule span{box-sizing:border-box;width:17px;height:17px;border:1px solid currentColor;border-radius:4px;display:inline-flex;align-items:center;justify-content:center}';
 document.head.append(serviceBenefitRuleStyle);
