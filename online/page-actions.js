@@ -1,6 +1,6 @@
 'use strict';
 function pagePermission(action,page=activePage){return !!page&&FarnoorAccess.canAction(page,action);}
-function buttonPermissionPage(button){const target=button.dataset.scheduleTarget||button.dataset.reportFile;const file=target&&(state.productionSchedules||[]).find(file=>file.id===target);return file?productionPageId(file.section,true):activePage;}
+function buttonPermissionPage(button){if(button.dataset.permissionPage)return button.dataset.permissionPage;const target=button.dataset.scheduleTarget||button.dataset.reportFile;const file=target&&(state.productionSchedules||[]).find(file=>file.id===target);return file?productionPageId(file.section,true):activePage;}
 function requiredButtonAction(button){
  if(button.dataset.pageAction)return button.dataset.pageAction;
  if(button.dataset.pageActionRequired)return button.dataset.pageActionRequired;
@@ -21,7 +21,7 @@ function applyActionControls(){
  main.querySelectorAll('.account-paper input,.account-paper select,.account-paper textarea,.order-paper input,.order-paper select,.order-paper textarea').forEach(input=>{if(input.classList.contains('balance-select')||input.classList.contains('production-section-select'))return;input.disabled=!pagePermission('edit',buttonPermissionPage(input));});
 }
 // Capture before page-specific listeners, including controls recreated by report views.
-document.addEventListener('click',event=>{const button=event.target.closest('button');if(!button||!button.closest('#main')||adminView||!activePage)return;const action=requiredButtonAction(button);if(action&&!pagePermission(action,buttonPermissionPage(button))){event.preventDefault();event.stopImmediatePropagation();toast(action.toUpperCase()+' permission is required.');return;}if(button.dataset.pageAction){event.preventDefault();event.stopImmediatePropagation();if(action==='pdf')exportPagePDF();else window.print();}},true);
+document.addEventListener('click',event=>{const button=event.target.closest('button');if(!button||!button.closest('#main')||adminView||(!activePage&&!button.dataset.permissionPage))return;const action=requiredButtonAction(button);if(action&&!pagePermission(action,buttonPermissionPage(button))){event.preventDefault();event.stopImmediatePropagation();toast(action.toUpperCase()+' permission is required.');return;}if(button.dataset.pageAction){event.preventDefault();event.stopImmediatePropagation();if(action==='pdf')exportPagePDF();else if(button.dataset.permissionPage){const printClass=button.dataset.printBodyClass;if(printClass)document.body.classList.add(printClass);originalWindowPrint();}else window.print();}},true);
 document.addEventListener('submit',event=>{if(event.target.id==='recordForm'&&!pagePermission('edit')){event.preventDefault();event.stopImmediatePropagation();toast('EDIT permission is required.');}},true);
 const originalWindowPrint=window.print.bind(window);
 window.print=()=>{if(!pagePermission('print')){toast('PRINT permission is required.');return;}originalWindowPrint();};
