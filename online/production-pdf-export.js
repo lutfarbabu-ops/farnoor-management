@@ -23,7 +23,7 @@
  async function makeCurrentPrintImages(title,html){
   const frame=document.createElement('iframe');frame.title=title+' JPG';frame.style.cssText='position:fixed;left:-20000px;top:0;width:1123px;height:794px;border:0;pointer-events:none';
   const ready=new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=()=>reject(Error('Current report format could not load.'));});
-  const source=html.replace('</head>','<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script></head>');
+  const source=html.replace('</head>','<script src="'+new URL('vendor/html2pdf.bundle.min.js',document.baseURI).href+'"></script></head>');
   document.body.append(frame);
   try{
    frame.srcdoc=source;await ready;await frame.contentDocument.fonts.ready;
@@ -51,7 +51,7 @@
  async function makeCurrentPrintPdf(title,html){
   const frame=document.createElement('iframe');frame.title=title+' PDF';frame.style.cssText='position:fixed;left:-20000px;top:0;width:1123px;height:794px;border:0;pointer-events:none';
   const ready=new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=()=>reject(Error('Current report format could not load.'));});
-  const source=html.replace('</head>','<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script></head>');
+  const source=html.replace('</head>','<script src="'+new URL('vendor/html2pdf.bundle.min.js',document.baseURI).href+'"></script></head>');
   document.body.append(frame);
   try{
    frame.srcdoc=source;await ready;await frame.contentDocument.fonts.ready;
@@ -157,7 +157,7 @@
   if(!button||button.disabled||!day)return;
   button.disabled=true;if(search)search.disabled=true;
   try{
-   if(!window.html2pdf){const script=document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';script.crossOrigin='anonymous';document.head.append(script);await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=()=>reject(Error('JPG image tool could not be loaded. Check the internet connection and retry.'));});}
+   if(!window.html2pdf){const script=document.createElement('script');script.src=new URL('vendor/html2pdf.bundle.min.js',document.baseURI).href;document.head.append(script);await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=()=>reject(Error('JPG renderer could not be loaded. Refresh the page and retry.'));});}
    const reports=await collectReports(day);if(!reports.length)throw Error('এই তারিখে কোনো সেভ করা Production রিপোর্ট পাওয়া যায়নি।');
    const files=[];for(let index=0;index<reports.length;index++){button.textContent='Preparing JPG '+(index+1)+'/'+reports.length+'…';const report=reports[index],stem=safeName(report.name)+'-'+day,images=report.printHTML?await makeCurrentPrintImages(report.name+' · '+day,report.printHTML):await makeGenericImage(report.name+' · '+day,report.rows);images.forEach((data,page)=>files.push({name:stem+(images.length>1?'-page-'+String(page+1).padStart(2,'0'):'')+'.jpg',data}));}
    button.textContent='Preparing download…';const blob=zipFiles(files),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download='FARNOOR-Production-JPGs-'+day+'.zip';document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);notify(day+' তারিখের '+files.length+'টি JPG ফাইল ZIP ফাইলে ডাউনলোড হয়েছে।');
