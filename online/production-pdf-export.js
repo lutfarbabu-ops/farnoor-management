@@ -2,7 +2,7 @@
 (()=>{
  const buttonId='productionPdfBundleButton';
  const style=document.createElement('style');
- style.textContent='#'+buttonId+'{position:fixed;right:24px;bottom:24px;z-index:10000;border:0;border-radius:12px;padding:13px 18px;background:linear-gradient(135deg,#1457a6,#19305d);color:#fff;font:700 15px system-ui;box-shadow:0 8px 22px #102b5050;cursor:pointer}#'+buttonId+':disabled{opacity:.65;cursor:wait}';
+ style.textContent='#'+buttonId+'{display:flex;align-items:center;gap:8px;width:calc(100% - 32px);margin:4px 8px 6px 24px;padding:9px 11px;border:1px solid #87add7;border-radius:10px;background:#dcecff;color:#154b80;font:700 12px system-ui;box-shadow:0 2px 7px #102b5020;cursor:pointer;text-align:left}#'+buttonId+':hover{background:#c9e0ff}#'+buttonId+':disabled{opacity:.65;cursor:wait}#'+buttonId+'[hidden]{display:none!important}';
  document.head.append(style);
  function notify(message){if(typeof toast==='function')toast(message);else window.alert(message);}
  function safeName(value){return String(value||'Report').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90)||'Report';}
@@ -69,9 +69,18 @@
  function syncButton(){
   const production=document.body.dataset.activeDepartment==='production';
   let button=document.getElementById(buttonId);
-  if(production&&!button){button=document.createElement('button');button.type='button';button.id=buttonId;button.textContent='▤ Download Production PDFs';button.addEventListener('click',exportAll);button.title='Download each saved Production report as a separate PDF in one ZIP';document.body.append(button);}
-  if(button)button.hidden=!production;
+  if(production&&!button){button=document.createElement('button');button.type='button';button.id=buttonId;button.textContent='▤ Download Production PDFs';button.addEventListener('click',exportAll);button.title='Download each saved Production report as a separate PDF in one ZIP';}
+  if(button){
+   button.hidden=!production;
+   const labels=[...document.querySelectorAll('#navigation .submenu-label')],label=labels.find(node=>node.textContent.trim()==='Production Records');
+   const anchor=label?.closest('button'),pages=anchor?.parentElement;
+   if(production&&anchor&&pages&&button.parentElement!==pages)anchor.after(button);
+   else if(production&&anchor&&button.previousElementSibling!==anchor)anchor.after(button);
+  }
  }
  const previousGoPage=window.goPage;if(typeof previousGoPage==='function'){window.goPage=function(id){const result=previousGoPage(id);setTimeout(syncButton,0);return result;};}
- new MutationObserver(syncButton).observe(document.body,{attributes:true,attributeFilter:['data-active-department']});syncButton();
+ const buttonObserver=new MutationObserver(syncButton);
+ buttonObserver.observe(document.body,{attributes:true,attributeFilter:['data-active-department']});
+ const navigation=document.getElementById('navigation');if(navigation)buttonObserver.observe(navigation,{childList:true,subtree:true});
+ syncButton();
 })();
