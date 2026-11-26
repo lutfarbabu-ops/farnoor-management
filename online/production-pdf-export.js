@@ -28,10 +28,10 @@
   try{
    frame.srcdoc=source;await ready;await frame.contentDocument.fonts.ready;
    await Promise.all([...frame.contentDocument.images].map(image=>image.complete?Promise.resolve():new Promise(resolve=>{image.onload=resolve;image.onerror=resolve;})));
-   const win=frame.contentWindow;if(!win.html2canvas)throw Error('Image tool could not be loaded. Check the internet connection and retry.');
+   const win=frame.contentWindow;if(!win.html2pdf)throw Error('Image tool could not be loaded. Check the internet connection and retry.');
    const sheets=[...frame.contentDocument.querySelectorAll('[class]')].filter(node=>[...node.classList].some(name=>name.endsWith('-pd-print-sheet')));
    if(!sheets.length)throw Error('Report print pages could not be found.');
-   const images=[];for(const sheet of sheets){const canvas=await win.html2canvas(sheet,{scale:2,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,windowHeight:794,scrollX:0,scrollY:0});const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.96));if(!blob)throw Error('JPG image could not be created.');images.push(await blob.arrayBuffer());}
+   const images=[];for(const sheet of sheets){const worker=win.html2pdf().set({margin:0,image:{type:'jpeg',quality:.96},html2canvas:{scale:2,backgroundColor:'#ffffff',logging:false,useCORS:false,windowWidth:1123,windowHeight:794,scrollX:0,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}}).from(sheet).toCanvas();const canvas=await worker.get('canvas');const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.96));if(!blob)throw Error('JPG image could not be created.');images.push(await blob.arrayBuffer());}
    return images;
   }finally{frame.remove();}
  }
