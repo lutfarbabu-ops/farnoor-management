@@ -27,9 +27,38 @@ function serviceBenefitYearRowsWithStartRule(joining,release,useRule){
  return result;
 }
 servicePrintYearRows=function(joining,release){return serviceBenefitYearRowsWithStartRule(joining,release,serviceBenefitUse360DayStartRule);};
+function serviceBenefitAdjustRenderedRule(){
+ if(!serviceBenefitUse360DayStartRule)return;
+ const article=document.querySelector('#serviceBenefitPrintContent .service-benefit-paper');
+ const table=article?.querySelector('.service-benefit-year-table');
+ if(!article||!table)return;
+ const joiningLabel=[...article.querySelectorAll('dt')].find(node=>node.textContent.trim()==='Date Of Joining');
+ const dateText=joiningLabel?.nextElementSibling?.textContent||'';
+ const dateMatch=dateText.match(/(\d{1,2})[./-](\d{1,2})[./-](\d{4})/);
+ if(!dateMatch)return;
+ const day=Number(dateMatch[1]),month=Number(dateMatch[2]),year=Number(dateMatch[3]);
+ const remainingDays=Math.floor((Date.UTC(year,11,31)-Date.UTC(year,month-1,day))/86400000)+1;
+ if(remainingDays>=360)return;
+ const body=table.tBodies[0],rows=[...body.rows];
+ const joiningYearRow=rows.find(row=>Number(row.cells[1]?.textContent.trim())===year);
+ if(!joiningYearRow)return;
+ joiningYearRow.remove();
+ [...body.rows].forEach((row,index)=>{if(row.cells[0])row.cells[0].textContent=String(index+1).padStart(2,'0');});
+ const dataRows=[...body.rows];
+ const totalMonths=dataRows.reduce((sum,row)=>sum+(parseFloat(row.cells[2]?.textContent)||0),0);
+ const totalDays=dataRows.reduce((sum,row)=>sum+(parseFloat(row.cells[3]?.textContent)||0),0);
+ const totalAmount=dataRows.reduce((sum,row)=>sum+(parseFloat((row.cells[4]?.textContent||'').replace(/,/g,''))||0),0);
+ const totals=table.tFoot?.rows[0]?.cells;
+ if(totals?.length>=4){
+  totals[1].textContent=Number(totalMonths.toFixed(2))+' Month';
+  totals[2].textContent=Number(totalDays.toFixed(2))+' Days';
+  totals[3].textContent=Math.round(totalAmount).toLocaleString('en-US');
+ }
+}
 const servicePrintRenderWithRule=renderServiceBenefitPrint;
 renderServiceBenefitPrint=function(...args){
  servicePrintRenderWithRule.apply(this,args);
+ serviceBenefitAdjustRenderedRule();
  const form=document.getElementById('serviceBenefitPrintForm');
  if(!form||form.querySelector('#servicePrintCountRule'))return;
  const search=form.querySelector('.service-print-save');
