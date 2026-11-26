@@ -82,7 +82,7 @@
   if(!all&&!search)return '<p class="electrical-empty">Select an item and choose Search, or choose All.</p>';
   const map=stockMap(),stockRows=[...arr(lists.receive),...arr(lists.issue)],keys=[...map.keys()].filter(k=>map.get(k)>0&&(!search||itemKey(stockRows.find(x=>itemKey(x.item)===k.split("|")[0])?.item)===itemKey(search)));
   if(!keys.length)return '<p class="electrical-empty">No stock found.</p>';
-  return '<div class="electrical-table-wrap"><table class="electrical-table"><thead><tr><th>SL</th><th>Item</th><th>Recive</th><th>Stock</th></tr></thead><tbody>'+keys.map((k,index)=>{const [name,unit]=k.split("|"),r=arr(lists.receive).filter(x=>itemKey(x.item)===name&&unitKey(x.unit)===unit),i=arr(lists.issue).filter(x=>itemKey(x.item)===name&&unitKey(x.unit)===unit),label=r[0]?.item||i[0]?.item||name,displayUnit=r[0]?.unit||i[0]?.unit||unit;return '<tr><td>'+(index+1)+'</td><td>'+esc(label)+'</td><td>'+esc(qtyUnit(r.reduce((n,x)=>n+num(x.qty),0),displayUnit))+'</td><td>'+esc(qtyUnit(map.get(k),displayUnit))+'</td></tr>';}).join("")+'</tbody></table></div>';
+  return '<div class="electrical-table-wrap"><table class="electrical-table"><thead><tr><th>SL</th><th>Item</th><th>Stock</th></tr></thead><tbody>'+keys.map((k,index)=>{const [name,unit]=k.split("|"),r=arr(lists.receive).filter(x=>itemKey(x.item)===name&&unitKey(x.unit)===unit),i=arr(lists.issue).filter(x=>itemKey(x.item)===name&&unitKey(x.unit)===unit),label=r[0]?.item||i[0]?.item||name,displayUnit=r[0]?.unit||i[0]?.unit||unit;return '<tr><td>'+(index+1)+'</td><td>'+esc(label)+'</td><td>'+esc(qtyUnit(map.get(k),displayUnit))+'</td></tr>';}).join("")+'</tbody></table></div>';
  };
  const render=()=>{
   style();const main=document.getElementById("main");if(!main)return;
