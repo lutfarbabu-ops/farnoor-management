@@ -1,5 +1,6 @@
 'use strict';
 let serviceBenefitUse360DayStartRule=false;
+let serviceBenefitPrintHistoryEnabled=false;
 function serviceBenefitYearRowsWithStartRule(joining,release,useRule){
  const originalStart=servicePrintDate(joining),end=servicePrintDate(release);
  if(end.key<originalStart.key)throw Error('Release তারিখ যোগদানের তারিখের আগে হতে পারবে না।');
@@ -59,6 +60,23 @@ const servicePrintRenderWithRule=renderServiceBenefitPrint;
 renderServiceBenefitPrint=function(...args){
  servicePrintRenderWithRule.apply(this,args);
  serviceBenefitAdjustRenderedRule();
+ const history=document.querySelector('#serviceBenefitPrintContent .service-payment-history');
+ if(history){
+  history.dataset.printEnabled=String(serviceBenefitPrintHistoryEnabled);
+  const heading=history.querySelector('h4');
+  if(heading&&!heading.querySelector('#servicePaymentHistoryPrintToggle')){
+   const toggle=document.createElement('button');
+   toggle.type='button';
+   toggle.id='servicePaymentHistoryPrintToggle';
+   toggle.className='service-payment-history-print-toggle';
+   toggle.setAttribute('role','checkbox');
+   toggle.setAttribute('aria-checked',String(serviceBenefitPrintHistoryEnabled));
+   toggle.setAttribute('aria-label','Include Payment history in print');
+   toggle.title='Click to include Payment history in print.';
+   toggle.innerHTML='<span aria-hidden="true">'+(serviceBenefitPrintHistoryEnabled?'✓':'')+'</span>';
+   heading.append(toggle);
+  }
+ }
  const form=document.getElementById('serviceBenefitPrintForm');
  if(!form||form.querySelector('#servicePrintCountRule'))return;
  const search=form.querySelector('.service-print-save');
@@ -84,8 +102,20 @@ function toggleServiceBenefit360Rule(event){
 }
 document.getElementById('main').addEventListener('click',toggleServiceBenefit360Rule);
 document.getElementById('main').addEventListener('contextmenu',toggleServiceBenefit360Rule);
+document.getElementById('main').addEventListener('click',event=>{
+ const toggle=event.target.closest('#servicePaymentHistoryPrintToggle');
+ if(!toggle)return;
+ event.preventDefault();
+ serviceBenefitPrintHistoryEnabled=!serviceBenefitPrintHistoryEnabled;
+ const history=document.querySelector('#serviceBenefitPrintContent .service-payment-history');
+ if(history)history.dataset.printEnabled=String(serviceBenefitPrintHistoryEnabled);
+ toggle.setAttribute('aria-checked',String(serviceBenefitPrintHistoryEnabled));
+ const mark=toggle.querySelector('span');
+ if(mark)mark.textContent=serviceBenefitPrintHistoryEnabled?'✓':'';
+});
 const serviceBenefitRuleStyle=document.createElement('style');
 serviceBenefitRuleStyle.textContent='#servicePrintCountRule{box-sizing:border-box;width:42px;min-width:42px;height:42px;min-height:42px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid #95bbd2;border-radius:9px;background:transparent!important;box-shadow:none!important;color:#164c78;font-weight:700;cursor:pointer}#servicePrintCountRule[aria-checked=true]{background:transparent!important;box-shadow:none!important;border-color:#15936b;color:#116244}#servicePrintCountRule span{box-sizing:border-box;width:17px;height:17px;border:1px solid currentColor;border-radius:4px;display:inline-flex;align-items:center;justify-content:center}';
+serviceBenefitRuleStyle.textContent+=`.service-payment-history h4{display:flex;align-items:center;justify-content:space-between;gap:8px}.service-payment-history-print-toggle{box-sizing:border-box;width:27px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid #222;border-radius:2px;background:transparent!important;color:#111;cursor:pointer;vertical-align:middle}.service-payment-history-print-toggle span{width:13px;height:13px;border:1px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1}@media print{#servicePaymentHistoryPrintToggle{display:none!important}.service-payment-history:not([data-print-enabled=true]){display:none!important}}`;
 document.head.append(serviceBenefitRuleStyle);
 const serviceBenefit360RuleObserver=new MutationObserver(()=>serviceBenefitAdjustRenderedRule());
 serviceBenefit360RuleObserver.observe(document.getElementById('main'),{childList:true,subtree:true});
