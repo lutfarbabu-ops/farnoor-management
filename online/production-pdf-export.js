@@ -96,6 +96,15 @@
  function outputKind(row){const kind=String(row.hourlyPDKind||'').toLowerCase();return ['quality','iron','sample','finishing'].includes(kind)?kind:'line';}
  function outputRow(row){const fields=row.hourlyPD?.fields||{};return {Date:row.date||'',Section:fields.section||'',Incharge:fields.incharge||'',Buyer:[fields.buyer,fields.buyerLast].filter(Boolean).join(' / '),Style:[fields.style,fields.styleLast].filter(Boolean).join(' / '),Item:[fields.item,fields.itemLast].filter(Boolean).join(' / '),WorkingPlan:fields.workingPlan??'',HourlyTarget:fields.hourlyTarget??'',LayoutManpower:fields.layoutManpower??'',PresentManpower:fields.presentManpower??'',Remarks:fields.remarks||'',HourlyData:JSON.stringify({hours:row.hourlyPD?.rows||[],targets:row.hourlyPD?.targets||[],differences:row.hourlyPD?.differences||[],achievements:row.hourlyPD?.achievements||[]})};}
  function scheduleRow(file){return {Section:file.section||'',Month:file.month||'',WeeklyOff:file.weekly||'',ExtraDays:file.extra||[],StartDate:file.startDate||'',EndDate:file.endDate||'',Rows:file.rows||[],DailyJournal:file.journal||{},CreatedAt:file.createdAt||''};}
+ const printModuleFiles={line:'line-wise-hourly-pd.js',quality:'quality-wise-hourly-pd.js',iron:'iron-wise-hourly-pd.js',sample:'sample-wise-hourly-pd.js',finishing:'finishing-wise-hourly-pd.js'};
+ const printFunctionNames={line:'hourlyPDPrintHTML',quality:'qualityPDPrintHTML',iron:'ironPDPrintHTML',sample:'samplePDPrintHTML',finishing:'finishingPDPrintHTML'};
+ const printModulePromises=new Map();
+ async function ensurePrintFunction(kind){
+  const name=printFunctionNames[kind];if(typeof window[name]==='function')return window[name];
+  let pending=printModulePromises.get(kind);
+  if(!pending){pending=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL(printModuleFiles[kind]+'?pdf-export=20261126-1',document.baseURI).href;script.onload=()=>typeof window[name]==='function'?resolve(window[name]):reject(Error('Print module loaded but its function is unavailable.'));script.onerror=()=>reject(Error('Could not load the '+kind+' report Print module.'));document.head.append(script);});printModulePromises.set(kind,pending);}
+  return pending;
+ }
  async function collectReports(day){
   if(typeof state==='undefined'||typeof DEPARTMENTS==='undefined')throw Error('Production data is not ready. Refresh data and retry.');
   const department=DEPARTMENTS.find(item=>item.id==='production');if(!department)throw Error('Production department was not found.');
@@ -117,7 +126,7 @@
    if(window.FarnoorAccess?.canPage&&!window.FarnoorAccess.canPage(permission))continue;
    const saved=hourly.filter(row=>row.hourlyProduction===true&&row.hourlyPD&&!row.deletedAt&&outputKind(row)===kind&&normalizeDay(row.date)===day);
    if(!saved.length)continue;
-   const printFn=getPrint();if(typeof printFn!=='function')throw Error(label+'-এর আসল Print ফরম্যাট পাওয়া যায়নি। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।');
+   const printFn=typeof getPrint()==='function'?getPrint():await ensurePrintFunction(kind);if(typeof printFn!=='function')throw Error(label+'-এর আসল Print ফরম্যাট পাওয়া যায়নি। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।');
    const printHTML=printFn(saved);if(!printHTML||!printHTML.includes('hourly-pd-print-sheet'))throw Error(label+'-এর Print ফরম্যাট তৈরি করা যায়নি।');
    add(label,saved.map(outputRow),printHTML);
   }
