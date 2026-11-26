@@ -1,0 +1,77 @@
+'use strict';
+(()=>{
+ const buttonId='productionPdfBundleButton';
+ const style=document.createElement('style');
+ style.textContent='#'+buttonId+'{position:fixed;right:24px;bottom:24px;z-index:10000;border:0;border-radius:12px;padding:13px 18px;background:linear-gradient(135deg,#1457a6,#19305d);color:#fff;font:700 15px system-ui;box-shadow:0 8px 22px #102b5050;cursor:pointer}#'+buttonId+':disabled{opacity:.65;cursor:wait}';
+ document.head.append(style);
+ function notify(message){if(typeof toast==='function')toast(message);else window.alert(message);}
+ function safeName(value){return String(value||'Report').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90)||'Report';}
+ function escapeHTML(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+ function displayValue(value){if(value===null||value===undefined)return '';if(typeof value==='object'){try{return JSON.stringify(value);}catch{return String(value);}}return String(value);}
+ function pdfDocument(title,rows){
+  const columns=[...new Set(rows.flatMap(row=>Object.keys(row)))];
+  const table='<table><thead><tr>'+columns.map(key=>'<th>'+escapeHTML(key)+'</th>').join('')+'</tr></thead><tbody>'+
+   rows.map(row=>'<tr>'+columns.map(key=>'<td>'+escapeHTML(displayValue(row[key]))+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+  const host=document.createElement('article');
+  host.style.cssText='width:275mm;padding:7mm;background:#fff;color:#142235;font:9pt Arial,sans-serif;box-sizing:border-box';
+  host.innerHTML='<h1 style="text-align:center;color:#123e67;margin:0 0 2mm;font-size:18pt">FARNOOR GARMENTS LTD.</h1><p style="text-align:center;margin:0 0 4mm">1028/1/2 Malibagh Bazar Road, Dhaka-1217</p><h2 style="text-align:center;margin:0 0 4mm;font-size:14pt">'+escapeHTML(title)+'</h2><p style="font-size:8pt;color:#526273;margin:0 0 3mm">Saved records: '+rows.length+'</p>'+table;
+  const sheet=document.createElement('style');
+  sheet.textContent='table{border-collapse:collapse;width:100%;table-layout:fixed}th,td{border:1px solid #34495e;padding:3px 4px;text-align:left;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap}th{background:#e8f0f5}tr{break-inside:avoid}thead{display:table-header-group}';
+  host.append(sheet);
+  return host;
+ }
+ async function makePdf(title,rows){
+  const node=pdfDocument(title,rows);
+  document.body.append(node);
+  try{
+   const worker=window.html2pdf().set({margin:0,image:{type:'jpeg',quality:.94},html2canvas:{scale:1.5,backgroundColor:'#ffffff',logging:false},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}}).from(node);
+   return await worker.outputPdf('arraybuffer');
+  }finally{node.remove();}
+ }
+ function crc32(bytes){let crc=-1;for(let i=0;i<bytes.length;i++){crc^=bytes[i];for(let j=0;j<8;j++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}return (crc^-1)>>>0;}
+ function zipFiles(files){
+  const encoder=new TextEncoder(),parts=[],central=[];let offset=0;const now=new Date(),time=((now.getHours()&31)<<11)|((now.getMinutes()&63)<<5)|Math.floor(now.getSeconds()/2),date=(((now.getFullYear()-1980)&127)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+  for(const file of files){
+   const name=encoder.encode(file.name),data=new Uint8Array(file.data),crc=crc32(data),local=new Uint8Array(30+name.length),lv=new DataView(local.buffer);
+   lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0x0800,true);lv.setUint16(8,0,true);lv.setUint16(10,time,true);lv.setUint16(12,date,true);lv.setUint32(14,crc,true);lv.setUint32(18,data.length,true);lv.setUint32(22,data.length,true);lv.setUint16(26,name.length,true);lv.setUint16(28,0,true);local.set(name,30);parts.push(local,data);
+   const item=new Uint8Array(46+name.length),cv=new DataView(item.buffer);cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);cv.setUint16(10,0,true);cv.setUint16(12,time,true);cv.setUint16(14,date,true);cv.setUint32(16,crc,true);cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);cv.setUint16(28,name.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);cv.setUint16(34,0,true);cv.setUint16(36,0,true);cv.setUint32(38,0,true);cv.setUint32(42,offset,true);item.set(name,46);central.push(item);offset+=local.length+data.length;
+  }
+  const centralOffset=offset,centralSize=central.reduce((sum,item)=>sum+item.length,0),end=new Uint8Array(22),ev=new DataView(end.buffer);ev.setUint32(0,0x06054b50,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);ev.setUint32(12,centralSize,true);ev.setUint32(16,centralOffset,true);ev.setUint16(20,0,true);return new Blob([...parts,...central,end],{type:'application/zip'});
+ }
+ function outputKind(row){const kind=String(row.hourlyPDKind||'').toLowerCase();return kind==='quality'?'quality':kind==='iron'?'iron':kind==='sample'?'sample':'line';}
+ function outputRow(row){const fields=row.hourlyPD?.fields||{};return {Date:row.date||'',Section:fields.section||'',Incharge:fields.incharge||'',Buyer:[fields.buyer,fields.buyerLast].filter(Boolean).join(' / '),Style:[fields.style,fields.styleLast].filter(Boolean).join(' / '),Item:[fields.item,fields.itemLast].filter(Boolean).join(' / '),WorkingPlan:fields.workingPlan??'',HourlyTarget:fields.hourlyTarget??'',LayoutManpower:fields.layoutManpower??'',PresentManpower:fields.presentManpower??'',Remarks:fields.remarks||'',HourlyData:JSON.stringify({hours:row.hourlyPD?.rows||[],targets:row.hourlyPD?.targets||[],differences:row.hourlyPD?.differences||[],achievements:row.hourlyPD?.achievements||[]})};}
+ function scheduleRow(file){return {Section:file.section||'',Month:file.month||'',WeeklyOff:file.weekly||'',ExtraDays:file.extra||[],StartDate:file.startDate||'',EndDate:file.endDate||'',Rows:file.rows||[],DailyJournal:file.journal||{},CreatedAt:file.createdAt||''};}
+ async function collectReports(){
+  if(typeof state==='undefined'||typeof DEPARTMENTS==='undefined')throw Error('Production data is not ready. Refresh data and retry.');
+  const department=DEPARTMENTS.find(item=>item.id==='production');if(!department)throw Error('Production department was not found.');
+  const pages=department.pages.filter(page=>!page.hidden&&!page.navigationOnly&&(!window.FarnoorAccess?.canPage||window.FarnoorAccess.canPage(page.permissionPage||page.id)));
+  const largeGroups=(window.FarnoorLargeGroups||[]).filter(group=>group==='output'||pages.some(page=>page.id===group));
+  for(const group of largeGroups){if(!(window.FarnoorLoadedLargeGroups||[]).includes(group)){if(typeof ensureWorkspacePageData!=='function')throw Error('Saved Production records could not be loaded.');await ensureWorkspacePageData(group);}}
+  const reports=[];
+  const add=(name,rows)=>{if(Array.isArray(rows)&&rows.length)reports.push({name,rows});};
+  for(const page of pages){const rows=state.records?.[page.id]||[];add(page.name,rows);}
+  const hourly=state.records?.output||[];
+  const kinds=[['line','Line Wise Hourly PD','production-line-wise-hourly-pd'],['quality','Quality Wise Hourly PD','production-quality-wise-hourly-pd'],['iron','Iron Wise Hourly PD','production-iron-wise-hourly-pd'],['sample','Sample Wise Hourly PD','production-sample-wise-hourly-pd']];
+  for(const [kind,label,permission] of kinds){if(window.FarnoorAccess?.canPage&&!window.FarnoorAccess.canPage(permission))continue;add(label,hourly.filter(row=>row.hourlyProduction===true&&row.hourlyPD&&!row.deletedAt&&outputKind(row)===kind).map(outputRow));}
+  if(window.FarnoorAccess?.canPage?.('schedule-report')!==false)add('Production Plan and Schedule Reports',(state.productionSchedules||[]).map(scheduleRow));
+  return reports;
+ }
+ async function exportAll(){
+  const button=document.getElementById(buttonId);if(!button||button.disabled)return;button.disabled=true;button.textContent='Preparing Production PDFs…';
+  try{
+   if(!window.html2pdf){const script=document.createElement('script');script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';script.crossOrigin='anonymous';document.head.append(script);await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=()=>reject(Error('PDF tool could not be loaded. Check the internet connection and retry.'));});}
+   const reports=await collectReports();if(!reports.length)throw Error('No saved Production reports were found.');
+   const files=[];for(let index=0;index<reports.length;index++){button.textContent='Preparing PDF '+(index+1)+'/'+reports.length+'…';const report=reports[index];files.push({name:safeName(report.name)+'.pdf',data:await makePdf(report.name,report.rows)});}
+   button.textContent='Preparing download…';const blob=zipFiles(files),url=URL.createObjectURL(blob),anchor=document.createElement('a'),day=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Dhaka'});anchor.href=url;anchor.download='FARNOOR-Production-PDFs-'+day+'.zip';document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);notify(files.length+' আলাদা PDF তৈরি হয়েছে। ZIP ফাইলটি Downloads-এ সেভ হয়েছে।');
+  }catch(error){notify(error.message||'Production PDF তৈরি করা যায়নি.');}
+  finally{button.disabled=false;button.textContent='▤ Download Production PDFs';}
+ }
+ function syncButton(){
+  const production=document.body.dataset.activeDepartment==='production';
+  let button=document.getElementById(buttonId);
+  if(production&&!button){button=document.createElement('button');button.type='button';button.id=buttonId;button.textContent='▤ Download Production PDFs';button.addEventListener('click',exportAll);button.title='Download each saved Production report as a separate PDF in one ZIP';document.body.append(button);}
+  if(button)button.hidden=!production;
+ }
+ const previousGoPage=window.goPage;if(typeof previousGoPage==='function'){window.goPage=function(id){const result=previousGoPage(id);setTimeout(syncButton,0);return result;};}
+ new MutationObserver(syncButton).observe(document.body,{attributes:true,attributeFilter:['data-active-department']});syncButton();
+})();
